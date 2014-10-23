@@ -38,9 +38,7 @@ namespace KSoft.Phoenix.Resource
 			mHeader.Serialize(s);
 			mSignature.Serialize(s);
 
-			var leftovers_size = s.IsReading
-				? mHeader.HeaderSize
-				: (long)mHeader.HeaderSize - s.BaseStream.Position;
+			var leftovers_size = mHeader.HeaderSize - s.BaseStream.Position;
 			s.Pad((int)leftovers_size);
 
 			if (s.IsWriting)

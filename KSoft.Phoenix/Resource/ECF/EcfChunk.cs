@@ -9,6 +9,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		const int kDefaultAlignmentBit = 2;
 
+		#region Struct fields
 		public ulong EntryId;
 		public Values.PtrHandle DataOffset = Values.PtrHandle.Null32; // offset within the parent block
 		public int DataSize;
@@ -17,6 +18,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		public byte DataAlignmentBit = kDefaultAlignmentBit;
 		// I've seen XMB chunks have this set (eg, 4)
 		ushort unknown16;
+		#endregion
 
 		public void SeekTo(IO.IKSoftBinaryStream blockStream)
 		{
@@ -55,9 +57,9 @@ namespace KSoft.Phoenix.Resource.ECF
 				s.ReadAttributeOpt("size", ref DataSize, NumeralBase.Hex);
 			}
 		}
-		public void Read(IO.XmlElementStream s, bool include_file_data)
+		public void Read(IO.XmlElementStream s, bool includeFileData)
 		{
-			ReadFields(s, include_file_data);
+			ReadFields(s, includeFileData);
 		}
 		protected virtual void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{

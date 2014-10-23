@@ -9,6 +9,7 @@ namespace KSoft.Phoenix.Resource
 	public sealed class EraFileBuilder
 		: EraFileUtil
 	{
+		/// <summary>Extension of the file listing used to build ERAs</summary>
 		public const string kNameExtension = ".xml";
 
 		public EraFileBuilder(string listingPath)
@@ -19,7 +20,7 @@ namespace KSoft.Phoenix.Resource
 			mSourceFile = listingPath;
 		}
 
-		public bool ReadInternal()
+		bool ReadInternal()
 		{
 			bool result = true;
 
@@ -60,13 +61,13 @@ namespace KSoft.Phoenix.Resource
 		bool BuildInternal(string path, string eraName, string outputPath)
 		{
 			const FA k_mode = FA.Write;
-			const int kInitialBufferSize = 24 * IntegerMath.kMega; // 24MB
+			const int k_initial_buffer_size = 24 * IntegerMath.kMega; // 24MB
 
 			VerboseOutput.WriteLine("Building {0} to {1}...", eraName, outputPath);
 
 			VerboseOutput.WriteLine("\tAllocating memory...");
 			bool result = true;
-			using (var ms = new MemoryStream(kInitialBufferSize))
+			using (var ms = new MemoryStream(k_initial_buffer_size))
 			using (var era_memory = new IO.EndianStream(ms, Shell.EndianFormat.Big, this, permissions: k_mode))
 			{
 				era_memory.StreamMode = k_mode;
@@ -91,6 +92,11 @@ namespace KSoft.Phoenix.Resource
 			}
 			return result;
 		}
+		/// <summary>Builds the actual ERA file</summary>
+		/// <param name="path">Base path of the ERA's files (defined by the listing xml)</param>
+		/// <param name="eraName">Name of the final ERA file (without any directory or extension data)</param>
+		/// <param name="outputPath">(Optional) The path to output the final ERA file. Defaults to <paramref name="path"/></param>
+		/// <returns>True if all build operations were successful, false otherwise</returns>
 		public bool Build(string path, string eraName, string outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))

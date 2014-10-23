@@ -7,10 +7,15 @@ namespace KSoft.Phoenix.Resource
 	[Flags]
 	public enum EraFileExpanderOptions
 	{
+		/// <summary>Only the ERA's file listing (.xml) is generated</summary>
 		OnlyDumpListing = 1<<0,
+		/// <summary>Files that already exist in the output directory will be skipped</summary>
 		DontOverwriteExistingFiles = 1<<1,
+		/// <summary>Don't perform XMB to XML translations</summary>
 		DontTranslateXmbFiles = 1<<2,
+		/// <summary>Decompresses Scaleform data</summary>
 		DecompressUIFiles = 1<<3,
+		/// <summary>Translates GFX files to SWF</summary>
 		TranslateGfxFiles = 1<<4,
 	};
 
@@ -79,12 +84,15 @@ namespace KSoft.Phoenix.Resource
 		{
 			string listing_filename = System.IO.Path.Combine(path, listingName);
 
-			var root = new System.Xml.XmlDocument();
-			var e = root.CreateElement("EraArchive");
-			root.AppendChild(e);
-			using (var xml = new IO.XmlElementStream(root, root.DocumentElement, FA.Write, this))
+			using (var xml = IO.XmlElementStream.CreateForWrite("EraArchive", this))
+			{
+				xml.InitializeAtRootElement();
+				xml.StreamMode = FA.Write;
+
 				mEraFile.WriteDefinition(xml);
-			root.Save(listing_filename + EraFileBuilder.kNameExtension);
+
+				xml.Document.Save(listing_filename + EraFileBuilder.kNameExtension);
+			}
 		}
 		public bool ExpandTo(string path, string listingName)
 		{

@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			bool reading = s.IsReading;
 
-			int sig_data_length = reading && SignatureData == null
+			int sig_data_length = reading || SignatureData == null
 				? 0
 				: SignatureData.Length;
 			int size = reading
@@ -28,13 +28,16 @@ namespace KSoft.Phoenix.Resource
 
 			s.StreamSignature(kSignature);
 			s.Stream(ref size);
-			if (size < kNonSignatureBytesSize) throw new System.IO.InvalidDataException(size.ToString("X8"));
+			if (size < kNonSignatureBytesSize)
+				throw new System.IO.InvalidDataException(size.ToString("X8"));
 			s.Pad(sizeof(ulong));
 
 			s.StreamSignature(kSignatureMarker);
 			s.Stream(ref SizeBit);
-			if (reading) Array.Resize(ref SignatureData, size - kNonSignatureBytesSize);
-			s.Stream(SignatureData);
+			if (reading)
+				Array.Resize(ref SignatureData, size - kNonSignatureBytesSize);
+			if (sig_data_length > 0)
+				s.Stream(SignatureData);
 			s.StreamSignature(kSignatureMarker);
 		}
 		#endregion

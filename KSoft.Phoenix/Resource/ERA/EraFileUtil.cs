@@ -8,6 +8,9 @@ namespace KSoft.Phoenix.Resource
 	public abstract class EraFileUtil
 		: IDisposable
 	{
+		// The Cryptography pipeline assumes encrypted ERA files have the ".era" extension, while decrypted
+		// variants have an ".bin" extension. The Crypt() API wants a naked filename (not dir or extension data).
+
 		/// <summary>DON'T USE ME UNLESS YOU'RE NOT KSoft.Phoenix</summary>
 		public const string kExtensionEncrypted = EraFile.kExtensionEncrypted;
 		/// <summary>DON'T USE ME UNLESS YOU'RE NOT KSoft.Phoenix</summary>
@@ -29,7 +32,16 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
-		public static void Crypt(string path, string eraName, string outputPath, CryptographyTransformType transformType,
+		/// <summary>Performs a Cryptography operation on a given ERA file</summary>
+		/// <param name="path">Path to the input ERA file</param>
+		/// <param name="eraName">The naked ERA file, void of directory or extension data</param>
+		/// <param name="outputPath">Path to </param>
+		/// <param name="transformType">Type of Cryptography operation to perform</param>
+		/// <param name="verboseOutput">(Optional) the object to write verbose operation output to</param>
+		/// <returns>The output file's full path</returns>
+		///  
+		/// <exception cref="FileNotFoundException">Input ERA file does not exist</exception>
+		public static string Crypt(string path, string eraName, string outputPath, CryptographyTransformType transformType,
 			TextWriter verboseOutput = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
@@ -52,6 +64,9 @@ namespace KSoft.Phoenix.Resource
 			default:
 				throw new KSoft.Debug.UnreachableException(transformType.ToString());
 			}
+
+			if (!File.Exists(input_file))
+				throw new FileNotFoundException("ERA file for cryptography operation does not exist", input_file);
 
 			if (verboseOutput != null)
 			{
@@ -78,6 +93,8 @@ namespace KSoft.Phoenix.Resource
 					break;
 				}
 			}
+
+			return output_file;
 		}
 	};
 }

@@ -33,11 +33,13 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
+		#region Struct fields
 		public ulong FileTime; // bit encoded file time
 		public int DataUncompressedSize;
 		// 24 = ID calculated from Uncompressed data?
 		ulong unknown24, unknown2C;
 		public uint FilenameOffset;
+		#endregion
 
 		public string Filename;
 
@@ -200,6 +202,7 @@ namespace KSoft.Phoenix.Resource
 
 			if (EraFile.IsXmbFile(path) && translate_xmb_files)
 			{
+				#region Read XMB chunk
 				using (var xmb = new ECF.EcfFileXmb())
 				using (var ms = new System.IO.MemoryStream(chunk))
 				using (var es = new IO.EndianStream(ms, blockStream.ByteOrder, permissions: k_mode))
@@ -209,9 +212,11 @@ namespace KSoft.Phoenix.Resource
 
 					buffer = xmb.FileData;
 				}
+				#endregion
 
 				EraFile.RemoveXmbExtension(ref path);
 
+				#region Translate XMB to XML
 				using (var ms = new System.IO.MemoryStream(buffer, false))
 				using (var s = new IO.EndianReader(ms, blockStream.ByteOrder))
 				{
@@ -223,6 +228,7 @@ namespace KSoft.Phoenix.Resource
 						xmbf.ToXml(path);
 					}
 				}
+				#endregion
 			}
 			else
 			{
@@ -309,7 +315,8 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			string path = System.IO.Path.Combine(basePath, Filename);
-			if (!System.IO.File.Exists(path)) return false;
+			if (!System.IO.File.Exists(path))
+				return false;
 
 			using (var fs = System.IO.File.OpenRead(path))
 				BuildBuffer(blockStream, fs);
@@ -317,6 +324,7 @@ namespace KSoft.Phoenix.Resource
 			return true;
 		}
 
+		// Interface really only for the ERA's internal filenames table packaging
 		internal bool Pack(IO.EndianStream blockStream, System.IO.MemoryStream source)
 		{
 			Contract.Requires(blockStream.IsWriting);

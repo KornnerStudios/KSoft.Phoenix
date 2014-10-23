@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -134,7 +135,8 @@ namespace KSoft.Phoenix.Phx
 		internal static string TryGetName<T>(Collections.BListAutoId<T> dbi, int id)
 			where T : class, Collections.IListAutoIdObject, new()
 		{
-			if (id >= 0 && id < dbi.Count) return dbi[id].Data;
+			if (id >= 0 && id < dbi.Count)
+				return dbi[id].Data;
 
 			return null;
 		}
@@ -301,7 +303,7 @@ namespace KSoft.Phoenix.Phx
 		public BTriggerSystem LoadScript(string script_name, BTriggerScriptType type = BTriggerScriptType.TriggerScript)
 		{
 			var ctxt = mTriggerSerializer.StreamTriggerScriptGetContext(FA.Read, type, script_name);
-			var task = System.Threading.Tasks.Task<bool>.Factory.StartNew((state) => {
+			var task = Task<bool>.Factory.StartNew((state) => {
 				var _ctxt = state as XML.BTriggerScriptSerializer.StreamTriggerScriptContext;
 				return mTriggerSerializer.TryStreamData(_ctxt.FileInfo, FA.Read, mTriggerSerializer.StreamTriggerScript, _ctxt);
 			}, ctxt);
@@ -311,7 +313,7 @@ namespace KSoft.Phoenix.Phx
 		public bool LoadScenarioScripts(string scnrPath)
 		{
 			var ctxt = mTriggerSerializer.StreamTriggerScriptGetContext(FA.Read, BTriggerScriptType.Scenario, scnrPath);
-			var task = System.Threading.Tasks.Task<bool>.Factory.StartNew((state) => {
+			var task = Task<bool>.Factory.StartNew((state) => {
 				var _ctxt = state as XML.BTriggerScriptSerializer.StreamTriggerScriptContext;
 				return mTriggerSerializer.TryStreamData(_ctxt.FileInfo, FA.Read, mTriggerSerializer.LoadScenarioScripts, _ctxt);
 			}, ctxt);

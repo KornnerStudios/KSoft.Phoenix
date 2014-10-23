@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -10,10 +11,12 @@ namespace KSoft.Phoenix.Resource
 		public const string kExtensionEncrypted = ".era";
 		public const string kExtensionDecrypted = ".bin";
 
+		#region Compression utils
 		public static byte[] Compress(byte[] bytes, out uint resultAdler, int lvl = 5)
 		{
 			byte[] result = new byte[bytes.Length];
-			return IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out resultAdler, result, trimCompressedBytes: false);
+			return IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out resultAdler, result,
+				trimCompressedBytes:false);
 		}
 		public static byte[] Decompress(byte[] bytes, int uncompressedSize, out uint resultAdler)
 		{
@@ -26,6 +29,7 @@ namespace KSoft.Phoenix.Resource
 			return IO.Compression.ZLib.LowLevelDecompress(bytes, uncompressedSize,
 				sizeof(uint) * 2); // skip the header and decompressed size
 		}
+		#endregion
 
 		#region Xml extensions
 		static readonly HashSet<string> kXmlBasedFilesExtensions = new HashSet<string>() {
@@ -119,12 +123,29 @@ namespace KSoft.Phoenix.Resource
 		EraFileHeader mHeader = new EraFileHeader();
 		List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
 
+		int FileChunksFirstIndex { get {
+			// First comes the filenames table in mFiles, then all the files defined in the listing
+			return 1;
+		} }
+		/// <summary>All files destined for the ERA, excluding the internal filenames table</summary>
+		IEnumerable<EraFileEntryChunk> FileChunks { get {
+			// Skip the first chunk, as it is the filenames table
+			return Enumerable.Skip(mFiles, FileChunksFirstIndex);
+		} }
+		/// <summary>Number of files destined for the ERA, excluding the internal filenames table</summary>
+		int FileChunksCount { get {
+			// Exclude the first chunk from the count, as it is the filenames table
+			return mFiles.Count - FileChunksFirstIndex;
+		} }
+
 		public int CalculateHeaderAndFileChunksSize()
 		{
-			return EraFileHeader.CalculateHeaderSize() + EraFileEntryChunk.CalculateFileChunksSize(mFiles.Count);
+			return 
+				EraFileHeader.CalculateHeaderSize() + 
+				EraFileEntryChunk.CalculateFileChunksSize(mFiles.Count);
 		}
 
-		#region Xml Streaming
+		#region Xml definition Streaming
 		static EraFileEntryChunk GenerateFilenamesTableEntryChunk()
 		{
 			var chunk = new EraFileEntryChunk();
@@ -136,6 +157,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			mFiles.Clear();
 
+			// first entry should always be the null terminated filenames table
 			mFiles.Add(GenerateFilenamesTableEntryChunk());
 
 			foreach (var n in s.ElementsByName(ECF.EcfChunk.kXmlElementStreamName))
@@ -147,14 +169,12 @@ namespace KSoft.Phoenix.Resource
 				mFiles.Add(f);
 			}
 
-			if (mFiles.Count > 1)
-				mFiles.RemoveAt(0); // internal filenames
-
-			return mFiles.Count != 0;
+			// there should be at least one file destined for the ERA, excluding the filenames table
+			return FileChunksCount != 0;
 		}
 		public void WriteDefinition(IO.XmlElementStream s)
 		{
-			for (int x = 1; x < mFiles.Count; x++)
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 				mFiles[x].Write(s, false);
 		}
 		#endregion
@@ -166,13 +186,14 @@ namespace KSoft.Phoenix.Resource
 
 			var expander = blockStream.Owner as EraFileExpander;
 
-			for (int x = 1; x < mFiles.Count; x++)
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
-				if (expander != null) expander.VerboseOutput.Write("\r\t{0} ", mFiles[x].EntryId.ToString("X16"));
+				if (expander != null)
+					expander.VerboseOutput.Write("\r\t{0} ", mFiles[x].EntryId.ToString("X16"));
 				mFiles[x].Unpack(blockStream, basePath);
 			}
 
-			if(expander != null)
+			if (expander != null)
 				expander.VerboseOutput.Write("\r\t{0} \r", new string(' ', 16));
 		}
 
@@ -184,10 +205,12 @@ namespace KSoft.Phoenix.Resource
 			using (var s = new IO.EndianWriter(ms, blockStream.ByteOrder))
 			{
 				var smp = new Memory.Strings.StringMemoryPool(kFilenamesTablePoolConfig);
-				for (int x = 1; x < mFiles.Count; x++)
+				for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 				{
 					var file = mFiles[x];
-					if(file.EntryId == 0) file.EntryId = (ulong)x;
+					if (file.EntryId == 0)
+						file.EntryId = (ulong)x;
+
 					file.FilenameOffset = smp.Add(file.Filename).u32;
 				}
 				smp.WriteStrings(s);
@@ -203,7 +226,7 @@ namespace KSoft.Phoenix.Resource
 			var builder = blockStream.Owner as EraFileBuilder;
 
 			bool success = BuildFilenamesTable(blockStream);
-			for (int x = 1; x < mFiles.Count && success; x++)
+			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
 			{
 				if (builder != null)
 					builder.VerboseOutput.Write("\r\t\t{0} ", mFiles[x].EntryId.ToString("X16"));
@@ -234,7 +257,7 @@ namespace KSoft.Phoenix.Resource
 			using (var ms = new System.IO.MemoryStream(filenames_buffer))
 			using (var er = new IO.EndianReader(ms, s.ByteOrder))
 			{
-				for (int x = 1; x < mFiles.Count; x++)
+				for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 				{
 					var file = mFiles[x];
 
