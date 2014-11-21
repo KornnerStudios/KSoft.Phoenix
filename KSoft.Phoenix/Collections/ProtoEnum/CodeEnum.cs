@@ -6,7 +6,7 @@ namespace KSoft.Collections
 {
 	using PhxUtil = KSoft.Phoenix.PhxUtil;
 
-	public class CodeEnum<TEnum>
+	public sealed class CodeEnum<TEnum>
 		: IProtoEnum
 		where TEnum : struct
 	{

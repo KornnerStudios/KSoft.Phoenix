@@ -5,7 +5,8 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
-	public class BListExplicitIndexParams<T> : BListParams
+	public class BListExplicitIndexParams<T>
+		: BListParams
 	{
 		public readonly IComparer<T> kComparer = Comparer<T>.Default;
 

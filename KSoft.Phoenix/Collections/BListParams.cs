@@ -4,7 +4,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
-	public class BListParams
+	public abstract class BListParams
 		: BCollectionParams
 	{
 	};

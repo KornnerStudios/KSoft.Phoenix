@@ -9,7 +9,7 @@ namespace KSoft.Collections
 	/// Our base interface for lists of game data, whose elements occupy an explicit index
 	/// </summary>
 	/// <typeparam name="T">Game Data's type</typeparam>
-	public class BListExplicitIndex<T>
+	public sealed class BListExplicitIndex<T>
 		: BListExplicitIndexBase<T>
 		where T : IEqualityComparer<T>, IO.ITagElementStringNameStreamable, new()
 	{

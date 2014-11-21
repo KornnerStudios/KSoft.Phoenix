@@ -71,10 +71,13 @@ namespace KSoft.Phoenix.Resource
 			using (var era_memory = new IO.EndianStream(ms, Shell.EndianFormat.Big, this, permissions: k_mode))
 			{
 				era_memory.StreamMode = k_mode;
+				// we can use our custom VAT system to generate relative-offset (to a given chunk) information which ECFs use
 				era_memory.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
 
+				// seeking now will create null bytes for the header and embedded file chunk descriptors
 				ms.Seek(mEraFile.CalculateHeaderAndFileChunksSize(), SeekOrigin.Begin);
 
+				// now we can start embedding the files
 				VerboseOutput.WriteLine("\tPacking files...");
 				result &= mEraFile.Build(era_memory, path);
 
@@ -82,9 +85,11 @@ namespace KSoft.Phoenix.Resource
 				{
 					VerboseOutput.WriteLine("\tFinializing...");
 
+					// seek back to the start of the ERA and write out the finalized header and file chunk descriptors
 					ms.Seek(0, SeekOrigin.Begin);
 					mEraFile.Serialize(era_memory);
 
+					// finally, bake the ERA memory stream into a file
 					string era_filename = Path.Combine(outputPath, eraName) + EraFileExpander.kNameExtension;
 					using (var fs = new FileStream(era_filename, FileMode.Create, FA.Write))
 						ms.WriteTo(fs);

@@ -5,7 +5,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
-	public class BTypeValues<T>
+	public sealed class BTypeValues<T>
 		: BTypeValuesBase<T>
 		where T : IEqualityComparer<T>, IO.ITagElementStringNameStreamable, new()
 	{

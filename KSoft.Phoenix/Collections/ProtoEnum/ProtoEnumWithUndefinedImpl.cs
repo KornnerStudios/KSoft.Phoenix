@@ -7,7 +7,7 @@ namespace KSoft.Collections
 {
 	using PhxUtil = KSoft.Phoenix.PhxUtil;
 
-	internal class ProtoEnumWithUndefinedImpl
+	internal sealed class ProtoEnumWithUndefinedImpl
 		: IProtoEnumWithUndefined
 	{
 		IProtoEnum mRoot;

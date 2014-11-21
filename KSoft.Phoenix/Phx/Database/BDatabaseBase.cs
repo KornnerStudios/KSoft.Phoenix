@@ -300,9 +300,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			mTriggerSerializer = new XML.BTriggerScriptSerializer(Engine);
 		}
-		public BTriggerSystem LoadScript(string script_name, BTriggerScriptType type = BTriggerScriptType.TriggerScript)
+		public BTriggerSystem LoadScript(string scriptName, BTriggerScriptType type = BTriggerScriptType.TriggerScript)
 		{
-			var ctxt = mTriggerSerializer.StreamTriggerScriptGetContext(FA.Read, type, script_name);
+			var ctxt = mTriggerSerializer.StreamTriggerScriptGetContext(FA.Read, type, scriptName);
 			var task = Task<bool>.Factory.StartNew((state) => {
 				var _ctxt = state as XML.BTriggerScriptSerializer.StreamTriggerScriptContext;
 				return mTriggerSerializer.TryStreamData(_ctxt.FileInfo, FA.Read, mTriggerSerializer.StreamTriggerScript, _ctxt);

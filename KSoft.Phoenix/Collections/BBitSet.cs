@@ -7,12 +7,22 @@ namespace KSoft.Collections
 {
 	using Phx = Phoenix.Phx;
 
-	public class BBitSet
+	public sealed class BBitSet
 	{
 		Collections.BitSet mBits;
 
-		public int Count { get { return IsEmpty ? 0 : mBits.Length; } }
-		public int EnabledCount { get { return IsEmpty ? 0 : mBits.Cardinality; } }
+		/// <summary>Is this bitset void of any ON bits?</summary>
+		public bool IsEmpty { get {
+			return mBits == null;
+		} }
+		/// <summary>Number of bits in the set, both ON and OFF</summary>
+		public int Count { get {
+			return IsEmpty ? 0 : mBits.Length;
+		} }
+		/// <summary>Number of bits in the set which are ON</summary>
+		public int EnabledCount { get {
+			return IsEmpty ? 0 : mBits.Cardinality;
+		} }
 
 		/// <summary>Parameters that dictate the functionality of this list</summary>
 		public BBitSetParams Params { get; private set; }
@@ -26,18 +36,18 @@ namespace KSoft.Collections
 			InitializeFromEnum(null);
 		}
 
-		public bool IsEmpty { get { return mBits == null; } }
 		internal void OptimizeStorage()
 		{
 			if (EnabledCount == 0)
 				mBits = null;
 		}
+
 		internal IProtoEnum InitializeFromEnum(Phx.BDatabaseBase db)
 		{
 			IProtoEnum penum = null;
 
-			if (Params.kGetProtoEnum != null)	penum = Params.kGetProtoEnum();
-			else if (db != null)				penum = Params.kGetProtoEnumFromDB(db);
+				 if (Params.kGetProtoEnum != null)	penum = Params.kGetProtoEnum();
+			else if (db != null)					penum = Params.kGetProtoEnumFromDB(db);
 
 			if(penum != null)
 				mBits = new Collections.BitSet(penum.MemberCount);

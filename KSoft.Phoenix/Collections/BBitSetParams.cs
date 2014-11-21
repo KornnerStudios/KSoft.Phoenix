@@ -7,7 +7,7 @@ namespace KSoft.Collections
 {
 	using Phx = Phoenix.Phx;
 
-	public class BBitSetParams
+	public sealed class BBitSetParams
 	{
 		/// <summary>Get the source IProtoEnum from a global object</summary>
 		public readonly Func<IProtoEnum> kGetProtoEnum;

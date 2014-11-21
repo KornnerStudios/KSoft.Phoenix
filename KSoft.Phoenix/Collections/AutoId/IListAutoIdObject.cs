@@ -8,7 +8,7 @@ namespace KSoft.Collections
 	public interface IListAutoIdObject
 		: IO.ITagElementStringNameStreamable
 	{
-		/// <summary>Generated AutoID for this object</summary>
+		/// <summary>Generated AutoID for this object. Used internally, not a concept in the actual Phoenix engine</summary>
 		int AutoId { get; set; }
 
 		/// <summary>Main, ie key, data</summary>

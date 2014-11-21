@@ -5,7 +5,8 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
-	public class BTypeNamesWithCode : BTypeNames
+	public sealed class BTypeNamesWithCode
+		: BTypeNames
 	{
 		IProtoEnum mCodeTypes;
 
