@@ -23,12 +23,6 @@ namespace KSoft.Phoenix.XML
 		public override void Dispose() {}
 		#endregion
 
-		static void WaitUntilComplete(System.Threading.Tasks.ParallelLoopResult result)
-		{
-			while (!result.IsCompleted)
-				System.Threading.Thread.Sleep(500);
-		}
-
 		void ParseTriggerScript<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
@@ -69,13 +63,9 @@ namespace KSoft.Phoenix.XML
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.TriggerScript),
 				ParseTriggerScriptSansSkrimishAI, out result);
 
-			WaitUntilComplete(result);
-
 			ReadDataFilesAsync(Engine.ContentStorage.Update, Engine.GameDirectory.TriggerScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.TriggerScript),
 				ParseTriggerScript, out result);
-
-			WaitUntilComplete(result);
 		}
 		void ParseAbilities(Engine.PhxEngine e)
 		{
@@ -84,8 +74,6 @@ namespace KSoft.Phoenix.XML
 			ReadDataFilesAsync(Engine.ContentStorage.Game,   Engine.GameDirectory.AbilityScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.Ability),
 				ParseTriggerScript, out result);
-
-			WaitUntilComplete(result);
 		}
 		void ParsePowers(Engine.PhxEngine e)
 		{
@@ -94,8 +82,6 @@ namespace KSoft.Phoenix.XML
 			ReadDataFilesAsync(Engine.ContentStorage.Game,   Engine.GameDirectory.PowerScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.Power),
 				ParseTriggerScript, out result);
-
-			WaitUntilComplete(result);
 		}
 		void ParseScenarios(Engine.PhxEngine e)
 		{
@@ -104,8 +90,6 @@ namespace KSoft.Phoenix.XML
 			ReadDataFilesAsync(Engine.ContentStorage.Game, Engine.GameDirectory.Scenario,
 				"*.scn",
 				ParseScenarioScripts, out result);
-
-			WaitUntilComplete(result);
 		}
 
 		public void ParseScriptFiles()
