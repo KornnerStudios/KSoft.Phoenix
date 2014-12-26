@@ -46,6 +46,18 @@ namespace KSoft.Phoenix
 			return s;
 		}
 
+		// stream a "condition". mainly a helper for GameFile code
+		public static bool StreamCond<T>(this IO.EndianStream s, T ctxt, Predicate<T> writePredicate)
+		{
+			bool cond = s.IsReading
+				? false
+				: writePredicate(ctxt);
+
+			s.Stream(ref cond);
+
+			return cond;
+		}
+
 		public static bool HasXmbVariantSupport(this TypeCode c)
 		{
 			switch (c)

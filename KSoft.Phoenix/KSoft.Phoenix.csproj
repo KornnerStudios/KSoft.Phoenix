@@ -110,6 +110,7 @@
     <Compile Include="Runtime\BParametricSplineCurve.cs" />
     <Compile Include="Runtime\BStatsManager.cs" />
     <Compile Include="Runtime\BUser.cs" />
+    <Compile Include="Runtime\BVisual.cs" />
     <Compile Include="Runtime\Objects\BAdditionalTextures.cs" />
     <Compile Include="Runtime\Objects\BEntity.cs" />
     <Compile Include="Runtime\Objects\BEntityFilters.cs" />

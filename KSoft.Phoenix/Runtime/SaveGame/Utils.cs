@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Contract = System.Diagnostics.Contracts.Contract;
 
 using BVector = SlimMath.Vector4;
+using BMatrix = SlimMath.Matrix;
 using BCost = System.Single;
 
 namespace KSoft.Phoenix.Runtime
@@ -460,6 +462,74 @@ namespace KSoft.Phoenix.Runtime
 				s.Stream(ref ptr);
 			else
 				ptr = TypeExtensions.kNone;
+
+			return s;
+		}
+
+		public static bool StreamObjectId<T>(IO.EndianStream s, ref T obj,
+			Func<T> initializer,
+			Action<T, int> setId,
+			Func<T, int> getId,
+			int invalidId = TypeExtensions.kNone)
+			where T : class
+		{
+			Contract.Requires(initializer != null);
+			Contract.Requires(getId != null);
+			Contract.Requires(setId != null);
+
+			int id = invalidId;
+
+			#region Read
+			if (s.IsReading)
+			{
+				s.Stream(ref id);
+
+				if (id != invalidId)
+				{
+					if (obj == null)
+						obj = initializer();
+
+					setId(obj, id);
+				}
+			}
+			#endregion
+			#region Write
+			else if (s.IsWriting)
+			{
+				id = obj != null
+					? invalidId
+					: getId(obj);
+
+				s.Writer.Write(id);
+			}
+			#endregion
+
+			return id != invalidId;
+		}
+
+		public static IO.EndianStream StreamMatrix(IO.EndianStream s, ref BMatrix matrix)
+		{
+			if (s.StreamCond(matrix, m => !m.IsIdentity))
+			{
+				BVector 
+					forward = matrix.Row1, 
+					right = matrix.Row2,
+					up = matrix.Row3,
+					translation = matrix.Row4;
+
+				s.StreamV(ref forward);
+				s.StreamV(ref right);
+				s.StreamV(ref up);
+				s.StreamV(ref translation);
+
+				if (s.IsReading)
+				{
+					matrix.Row1 = forward;
+					matrix.Row2 = right;
+					matrix.Row3 = up;
+					matrix.Row4 = translation;
+				}
+			}
 
 			return s;
 		}
