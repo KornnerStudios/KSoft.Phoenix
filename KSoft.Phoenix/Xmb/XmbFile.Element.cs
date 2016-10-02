@@ -23,7 +23,8 @@ namespace KSoft.Phoenix.Xmb
 			#region IEndianStreamable Members
 			public void ReadAttributes(XmbFile xmb, IO.EndianReader s)
 			{
-				if (mAttributesOffset.IsInvalidHandle) return;
+				if (mAttributesOffset.IsInvalidHandle)
+					return;
 
 				s.Seek((long)mAttributesOffset);
 				for (int x = 0; x < Attributes.Capacity; x++)
@@ -47,22 +48,39 @@ namespace KSoft.Phoenix.Xmb
 				for (int x = 0; x < ChildrenIndices.Capacity; x++)
 					ChildrenIndices.Add(s.ReadInt32());
 			}
-			public void Read(XmbFile xmb, IO.EndianReader s)
+			public void Read(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
 			{
 				s.Read(out RootElementIndex);
 				XmbVariantSerialization.Read(s, out NameVariant);
 				XmbVariantSerialization.Read(s, out InnerTextVariant);
-				int count;
+				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
 
+				#region Attributes header
+				int count;
 				s.Read(out count);
+				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
 				s.ReadVirtualAddress(out mAttributesOffset);
 				Attributes = new List<KeyValuePair<XmbVariant, XmbVariant>>(count);
+				#endregion
 
+				#region Children header
 				s.Read(out count);
+				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
 				s.ReadVirtualAddress(out mChildrenOffset);
 				ChildrenIndices = new List<int>(count);
+				#endregion
 
-				if (NameVariant.HasUnicodeData || InnerTextVariant.HasUnicodeData) xmb.mHasUnicodeStrings = true;
+				if (NameVariant.HasUnicodeData || InnerTextVariant.HasUnicodeData)
+					xmb.mHasUnicodeStrings = true;
 			}
 
 			public void WriteAttributes(IO.EndianWriter s)
@@ -100,17 +118,35 @@ namespace KSoft.Phoenix.Xmb
 			}
 			public void Write(IO.EndianWriter s)
 			{
+				var xmbContext = s.UserData as XmbFileContext;
+
 				s.Write(RootElementIndex);
 				XmbVariantSerialization.Write(s, NameVariant);
 				XmbVariantSerialization.Write(s, InnerTextVariant);
+				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
 
+				#region Attributes header
 				s.Write(Attributes.Count);
+				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
 				mAttributesOffsetPos = s.PositionPtr;
 				s.WriteVirtualAddress(Values.PtrHandle.InvalidHandle32);
+				#endregion
 
+				#region Children header
 				s.Write(ChildrenIndices.Count);
+				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
 				mChildrenOffsetPos = s.PositionPtr;
 				s.WriteVirtualAddress(Values.PtrHandle.InvalidHandle32);
+				#endregion
 			}
 			#endregion
 
@@ -167,7 +203,8 @@ namespace KSoft.Phoenix.Xmb
 			{
 				var e = doc.CreateElement(xmb.ToString(NameVariant));
 
-				if (root != null) root.AppendChild(e);
+				if (root != null)
+					root.AppendChild(e);
 
 				AttributesToXml(xmb, doc, e);
 				ChildrenToXml(xmb, doc, e);

@@ -9,13 +9,18 @@ namespace KSoft.Security.Cryptography
 
 	static class PhxHash
 	{
+		public const int kSha1SizeOf = 20;
+
 		// NOTE: data is written to the buffer in MSB order
 		static byte[] gUInt64Buffer = new byte[sizeof(ulong)];
 
 		static void BufferFillUnicode(char unicode)
 		{
-			gUInt64Buffer[0] = (byte)(unicode >> 8);
-			gUInt64Buffer[1] = (byte)(unicode >> 0);
+			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, (ushort)unicode);
+			if (BitConverter.IsLittleEndian)
+			{
+				Bitwise.ByteSwap.SwapUInt16(gUInt64Buffer, 0);
+			}
 		}
 
 		public static void UInt8(SHA1CryptoServiceProvider sha, uint word, bool isFinal = false)
@@ -29,8 +34,11 @@ namespace KSoft.Security.Cryptography
 		}
 		public static void UInt16(SHA1CryptoServiceProvider sha, uint word, bool isFinal = false)
 		{
-			gUInt64Buffer[0] = (byte)(word >> 8);
-			gUInt64Buffer[1] = (byte)(word >> 0);
+			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, (ushort)word);
+			if (BitConverter.IsLittleEndian)
+			{
+				Bitwise.ByteSwap.SwapUInt16(gUInt64Buffer, 0);
+			}
 
 			if (isFinal)
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(ushort));
@@ -39,10 +47,11 @@ namespace KSoft.Security.Cryptography
 		}
 		public static void UInt32(SHA1CryptoServiceProvider sha, uint word, bool isFinal = false)
 		{
-			gUInt64Buffer[0] = (byte)(word >> 24);
-			gUInt64Buffer[1] = (byte)(word >> 16);
-			gUInt64Buffer[2] = (byte)(word >> 8);
-			gUInt64Buffer[3] = (byte)(word >> 0);
+			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, word);
+			if (BitConverter.IsLittleEndian)
+			{
+				Bitwise.ByteSwap.SwapUInt32(gUInt64Buffer, 0);
+			}
 
 			if (isFinal)
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(uint));
@@ -51,14 +60,11 @@ namespace KSoft.Security.Cryptography
 		}
 		public static void UInt64(SHA1CryptoServiceProvider sha, ulong word, bool isFinal = false)
 		{
-			gUInt64Buffer[0] = (byte)(word >> 56);
-			gUInt64Buffer[1] = (byte)(word >> 48);
-			gUInt64Buffer[2] = (byte)(word >> 40);
-			gUInt64Buffer[3] = (byte)(word >> 32);
-			gUInt64Buffer[4] = (byte)(word >> 24);
-			gUInt64Buffer[5] = (byte)(word >> 16);
-			gUInt64Buffer[6] = (byte)(word >> 8);
-			gUInt64Buffer[7] = (byte)(word >> 0);
+			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, word);
+			if (BitConverter.IsLittleEndian)
+			{
+				Bitwise.ByteSwap.SwapUInt64(gUInt64Buffer, 0);
+			}
 
 			if (isFinal)
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(ulong));
@@ -94,6 +100,51 @@ namespace KSoft.Security.Cryptography
 			for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
 			{
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ushort), null, 0);
+			}
+		}
+
+		public static void Stream(SHA1CryptoServiceProvider sha
+			, System.IO.Stream inputStream
+			, long inputOffset
+			, long inputLength
+			, bool isFinal = false)
+		{
+			const int k_read_block_size = 4096;
+
+			Contract.Requires(inputStream != null);
+			Contract.Requires(inputStream.CanSeek && inputStream.CanRead);
+			Contract.Requires(inputOffset >= 0);
+			Contract.Requires(inputLength > 0);
+
+			var scratch_buffer = new byte[k_read_block_size];
+
+			using (new IO.StreamPositionContext(inputStream))
+			{
+				inputStream.Seek(inputOffset, System.IO.SeekOrigin.Begin);
+
+				for (long input_bytes_read = 0; input_bytes_read < inputLength; )
+				{
+					long bytes_remaining = inputLength - input_bytes_read;
+					int read_block_length = System.Math.Min((int)bytes_remaining, scratch_buffer.Length);
+
+					Array.Clear(scratch_buffer, 0, scratch_buffer.Length);
+					for (int actual_bytes_read = 0; actual_bytes_read < read_block_length; )
+					{
+						int sub_block_offset = actual_bytes_read;
+						int sub_block_length = read_block_length - sub_block_offset;
+						actual_bytes_read += inputStream.Read(scratch_buffer, sub_block_offset, sub_block_length);
+					}
+
+					sha.TransformBlock(
+						scratch_buffer, 0, read_block_length,
+						null, 0);
+					input_bytes_read += read_block_length;
+				}
+			}
+
+			if (isFinal)
+			{
+				sha.TransformFinalBlock(scratch_buffer, 0, 0);
 			}
 		}
 

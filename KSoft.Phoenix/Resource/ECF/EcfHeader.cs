@@ -15,17 +15,19 @@ namespace KSoft.Phoenix.Resource.ECF
 		public int HeaderSize;
 		// Checksum of the TotalSize field and onward, added to the checksum of everything after the header (HeaderSize - sizeof(ECFHeader))
 		public uint Checksum;
+
 		public int TotalSize;
 		public short ChunkCount;
-		short unknown12;
+		private ushort mFlags;
+		private uint mID; // The signature of the data which this header encapsulates
+		private ushort mExtraDataSize;
 
-		uint ID; // The signature of the data which this header encapsulates
-		ushort ExtraDataSize;
+		public ushort ExtraDataSize { get { return mExtraDataSize; } }
 
 		public void InitializeChunkInfo(uint dataId, uint dataChunkExtraDataSize = 0)
 		{
-			ID = dataId;
-			ExtraDataSize = (ushort)dataChunkExtraDataSize;
+			mID = dataId;
+			mExtraDataSize = (ushort)dataChunkExtraDataSize;
 		}
 
 		public void BeginBlock(IO.IKSoftBinaryStream s)
@@ -51,16 +53,16 @@ namespace KSoft.Phoenix.Resource.ECF
 			s.Stream(ref Checksum);
 			s.Stream(ref TotalSize);
 			s.Stream(ref ChunkCount);
-			s.Stream(ref unknown12);
+			s.Stream(ref mFlags);
 
-			if (s.IsReading && unknown12 != 0)
+			if (s.IsReading && mFlags != 0)
 			{
 				// TODO: trace
 				System.Diagnostics.Debugger.Break();
 			}
 
-			s.Stream(ref ID);
-			s.Stream(ref ExtraDataSize);
+			s.Stream(ref mID);
+			s.Stream(ref mExtraDataSize);
 			s.Pad(sizeof(short) + sizeof(int));
 		}
 		#endregion

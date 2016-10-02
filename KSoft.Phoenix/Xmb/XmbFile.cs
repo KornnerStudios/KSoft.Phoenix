@@ -6,6 +6,11 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Xmb
 {
+	/*public */sealed class XmbFileContext
+	{
+		public Shell.ProcessorSize PointerSize;
+	};
+
 	/*public*/ sealed partial class XmbFile
 		: IO.IEndianStreamable
 		, IDisposable
@@ -42,59 +47,116 @@ namespace KSoft.Phoenix.Xmb
 		#region IEndianStreamable Members
 		public void Read(IO.EndianReader s)
 		{
-			Values.PtrHandle elements_offset_pos;
+			var context = s.UserData as XmbFileContext;
 
-			var signature = s.ReadUInt32();
-			if (signature != kSignature)
-				throw new IO.SignatureMismatchException(s.BaseStream, kSignature, signature);
-
-			#region Initialize elements
+			using (s.ReadSignatureWithByteSwapSupport(kSignature))
 			{
-				int count = s.ReadInt32();
-				s.ReadVirtualAddress(out elements_offset_pos);
+				if (context.PointerSize == Shell.ProcessorSize.x64)
+				{
+					// #HACK to deal with xmb files which weren't updated with new tools
+					if (s.ByteOrder == Shell.EndianFormat.Big)
+					{
+						context.PointerSize = Shell.ProcessorSize.x32;
+					}
+				}
 
-				mElements = new List<Element>(count);
-			}
-			#endregion
-			#region Initialize and read pool
-			{
-				int size = s.ReadInt32();
-				Values.PtrHandle pool_offset_pos = s.ReadVirtualAddress();
+				s.VirtualAddressTranslationInitialize(context.PointerSize);
 
-				s.Seek((long)pool_offset_pos);
-				byte[] buffer = s.ReadBytes(size);
+				Values.PtrHandle elements_offset_pos;
 
-				mPool = new XmbVariantMemoryPool(buffer, s.ByteOrder);
-			}
-			#endregion
+				if (context.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad32();
+				}
+				#region Initialize elements
+				{
+					int count = s.ReadInt32();
+					if (context.PointerSize == Shell.ProcessorSize.x64)
+					{
+						s.Pad32();
+					}
+					s.ReadVirtualAddress(out elements_offset_pos);
 
-			s.Seek((long)elements_offset_pos);
-			for (int x = 0; x < mElements.Capacity; x++)
-			{
-				var e = new Element();
-				mElements.Add(e);
+					mElements = new List<Element>(count);
+				}
+				#endregion
+				#region Initialize and read pool
+				{
+					int size = s.ReadInt32();
+					if (context.PointerSize == Shell.ProcessorSize.x64)
+					{
+						s.Pad32();
+					}
+					Values.PtrHandle pool_offset_pos = s.ReadVirtualAddress();
 
-				e.Index = x;
-				e.Read(this, s);
-			}
+					s.Seek((long)pool_offset_pos);
+					byte[] buffer = s.ReadBytes(size);
 
-			foreach (var e in mElements)
-			{
-				e.ReadAttributes(this, s);
-				e.ReadChildren(s);
+					mPool = new XmbVariantMemoryPool(buffer, s.ByteOrder);
+				}
+				#endregion
+
+				if (context.PointerSize == Shell.ProcessorSize.x64)
+				{
+					s.Pad64();
+				}
+
+				s.Seek((long)elements_offset_pos);
+				for (int x = 0; x < mElements.Capacity; x++)
+				{
+					var e = new Element();
+					mElements.Add(e);
+
+					e.Index = x;
+					e.Read(this, context, s);
+				}
+
+				foreach (var e in mElements)
+				{
+					e.ReadAttributes(this, s);
+					e.ReadChildren(s);
+				}
 			}
 		}
 
 		public void Write(IO.EndianWriter s)
 		{
+			var context = s.UserData as XmbFileContext;
+
 			s.Write(kSignature);
+			if (context.PointerSize == Shell.ProcessorSize.x64)
+			{
+				s.Pad32();
+			}
+
+			#region Elements header
 			s.Write(mElements.Count);
-			var elements_offset_pos = s.MarkVirtualAddress32();
+			if (context.PointerSize == Shell.ProcessorSize.x64)
+			{
+				s.Pad32();
+			}
+			var elements_offset_pos = s.MarkVirtualAddress(context.PointerSize);
+			#endregion
+
+			#region Pool header
 			s.Write(mPool.Size);
-			var pool_offset_pos = s.MarkVirtualAddress32();
+			if (context.PointerSize == Shell.ProcessorSize.x64)
+			{
+				s.Pad32();
+			}
+			var pool_offset_pos = s.MarkVirtualAddress(context.PointerSize);
+			#endregion
+
+			if (context.PointerSize == Shell.ProcessorSize.x64)
+			{
+				s.Pad64();
+			}
 
 			var elements_offset = s.PositionPtr;
-			foreach (var e in mElements) e.Write(s);
+			foreach (var e in mElements)
+			{
+				e.Write(s);
+			}
 			foreach (var e in mElements)
 			{
 				e.WriteAttributes(s);
@@ -127,8 +189,9 @@ namespace KSoft.Phoenix.Xmb
 			var root = mElements[0];
 			var root_e = root.ToXml(this, doc, null);
 
-			// TODO: determine if the XMB has unicode strings and only switch to UTF8 when that's the case
-			var encoding = mHasUnicodeStrings ? System.Text.Encoding.UTF8 : System.Text.Encoding.ASCII;
+			var encoding = mHasUnicodeStrings
+				? System.Text.Encoding.UTF8
+				: System.Text.Encoding.ASCII;
 
 			doc.AppendChild(root_e);
 			using (var xml = new XmlTextWriter(file, encoding))

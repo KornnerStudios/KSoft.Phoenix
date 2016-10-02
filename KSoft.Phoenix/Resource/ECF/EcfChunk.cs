@@ -1,13 +1,34 @@
 ﻿
 namespace KSoft.Phoenix.Resource.ECF
 {
+	public enum EcfCompressionType : byte
+	{
+		Stored,
+		/// <summary>File data is stored in a standard compressed buffer (no header/footer/etc data, just plain old compressed bytes)</summary>
+		DeflateRaw,
+		/// <summary>File data is stored in a <see cref="CompressedStream"/> buffer</summary>
+		DeflateStream,
+	};
+
+	enum EcfChunkResourceFlags : ushort
+	{
+		Contiguous,
+		WriteCombined, // only valid with Contiguous
+		IsDeflateStream,
+		IsResourceTag,
+	};
+
 	/*public*/ class EcfChunk
 		: IO.IEndianStreamSerializable
 	{
+		public const int kMaxCount = 32768;
+		public const uint kMaxSize = 1024U * 1024U * 1024U;
+
 		public const int kSizeOf = 0x18;
 		internal const string kXmlElementStreamName = "chunk";
 
 		const int kDefaultAlignmentBit = 2;
+		const byte kCompressionTypeMask = 7;
 
 		#region Struct fields
 		public ulong EntryId;
@@ -16,8 +37,45 @@ namespace KSoft.Phoenix.Resource.ECF
 		public uint Checksum;
 		public byte Flags;
 		public byte DataAlignmentBit = kDefaultAlignmentBit;
-		// I've seen XMB chunks have this set (eg, 4)
-		ushort unknown16;
+		private ushort mResourceFlags;
+		#endregion
+
+		public ulong DecompressedDataTiger64
+		{
+			get { return EntryId; }
+			set { EntryId = value; }
+		}
+
+		public EcfCompressionType CompressionType
+		{
+			get { return (EcfCompressionType)(Flags & kCompressionTypeMask); }
+			set { Flags |= (byte)( ((byte)(value)) & kCompressionTypeMask ); }
+		}
+
+		#region Resource flags
+		public bool IsContiguous
+		{
+			get { return Bitwise.Flags.Test(mResourceFlags, 1U<<(ushort)EcfChunkResourceFlags.Contiguous); }
+			set { Bitwise.Flags.Modify(value, ref mResourceFlags, (ushort)1U<<(ushort)EcfChunkResourceFlags.Contiguous); }
+		}
+
+		public bool IsWriteCombined
+		{
+			get { return Bitwise.Flags.Test(mResourceFlags, 1U<<(ushort)EcfChunkResourceFlags.WriteCombined); }
+			set { Bitwise.Flags.Modify(value, ref mResourceFlags, (ushort)1U<<(ushort)EcfChunkResourceFlags.WriteCombined); }
+		}
+
+		public bool IsDeflateStream
+		{
+			get { return Bitwise.Flags.Test(mResourceFlags, 1U<<(ushort)EcfChunkResourceFlags.IsDeflateStream); }
+			set { Bitwise.Flags.Modify(value, ref mResourceFlags, (ushort)1U<<(ushort)EcfChunkResourceFlags.IsDeflateStream); }
+		}
+
+		public bool IsResourceTag
+		{
+			get { return Bitwise.Flags.Test(mResourceFlags, 1U<<(ushort)EcfChunkResourceFlags.IsResourceTag); }
+			set { Bitwise.Flags.Modify(value, ref mResourceFlags, (ushort)1U<<(ushort)EcfChunkResourceFlags.IsResourceTag); }
+		}
 		#endregion
 
 		public void SeekTo(IO.IKSoftBinaryStream blockStream)
@@ -41,7 +99,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			s.Stream(ref Checksum);
 			s.Stream(ref Flags);
 			s.Stream(ref DataAlignmentBit);
-			s.Stream(ref unknown16);
+			s.Stream(ref mResourceFlags);
 		}
 		#endregion
 
@@ -64,9 +122,9 @@ namespace KSoft.Phoenix.Resource.ECF
 		protected virtual void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{
 			s.WriteAttribute("id", EntryId.ToString("X16"));
-			if(Flags != 0)
+			if (Flags != 0)
 				s.WriteAttribute("flags", Flags.ToString("X1"));
-			if(DataAlignmentBit != kDefaultAlignmentBit)
+			if (DataAlignmentBit != kDefaultAlignmentBit)
 				s.WriteAttribute("align", DataAlignmentBit.ToString("X1"));
 			if (includeFileData)
 			{

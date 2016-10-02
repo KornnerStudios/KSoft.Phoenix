@@ -27,18 +27,42 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			base.Serialize(s);
 
-			var chunk = mChunks[0];
-			if (chunk.EntryId != kChunkId)
-				throw new System.IO.InvalidDataException(chunk.EntryId.ToString("X16"));
+			foreach (var chunk in mChunks)
+			{
+				if (s.IsReading)
+				{
+					chunk.SeekTo(s);
+				}
 
+				switch (chunk.EntryId)
+				{
+					case kChunkId:
+						SerializeMainChunk(chunk, s);
+						break;
+
+					default:
+						throw new KSoft.Debug.UnreachableException(chunk.EntryId.ToString("X16"));
+				}
+			}
+		}
+
+		private void SerializeMainChunk(EcfChunk chunk, IO.EndianStream s)
+		{
 			if (s.IsReading)
 			{
-				chunk.SeekTo(s);
+				if (!chunk.IsDeflateStream)
+				{
+					throw new System.IO.InvalidDataException(string.Format("{0}'s is supposed to be an XMB but isn't compressed",
+						chunk.EntryId.ToString("X16")));
+				}
+
 				FileData = CompressedStream.DecompressFromStream(s);
 			}
 			else if (s.IsWriting)
 			{
 				Contract.Assert(false);
+
+				chunk.IsDeflateStream = true;
 			}
 		}
 	};

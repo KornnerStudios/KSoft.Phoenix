@@ -1,7 +1,12 @@
 ﻿using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+using SHA1CryptoServiceProvider = System.Security.Cryptography.SHA1CryptoServiceProvider;
 
 namespace KSoft.Phoenix.Resource
 {
+	using PhxHash = Security.Cryptography.PhxHash;
+
 	/*public*/ sealed class EraFileSignature
 		: IO.IEndianStreamSerializable
 	{
@@ -10,6 +15,8 @@ namespace KSoft.Phoenix.Resource
 		const byte kDefaultSizeBit = 0x13;
 
 		const int kNonSignatureBytesSize = sizeof(uint) + sizeof(byte) + sizeof(uint);
+
+		const uint kSha1Salt = 0xA7F95F9C;
 
 		public byte SizeBit = kDefaultSizeBit;
 		public byte[] SignatureData;
@@ -30,16 +37,46 @@ namespace KSoft.Phoenix.Resource
 			s.Stream(ref size);
 			if (size < kNonSignatureBytesSize)
 				throw new System.IO.InvalidDataException(size.ToString("X8"));
-			s.Pad(sizeof(ulong));
+			s.Pad64();
 
 			s.StreamSignature(kSignatureMarker);
 			s.Stream(ref SizeBit);
 			if (reading)
+			{
 				Array.Resize(ref SignatureData, size - kNonSignatureBytesSize);
-			if (sig_data_length > 0)
+			}
+			if (SignatureData.Length > 0)
+			{
 				s.Stream(SignatureData);
+			}
 			s.StreamSignature(kSignatureMarker);
 		}
 		#endregion
+
+		internal static byte[] ComputeSignatureDigest(System.IO.Stream chunksStream
+			, long chunksOffset
+			, long chunksLength
+			, ECF.EcfHeader header)
+		{
+			Contract.Requires(chunksStream != null);
+			Contract.Requires(chunksStream.CanSeek && chunksStream.CanRead);
+			Contract.Requires(chunksOffset >= 0);
+			Contract.Requires(chunksLength > 0);
+
+			using (var sha = new SHA1CryptoServiceProvider())
+			{
+				PhxHash.UInt32(sha, kSha1Salt);
+				PhxHash.UInt32(sha, (uint)header.HeaderSize);
+				PhxHash.UInt32(sha, (uint)header.ChunkCount);
+				PhxHash.UInt32(sha, (uint)header.ExtraDataSize);
+				PhxHash.UInt32(sha, (uint)header.TotalSize);
+
+				PhxHash.Stream(sha,
+					chunksStream, chunksOffset, chunksLength,
+					isFinal: true);
+
+				return sha.Hash;
+			}
+		}
 	};
 }

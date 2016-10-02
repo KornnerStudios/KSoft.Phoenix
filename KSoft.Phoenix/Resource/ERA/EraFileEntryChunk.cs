@@ -16,28 +16,14 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
-		#region Flags
-		const byte kIsCompressedFlag = 1 << 0;
-		/// <summary>File data is stored in a standard compressed buffer (no header/footer/etc data, just plain old compressed bytes)</summary>
-		public bool IsCompressed
-		{
-			get { return Bitwise.Flags.Test(base.Flags, kIsCompressedFlag); }
-			set { Bitwise.Flags.Modify(value, ref base.Flags, kIsCompressedFlag); }
-		}
-		const byte kIsCompressedStreamFlag = 1 << 1;
-		/// <summary>File data is stored in a <see cref="CompressedStream"/> buffer</summary>
-		public bool IsCompressedStream
-		{
-			get { return Bitwise.Flags.Test(base.Flags, kIsCompressedStreamFlag); }
-			set { Bitwise.Flags.Modify(value, ref base.Flags, kIsCompressedStreamFlag); }
-		}
-		#endregion
-
 		#region Struct fields
 		public ulong FileTime; // bit encoded file time
 		public int DataUncompressedSize;
+		public byte[] CompressedDataTiger128 = new byte[16];
 		// 24 = ID calculated from Uncompressed data?
-		ulong unknown24, unknown2C;
+		// Compressed data's Tiger128
+		public ulong CompressedDataTiger128_0, CompressedDataTiger128_1;
+		// actually only 24 bits, big endian
 		public uint FilenameOffset;
 		#endregion
 
@@ -48,18 +34,12 @@ namespace KSoft.Phoenix.Resource
 		{
 			base.Serialize(s);
 
-			var fname_offset = s.IsReading
-				? 0
-				: FilenameOffset << 8;
-
 			s.Stream(ref FileTime);
 			s.Stream(ref DataUncompressedSize);
-			s.Stream(ref unknown24);
-			s.Stream(ref unknown2C);
-			s.Stream(ref fname_offset);
-
-			if(s.IsReading)
-				FilenameOffset = fname_offset >> 8;
+			s.Stream(ref CompressedDataTiger128_0);
+			s.Stream(ref CompressedDataTiger128_1);
+			s.StreamUInt24(ref FilenameOffset);
+			s.Pad8();
 		}
 		#endregion
 
@@ -68,8 +48,10 @@ namespace KSoft.Phoenix.Resource
 		{
 			base.WriteFields(s, includeFileData);
 
-			if(FileTime != 0) s.WriteAttribute("fileTime", FileTime.ToString("X16"));
-			if(unknown2C != 0) s.WriteAttribute("u2C", unknown2C.ToString("X16"));
+			if (FileTime != 0)
+				s.WriteAttribute("fileTime", FileTime.ToString("X16"));
+			if (CompressedDataTiger128_1 != 0)
+				s.WriteAttribute("u2C", CompressedDataTiger128_1.ToString("X16"));
 
 			// When we extract, we decode xmbs
 			string fn = Filename;
@@ -81,15 +63,15 @@ namespace KSoft.Phoenix.Resource
 				if (expander != null && expander.Options.HasFlag(EraFileExpanderOptions.DontTranslateXmbFiles))
 					remove_xmb_ext = false;
 
-				if(remove_xmb_ext)
+				if (remove_xmb_ext)
 					EraFile.RemoveXmbExtension(ref fn);
 			}
 			s.WriteAttribute("name", fn);
 
 			if (includeFileData && DataUncompressedSize != DataSize)
 				s.WriteAttribute("fullSize", DataUncompressedSize.ToString("X8"));
-			if (unknown24 != EntryId)
-				s.WriteAttribute("u24", unknown24.ToString("X16"));
+			if (CompressedDataTiger128_0 != EntryId)
+				s.WriteAttribute("u24", CompressedDataTiger128_0.ToString("X16"));
 
 			if (includeFileData)
 				s.WriteAttribute("nameOffset", FilenameOffset.ToString("X6"));
@@ -100,12 +82,12 @@ namespace KSoft.Phoenix.Resource
 			base.ReadFields(s, includeFileData);
 
 			s.ReadAttributeOpt("fileTime", ref FileTime, NumeralBase.Hex);
-			s.ReadAttributeOpt("u2C", ref unknown2C, NumeralBase.Hex);
+			s.ReadAttributeOpt("u2C", ref CompressedDataTiger128_1, NumeralBase.Hex);
 
 			s.ReadAttribute("name", ref Filename);
 
 			s.ReadAttributeOpt("fullSize", ref DataUncompressedSize, NumeralBase.Hex);
-			s.ReadAttributeOpt("u24", ref unknown24, NumeralBase.Hex);
+			s.ReadAttributeOpt("u24", ref CompressedDataTiger128_0, NumeralBase.Hex);
 			s.ReadAttributeOpt("nameOffset", ref FilenameOffset, NumeralBase.Hex);
 		}
 		#endregion
@@ -125,15 +107,24 @@ namespace KSoft.Phoenix.Resource
 		{
 			byte[] result = null;
 
-			if (IsCompressed)
+			switch (CompressionType)
 			{
-				result = base.GetBuffer(blockStream);
-				result = DecompressFromBuffer(blockStream, result);
+				case ECF.EcfCompressionType.Stored:
+					result = base.GetBuffer(blockStream);
+					break;
+
+				case ECF.EcfCompressionType.DeflateRaw:
+					result = base.GetBuffer(blockStream);
+					result = DecompressFromBuffer(blockStream, result);
+					break;
+
+				case ECF.EcfCompressionType.DeflateStream:
+					result = DecompressFromStream(blockStream);
+					break;
+
+				default:
+					throw new KSoft.Debug.UnreachableException(CompressionType.ToString());
 			}
-			else if (IsCompressedStream)
-				result = DecompressFromStream(blockStream);
-			else
-				result = base.GetBuffer(blockStream);
 
 			return result;
 		}
@@ -164,18 +155,35 @@ namespace KSoft.Phoenix.Resource
 			base.DataOffset = blockStream.PositionPtr;
 			this.DataUncompressedSize = (int)sourceFile.Length;
 
-			if (IsCompressed)
-				CompressSourceToStream(blockStream.Writer, sourceFile);
-			else if (IsCompressedStream)
-				CompressSourceToCompressionStream(blockStream.Writer, sourceFile);
-			else
+			switch (CompressionType)
 			{
-				base.DataSize = (int)sourceFile.Length;  // Update this ECF's size
-				// Copy the source file's bytes to the block stream
-				sourceFile.CopyTo(blockStream.BaseStream);
+				case ECF.EcfCompressionType.Stored:
+				{
+					base.DataSize = (int)sourceFile.Length;  // Update this ECF's size
+					// Copy the source file's bytes to the block stream
+					sourceFile.CopyTo(blockStream.BaseStream);
+					break;
+				}
+
+				case ECF.EcfCompressionType.DeflateRaw:
+					CompressSourceToStream(blockStream.Writer, sourceFile);
+					break;
+
+				case ECF.EcfCompressionType.DeflateStream:
+					CompressSourceToCompressionStream(blockStream.Writer, sourceFile);
+					break;
+
+				default:
+					throw new KSoft.Debug.UnreachableException(CompressionType.ToString());
 			}
 		}
 		#endregion
+
+		public override string ToString()
+		{
+			return string.Format("{0}",
+				Filename);
+		}
 
 		bool ShouldUnpack(EraFileExpander expander, string path)
 		{
@@ -183,10 +191,14 @@ namespace KSoft.Phoenix.Resource
 			{
 				// it's an XMB file and the user didn't say NOT to translate them
 				if (EraFile.IsXmbFile(path) && !expander.Options.HasFlag(EraFileExpanderOptions.DontTranslateXmbFiles))
+				{
 					EraFile.RemoveXmbExtension(ref path);
+				}
 
 				if (System.IO.File.Exists(path))
+				{
 					return false;
+				}
 			}
 			return true;
 		}
@@ -198,7 +210,9 @@ namespace KSoft.Phoenix.Resource
 
 			bool translate_xmb_files = true;
 			if (expander != null && expander.Options.HasFlag(EraFileExpanderOptions.DontTranslateXmbFiles))
+			{
 				translate_xmb_files = false;
+			}
 
 			if (EraFile.IsXmbFile(path) && translate_xmb_files)
 			{
@@ -217,10 +231,22 @@ namespace KSoft.Phoenix.Resource
 				EraFile.RemoveXmbExtension(ref path);
 
 				#region Translate XMB to XML
+				var vaSize = Shell.ProcessorSize.x32;
+				var builtFor64Bit = expander.Options.HasFlag(EraFileExpanderOptions.x64);
+				if (builtFor64Bit)
+				{
+					vaSize = Shell.ProcessorSize.x64;
+				}
+
+				var context = new Xmb.XmbFileContext()
+				{
+					PointerSize = vaSize,
+				};
+
 				using (var ms = new System.IO.MemoryStream(buffer, false))
 				using (var s = new IO.EndianReader(ms, blockStream.ByteOrder))
 				{
-					s.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
+					s.UserData = context;
 
 					using (var xmbf = new Phoenix.Xmb.XmbFile())
 					{
@@ -233,7 +259,9 @@ namespace KSoft.Phoenix.Resource
 			else
 			{
 				using (var fs = System.IO.File.Create(path))
+				{
 					fs.Write(buffer, 0, buffer.Length);
+				}
 
 				if (EraFile.IsScaleformFile(path))
 				{
@@ -251,7 +279,9 @@ namespace KSoft.Phoenix.Resource
 
 								byte[] decompressed_data = EraFile.DecompressScaleform(buffer, decompressed_size);
 								using (var fs = System.IO.File.Create(path + ".bin"))
+								{
 									fs.Write(decompressed_data, 0, decompressed_data.Length);
+								}
 							}
 						}
 					}
@@ -287,11 +317,15 @@ namespace KSoft.Phoenix.Resource
 
 			var expander = blockStream.Owner as EraFileExpander;
 			if (expander != null && !ShouldUnpack(expander, path))
-					return;
+			{
+				return;
+			}
 
 			string folder = System.IO.Path.GetDirectoryName(path);
 			if (!System.IO.Directory.Exists(folder))
+			{
 				System.IO.Directory.CreateDirectory(folder);
+			}
 
 			byte[] buffer = GetBuffer(blockStream);
 			Unpack(blockStream, expander, path, buffer);
@@ -304,22 +338,24 @@ namespace KSoft.Phoenix.Resource
 			// in case someone fucked up the xml listing
 			if (EraFile.IsXmlBasedFile(Filename))
 			{
-				IsCompressed = true;
-				IsCompressedStream = false;
-			
+				CompressionType = ECF.EcfCompressionType.DeflateRaw;
+
 			}
 			else if (EraFile.IsXmbFile(Filename))
 			{
-				IsCompressed = false;
-				IsCompressedStream = false;
+				CompressionType = ECF.EcfCompressionType.Stored;
 			}
 
 			string path = System.IO.Path.Combine(basePath, Filename);
 			if (!System.IO.File.Exists(path))
+			{
 				return false;
+			}
 
 			using (var fs = System.IO.File.OpenRead(path))
+			{
 				BuildBuffer(blockStream, fs);
+			}
 
 			return true;
 		}

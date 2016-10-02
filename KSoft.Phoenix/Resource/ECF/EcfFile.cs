@@ -5,7 +5,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 namespace KSoft.Phoenix.Resource.ECF
 {
 	// http://en.wikipedia.org/wiki/Unix_File_System
-	
+
 	/*public*/ class EcfFile
 		: IDisposable
 		, IO.IEndianStreamSerializable

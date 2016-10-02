@@ -61,8 +61,11 @@ namespace KSoft.Phoenix.Resource
 			ushort chunk_size = s.ReadUInt16(), negate_chunk_size = s.ReadUInt16();
 
 			ushort expected_negate = (ushort)~chunk_size;
-			if (expected_negate != negate_chunk_size) throw new IO.SignatureMismatchException(s.BaseStream,
-				expected_negate, negate_chunk_size);
+			if (expected_negate != negate_chunk_size)
+			{
+				throw new IO.SignatureMismatchException(s.BaseStream,
+					expected_negate, negate_chunk_size);
+			}
 
 			byte[] bytes = s.ReadBytes(chunk_size);
 			ms.Write(bytes, 0, bytes.Length);
@@ -94,7 +97,8 @@ namespace KSoft.Phoenix.Resource
 			using (var ms = new System.IO.MemoryStream(initBufferCapacity))
 			{
 				while (ReadChunk(s.Reader, ms) != 0)
-					;
+				{
+				}
 				s.StreamSignature(kSignatureEndOfStream);
 
 				CompressedData = ms.ToArray();
@@ -103,16 +107,23 @@ namespace KSoft.Phoenix.Resource
 		void WriteCompressedDataInChunks(IO.EndianStream s)
 		{
 			for (int offset = 0, size = 0, bytes_remaining = CompressedData.Length;
-				(size = WriteChunk(s.Writer, offset, ref bytes_remaining)) != 0; 
+				(size = WriteChunk(s.Writer, offset, ref bytes_remaining)) != 0;
 				offset += size)
-				;
+			{
+			}
 
 			s.StreamSignature(kSignatureEndOfStream);
 		}
 		void StreamCompressedDataInChunks(IO.EndianStream s, int initBufferCapacity = 4096)
 		{
-				 if (s.IsReading) ReadCompressedDataInChunks(s, initBufferCapacity);
-			else if (s.IsWriting) WriteCompressedDataInChunks(s);
+			if (s.IsReading)
+			{
+				ReadCompressedDataInChunks(s, initBufferCapacity);
+			}
+			else if (s.IsWriting)
+			{
+				WriteCompressedDataInChunks(s);
+			}
 		}
 		#endregion
 
@@ -144,7 +155,7 @@ namespace KSoft.Phoenix.Resource
 			else
 			{
 				Contract.Assert(!writing || mHeader.StreamMode == (uint)Mode.Buffered);
-				
+
 				StreamCompressedDataInChunks(s);
 				s.Stream(ref mHeader); // actual header appears after the chunks
 
@@ -179,9 +190,13 @@ namespace KSoft.Phoenix.Resource
 
 			// Assume the compressed data will be at most the same size as the uncompressed data
 			if (CompressedData == null || CompressedData.Length < (int)mHeader.UncompressedSize)
+			{
 				CompressedData = new byte[mHeader.UncompressedSize];
+			}
 			else
+			{
 				Array.Clear(CompressedData, 0, CompressedData.Length);
+			}
 
 			CompressedData = IO.Compression.ZLib.LowLevelCompress(UncompressedData, level,
 				out mHeader.CompressedCrc, CompressedData);
@@ -191,9 +206,13 @@ namespace KSoft.Phoenix.Resource
 		public void Decompress()
 		{
 			if (UncompressedData == null || UncompressedData.Length < (int)mHeader.UncompressedSize)
+			{
 				UncompressedData = new byte[mHeader.UncompressedSize];
+			}
 			else
+			{
 				Array.Clear(UncompressedData, 0, UncompressedData.Length);
+			}
 
 			IO.Compression.ZLib.LowLevelDecompress(CompressedData, UncompressedData);
 		}

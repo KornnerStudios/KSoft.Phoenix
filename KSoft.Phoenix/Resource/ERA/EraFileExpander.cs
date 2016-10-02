@@ -17,6 +17,8 @@ namespace KSoft.Phoenix.Resource
 		DecompressUIFiles = 1<<3,
 		/// <summary>Translates GFX files to SWF</summary>
 		TranslateGfxFiles = 1<<4,
+		/// <summary>Built for 64-bit builds</summary>
+		x64 = 1<<5,
 	};
 
 	public sealed class EraFileExpander

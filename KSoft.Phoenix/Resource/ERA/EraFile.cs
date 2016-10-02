@@ -120,28 +120,28 @@ namespace KSoft.Phoenix.Resource
 		static readonly Memory.Strings.StringMemoryPoolSettings kFilenamesTablePoolConfig = new Memory.Strings.
 			StringMemoryPoolSettings(Memory.Strings.StringStorage.CStringAscii, false);
 
-		EraFileHeader mHeader = new EraFileHeader();
-		List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
+		private EraFileHeader mHeader = new EraFileHeader();
+		private List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
 
-		int FileChunksFirstIndex { get {
+		private int FileChunksFirstIndex { get {
 			// First comes the filenames table in mFiles, then all the files defined in the listing
 			return 1;
 		} }
 		/// <summary>All files destined for the ERA, excluding the internal filenames table</summary>
-		IEnumerable<EraFileEntryChunk> FileChunks { get {
+		private IEnumerable<EraFileEntryChunk> FileChunks { get {
 			// Skip the first chunk, as it is the filenames table
 			return Enumerable.Skip(mFiles, FileChunksFirstIndex);
 		} }
 		/// <summary>Number of files destined for the ERA, excluding the internal filenames table</summary>
-		int FileChunksCount { get {
+		private int FileChunksCount { get {
 			// Exclude the first chunk from the count, as it is the filenames table
 			return mFiles.Count - FileChunksFirstIndex;
 		} }
 
 		public int CalculateHeaderAndFileChunksSize()
 		{
-			return 
-				EraFileHeader.CalculateHeaderSize() + 
+			return
+				EraFileHeader.CalculateHeaderSize() +
 				EraFileEntryChunk.CalculateFileChunksSize(mFiles.Count);
 		}
 
@@ -149,7 +149,7 @@ namespace KSoft.Phoenix.Resource
 		static EraFileEntryChunk GenerateFilenamesTableEntryChunk()
 		{
 			var chunk = new EraFileEntryChunk();
-			chunk.IsCompressedStream = true;
+			chunk.CompressionType = ECF.EcfCompressionType.DeflateStream;
 
 			return chunk;
 		}
@@ -164,7 +164,9 @@ namespace KSoft.Phoenix.Resource
 			{
 				var f = new EraFileEntryChunk();
 				using (s.EnterCursorBookmark(n))
+				{
 					f.Read(s, false);
+				}
 
 				mFiles.Add(f);
 			}
@@ -175,7 +177,9 @@ namespace KSoft.Phoenix.Resource
 		public void WriteDefinition(IO.XmlElementStream s)
 		{
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
 				mFiles[x].Write(s, false);
+			}
 		}
 		#endregion
 
@@ -189,15 +193,19 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				if (expander != null)
+				{
 					expander.VerboseOutput.Write("\r\t{0} ", mFiles[x].EntryId.ToString("X16"));
+				}
 				mFiles[x].Unpack(blockStream, basePath);
 			}
 
 			if (expander != null)
+			{
 				expander.VerboseOutput.Write("\r\t{0} \r", new string(' ', 16));
+			}
 		}
 
-		bool BuildFilenamesTable(IO.EndianStream blockStream)
+		private bool BuildFilenamesTable(IO.EndianStream blockStream)
 		{
 			Contract.Requires(blockStream.IsWriting);
 
@@ -209,13 +217,15 @@ namespace KSoft.Phoenix.Resource
 				{
 					var file = mFiles[x];
 					if (file.EntryId == 0)
+					{
 						file.EntryId = (ulong)x;
+					}
 
 					file.FilenameOffset = smp.Add(file.Filename).u32;
 				}
 				smp.WriteStrings(s);
 				ms.Seek(0, System.IO.SeekOrigin.Begin);
-				
+
 				return mFiles[0].Pack(blockStream, ms);
 			}
 		}
@@ -229,16 +239,22 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
 			{
 				if (builder != null)
+				{
 					builder.VerboseOutput.Write("\r\t\t{0} ", mFiles[x].EntryId.ToString("X16"));
+				}
 
 				success &= mFiles[x].Pack(blockStream, basePath);
 			}
 
 			if (builder != null)
+			{
 				builder.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+			}
 
-			if(success)
+			if (success)
+			{
 				blockStream.AlignToBoundry(kAlignmentBit);
+			}
 
 			return success;
 		}
@@ -248,7 +264,9 @@ namespace KSoft.Phoenix.Resource
 		public void ReadPostprocess(IO.EndianStream s)
 		{
 			if (mFiles.Count == 0)
+			{
 				return;
+			}
 
 			var filenames_chunk = mFiles[0];
 			filenames_chunk.Filename = kFilenamesTableName;
@@ -262,7 +280,9 @@ namespace KSoft.Phoenix.Resource
 					var file = mFiles[x];
 
 					if (file.FilenameOffset != er.BaseStream.Position)
+					{
 						throw new System.IO.InvalidDataException(file.FilenameOffset.ToString("X8"));
+					}
 
 					file.Filename = er.ReadString(Memory.Strings.StringStorage.CStringAscii);
 				}
@@ -290,10 +310,12 @@ namespace KSoft.Phoenix.Resource
 					mFiles.Add(file);
 				}
 			}
-			else if(s.IsWriting)
+			else if (s.IsWriting)
 			{
 				foreach (var f in mFiles)
+				{
 					f.Serialize(s);
+				}
 			}
 		}
 		#endregion
