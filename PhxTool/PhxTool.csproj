@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FF4C18C7-4F54-4FD9-8347-10AC805FD129}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PhxTool</RootNamespace>
+    <AssemblyName>PhxTool</AssemblyName>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <Import Project="$(MSBuildProjectDirectory)\..\KSoft.Phoenix.props" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Environment.cs" />
+    <Compile Include="Mono.Options.cs" />
+    <Compile Include="Phoenix\EraTool.cs" />
+    <Compile Include="Phoenix\ProgramPhx.cs" />
+    <Compile Include="Phoenix\WwiseTool.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProgramBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
+      <Project>{18f32228-8351-4f99-992f-78e9d1ce83d9}</Project>
+      <Name>KSoft.IO.TagElementStreams</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">
+      <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
+      <Name>KSoft</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Security\KSoft.Security.csproj">
+      <Project>{0632a00b-de9e-4350-a3f8-3a82f9c780af}</Project>
+      <Name>KSoft.Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)Games\Wwise\KSoft.Wwise\KSoft.Wwise.csproj">
+      <Project>{bddec955-6d39-4058-92e5-f1bf170f860f}</Project>
+      <Name>KSoft.Wwise</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Compression\KSoft.Compression.csproj">
+      <Project>{0b27603c-ceb1-4a3a-b56f-cbc14b8c06e7}</Project>
+      <Name>KSoft.Compression</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Math\KSoft.Math.csproj">
+      <Project>{423f13fc-da0c-4c82-b75e-60a1bfea7bb6}</Project>
+      <Name>KSoft.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KSoft.Phoenix\KSoft.Phoenix.csproj">
+      <Project>{3fd3a05a-4451-49d1-b38e-b897f3444754}</Project>
+      <Name>KSoft.Phoenix</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
