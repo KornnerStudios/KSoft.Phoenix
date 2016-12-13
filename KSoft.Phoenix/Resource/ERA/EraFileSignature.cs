@@ -44,8 +44,9 @@ namespace KSoft.Phoenix.Resource
 			if (reading)
 			{
 				Array.Resize(ref SignatureData, size - kNonSignatureBytesSize);
+				sig_data_length = SignatureData.Length;
 			}
-			if (SignatureData.Length > 0)
+			if (sig_data_length > 0)
 			{
 				s.Stream(SignatureData);
 			}

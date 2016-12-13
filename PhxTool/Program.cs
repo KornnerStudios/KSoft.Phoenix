@@ -57,9 +57,11 @@ namespace KSoft.Tool
 		static void Initialize()
 		{
 			KSoft.Program.Initialize();
+			KSoft.Phoenix.Program.Initialize();
 		}
 		static void Dispose()
 		{
+			KSoft.Phoenix.Program.Dispose();
 			KSoft.Program.Dispose();
 		}
 

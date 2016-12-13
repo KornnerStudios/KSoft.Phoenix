@@ -8,6 +8,7 @@ namespace KSoft.Phoenix.Debug
 	{
 		static Diag.TraceSource kPhoenixSource
 			, kEngineSource
+			, kResourceSource
 			, kSecuritySource
 			, kXmlSource
 			;
@@ -16,6 +17,7 @@ namespace KSoft.Phoenix.Debug
 		{
 			kPhoenixSource = new		Diag.TraceSource("KSoft.Phoenix",			Diag.SourceLevels.All);
 			kEngineSource = new			Diag.TraceSource("KSoft.Phoenix.Engine",	Diag.SourceLevels.All);
+			kResourceSource = new		Diag.TraceSource("KSoft.Phoenix.Resource",	Diag.SourceLevels.All);
 			kSecuritySource = new		Diag.TraceSource("KSoft.Security",			Diag.SourceLevels.All);
 			kXmlSource = new			Diag.TraceSource("KSoft.Phoenix.XML",		Diag.SourceLevels.All);
 		}
@@ -24,6 +26,8 @@ namespace KSoft.Phoenix.Debug
 		public static Diag.TraceSource Phoenix		{ get { return kPhoenixSource; } }
 		/// <summary>Tracer for the <see cref="KSoft.Phoenix.Engine"/> namespace</summary>
 		public static Diag.TraceSource Engine		{ get { return kEngineSource; } }
+		/// <summary>Tracer for the <see cref="KSoft.Phoenix.Resource"/> namespace</summary>
+		public static Diag.TraceSource Resource		{ get { return kResourceSource; } }
 		/// <summary>Tracer for the <see cref="KSoft.Security"/> namespace</summary>
 		public static Diag.TraceSource Security		{ get { return kSecuritySource; } }
 		/// <summary>Tracer for the <see cref="KSoft.Phoenix.XML"/> namespace</summary>

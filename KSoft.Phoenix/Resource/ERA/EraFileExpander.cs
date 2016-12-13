@@ -19,6 +19,7 @@ namespace KSoft.Phoenix.Resource
 		TranslateGfxFiles = 1<<4,
 		/// <summary>Built for 64-bit builds</summary>
 		x64 = 1<<5,
+		DumpDebugInfo=1<<6,
 	};
 
 	public sealed class EraFileExpander

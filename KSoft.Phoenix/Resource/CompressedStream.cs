@@ -198,8 +198,20 @@ namespace KSoft.Phoenix.Resource
 				Array.Clear(CompressedData, 0, CompressedData.Length);
 			}
 
+			uint adler32;
 			CompressedData = IO.Compression.ZLib.LowLevelCompress(UncompressedData, level,
-				out mHeader.CompressedCrc, CompressedData);
+				out adler32/*mHeader.CompressedCrc*/, CompressedData);
+
+			mHeader.CompressedCrc = Adler32.Compute(CompressedData);
+			if (mHeader.CompressedCrc != adler32)
+			{
+#if false
+				Debug.Trace.Resource.TraceInformation("ZLib.LowLevelCompress returned different adler32 ({0}) than our computations ({1}). Uncompressed adler32={2}",
+					adler32.ToString("X8"),
+					mHeader.CompressedCrc.ToString("X8"),
+					mHeader.UncompressedCrc.ToString("X8"));
+#endif
+			}
 
 			mHeader.CompressedSize = (ulong)CompressedData.LongLength;
 		}

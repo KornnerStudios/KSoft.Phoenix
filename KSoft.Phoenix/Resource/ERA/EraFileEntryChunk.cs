@@ -32,6 +32,9 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
+			var eraUtil = s.Owner as EraFileUtil;
+			long position = s.BaseStream.Position;
+
 			base.Serialize(s);
 
 			s.Stream(ref FileTime);
@@ -40,6 +43,23 @@ namespace KSoft.Phoenix.Resource
 			s.Stream(ref CompressedDataTiger128_1);
 			s.StreamUInt24(ref FilenameOffset);
 			s.Pad8();
+
+			if (eraUtil != null && eraUtil.DebugOutput != null)
+			{
+				eraUtil.DebugOutput.Write("FileEntry: {0} @{1} offset={2} end={3} size={4} dsize={5} adler={6} ",
+					base.EntryId.ToString("X16"),
+					position.ToString("X8"),
+					base.DataOffset.u32.ToString("X8"),
+					(base.DataOffset.u32 + base.DataSize).ToString("X8"),
+					base.DataSize.ToString("X8"),
+					DataUncompressedSize.ToString("X8"),
+					base.Checksum.ToString("X8"));
+
+				if (!string.IsNullOrEmpty(Filename))
+					eraUtil.DebugOutput.Write(Filename);
+
+				eraUtil.DebugOutput.WriteLine();
+			}
 		}
 		#endregion
 
@@ -160,6 +180,7 @@ namespace KSoft.Phoenix.Resource
 				case ECF.EcfCompressionType.Stored:
 				{
 					base.DataSize = (int)sourceFile.Length;  // Update this ECF's size
+					base.Checksum = Security.Cryptography.Adler32.Compute(sourceFile, base.DataSize); // Also update this ECF's checksum
 					// Copy the source file's bytes to the block stream
 					sourceFile.CopyTo(blockStream.BaseStream);
 					break;
@@ -335,6 +356,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			Contract.Requires(blockStream.IsWriting);
 
+#if false // only compress if there's a reasonable savings
 			// in case someone fucked up the xml listing
 			if (EraFile.IsXmlBasedFile(Filename))
 			{
@@ -345,6 +367,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				CompressionType = ECF.EcfCompressionType.Stored;
 			}
+#endif
 
 			string path = System.IO.Path.Combine(basePath, Filename);
 			if (!System.IO.File.Exists(path))

@@ -176,7 +176,7 @@ namespace KSoft.Tool.Phoenix
 		{
 			options = 0;
 			bool only_dump_listing = false, dont_overwrite = false, dont_trans_xmb = false, decompress_ui_files = false,
-				trans_gfx = false, is_32bit = false;
+				trans_gfx = false, is_32bit = false, dump_dbg_info = false;
 
 			if (switches == null)
 				switches = "";
@@ -192,6 +192,8 @@ namespace KSoft.Tool.Phoenix
 				trans_gfx = switches[4] == '1';
 			if (switches.Length >= 6)
 				is_32bit = switches[5] == '1';
+			if (switches.Length >= 7)
+				dump_dbg_info = switches[6] == '1';
 
 			if (only_dump_listing)
 			{
@@ -227,6 +229,11 @@ namespace KSoft.Tool.Phoenix
 			{
 				Console.WriteLine("Era:Expander: Switch enabled - {0}", "Treat ERA as 32-bit (Xbox360)");
 			}
+			if (dump_dbg_info)
+			{
+				Console.WriteLine("Era:Expander: Switch enabled - {0}", "Dump debug info");
+				options |= KSoft.Phoenix.Resource.EraFileExpanderOptions.DumpDebugInfo;
+			}
 		}
 		static void Expand(string eraPath, string listingName, string outputPath, string switches)
 		{
@@ -237,13 +244,21 @@ namespace KSoft.Tool.Phoenix
 			KSoft.Phoenix.Resource.EraFileExpanderOptions options;
 			ExpandParseSwitches(switches, out options);
 
+			StreamWriter debug_output = options.HasFlag(KSoft.Phoenix.Resource.EraFileExpanderOptions.DumpDebugInfo)
+				? new StreamWriter("debug_output.txt")
+				: null;
+
 			using (var expander = new KSoft.Phoenix.Resource.EraFileExpander(eraPath, options))
 			{
 				expander.VerboseOutput = Console.Out;
+				expander.DebugOutput = debug_output;
 
 				if (expander.Read())
 					expander.ExpandTo(outputPath, listingName);
 			}
+
+			if (debug_output != null)
+				debug_output.Close();
 		}
 
 		static void Build(string path, string listingName, string outputPath, string switches)
@@ -251,10 +266,19 @@ namespace KSoft.Tool.Phoenix
 			if (string.IsNullOrWhiteSpace(outputPath))
 				outputPath = path;
 
+			bool dump_dbg_info = false;
+			if (!string.IsNullOrEmpty(switches) && switches.Length >= 1)
+				dump_dbg_info = switches[0] == '1';
+
+			StreamWriter debug_output = dump_dbg_info
+				? new StreamWriter("debug_output.txt")
+				: null;
+
 			string listing_path = Path.Combine(path, listingName) + KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension;
 			using (var builder = new KSoft.Phoenix.Resource.EraFileBuilder(listing_path))
 			{
 				builder.VerboseOutput = Console.Out;
+				builder.DebugOutput = debug_output;
 
 				if (builder.Read())
 					if (builder.Build(path, listingName, outputPath))
@@ -262,6 +286,9 @@ namespace KSoft.Tool.Phoenix
 					else
 						builder.VerboseOutput.WriteLine("Failed!");
 			}
+
+			if (debug_output != null)
+				debug_output.Close();
 		}
 
 		static void Crypt(string path, string eraName, string outputPath, string switches, Security.Cryptography.CryptographyTransformType transformType)

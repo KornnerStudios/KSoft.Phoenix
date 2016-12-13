@@ -11,14 +11,15 @@ namespace KSoft.Phoenix.Resource
 		// The Cryptography pipeline assumes encrypted ERA files have the ".era" extension, while decrypted
 		// variants have an ".bin" extension. The Crypt() API wants a naked filename (not dir or extension data).
 
-		/// <summary>DON'T USE ME UNLESS YOU'RE NOT KSoft.Phoenix</summary>
+		/// <summary>DO NOT USE UNLESS YOU ARE KSoft.Phoenix</summary>
 		public const string kExtensionEncrypted = EraFile.kExtensionEncrypted;
-		/// <summary>DON'T USE ME UNLESS YOU'RE NOT KSoft.Phoenix</summary>
+		/// <summary>DO NOT USE UNLESS YOU ARE KSoft.Phoenix</summary>
 		public const string kExtensionDecrypted = EraFile.kExtensionDecrypted;
 
 		/*protected*/ internal EraFile mEraFile;
 		protected string mSourceFile; // filename of the source file which the util stems from (.era, .xml)
 		public System.IO.TextWriter VerboseOutput { get; set; }
+		public System.IO.TextWriter DebugOutput { get; set; }
 
 		protected EraFileUtil()
 		{
@@ -39,7 +40,6 @@ namespace KSoft.Phoenix.Resource
 		/// <param name="transformType">Type of Cryptography operation to perform</param>
 		/// <param name="verboseOutput">(Optional) the object to write verbose operation output to</param>
 		/// <returns>The output file's full path</returns>
-		///  
 		/// <exception cref="FileNotFoundException">Input ERA file does not exist</exception>
 		public static string Crypt(string path, string eraName, string outputPath, CryptographyTransformType transformType,
 			TextWriter verboseOutput = null)

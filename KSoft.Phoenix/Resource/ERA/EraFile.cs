@@ -15,8 +15,20 @@ namespace KSoft.Phoenix.Resource
 		public static byte[] Compress(byte[] bytes, out uint resultAdler, int lvl = 5)
 		{
 			byte[] result = new byte[bytes.Length];
-			return IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out resultAdler, result,
-				trimCompressedBytes:false);
+			uint adler32;
+			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out adler32, result);
+
+			resultAdler = KSoft.Security.Cryptography.Adler32.Compute(result);
+			if (resultAdler != adler32)
+			{
+#if false
+				Debug.Trace.Resource.TraceInformation("ZLib.LowLevelCompress returned different adler32 ({0}) than our computations ({1})",
+					adler32.ToString("X8"),
+					resultAdler.ToString("X8"));
+#endif
+			}
+
+			return result;
 		}
 		public static byte[] Decompress(byte[] bytes, int uncompressedSize, out uint resultAdler)
 		{
@@ -291,12 +303,21 @@ namespace KSoft.Phoenix.Resource
 
 		public void Serialize(IO.EndianStream s)
 		{
+			var eraUtil = s.Owner as EraFileUtil;
+
 			if (s.IsWriting)
 			{
 				mHeader.UpdateFileCount(mFiles.Count);
 			}
 
 			mHeader.Serialize(s);
+
+			if (eraUtil != null && eraUtil.DebugOutput != null)
+			{
+				eraUtil.DebugOutput.WriteLine("Header position end: {0}",
+					s.BaseStream.Position);
+				eraUtil.DebugOutput.WriteLine();
+			}
 
 			if (s.IsReading)
 			{
@@ -316,6 +337,11 @@ namespace KSoft.Phoenix.Resource
 				{
 					f.Serialize(s);
 				}
+			}
+
+			if (eraUtil != null && eraUtil.DebugOutput != null)
+			{
+				eraUtil.DebugOutput.WriteLine();
 			}
 		}
 		#endregion
