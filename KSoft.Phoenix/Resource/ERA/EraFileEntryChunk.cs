@@ -1,4 +1,5 @@
-﻿using Contracts = System.Diagnostics.Contracts;
+﻿using System;
+using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource
@@ -18,7 +19,7 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		#region Struct fields
-		public ulong FileTime; // bit encoded file time
+		private ulong mFileTimeBits; // FILETIME
 		public int DataUncompressedSize;
 		// First 128 bits of the compressed data's Tiger hash
 		public byte[] CompressedDataTiger128 = new byte[kCompresssedDataTigerHashSize];
@@ -27,6 +28,11 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		public string FileName;
+		public System.DateTime FileDateTime
+		{
+			get { return DateTime.FromFileTimeUtc((long)mFileTimeBits); }
+			set { mFileTimeBits = (ulong)value.ToFileTimeUtc(); }
+		}
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
@@ -36,7 +42,7 @@ namespace KSoft.Phoenix.Resource
 
 			base.Serialize(s);
 
-			s.Stream(ref FileTime);
+			s.Stream(ref mFileTimeBits);
 			s.Stream(ref DataUncompressedSize);
 
 			if (s.IsWriting)
@@ -74,10 +80,17 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		#region Xml Streaming
+		string FileDateTimeString { get {
+			return FileDateTime.ToString("u"); // UniversalSorta­bleDateTimePat­tern
+		} }
+
 		protected override void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{
-			if (FileTime != 0)
-				s.WriteAttribute("fileTime", FileTime.ToString("X16"));
+			if (includeFileData && mFileTimeBits != 0)
+				s.WriteAttribute("fileTime", mFileTimeBits.ToString("X16"));
+
+			// only because it's interesting to have, never read back in
+			s.WriteAttribute("fileDateTime", FileDateTimeString);
 
 			base.WriteFields(s, includeFileData);
 
@@ -106,13 +119,16 @@ namespace KSoft.Phoenix.Resource
 
 				s.WriteAttribute("nameOffset", FileNameOffset.ToString("X6"));
 			}
+
+			base.WriteFlags(s);
+			base.WriteResourceFlags(s);
 		}
 
 		protected override void ReadFields(IO.XmlElementStream s, bool includeFileData)
 		{
 			base.ReadFields(s, includeFileData);
 
-			s.ReadAttributeOpt("fileTime", ref FileTime, NumeralBase.Hex);
+			s.ReadAttributeOpt("fileTime", ref mFileTimeBits, NumeralBase.Hex);
 
 			s.ReadAttribute("name", ref FileName);
 
@@ -431,6 +447,12 @@ namespace KSoft.Phoenix.Resource
 				return false;
 			}
 
+			var creation_time = System.IO.File.GetCreationTimeUtc(path);
+			var write_time = System.IO.File.GetLastWriteTimeUtc(path);
+			this.FileDateTime = write_time > creation_time
+				? write_time
+				: creation_time;
+
 			using (var fs = System.IO.File.OpenRead(path))
 			{
 				BuildBuffer(blockStream, fs, hasher);
@@ -445,6 +467,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			Contract.Requires(blockStream.IsWriting);
 
+			this.FileDateTime = DateTime.UtcNow;
 			BuildBuffer(blockStream, source, hasher);
 
 			return true;

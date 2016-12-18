@@ -108,26 +108,35 @@ namespace KSoft.Phoenix.Resource.ECF
 		#endregion
 
 		#region Xml Streaming
+		public void Read(IO.XmlElementStream s, bool includeFileData)
+		{
+			ReadFields(s, includeFileData);
+		}
+		public void Write(IO.XmlElementStream s, bool includeFileData)
+		{
+			using (s.EnterCursorBookmark(kXmlElementStreamName))
+				WriteFields(s, includeFileData);
+		}
+
 		protected virtual void ReadFields(IO.XmlElementStream s, bool includeFileData)
 		{
 			s.ReadAttributeOpt("id", ref EntryId, NumeralBase.Hex);
-			s.ReadAttributeOpt("flags", ref Flags, NumeralBase.Hex);
+			//s.ReadAttributeOpt("flags", ref Flags, NumeralBase.Hex);
 			s.ReadAttributeOpt("align", ref DataAlignmentBit, NumeralBase.Hex);
 			if (includeFileData)
 			{
 				s.ReadAttributeOpt("offset", ref DataOffset.u32, NumeralBase.Hex);
 				s.ReadAttributeOpt("size", ref DataSize, NumeralBase.Hex);
 			}
-		}
-		public void Read(IO.XmlElementStream s, bool includeFileData)
-		{
-			ReadFields(s, includeFileData);
+
+			ReadFlags(s);
+			ReadResourceFlags(s);
 		}
 		protected virtual void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{
 			s.WriteAttribute("id", EntryId.ToString("X16"));
-			if (Flags != 0)
-				s.WriteAttribute("flags", Flags.ToString("X1"));
+			//if (Flags != 0)
+			//	s.WriteAttribute("flags", Flags.ToString("X1"));
 			if (DataAlignmentBit != kDefaultAlignmentBit)
 				s.WriteAttribute("align", DataAlignmentBit.ToString("X1"));
 			if (includeFileData)
@@ -136,10 +145,46 @@ namespace KSoft.Phoenix.Resource.ECF
 				s.WriteAttribute("size", DataSize.ToString("X8"));
 			}
 		}
-		public void Write(IO.XmlElementStream s, bool includeFileData)
+
+		protected void ReadFlags(IO.XmlElementStream s)
 		{
-			using (s.EnterCursorBookmark(kXmlElementStreamName))
-				WriteFields(s, includeFileData);
+			var compType = EcfCompressionType.Stored;
+			if (s.ReadAttributeEnumOpt("Compression", ref compType))
+				CompressionType = compType;
+		}
+		protected void WriteFlags(IO.XmlElementStream s)
+		{
+			if (Flags == 0)
+				return;
+
+			s.WriteAttributeEnum("Compression", CompressionType);
+		}
+
+		protected void ReadResourceFlags(IO.XmlElementStream s)
+		{
+			bool flag = false;
+			if (s.ReadAttributeOpt("IsContiguous", ref flag))
+				IsContiguous = flag;
+			if (s.ReadAttributeOpt("IsWriteCombined", ref flag))
+				IsWriteCombined = flag;
+			if (s.ReadAttributeOpt("IsDeflateStream", ref flag))
+				IsDeflateStream = flag;
+			if (s.ReadAttributeOpt("IsResourceTag", ref flag))
+				IsResourceTag = flag;
+		}
+		protected void WriteResourceFlags(IO.XmlElementStream s)
+		{
+			if (mResourceFlags == 0)
+				return;
+
+			if (IsContiguous)
+				s.WriteAttribute("IsContiguous", true);
+			if (IsWriteCombined)
+				s.WriteAttribute("IsWriteCombined", true);
+			if (IsDeflateStream)
+				s.WriteAttribute("IsDeflateStream", true);
+			if (IsResourceTag)
+				s.WriteAttribute("IsResourceTag", true);
 		}
 		#endregion
 	};

@@ -120,7 +120,7 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
-		const int kAlignmentBit = 12;
+		const int kAlignmentBit = IntegerMath.kFourKiloAlignmentBit;
 		const string kFileNamesTableName = "_filenames.bin";
 		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig = new Memory.Strings.
 			StringMemoryPoolSettings(Memory.Strings.StringStorage.CStringAscii, false);
