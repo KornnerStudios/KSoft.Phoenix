@@ -4,22 +4,22 @@ using FA = System.IO.FileAccess;
 
 namespace KSoft.Phoenix.Resource
 {
-	[Flags]
 	public enum EraFileExpanderOptions
 	{
 		/// <summary>Only the ERA's file listing (.xml) is generated</summary>
-		OnlyDumpListing = 1<<0,
+		OnlyDumpListing,
 		/// <summary>Files that already exist in the output directory will be skipped</summary>
-		DontOverwriteExistingFiles = 1<<1,
+		DontOverwriteExistingFiles,
 		/// <summary>Don't perform XMB to XML translations</summary>
-		DontTranslateXmbFiles = 1<<2,
+		DontTranslateXmbFiles,
 		/// <summary>Decompresses Scaleform data</summary>
-		DecompressUIFiles = 1<<3,
+		DecompressUIFiles,
 		/// <summary>Translates GFX files to SWF</summary>
-		TranslateGfxFiles = 1<<4,
-		/// <summary>Built for 64-bit builds</summary>
-		x64 = 1<<5,
-		DumpDebugInfo=1<<6,
+		TranslateGfxFiles,
+		Decrypt,
+		DontLoadEntireEraIntoMemory,
+
+		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 	};
 
 	public sealed class EraFileExpander
@@ -27,14 +27,15 @@ namespace KSoft.Phoenix.Resource
 	{
 		public const string kNameExtension = ".era.bin";
 
+		System.IO.Stream mEraBaseStream;
 		IO.EndianStream mEraStream;
 
-		public EraFileExpanderOptions Options { get; private set; }
+		/// <see cref="EraFileExpanderOptions"/>
+		public Collections.BitVector32 ExpanderOptions;
 
-		public EraFileExpander(string eraPath, EraFileExpanderOptions options = 0)
+		public EraFileExpander(string eraPath)
 		{
 			mSourceFile = eraPath;
-			Options = options;
 		}
 
 		public override void Dispose()
@@ -42,22 +43,19 @@ namespace KSoft.Phoenix.Resource
 			base.Dispose();
 
 			Util.DisposeAndNull(ref mEraStream);
+			Util.DisposeAndNull(ref mEraBaseStream);
 		}
 
-		bool ReadEra()
+		bool ReadEraFromStream()
 		{
-			const FA k_mode = FA.Read;
-
 			bool result = true;
-
-			VerboseOutput.WriteLine("Opening and reading ERA file {0}...", mSourceFile);
-
-			mEraStream = new IO.EndianStream(System.IO.File.OpenRead(mSourceFile), Shell.EndianFormat.Big, this, permissions: k_mode);
-			mEraStream.StreamMode = k_mode;
 
 			result = EraFileHeader.VerifyIsEraAndDecrypted(mEraStream.Reader);
 			if (!result)
-				VerboseOutput.WriteLine("\tFailed: File is either not decrypted, corrupt, or not even an ERA");
+			{
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tFailed: File is either not decrypted, corrupt, or not even an ERA");
+			}
 			else
 			{
 				mEraStream.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
@@ -69,14 +67,56 @@ namespace KSoft.Phoenix.Resource
 
 			return result;
 		}
+
+		bool ReadEraFromFile()
+		{
+			if (VerboseOutput != null)
+				VerboseOutput.WriteLine("Opening and reading ERA file {0}...",
+					mSourceFile);
+
+			if (ExpanderOptions.Test(EraFileExpanderOptions.DontLoadEntireEraIntoMemory))
+				mEraBaseStream = System.IO.File.OpenRead(mSourceFile);
+			else
+			{
+				byte[] era_bytes = System.IO.File.ReadAllBytes(mSourceFile);
+				if (ExpanderOptions.Test(EraFileExpanderOptions.Decrypt))
+				{
+					if (VerboseOutput != null)
+						VerboseOutput.WriteLine("Decrypting...");
+
+					DecryptFileBytes(era_bytes);
+				}
+
+				mEraBaseStream = new System.IO.MemoryStream(era_bytes, writable: false);
+			}
+
+			mEraStream = new IO.EndianStream(mEraBaseStream, Shell.EndianFormat.Big, this, permissions: FA.Read);
+			mEraStream.StreamMode = FA.Read;
+
+			return ReadEraFromStream();
+		}
+
+		void DecryptFileBytes(byte[] eraBytes)
+		{
+			using (var era_in_ms = new System.IO.MemoryStream(eraBytes, writable: false))
+			using (var era_out_ms = new System.IO.MemoryStream(eraBytes, writable: true))
+			using (var era_reader = new IO.EndianReader(era_in_ms, Shell.EndianFormat.Big))
+			using (var era_writer = new IO.EndianWriter(era_out_ms, Shell.EndianFormat.Big))
+			{
+				CryptStream(era_reader, era_writer,
+					Security.Cryptography.CryptographyTransformType.Decrypt);
+			}
+		}
+
 		public bool Read()
 		{
 			bool result = true;
 
-			try { result &= ReadEra(); }
+			try { result &= ReadEraFromFile(); }
 			catch (Exception ex)
 			{
-				VerboseOutput.WriteLine("\tEncountered an error while trying to read the ERA: {0}", ex);
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tEncountered an error while trying to read the ERA: {0}", ex);
 				result = false;
 			}
 
@@ -111,22 +151,26 @@ namespace KSoft.Phoenix.Resource
 			try { SaveListing(path, listingName); }
 			catch (Exception ex)
 			{
-				VerboseOutput.WriteLine("\tEncountered an error while outputting listing: {0}", ex);
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tEncountered an error while outputting listing: {0}", ex);
 				result = false;
 			}
 
-			if (result && !Options.HasFlag(EraFileExpanderOptions.OnlyDumpListing))
+			if (result && !ExpanderOptions.Test(EraFileExpanderOptions.OnlyDumpListing))
 			{
-				VerboseOutput.WriteLine("Expanding archive to {0}...", path);
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("Expanding archive to {0}...", path);
 
 				try { mEraFile.ExpandTo(mEraStream, path); }
 				catch (Exception ex)
 				{
-					VerboseOutput.WriteLine("\tEncountered an error while expanding archive: {0}", ex);
+					if (VerboseOutput != null)
+						VerboseOutput.WriteLine("\tEncountered an error while expanding archive: {0}", ex);
 					result = false;
 				}
 
-				VerboseOutput.WriteLine("Done");
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("Done");
 			}
 
 			mEraStream.Close();

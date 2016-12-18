@@ -1,9 +1,20 @@
 ﻿using System;
 using System.IO;
+using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource
 {
 	using CryptographyTransformType = Security.Cryptography.CryptographyTransformType;
+
+	public enum EraFileUtilOptions
+	{
+		DumpDebugInfo,
+		SkipVerification,
+		/// <summary>Built for 64-bit builds</summary>
+		x64,
+
+		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
+	};
 
 	public abstract class EraFileUtil
 		: IDisposable
@@ -21,6 +32,9 @@ namespace KSoft.Phoenix.Resource
 		public System.IO.TextWriter VerboseOutput { get; set; }
 		public System.IO.TextWriter DebugOutput { get; set; }
 
+		/// <see cref="EraFileUtilOptions"/>
+		public Collections.BitVector32 Options = new Collections.BitVector32();
+
 		protected EraFileUtil()
 		{
 			VerboseOutput = Console.Out;
@@ -30,6 +44,7 @@ namespace KSoft.Phoenix.Resource
 		public virtual void Dispose()
 		{
 			VerboseOutput = null;
+			Util.DisposeAndNull(ref mEraFile);
 		}
 		#endregion
 
@@ -79,22 +94,32 @@ namespace KSoft.Phoenix.Resource
 			using (var ew_fs = new FileStream(output_file, FileMode.Create, FileAccess.Write))
 			using (var ew = new IO.EndianWriter(ew_fs, Shell.EndianFormat.Big))
 			{
-				var tea = new Security.Cryptography.PhxTEA(er, ew);
-				tea.InitializeKey(Security.Cryptography.PhxTEA.kKeyEra);
-
-				switch (transformType)
-				{
-				case CryptographyTransformType.Decrypt:
-					tea.Decrypt();
-					break;
-
-				case CryptographyTransformType.Encrypt:
-					tea.Encrypt();
-					break;
-				}
+				CryptStream(er, ew, transformType);
 			}
 
 			return output_file;
+		}
+
+		public static void CryptStream(IO.EndianReader input, IO.EndianWriter output, CryptographyTransformType transformType)
+		{
+			Contract.Requires(input != null);
+			Contract.Requires(output != null);
+			// This should be OK because PhxTEA is buffered
+			//Contract.Requires(input.BaseStream != output.BaseStream);
+
+			var tea = new Security.Cryptography.PhxTEA(input, output);
+			tea.InitializeKey(Security.Cryptography.PhxTEA.kKeyEra);
+
+			switch (transformType)
+			{
+			case CryptographyTransformType.Decrypt:
+				tea.Decrypt();
+				break;
+
+			case CryptographyTransformType.Encrypt:
+				tea.Encrypt();
+				break;
+			}
 		}
 	};
 }

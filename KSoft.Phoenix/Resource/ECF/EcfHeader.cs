@@ -11,10 +11,11 @@ namespace KSoft.Phoenix.Resource.ECF
 	{
 		public const uint kSignature = 0xDABA7737;
 		public const int kSizeOf = 0x20;
+		public const int kAdler32StartOffset = sizeof(uint) * 3;
 
 		public int HeaderSize;
 		// Checksum of the TotalSize field and onward, added to the checksum of everything after the header (HeaderSize - sizeof(ECFHeader))
-		public uint Checksum;
+		public uint Adler32;
 
 		public int TotalSize;
 		public short ChunkCount;
@@ -22,6 +23,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		private uint mID; // The signature of the data which this header encapsulates
 		private ushort mExtraDataSize;
 
+		public int Adler32BufferLength { get { return HeaderSize - kAdler32StartOffset; } }
 		public ushort ExtraDataSize { get { return mExtraDataSize; } }
 
 		public void InitializeChunkInfo(uint dataId, uint dataChunkExtraDataSize = 0)
@@ -50,7 +52,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			s.StreamSignature(kSignature);
 			s.Stream(ref HeaderSize);
-			s.Stream(ref Checksum);
+			s.Stream(ref Adler32);
 			s.Stream(ref TotalSize);
 			s.Stream(ref ChunkCount);
 			s.Stream(ref mFlags);

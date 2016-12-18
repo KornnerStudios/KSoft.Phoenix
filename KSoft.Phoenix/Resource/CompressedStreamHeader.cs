@@ -8,10 +8,10 @@ namespace KSoft.Phoenix.Resource
 		{
 			public const int kSizeOf = 0x24;
 
-			internal uint HeaderCrc;
+			internal uint HeaderAdler32;
 			public uint StreamMode;
 			public ulong UncompressedSize, CompressedSize;
-			public uint UncompressedCrc, CompressedCrc;
+			public uint UncompressedAdler32, CompressedAdler32;
 
 			public bool UseBufferedStreaming { get {
 				return StreamMode == (uint)Mode.Buffered;
@@ -19,8 +19,8 @@ namespace KSoft.Phoenix.Resource
 
 			public void UpdateHeaderCrc()
 			{
-				HeaderCrc = InMemoryRep.Checksum(UncompressedSize, UncompressedCrc,
-					CompressedSize, CompressedCrc,
+				HeaderAdler32 = InMemoryRep.Checksum(UncompressedSize, UncompressedAdler32,
+					CompressedSize, CompressedAdler32,
 					StreamMode);
 			}
 
@@ -31,12 +31,12 @@ namespace KSoft.Phoenix.Resource
 					UpdateHeaderCrc();
 
 				s.StreamSignature(kSignature);
-				s.Stream(ref HeaderCrc);
+				s.Stream(ref HeaderAdler32);
 				s.Stream(ref StreamMode);
 				s.Stream(ref UncompressedSize);
 				s.Stream(ref CompressedSize);
-				s.Stream(ref UncompressedCrc);
-				s.Stream(ref CompressedCrc);
+				s.Stream(ref UncompressedAdler32);
+				s.Stream(ref CompressedAdler32);
 			}
 			#endregion
 		};

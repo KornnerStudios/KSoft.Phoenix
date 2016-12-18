@@ -31,12 +31,18 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
+			var eraFile = s.Owner as EraFileUtil;
+
 			if (s.IsWriting)
 			{
 				mHeader.UpdateTotalSize(s.BaseStream);
 			}
 
-			// write the header, but it won't have the correct CRC if things have changed, 
+			long header_position = s.BaseStream.CanSeek
+				? s.BaseStream.Position
+				: -1;
+
+			// write the header, but it won't have the correct CRC if things have changed,
 			// or if this is a fresh new archive
 			mHeader.Serialize(s);
 			mSignature.Serialize(s);
@@ -44,18 +50,40 @@ namespace KSoft.Phoenix.Resource
 			var leftovers_size = mHeader.HeaderSize - s.BaseStream.Position;
 			s.Pad((int)leftovers_size);
 
-			if (s.IsWriting)
+			// verify or update the header checksum
+			if (s.IsReading)
 			{
-				// Update the header if we're using a memory stream for our destination
-				var ms = s.BaseStream as System.IO.MemoryStream;
-				if (ms != null)
+				if (header_position != -1 &&
+					!eraFile.Options.Test(EraFileUtilOptions.SkipVerification))
 				{
-					mHeader.Checksum = Security.Cryptography.Adler32.Compute(ms.GetBuffer(),
-						ECF.EcfHeader.kSizeOf, kHeaderSize - ECF.EcfHeader.kSizeOf);
+					long current_position = s.BaseStream.Position;
+					s.BaseStream.Seek(header_position+ECF.EcfHeader.kAdler32StartOffset, System.IO.SeekOrigin.Begin);
 
-					ms.Seek(0, System.IO.SeekOrigin.Begin);
+					var actual_adler = Security.Cryptography.Adler32.Compute(s.BaseStream, mHeader.Adler32BufferLength);
+					if (actual_adler != mHeader.Adler32)
+					{
+						throw new System.IO.InvalidDataException(string.Format(
+							"ERA header adler32 {0} does not match actual adler32 {1}",
+							mHeader.Adler32.ToString("X8"),
+							actual_adler.ToString("X8")
+							));
+					}
+
+					s.BaseStream.Seek(current_position, System.IO.SeekOrigin.Begin);
+				}
+			}
+			else if (s.IsWriting)
+			{
+				if (header_position != -1)
+				{
+					long current_position = s.BaseStream.Position;
+					s.BaseStream.Seek(header_position+ECF.EcfHeader.kAdler32StartOffset, System.IO.SeekOrigin.Begin);
+
+					mHeader.Adler32 = Security.Cryptography.Adler32.Compute(s.BaseStream, mHeader.Adler32BufferLength);
+
+					s.BaseStream.Seek(header_position, System.IO.SeekOrigin.Begin);
 					mHeader.Serialize(s);
-					ms.Seek(kHeaderSize, System.IO.SeekOrigin.Begin);
+					s.BaseStream.Seek(current_position, System.IO.SeekOrigin.Begin);
 				}
 			}
 		}

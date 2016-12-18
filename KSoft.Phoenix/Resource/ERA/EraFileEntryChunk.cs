@@ -8,6 +8,7 @@ namespace KSoft.Phoenix.Resource
 	{
 		#region SizeOf
 		public new const int kSizeOf = 0x38;
+		public const int kCompresssedDataTigerHashSize = 16;
 		public const uint kExtraDataSize = kSizeOf - ECF.EcfChunk.kSizeOf;
 
 		public static int CalculateFileChunksSize(int fileCount)
@@ -19,15 +20,13 @@ namespace KSoft.Phoenix.Resource
 		#region Struct fields
 		public ulong FileTime; // bit encoded file time
 		public int DataUncompressedSize;
-		public byte[] CompressedDataTiger128 = new byte[16];
-		// 24 = ID calculated from Uncompressed data?
-		// Compressed data's Tiger128
-		public ulong CompressedDataTiger128_0, CompressedDataTiger128_1;
+		// First 128 bits of the compressed data's Tiger hash
+		public byte[] CompressedDataTiger128 = new byte[kCompresssedDataTigerHashSize];
 		// actually only 24 bits, big endian
-		public uint FilenameOffset;
+		public uint FileNameOffset;
 		#endregion
 
-		public string Filename;
+		public string FileName;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
@@ -39,9 +38,20 @@ namespace KSoft.Phoenix.Resource
 
 			s.Stream(ref FileTime);
 			s.Stream(ref DataUncompressedSize);
-			s.Stream(ref CompressedDataTiger128_0);
-			s.Stream(ref CompressedDataTiger128_1);
-			s.StreamUInt24(ref FilenameOffset);
+
+			if (s.IsWriting)
+			{
+				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 0);
+				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 1);
+			}
+			s.Stream(CompressedDataTiger128);
+			{
+				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 0);
+				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 1);
+			}
+
+
+			s.StreamUInt24(ref FileNameOffset);
 			s.Pad8();
 
 			if (eraUtil != null && eraUtil.DebugOutput != null)
@@ -53,10 +63,10 @@ namespace KSoft.Phoenix.Resource
 					(base.DataOffset.u32 + base.DataSize).ToString("X8"),
 					base.DataSize.ToString("X8"),
 					DataUncompressedSize.ToString("X8"),
-					base.Checksum.ToString("X8"));
+					base.Adler32.ToString("X8"));
 
-				if (!string.IsNullOrEmpty(Filename))
-					eraUtil.DebugOutput.Write(Filename);
+				if (!string.IsNullOrEmpty(FileName))
+					eraUtil.DebugOutput.Write(FileName);
 
 				eraUtil.DebugOutput.WriteLine();
 			}
@@ -66,21 +76,19 @@ namespace KSoft.Phoenix.Resource
 		#region Xml Streaming
 		protected override void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{
-			base.WriteFields(s, includeFileData);
-
 			if (FileTime != 0)
 				s.WriteAttribute("fileTime", FileTime.ToString("X16"));
-			if (CompressedDataTiger128_1 != 0)
-				s.WriteAttribute("u2C", CompressedDataTiger128_1.ToString("X16"));
+
+			base.WriteFields(s, includeFileData);
 
 			// When we extract, we decode xmbs
-			string fn = Filename;
+			string fn = FileName;
 			if (EraFile.IsXmbFile(fn))
 			{
 				bool remove_xmb_ext = true;
 
 				var expander = s.Owner as EraFileExpander;
-				if (expander != null && expander.Options.HasFlag(EraFileExpanderOptions.DontTranslateXmbFiles))
+				if (expander != null && expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 					remove_xmb_ext = false;
 
 				if (remove_xmb_ext)
@@ -88,13 +96,16 @@ namespace KSoft.Phoenix.Resource
 			}
 			s.WriteAttribute("name", fn);
 
-			if (includeFileData && DataUncompressedSize != DataSize)
-				s.WriteAttribute("fullSize", DataUncompressedSize.ToString("X8"));
-			if (CompressedDataTiger128_0 != EntryId)
-				s.WriteAttribute("u24", CompressedDataTiger128_0.ToString("X16"));
-
 			if (includeFileData)
-				s.WriteAttribute("nameOffset", FilenameOffset.ToString("X6"));
+			{
+				if (DataUncompressedSize != DataSize)
+					s.WriteAttribute("fullSize", DataUncompressedSize.ToString("X8"));
+
+				s.WriteAttribute("compressedDataHash",
+					Text.Util.ByteArrayToString(CompressedDataTiger128));
+
+				s.WriteAttribute("nameOffset", FileNameOffset.ToString("X6"));
+			}
 		}
 
 		protected override void ReadFields(IO.XmlElementStream s, bool includeFileData)
@@ -102,15 +113,48 @@ namespace KSoft.Phoenix.Resource
 			base.ReadFields(s, includeFileData);
 
 			s.ReadAttributeOpt("fileTime", ref FileTime, NumeralBase.Hex);
-			s.ReadAttributeOpt("u2C", ref CompressedDataTiger128_1, NumeralBase.Hex);
 
-			s.ReadAttribute("name", ref Filename);
+			s.ReadAttribute("name", ref FileName);
 
 			s.ReadAttributeOpt("fullSize", ref DataUncompressedSize, NumeralBase.Hex);
-			s.ReadAttributeOpt("u24", ref CompressedDataTiger128_0, NumeralBase.Hex);
-			s.ReadAttributeOpt("nameOffset", ref FilenameOffset, NumeralBase.Hex);
+			s.ReadAttributeOpt("nameOffset", ref FileNameOffset, NumeralBase.Hex);
+
+			string hashString = null;
+			if (s.ReadAttributeOpt("compressedDataHash", ref hashString))
+				CompressedDataTiger128 = Text.Util.ByteStringToArray(hashString);
 		}
 		#endregion
+
+		[Contracts.Pure]
+		public uint ComputeAdler32(IO.EndianStream blockStream)
+		{
+			Contract.Requires(blockStream != null);
+
+			SeekTo(blockStream);
+			uint adler = Security.Cryptography.Adler32.Compute(blockStream.BaseStream, DataSize);
+			return adler;
+		}
+
+		[Contracts.Pure]
+		public void ComputeHash(IO.EndianStream blockStream, Security.Cryptography.TigerHashBase hasher)
+		{
+			Contract.Requires(blockStream != null);
+			Contract.Requires(hasher != null);
+
+			hasher.Initialize();
+			hasher.ComputeHash(blockStream.BaseStream,
+				(long)DataOffset, DataSize);
+		}
+
+		void CalculateDecompressedDataTiger(System.IO.Stream source, Security.Cryptography.TigerHashBase hasher)
+		{
+			hasher.ComputeHash(source, 0, (int)source.Length,
+				restorePosition: true);
+
+			ulong tiger64;
+			hasher.TryGetAsTiger64(out tiger64);
+			this.DecompressedDataTiger64 = tiger64;
+		}
 
 		#region Buffer Util
 		byte[] DecompressFromBuffer(IO.EndianStream blockStream, byte[] buffer)
@@ -130,11 +174,11 @@ namespace KSoft.Phoenix.Resource
 			switch (CompressionType)
 			{
 				case ECF.EcfCompressionType.Stored:
-					result = base.GetBuffer(blockStream);
+					result = GetRawBuffer(blockStream);
 					break;
 
 				case ECF.EcfCompressionType.DeflateRaw:
-					result = base.GetBuffer(blockStream);
+					result = GetRawBuffer(blockStream);
 					result = DecompressFromBuffer(blockStream, result);
 					break;
 
@@ -153,10 +197,14 @@ namespace KSoft.Phoenix.Resource
 		{
 			// Read the source bytes
 			byte[] buffer = new byte[sourceFile.Length];
-			sourceFile.Read(buffer, 0, buffer.Length);
+			for (int x = 0; x < buffer.Length; )
+			{
+				int n = sourceFile.Read(buffer, x, buffer.Length - x);
+				x += n;
+			}
 
 			// Compress the source bytes into a new buffer
-			byte[] result = EraFile.Compress(buffer, out base.Checksum);  // Also update this ECF's checksum
+			byte[] result = EraFile.Compress(buffer, out base.Adler32);  // Also update this ECF's checksum
 			base.DataSize = result.Length; // Update this ECF's size
 
 			// Write the compressed bytes to the block stream
@@ -166,11 +214,15 @@ namespace KSoft.Phoenix.Resource
 		{
 			// Build a CompressedStream from the source file and write it to the block stream
 			CompressedStream.CompressFromStream(blockStream, sourceFile,
-				out base.Checksum, out base.DataSize);  // Update this ECF's checksum and size
+				out base.Adler32, out base.DataSize);  // Update this ECF's checksum and size
 		}
-		public void BuildBuffer(IO.EndianStream blockStream, System.IO.Stream sourceFile)
+		public void BuildBuffer(IO.EndianStream blockStream, System.IO.Stream sourceFile,
+			Security.Cryptography.TigerHashBase hasher)
 		{
 			blockStream.AlignToBoundry(base.DataAlignmentBit);
+
+			sourceFile.Seek(0, System.IO.SeekOrigin.Begin);
+			CalculateDecompressedDataTiger(sourceFile, hasher);
 
 			base.DataOffset = blockStream.PositionPtr;
 			this.DataUncompressedSize = (int)sourceFile.Length;
@@ -180,7 +232,7 @@ namespace KSoft.Phoenix.Resource
 				case ECF.EcfCompressionType.Stored:
 				{
 					base.DataSize = (int)sourceFile.Length;  // Update this ECF's size
-					base.Checksum = Security.Cryptography.Adler32.Compute(sourceFile, base.DataSize); // Also update this ECF's checksum
+					base.Adler32 = Security.Cryptography.Adler32.Compute(sourceFile, base.DataSize); // Also update this ECF's checksum
 					// Copy the source file's bytes to the block stream
 					sourceFile.CopyTo(blockStream.BaseStream);
 					break;
@@ -197,21 +249,24 @@ namespace KSoft.Phoenix.Resource
 				default:
 					throw new KSoft.Debug.UnreachableException(CompressionType.ToString());
 			}
+
+			ComputeHash(blockStream, hasher);
+			System.Array.Copy(hasher.Hash, 0, CompressedDataTiger128, 0, CompressedDataTiger128.Length);
 		}
 		#endregion
 
 		public override string ToString()
 		{
 			return string.Format("{0}",
-				Filename);
+				FileName);
 		}
 
 		bool ShouldUnpack(EraFileExpander expander, string path)
 		{
-			if (expander.Options.HasFlag(EraFileExpanderOptions.DontOverwriteExistingFiles))
+			if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DontOverwriteExistingFiles))
 			{
 				// it's an XMB file and the user didn't say NOT to translate them
-				if (EraFile.IsXmbFile(path) && !expander.Options.HasFlag(EraFileExpanderOptions.DontTranslateXmbFiles))
+				if (EraFile.IsXmbFile(path) && !expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 				{
 					EraFile.RemoveXmbExtension(ref path);
 				}
@@ -230,7 +285,7 @@ namespace KSoft.Phoenix.Resource
 			byte[] buffer = chunk;
 
 			bool translate_xmb_files = true;
-			if (expander != null && expander.Options.HasFlag(EraFileExpanderOptions.DontTranslateXmbFiles))
+			if (expander != null && expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 			{
 				translate_xmb_files = false;
 			}
@@ -253,7 +308,7 @@ namespace KSoft.Phoenix.Resource
 
 				#region Translate XMB to XML
 				var vaSize = Shell.ProcessorSize.x32;
-				var builtFor64Bit = expander.Options.HasFlag(EraFileExpanderOptions.x64);
+				var builtFor64Bit = expander.Options.Test(EraFileUtilOptions.x64);
 				if (builtFor64Bit)
 				{
 					vaSize = Shell.ProcessorSize.x64;
@@ -287,7 +342,7 @@ namespace KSoft.Phoenix.Resource
 				if (EraFile.IsScaleformFile(path))
 				{
 					#region DecompressUIFiles
-					if (expander.Options.HasFlag(EraFileExpanderOptions.DecompressUIFiles))
+					if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DecompressUIFiles))
 					{
 						using (var ms = new System.IO.MemoryStream(buffer, false))
 						using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
@@ -308,7 +363,7 @@ namespace KSoft.Phoenix.Resource
 					}
 					#endregion
 					#region TranslateGfxFiles
-					if (expander.Options.HasFlag(EraFileExpanderOptions.TranslateGfxFiles))
+					if (expander.ExpanderOptions.Test(EraFileExpanderOptions.TranslateGfxFiles))
 					{
 						using (var ms = new System.IO.MemoryStream(buffer, false))
 						using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
@@ -334,7 +389,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			Contract.Requires(blockStream.IsReading);
 
-			string path = System.IO.Path.Combine(basePath, Filename);
+			string path = System.IO.Path.Combine(basePath, FileName);
 
 			var expander = blockStream.Owner as EraFileExpander;
 			if (expander != null && !ShouldUnpack(expander, path))
@@ -352,24 +407,25 @@ namespace KSoft.Phoenix.Resource
 			Unpack(blockStream, expander, path, buffer);
 		}
 
-		public bool Pack(IO.EndianStream blockStream, string basePath)
+		public bool Pack(IO.EndianStream blockStream, string basePath,
+			Security.Cryptography.TigerHashBase hasher)
 		{
 			Contract.Requires(blockStream.IsWriting);
 
 #if false // only compress if there's a reasonable savings
 			// in case someone fucked up the xml listing
-			if (EraFile.IsXmlBasedFile(Filename))
+			if (EraFile.IsXmlBasedFile(FileName))
 			{
 				CompressionType = ECF.EcfCompressionType.DeflateRaw;
 
 			}
-			else if (EraFile.IsXmbFile(Filename))
+			else if (EraFile.IsXmbFile(FileName))
 			{
 				CompressionType = ECF.EcfCompressionType.Stored;
 			}
 #endif
 
-			string path = System.IO.Path.Combine(basePath, Filename);
+			string path = System.IO.Path.Combine(basePath, FileName);
 			if (!System.IO.File.Exists(path))
 			{
 				return false;
@@ -377,18 +433,19 @@ namespace KSoft.Phoenix.Resource
 
 			using (var fs = System.IO.File.OpenRead(path))
 			{
-				BuildBuffer(blockStream, fs);
+				BuildBuffer(blockStream, fs, hasher);
 			}
 
 			return true;
 		}
 
 		// Interface really only for the ERA's internal filenames table packaging
-		internal bool Pack(IO.EndianStream blockStream, System.IO.MemoryStream source)
+		internal bool Pack(IO.EndianStream blockStream, System.IO.MemoryStream source,
+			Security.Cryptography.TigerHashBase hasher)
 		{
 			Contract.Requires(blockStream.IsWriting);
 
-			BuildBuffer(blockStream, source);
+			BuildBuffer(blockStream, source, hasher);
 
 			return true;
 		}

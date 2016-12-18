@@ -169,7 +169,7 @@ namespace KSoft.Phoenix.Resource
 			UncompressedData = new byte[mHeader.UncompressedSize];
 			s.Read(UncompressedData, 0, UncompressedData.Length);
 
-			mHeader.UncompressedCrc = Adler32.Compute(UncompressedData);
+			mHeader.UncompressedAdler32 = Adler32.Compute(UncompressedData);
 		}
 		public void WriteData(System.IO.Stream s)
 		{
@@ -200,16 +200,16 @@ namespace KSoft.Phoenix.Resource
 
 			uint adler32;
 			CompressedData = IO.Compression.ZLib.LowLevelCompress(UncompressedData, level,
-				out adler32/*mHeader.CompressedCrc*/, CompressedData);
+				out adler32/*mHeader.CompressedAdler32*/, CompressedData);
 
-			mHeader.CompressedCrc = Adler32.Compute(CompressedData);
-			if (mHeader.CompressedCrc != adler32)
+			mHeader.CompressedAdler32 = Adler32.Compute(CompressedData);
+			if (mHeader.CompressedAdler32 != adler32)
 			{
 #if false
 				Debug.Trace.Resource.TraceInformation("ZLib.LowLevelCompress returned different adler32 ({0}) than our computations ({1}). Uncompressed adler32={2}",
 					adler32.ToString("X8"),
-					mHeader.CompressedCrc.ToString("X8"),
-					mHeader.UncompressedCrc.ToString("X8"));
+					mHeader.CompressedAdler32.ToString("X8"),
+					mHeader.UncompressedAdler32.ToString("X8"));
 #endif
 			}
 

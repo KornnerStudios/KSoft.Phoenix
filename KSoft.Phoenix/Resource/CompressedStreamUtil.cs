@@ -20,7 +20,7 @@ namespace KSoft.Phoenix.Resource
 
 			const int kSizeOf = kOffsetMode + sizeof(uint); // 0x14
 
-			public static uint Checksum(ulong srcSize, uint srcAdler, ulong cmpSize, uint cmpAdler, 
+			public static uint Checksum(ulong srcSize, uint srcAdler, ulong cmpSize, uint cmpAdler,
 				uint mode = 0)
 			{
 				var bc = Adler32.BitComputer.New;
@@ -36,10 +36,10 @@ namespace KSoft.Phoenix.Resource
 		};
 
 		static readonly Header kBufferedHeader = new Header() {
-			HeaderCrc = 0x00330004,
+			HeaderAdler32 = 0x00330004,
 			StreamMode = (uint)Mode.Buffered,
 			UncompressedSize = 0,	CompressedSize = 0,
-			UncompressedCrc = 1,	CompressedCrc = 1,
+			UncompressedAdler32 = 1,	CompressedAdler32 = 1,
 		};
 
 		public static void CompressFromStream(IO.EndianWriter blockStream, System.IO.Stream source,
@@ -59,10 +59,11 @@ namespace KSoft.Phoenix.Resource
 
 				cs.Serialize(s);
 
-				byte[] final_buffer = ms.GetBuffer();
-				streamAdler = Adler32.Compute(final_buffer);
-				streamSize = final_buffer.Length;
-				blockStream.Write(final_buffer);
+				ms.Position = 0;
+				streamSize = (int)ms.Length;
+				streamAdler = Adler32.Compute(ms, streamSize);
+
+				ms.WriteTo(blockStream.BaseStream);
 			}
 		}
 		public static byte[] DecompressFromStream(IO.EndianStream blockStream)

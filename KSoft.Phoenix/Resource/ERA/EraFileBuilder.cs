@@ -6,11 +6,21 @@ using FA = System.IO.FileAccess;
 
 namespace KSoft.Phoenix.Resource
 {
+	public enum EraFileBuilderOptions
+	{
+		Encrypt,
+
+		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
+	};
+
 	public sealed class EraFileBuilder
 		: EraFileUtil
 	{
 		/// <summary>Extension of the file listing used to build ERAs</summary>
 		public const string kNameExtension = ".xml";
+
+		/// <see cref="EraFileBuilderOptions"/>
+		public Collections.BitVector32 BuilderOptions;
 
 		public EraFileBuilder(string listingPath)
 		{
@@ -24,7 +34,8 @@ namespace KSoft.Phoenix.Resource
 		{
 			bool result = true;
 
-			VerboseOutput.WriteLine("Trying to read source listing {0}...", mSourceFile);
+			if (VerboseOutput != null)
+				VerboseOutput.WriteLine("Trying to read source listing {0}...", mSourceFile);
 
 			if (!File.Exists(mSourceFile))
 				result = false;
@@ -40,7 +51,10 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			if (result == false)
-				VerboseOutput.WriteLine("\tFailed!");
+			{
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tFailed!");
+			}
 
 			return result;
 		}
@@ -51,11 +65,24 @@ namespace KSoft.Phoenix.Resource
 			try { result &= ReadInternal(); }
 			catch (Exception ex)
 			{
-				VerboseOutput.WriteLine("\tEncountered an error while trying to read listing: {0}", ex);
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tEncountered an error while trying to read listing: {0}", ex);
 				result = false;
 			}
 
 			return result;
+		}
+
+		void EncryptFileBytes(byte[] eraBytes, int eraBytesLength)
+		{
+			using (var era_in_ms = new System.IO.MemoryStream(eraBytes, 0, eraBytesLength, writable: false))
+			using (var era_out_ms = new System.IO.MemoryStream(eraBytes, 0, eraBytesLength, writable: true))
+			using (var era_reader = new IO.EndianReader(era_in_ms, Shell.EndianFormat.Big))
+			using (var era_writer = new IO.EndianWriter(era_out_ms, Shell.EndianFormat.Big))
+			{
+				CryptStream(era_reader, era_writer,
+					Security.Cryptography.CryptographyTransformType.Encrypt);
+			}
 		}
 
 		bool BuildInternal(string path, string eraName, string outputPath)
@@ -63,9 +90,11 @@ namespace KSoft.Phoenix.Resource
 			const FA k_mode = FA.Write;
 			const int k_initial_buffer_size = 24 * IntegerMath.kMega; // 24MB
 
-			VerboseOutput.WriteLine("Building {0} to {1}...", eraName, outputPath);
+			if (VerboseOutput != null)
+				VerboseOutput.WriteLine("Building {0} to {1}...", eraName, outputPath);
 
-			VerboseOutput.WriteLine("\tAllocating memory...");
+			if (VerboseOutput != null)
+				VerboseOutput.WriteLine("\tAllocating memory...");
 			bool result = true;
 			using (var ms = new MemoryStream(k_initial_buffer_size))
 			using (var era_memory = new IO.EndianStream(ms, Shell.EndianFormat.Big, this, permissions: k_mode))
@@ -78,19 +107,36 @@ namespace KSoft.Phoenix.Resource
 				ms.Seek(mEraFile.CalculateHeaderAndFileChunksSize(), SeekOrigin.Begin);
 
 				// now we can start embedding the files
-				VerboseOutput.WriteLine("\tPacking files...");
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tPacking files...");
 				result &= mEraFile.Build(era_memory, path);
 
 				if (result)
 				{
-					VerboseOutput.WriteLine("\tFinializing...");
+					if (VerboseOutput != null)
+						VerboseOutput.WriteLine("\tFinializing...");
 
 					// seek back to the start of the ERA and write out the finalized header and file chunk descriptors
 					ms.Seek(0, SeekOrigin.Begin);
 					mEraFile.Serialize(era_memory);
 
 					// finally, bake the ERA memory stream into a file
-					string era_filename = Path.Combine(outputPath, eraName) + EraFileExpander.kNameExtension;
+					string era_filename = Path.Combine(outputPath, eraName);
+					if (!BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
+					{
+						era_filename += EraFileExpander.kNameExtension;
+					}
+					else
+					{
+						era_filename += EraFileBuilder.kExtensionEncrypted;
+
+						if (VerboseOutput != null)
+							VerboseOutput.WriteLine("\tEncrypting...");
+
+						var era_bytes = ms.GetBuffer();
+						EncryptFileBytes(era_bytes, (int)ms.Length);
+					}
+
 					using (var fs = new FileStream(era_filename, FileMode.Create, FA.Write))
 						ms.WriteTo(fs);
 				}

@@ -34,7 +34,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		public ulong EntryId;
 		public Values.PtrHandle DataOffset = Values.PtrHandle.Null32; // offset within the parent block
 		public int DataSize;
-		public uint Checksum;
+		public uint Adler32;
 		public byte Flags;
 		public byte DataAlignmentBit = kDefaultAlignmentBit;
 		private ushort mResourceFlags;
@@ -82,12 +82,16 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			blockStream.Seek((long)DataOffset);
 		}
-		public virtual byte[] GetBuffer(IO.EndianStream blockStream)
+		public byte[] GetRawBuffer(IO.EndianStream blockStream)
 		{
 			SeekTo(blockStream);
 			byte[] result = blockStream.Reader.ReadBytes(DataSize);
 
 			return result;
+		}
+		public virtual byte[] GetBuffer(IO.EndianStream blockStream)
+		{
+			return GetRawBuffer(blockStream);
 		}
 
 		#region IEndianStreamSerializable Members
@@ -96,7 +100,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			s.Stream(ref EntryId);
 			s.StreamVirtualAddress(ref DataOffset);
 			s.Stream(ref DataSize);
-			s.Stream(ref Checksum);
+			s.Stream(ref Adler32);
 			s.Stream(ref Flags);
 			s.Stream(ref DataAlignmentBit);
 			s.Stream(ref mResourceFlags);

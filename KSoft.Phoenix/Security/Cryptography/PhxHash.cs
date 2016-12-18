@@ -185,5 +185,14 @@ namespace KSoft.Security.Cryptography
 				Array.Copy(result_final, result, result_final.Length);
 			}
 		}
+
+		public static TigerHashBase CreateHaloWarsTigerHash()
+		{
+			Contract.Ensures(Contract.Result<TigerHashBase>() != null);
+
+			var tiger = TigerHashBase.Create(TigerHash.kAlgorithmName);
+
+			return tiger;
+		}
 	};
 }

@@ -7,6 +7,7 @@ namespace KSoft.Phoenix.Resource
 {
 	/*public*/ sealed class EraFile
 		: IO.IEndianStreamSerializable
+		, System.IDisposable
 	{
 		public const string kExtensionEncrypted = ".era";
 		public const string kExtensionDecrypted = ".bin";
@@ -19,14 +20,6 @@ namespace KSoft.Phoenix.Resource
 			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out adler32, result);
 
 			resultAdler = KSoft.Security.Cryptography.Adler32.Compute(result);
-			if (resultAdler != adler32)
-			{
-#if false
-				Debug.Trace.Resource.TraceInformation("ZLib.LowLevelCompress returned different adler32 ({0}) than our computations ({1})",
-					adler32.ToString("X8"),
-					resultAdler.ToString("X8"));
-#endif
-			}
 
 			return result;
 		}
@@ -128,12 +121,14 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		const int kAlignmentBit = 12;
-		const string kFilenamesTableName = "_filenames.bin";
-		static readonly Memory.Strings.StringMemoryPoolSettings kFilenamesTablePoolConfig = new Memory.Strings.
+		const string kFileNamesTableName = "_filenames.bin";
+		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig = new Memory.Strings.
 			StringMemoryPoolSettings(Memory.Strings.StringStorage.CStringAscii, false);
 
 		private EraFileHeader mHeader = new EraFileHeader();
 		private List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
+
+		public Security.Cryptography.TigerHashBase TigerHasher { get; private set; }
 
 		private int FileChunksFirstIndex { get {
 			// First comes the filenames table in mFiles, then all the files defined in the listing
@@ -150,11 +145,88 @@ namespace KSoft.Phoenix.Resource
 			return mFiles.Count - FileChunksFirstIndex;
 		} }
 
+		public EraFile()
+		{
+			TigerHasher = Security.Cryptography.PhxHash.CreateHaloWarsTigerHash();
+		}
+
+		#region IDisposable Members
+		public void Dispose()
+		{
+			if (TigerHasher != null)
+			{
+				TigerHasher.Dispose();
+				TigerHasher = null;
+			}
+		}
+		#endregion
+
 		public int CalculateHeaderAndFileChunksSize()
 		{
 			return
 				EraFileHeader.CalculateHeaderSize() +
 				EraFileEntryChunk.CalculateFileChunksSize(mFiles.Count);
+		}
+
+		private void ValidateAdler32(EraFileEntryChunk fileEntry, IO.EndianStream blockStream)
+		{
+			var actual_adler = fileEntry.ComputeAdler32(blockStream);
+
+			if (actual_adler != fileEntry.Adler32)
+			{
+				string chunk_name = !string.IsNullOrEmpty(fileEntry.FileName)
+					? fileEntry.FileName
+					: "FileNames";//fileEntry.EntryId.ToString("X16");
+
+				throw new System.IO.InvalidDataException(string.Format(
+					"Invalid chunk adler32 for '{0}' offset={1} size={2} " +
+					"expected {3} but got {4}",
+					chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
+					fileEntry.Adler32.ToString("X8"),
+					actual_adler.ToString("X8")
+					));
+			}
+		}
+
+		private void ValidateHashes(EraFileEntryChunk fileEntry, IO.EndianStream blockStream)
+		{
+			fileEntry.ComputeHash(blockStream, TigerHasher);
+
+			if (!fileEntry.CompressedDataTiger128.EqualsArray(TigerHasher.Hash))
+			{
+				string chunk_name = !string.IsNullOrEmpty(fileEntry.FileName)
+					? fileEntry.FileName
+					: "FileNames";//fileEntry.EntryId.ToString("X16");
+
+				throw new System.IO.InvalidDataException(string.Format(
+					"Invalid chunk hash for '{0}' offset={1} size={2} " +
+					"expected {3} but got {4}",
+					chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
+					Text.Util.ByteArrayToString(fileEntry.CompressedDataTiger128),
+					Text.Util.ByteArrayToString(TigerHasher.Hash, 0, EraFileEntryChunk.kCompresssedDataTigerHashSize)
+					));
+			}
+
+			if (fileEntry.CompressionType == ECF.EcfCompressionType.Stored)
+			{
+				ulong tiger64;
+				TigerHasher.TryGetAsTiger64(out tiger64);
+
+				if (fileEntry.DecompressedDataTiger64 != tiger64)
+				{
+					string chunk_name = !string.IsNullOrEmpty(fileEntry.FileName)
+						? fileEntry.FileName
+						: "FileNames";//fileEntry.EntryId.ToString("X16");
+
+					throw new System.IO.InvalidDataException(string.Format(
+						"Chunk id mismatch for '{0}' offset={1} size={2} " +
+						"expected {3} but got {4}",
+						chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
+						fileEntry.DecompressedDataTiger64.ToString("X16"),
+						Text.Util.ByteArrayToString(TigerHasher.Hash, 0, sizeof(ulong))
+						));
+				}
+			}
 		}
 
 		#region Xml definition Streaming
@@ -200,45 +272,52 @@ namespace KSoft.Phoenix.Resource
 		{
 			Contract.Requires(blockStream.IsReading);
 
-			var expander = blockStream.Owner as EraFileExpander;
+			var eraUtil = blockStream.Owner as EraFileUtil;
+
+			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			{
+				eraUtil.VerboseOutput.WriteLine("\tUnpacking files...");
+			}
 
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
-				if (expander != null)
+				var file = mFiles[x];
+
+				if (eraUtil != null && eraUtil.VerboseOutput != null)
 				{
-					expander.VerboseOutput.Write("\r\t{0} ", mFiles[x].EntryId.ToString("X16"));
+					eraUtil.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
-				mFiles[x].Unpack(blockStream, basePath);
+				file.Unpack(blockStream, basePath);
 			}
 
-			if (expander != null)
+			if (eraUtil != null && eraUtil.VerboseOutput != null)
 			{
-				expander.VerboseOutput.Write("\r\t{0} \r", new string(' ', 16));
+				eraUtil.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+				eraUtil.VerboseOutput.WriteLine("\tDone");
 			}
 		}
 
-		private bool BuildFilenamesTable(IO.EndianStream blockStream)
+		private bool BuildFileNamesTable(IO.EndianStream blockStream)
 		{
 			Contract.Requires(blockStream.IsWriting);
 
 			using (var ms = new System.IO.MemoryStream(mFiles.Count * 128))
 			using (var s = new IO.EndianWriter(ms, blockStream.ByteOrder))
 			{
-				var smp = new Memory.Strings.StringMemoryPool(kFilenamesTablePoolConfig);
+				var smp = new Memory.Strings.StringMemoryPool(kFileNamesTablePoolConfig);
 				for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 				{
 					var file = mFiles[x];
-					if (file.EntryId == 0)
-					{
-						file.EntryId = (ulong)x;
-					}
 
-					file.FilenameOffset = smp.Add(file.Filename).u32;
+					file.FileNameOffset = smp.Add(file.FileName).u32;
 				}
 				smp.WriteStrings(s);
-				ms.Seek(0, System.IO.SeekOrigin.Begin);
+				//ms.Seek(0, System.IO.SeekOrigin.Begin);
 
-				return mFiles[0].Pack(blockStream, ms);
+				var filenames_chunk = mFiles[0];
+				bool success = filenames_chunk.Pack(blockStream, ms, TigerHasher);
+
+				return success;
 			}
 		}
 		public bool Build(IO.EndianStream blockStream, string basePath)
@@ -247,18 +326,18 @@ namespace KSoft.Phoenix.Resource
 
 			var builder = blockStream.Owner as EraFileBuilder;
 
-			bool success = BuildFilenamesTable(blockStream);
+			bool success = BuildFileNamesTable(blockStream);
 			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
 			{
-				if (builder != null)
+				if (builder != null && builder.VerboseOutput != null)
 				{
 					builder.VerboseOutput.Write("\r\t\t{0} ", mFiles[x].EntryId.ToString("X16"));
 				}
 
-				success &= mFiles[x].Pack(blockStream, basePath);
+				success &= mFiles[x].Pack(blockStream, basePath, TigerHasher);
 			}
 
-			if (builder != null)
+			if (builder != null && builder.VerboseOutput != null)
 			{
 				builder.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
 			}
@@ -280,8 +359,24 @@ namespace KSoft.Phoenix.Resource
 				return;
 			}
 
+			ReadFileNamesChunk(s);
+			ValidateFileHashes(s);
+		}
+
+		void ReadFileNamesChunk(IO.EndianStream s)
+		{
+			var eraUtil = s.Owner as EraFileUtil;
+
 			var filenames_chunk = mFiles[0];
-			filenames_chunk.Filename = kFilenamesTableName;
+
+			if (eraUtil != null &&
+				!eraUtil.Options.Test(EraFileUtilOptions.SkipVerification))
+			{
+				ValidateAdler32(filenames_chunk, s);
+				ValidateHashes(filenames_chunk, s);
+			}
+
+			filenames_chunk.FileName = kFileNamesTableName;
 
 			byte[] filenames_buffer = filenames_chunk.GetBuffer(s);
 			using (var ms = new System.IO.MemoryStream(filenames_buffer))
@@ -291,13 +386,60 @@ namespace KSoft.Phoenix.Resource
 				{
 					var file = mFiles[x];
 
-					if (file.FilenameOffset != er.BaseStream.Position)
+					if (file.FileNameOffset != er.BaseStream.Position)
 					{
-						throw new System.IO.InvalidDataException(file.FilenameOffset.ToString("X8"));
+						throw new System.IO.InvalidDataException(file.FileNameOffset.ToString("X8"));
 					}
 
-					file.Filename = er.ReadString(Memory.Strings.StringStorage.CStringAscii);
+					file.FileName = er.ReadString(Memory.Strings.StringStorage.CStringAscii);
 				}
+			}
+		}
+
+		void ValidateFileHashes(IO.EndianStream s)
+		{
+			var eraUtil = s.Owner as EraFileUtil;
+
+			if (eraUtil != null &&
+				eraUtil.Options.Test(EraFileUtilOptions.SkipVerification))
+			{
+				return;
+			}
+
+			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			{
+				eraUtil.VerboseOutput.WriteLine("\tVerifying file hashes...");
+			}
+
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
+				var file = mFiles[x];
+
+				if (eraUtil != null && eraUtil.VerboseOutput != null)
+				{
+					eraUtil.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+				}
+
+				ValidateAdler32(file, s);
+				ValidateHashes(file, s);
+			}
+
+			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			{
+				eraUtil.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+				eraUtil.VerboseOutput.WriteLine("\t\tDone");
+			}
+		}
+
+		void CalculateFileCompressedDataHashes(IO.EndianStream s)
+		{
+			for (int x = 0/*FileChunksFirstIndex*/; x < mFiles.Count; x++)
+			{
+				var file = mFiles[x];
+
+				file.ComputeHash(s, TigerHasher);
+				System.Array.Copy(TigerHasher.Hash,
+					file.CompressedDataTiger128, file.CompressedDataTiger128.Length);
 			}
 		}
 
@@ -319,6 +461,16 @@ namespace KSoft.Phoenix.Resource
 				eraUtil.DebugOutput.WriteLine();
 			}
 
+			SerializeFileEntryChunks(s);
+
+			if (eraUtil != null && eraUtil.DebugOutput != null)
+			{
+				eraUtil.DebugOutput.WriteLine();
+			}
+		}
+
+		public void SerializeFileEntryChunks(IO.EndianStream s)
+		{
 			if (s.IsReading)
 			{
 				mFiles.Capacity = mHeader.FileCount;
@@ -337,11 +489,6 @@ namespace KSoft.Phoenix.Resource
 				{
 					f.Serialize(s);
 				}
-			}
-
-			if (eraUtil != null && eraUtil.DebugOutput != null)
-			{
-				eraUtil.DebugOutput.WriteLine();
 			}
 		}
 		#endregion
