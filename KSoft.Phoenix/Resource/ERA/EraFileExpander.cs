@@ -18,6 +18,7 @@ namespace KSoft.Phoenix.Resource
 		TranslateGfxFiles,
 		Decrypt,
 		DontLoadEntireEraIntoMemory,
+		DontRemoveXmlOrXmbFiles,
 
 		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 	};

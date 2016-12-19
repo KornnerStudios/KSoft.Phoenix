@@ -127,6 +127,7 @@ namespace KSoft.Phoenix.Resource
 
 		private EraFileHeader mHeader = new EraFileHeader();
 		private List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
+		private Dictionary<string, EraFileEntryChunk> mFileNameToChunk = new Dictionary<string, EraFileEntryChunk>();
 
 		public Security.Cryptography.TigerHashBase TigerHasher { get; private set; }
 
@@ -229,6 +230,84 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
+		private int FileIndexToListingIndex(int fileIndex)
+		{
+			return fileIndex - 1;
+		}
+
+		private void BuildFileNameMaps(System.IO.TextWriter verboseOutput)
+		{
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; )
+			{
+				var file = mFiles[x];
+
+				EraFileEntryChunk existingFile;
+				if (mFileNameToChunk.TryGetValue(file.FileName, out existingFile))
+				{
+					if (verboseOutput != null)
+					{
+						verboseOutput.WriteLine("Removing duplicate {0} entry at #{1}",
+							file.FileName, FileIndexToListingIndex(x));
+					}
+					mFiles.RemoveAt(x);
+					continue;
+				}
+
+				mFileNameToChunk.Add(file.FileName, file);
+				x++;
+			}
+		}
+
+		private void RemoveXmbFilesWhereXmlExists(System.IO.TextWriter verboseOutput)
+		{
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
+				var file = mFiles[x];
+				if (!IsXmbFile(file.FileName))
+					continue;
+
+				string xml_name = file.FileName;
+				RemoveXmbExtension(ref xml_name);
+				EraFileEntryChunk xml_file;
+				if (!mFileNameToChunk.TryGetValue(xml_name, out xml_file))
+					continue;
+
+				if (verboseOutput != null)
+					verboseOutput.WriteLine("\tRemoving XMB file #{0} '{1}' from listing since its XML already exists {2}",
+						FileIndexToListingIndex(x),
+						file.FileName,
+						xml_file.FileName);
+
+				mFiles.RemoveAt(x);
+				x--;
+			}
+		}
+
+		private void RemoveXmlFilesWhereXmbExists(System.IO.TextWriter verboseOutput)
+		{
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
+				var file = mFiles[x];
+				if (!IsXmlBasedFile(file.FileName))
+					continue;
+
+				string xmb_name = file.FileName;
+				xmb_name += ".xmb";
+				EraFileEntryChunk xmb_file;
+				if (!mFileNameToChunk.TryGetValue(xmb_name, out xmb_file))
+					continue;
+
+				if (verboseOutput != null)
+					verboseOutput.WriteLine("\tRemoving XML file #{0} '{1}' from listing since its XMB already exists {2}",
+						FileIndexToListingIndex(x),
+						file.FileName,
+						xmb_file.FileName);
+
+				mFiles.RemoveAt(x);
+				x--;
+			}
+		}
+
 		#region Xml definition Streaming
 		static EraFileEntryChunk GenerateFilenamesTableEntryChunk()
 		{
@@ -312,7 +391,6 @@ namespace KSoft.Phoenix.Resource
 					file.FileNameOffset = smp.Add(file.FileName).u32;
 				}
 				smp.WriteStrings(s);
-				//ms.Seek(0, System.IO.SeekOrigin.Begin);
 
 				var filenames_chunk = mFiles[0];
 				bool success = filenames_chunk.Pack(blockStream, ms, TigerHasher);
@@ -326,6 +404,7 @@ namespace KSoft.Phoenix.Resource
 
 			var builder = blockStream.Owner as EraFileBuilder;
 
+			BuildFileNameMaps(builder != null ? builder.VerboseOutput : null);
 			bool success = BuildFileNamesTable(blockStream);
 			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
 			{
@@ -359,8 +438,31 @@ namespace KSoft.Phoenix.Resource
 				return;
 			}
 
+			var expander = s.Owner as EraFileExpander;
+			var verboseOutput = expander != null ? expander.VerboseOutput : null;
+
 			ReadFileNamesChunk(s);
 			ValidateFileHashes(s);
+
+			BuildFileNameMaps(verboseOutput);
+
+			if (expander != null && !expander.ExpanderOptions.Test(EraFileExpanderOptions.DontRemoveXmlOrXmbFiles))
+			{
+				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
+				{
+					if (verboseOutput != null)
+						verboseOutput.WriteLine("Removing any XML files if their XMB counterpart exists...");
+
+					RemoveXmlFilesWhereXmbExists(verboseOutput);
+				}
+				else
+				{
+					if (verboseOutput != null)
+						verboseOutput.WriteLine("Removing any XMB files if their XML counterpart exists...");
+
+					RemoveXmbFilesWhereXmlExists(verboseOutput);
+				}
+			}
 		}
 
 		void ReadFileNamesChunk(IO.EndianStream s)
@@ -388,7 +490,13 @@ namespace KSoft.Phoenix.Resource
 
 					if (file.FileNameOffset != er.BaseStream.Position)
 					{
-						throw new System.IO.InvalidDataException(file.FileNameOffset.ToString("X8"));
+						throw new System.IO.InvalidDataException(string.Format(
+							"#{0} {1} has bad filename offset {2} != {3}",
+							FileIndexToListingIndex(x),
+							file.EntryId.ToString("X16"),
+							file.FileNameOffset.ToString("X8"),
+							er.BaseStream.Position.ToString("X8")
+							));
 					}
 
 					file.FileName = er.ReadString(Memory.Strings.StringStorage.CStringAscii);

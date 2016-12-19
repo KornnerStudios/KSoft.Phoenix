@@ -66,12 +66,14 @@ namespace KSoft.Tool.Phoenix
 				return false;
 			}
 
+#if false // checked in expand's logic now since we support in-situ
 			string input_file = mPath + KSoft.Phoenix.Resource.EraFileExpander.kNameExtension;
 			if (!File.Exists(input_file))
 			{
 				Console.WriteLine("Error: Input ERA does not exist");
 				return false;
 			}
+#endif
 
 			return true;
 		}
@@ -184,7 +186,7 @@ namespace KSoft.Tool.Phoenix
 			expanderOptions = new Collections.BitVector32();
 			bool only_dump_listing = false, dont_overwrite = false, dont_trans_xmb = false, decompress_ui_files = false,
 				trans_gfx = false, is_32bit = false, decrypt = false, dont_load_into_memory = false,
-				skip_verification = false, dump_dbg_info = false;
+				skip_verification = false, dump_dbg_info = false, dont_remove_xml_xmb = false;
 
 			if (switches == null)
 				switches = "";
@@ -200,6 +202,7 @@ namespace KSoft.Tool.Phoenix
 			ParseSwitch(switches, index++, ref decrypt);
 			ParseSwitch(switches, index++, ref dont_load_into_memory);
 			ParseSwitch(switches, index++, ref dump_dbg_info);
+			ParseSwitch(switches, index++, ref dont_remove_xml_xmb);
 
 			if (only_dump_listing)
 			{
@@ -237,6 +240,11 @@ namespace KSoft.Tool.Phoenix
 				Console.WriteLine("Era:Expander: Switch enabled - {0}", "Not loading entire ERA into memory");
 				expanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontLoadEntireEraIntoMemory);
 			}
+			if (dont_remove_xml_xmb)
+			{
+				Console.WriteLine("Era:Expander: Switch enabled - {0}", "Not skipping XML or XMB counterparts");
+				expanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontRemoveXmlOrXmbFiles);
+			}
 
 			if (!is_32bit)
 			{
@@ -268,8 +276,17 @@ namespace KSoft.Tool.Phoenix
 			Collections.BitVector32 options, expanderOptions;
 			ExpandParseSwitches(switches, out options, out expanderOptions);
 
-			if (!expanderOptions.Test(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt))
+			if (expanderOptions.Test(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt))
+				eraPath += KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted;
+			else
 				eraPath += KSoft.Phoenix.Resource.EraFileExpander.kNameExtension;
+
+			if (!File.Exists(eraPath))
+			{
+				Console.WriteLine("Error: Input ERA does not exist '{0}'",
+					eraPath);
+				return;
+			}
 
 			StreamWriter debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_expander.txt")
