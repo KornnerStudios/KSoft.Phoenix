@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="PhxGui.SelectableFolderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignWidth="196" Height="23">
+    <DockPanel>
+        <Button Height="Auto" Margin="0" Padding="0" DockPanel.Dock="Right" Click="OnBrowseFolder">Browse</Button>
+        <TextBox Height="Auto" HorizontalAlignment="Stretch" DockPanel.Dock="Right" IsReadOnly="True"
+           Text="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnlyCaretVisible="True" />
+    </DockPanel>
+</UserControl>

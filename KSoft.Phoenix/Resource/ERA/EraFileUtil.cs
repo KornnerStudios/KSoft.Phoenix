@@ -37,7 +37,8 @@ namespace KSoft.Phoenix.Resource
 
 		protected EraFileUtil()
 		{
-			VerboseOutput = Console.Out;
+			if (System.Diagnostics.Debugger.IsAttached)
+				VerboseOutput = Console.Out;
 		}
 
 		#region IDisposable Members

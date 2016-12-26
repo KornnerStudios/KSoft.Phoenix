@@ -17,7 +17,7 @@ namespace KSoft.Phoenix.Resource
 		: EraFileUtil
 	{
 		/// <summary>Extension of the file listing used to build ERAs</summary>
-		public const string kNameExtension = ".xml";
+		public const string kNameExtension = ".eradef";
 
 		/// <see cref="EraFileBuilderOptions"/>
 		public Collections.BitVector32 BuilderOptions;
@@ -87,6 +87,23 @@ namespace KSoft.Phoenix.Resource
 
 		bool BuildInternal(string path, string eraName, string outputPath)
 		{
+			string era_filename = Path.Combine(outputPath, eraName);
+			if (!BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
+			{
+				era_filename += EraFileExpander.kNameExtension;
+			}
+			else
+			{
+				era_filename += EraFileBuilder.kExtensionEncrypted;
+			}
+
+			if (System.IO.File.Exists(era_filename))
+			{
+				var attrs = System.IO.File.GetAttributes(era_filename);
+				if (attrs.HasFlag(FileAttributes.ReadOnly))
+					throw new IOException("ERA file is readonly, can't build: " + era_filename);
+			}
+
 			const FA k_mode = FA.Write;
 			const int k_initial_buffer_size = 24 * IntegerMath.kMega; // 24MB
 
@@ -121,20 +138,16 @@ namespace KSoft.Phoenix.Resource
 					mEraFile.Serialize(era_memory);
 
 					// finally, bake the ERA memory stream into a file
-					string era_filename = Path.Combine(outputPath, eraName);
-					if (!BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
+					if (BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
 					{
-						era_filename += EraFileExpander.kNameExtension;
-					}
-					else
-					{
-						era_filename += EraFileBuilder.kExtensionEncrypted;
-
 						if (VerboseOutput != null)
 							VerboseOutput.WriteLine("\tEncrypting...");
 
 						var era_bytes = ms.GetBuffer();
 						EncryptFileBytes(era_bytes, (int)ms.Length);
+					}
+					else // not encrypted
+					{
 					}
 
 					using (var fs = new FileStream(era_filename, FileMode.Create, FA.Write))
@@ -158,7 +171,8 @@ namespace KSoft.Phoenix.Resource
 			try { BuildInternal(path, eraName, outputPath); }
 			catch (Exception ex)
 			{
-				VerboseOutput.WriteLine("\tEncountered an error while building the archive: {0}", ex);
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("\tEncountered an error while building the archive: {0}", ex);
 				result = false;
 			}
 

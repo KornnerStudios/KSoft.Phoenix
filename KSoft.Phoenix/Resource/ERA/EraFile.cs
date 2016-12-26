@@ -316,13 +316,8 @@ namespace KSoft.Phoenix.Resource
 
 			return chunk;
 		}
-		public bool ReadDefinition(IO.XmlElementStream s)
+		private void ReadChunks(IO.XmlElementStream s)
 		{
-			mFiles.Clear();
-
-			// first entry should always be the null terminated filenames table
-			mFiles.Add(GenerateFilenamesTableEntryChunk());
-
 			foreach (var n in s.ElementsByName(ECF.EcfChunk.kXmlElementStreamName))
 			{
 				var f = new EraFileEntryChunk();
@@ -333,16 +328,32 @@ namespace KSoft.Phoenix.Resource
 
 				mFiles.Add(f);
 			}
+		}
+		private void WriteChunks(IO.XmlElementStream s)
+		{
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
+				mFiles[x].Write(s, false);
+			}
+		}
+
+		public bool ReadDefinition(IO.XmlElementStream s)
+		{
+			mFiles.Clear();
+
+			// first entry should always be the null terminated filenames table
+			mFiles.Add(GenerateFilenamesTableEntryChunk());
+
+			using (s.EnterCursorBookmark("Files"))
+				ReadChunks(s);
 
 			// there should be at least one file destined for the ERA, excluding the filenames table
 			return FileChunksCount != 0;
 		}
 		public void WriteDefinition(IO.XmlElementStream s)
 		{
-			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
-			{
-				mFiles[x].Write(s, false);
-			}
+			using (s.EnterCursorBookmark("Files"))
+				WriteChunks(s);
 		}
 		#endregion
 
