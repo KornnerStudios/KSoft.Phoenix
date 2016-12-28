@@ -148,7 +148,9 @@ namespace KSoft.Phoenix.Resource
 
 			bool result = true;
 
-			VerboseOutput.WriteLine("Outputting listing...");
+			if (VerboseOutput != null)
+				VerboseOutput.WriteLine("Outputting listing...");
+
 			try { SaveListing(path, listingName); }
 			catch (Exception ex)
 			{

@@ -14,6 +14,7 @@
   <Import Project="$(MSBuildProjectDirectory)\..\KSoft.Phoenix.props" />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -109,6 +110,10 @@
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Math\KSoft.Math.csproj">
       <Project>{423f13fc-da0c-4c82-b75e-60a1bfea7bb6}</Project>
       <Name>KSoft.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.WPF\KSoft.WPF.csproj">
+      <Project>{8BC67689-8BAA-480E-B2C1-03590AB79259}</Project>
+      <Name>KSoft.WPF</Name>
     </ProjectReference>
     <ProjectReference Include="..\KSoft.Phoenix\KSoft.Phoenix.csproj">
       <Project>{3fd3a05a-4451-49d1-b38e-b897f3444754}</Project>
