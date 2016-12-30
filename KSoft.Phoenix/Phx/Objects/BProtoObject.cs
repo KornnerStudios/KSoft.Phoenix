@@ -12,7 +12,7 @@ namespace KSoft.Phoenix.Phx
 	//ChildObject.UserCiv
 	//ChildObject.AttachBone (string)
 	//ChildObject.Rotation (float)
-	
+
 	public sealed class BProtoObject
 		: DatabaseIdObject
 	{
@@ -20,8 +20,8 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Object")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrName,
-			Flags = XML.BCollectionXmlParamsFlags.ToLowerDataNames | 
-				XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading | 
+			Flags = XML.BCollectionXmlParamsFlags.ToLowerDataNames |
+				XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading |
 				XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
 		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
@@ -62,6 +62,8 @@ namespace KSoft.Phoenix.Phx
 		const string kXmlElementAddRsrcAttrAmount = "Amount";
 
 		const string kXmlElementPlacementRules = "PlacementRules"; // PlacementRules file name (sans extension)
+
+		const string kXmlElementCommand = "Command";
 		#endregion
 
 		int mId = TypeExtensions.kNone;
@@ -101,6 +103,8 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BBitSet Flags { get; private set; }
 		public Collections.BBitSet ObjectTypes { get; private set; }
 
+		public Collections.BListArray<BProtoObjectCommand> Commands { get; private set; }
+
 		public BProtoObject() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_Cost)
 		{
 			Veterancy = new Collections.BListExplicitIndex<BProtoObjectVeterancy>(BProtoObjectVeterancy.kBListExplicitIndexParams);
@@ -113,6 +117,8 @@ namespace KSoft.Phoenix.Phx
 
 			Flags = new Collections.BBitSet(kFlagsParams);
 			ObjectTypes = new Collections.BBitSet(kObjectTypesParams);
+
+			Commands = new Collections.BListArray<BProtoObjectCommand>();
 		}
 
 		#region ITagElementStreamable<string> Members
@@ -123,25 +129,136 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			s.StreamAttributeOpt(kXmlAttrId, ref mId, Predicates.IsNotNone);
-			s.StreamElementEnumOpt(kXmlElementObjectClass, ref mClassType, x => x != BProtoObjectClassType.Invalid);
-
-			XML.XmlUtil.Serialize(s, Veterancy, BProtoObjectVeterancy.kBListExplicitIndexXmlParams);
-
-			s.StreamElementOpt(kXmlElementCostEscalation, ref mCostEscalation, PhxPredicates.IsNotInvalid);
+			//MovementType
+			//Hardpoint
+			//SingleBoneIK
+			//GroundIK
+			//SweetSpotIK
+			//ObstructionRadiusX,ObstructionRadiusY,ObstructionRadiusZ
+			//FlattenMinX0,FlattenMaxX0,FlattenMinZ0,FlattenMaxZ0,FlattenMinX1,FlattenMaxX1,FlattenMinZ1,FlattenMaxZ1
+			//ParkingMinX,ParkingMaxX,ParkingMinZ,ParkingMaxZ
+			//TerrainHeightTolerance
+			//PhysicsInfo
+			//PhysicsReplacementInfo
+			//Velocity
+			//MaxVelocity
+			//ReverseSpeed
+			//Acceleration
+			//TrackingDelay
+			//StartingVelocity
+			//Fuel
+			//PerturbanceChance
+			//PerturbanceVelocity
+			//PerturbanceMinTime
+			//PerturbanceMaxTime
+			//PerturbInitialVelocity
+			//ActiveScanChance
+			//TurnRate
 			s.StreamElementOpt(kXmlElementHitpoints, ref mHitpoints, PhxPredicates.IsNotInvalid);
-			s.StreamElementOpt(kXmlElementAttackGradeDPS, ref mAttackGradeDPS, PhxPredicates.IsNotInvalid);
-			s.StreamElementOpt(kXmlElementCombatValue, ref mCombatValue, PhxPredicates.IsNotInvalid);
+			//Shieldpoints
+			//LOS
+			//PickRadius
+			//PickOffset
+			//PickPriority
+			//SelectType
+			//GotoType
+			//SelectedRadiusX
+			//SelectedRadiusZ
+			//BuildPoints
+			//RepairPoints
+			s.StreamElementEnumOpt(kXmlElementObjectClass, ref mClassType, x => x != BProtoObjectClassType.Invalid);
+			//TrainerType
+			//AutoLockDown
+			//Cost
+			s.StreamElementOpt(kXmlElementCostEscalation, ref mCostEscalation, PhxPredicates.IsNotInvalid);
+			//CostEscalationObject
+			//CaptureCost
 			s.StreamElementOpt(kXmlElementBounty, ref mBounty, PhxPredicates.IsNotInvalid);
-			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle);
-			XML.XmlUtil.Serialize(s, PopulationsCapAddition, BPopulation.kBListXmlParamsSingle_CapAddition);
-
-			(xs as XML.BDatabaseXmlSerializerBase).StreamXmlTactic(s, kXmlElementTactics, this, ref mHasTactics);
-
-			XML.XmlUtil.Serialize(s, Rates, BGameData.kRatesBListTypeValuesXmlParams);
+			//AIAssetValueAdjust
+			s.StreamElementOpt(kXmlElementCombatValue, ref mCombatValue, PhxPredicates.IsNotInvalid);
+			//ResourceAmount
+			//PlacementRules
+			//DeathFadeTime
+			//DeathFadeDelayTime
+			//TrainAnim
+			//SquadModeAnim
+			//RallyPoint
+			//MaxProjectileHeight
+			//GroundIKTilt
+			//DeathReplacement
+			//DeathSpawnSquad
+			//SurfaceType
+			//DisplayNameID
+			//RolloverTextID
+			//StatsNameID
+			//GaiaRolloverTextID
+			//EnemyRolloverTextID
+			//PrereqTextID
+			//RoleTextID
+			//Visual
+			//CorpseDeath
+			//AbilityCommand
+			//Power
+			//Ability
+			XML.XmlUtil.Serialize(s, Veterancy, BProtoObjectVeterancy.kBListExplicitIndexXmlParams);
 			XML.XmlUtil.Serialize(s, AddResource, BResource.kBListTypeValuesXmlParams_AddResource, kXmlElementAddRsrcAttrAmount);
-
+			//ExistSound
+			//GathererLimit
+			//BlockMovementObject
+			//Lifespan
+			//AmmoMax
+			//AmmoRegenRate
+			//NumConversions
+			//NumStasisFieldsToStop
 			XML.XmlUtil.Serialize(s, Flags, XML.BBitSetXmlParams.kFlagsSansRoot);
 			XML.XmlUtil.Serialize(s, ObjectTypes, kObjectTypesXmlParams);
+			//DamageType
+			//Sound
+			//ImpactDecal
+			//ExtendedSoundBank
+			//PortraitIcon
+			//MinimapIcon
+			//MinimapColor
+			XML.XmlUtil.Serialize(s, Commands, BTargetPriority.kBListXmlParams);
+			//TrainLimit
+			//GatherLink
+			//ChildObjects
+			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle);
+			XML.XmlUtil.Serialize(s, PopulationsCapAddition, BPopulation.kBListXmlParamsSingle_CapAddition);
+			(xs as XML.BDatabaseXmlSerializerBase).StreamXmlTactic(s, kXmlElementTactics, this, ref mHasTactics);
+			//FlightLevel
+			//ExitFromDirection
+			//HPBar
+			//HitZone
+			//BeamHead
+			//BeamTail
+			//Level
+			//LevelUpEffect
+			//RecoveringEffect
+			//AutoTrainOnBuilt
+			//Socket
+			XML.XmlUtil.Serialize(s, Rates, BGameData.kRatesBListTypeValuesXmlParams);
+			//MaxContained
+			//MaxFlameEffects
+			//Contain
+			//GarrisonSquadMode
+			//BuildStatsObject
+			//SubSelectSort
+			s.StreamElementOpt(kXmlElementAttackGradeDPS, ref mAttackGradeDPS, PhxPredicates.IsNotInvalid);
+			//RamDodgeFactor
+			//HoveringRumble
+			//VisualDisplayPriority
+			//ChildObjectDamageTakenScalar
+			//TrueLOSHeight
+			//GarrisonTime
+			//BuildRotation
+			//BuildOffset
+			//AutoParkingLot
+			//BuildingStrengthDisplay
+			//ShieldType
+			//RevealRadius
+			//TargetBeam
+			//KillBeam
 		}
 		#endregion
 	};

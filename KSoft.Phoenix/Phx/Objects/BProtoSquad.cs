@@ -64,10 +64,42 @@ namespace KSoft.Phoenix.Phx
 		{
 			base.Serialize(s);
 
+			//formationType
+			//DisplayNameID
+			//RolloverTextID
+			//StatsNameID
+			//PrereqTextID
+			//RoleTextID
+			//PortraitIcon
+			//AltIcon
+			//BuildPoints
+			//Cost
+			//Stance
+			//TrainAnim
+			//Selection
+			//HPBar
+			//VeterancyBar
+			//AbilityRecoveryBar
+			//BobbleHead
+			//BuildingStrengthDisplay
+			//CryoPoints
+			//DazeResist
+			//Birth
 			if (ShouldStreamUnits(s))
 				XML.XmlUtil.Serialize(s, Units, BProtoSquadUnit.kBListXmlParams);
-
+			//SubSelectSort
+			//TurnRadius
+			//LeashDistance
+			//LeashDeadzone
+			//LeashRecallDelay
+			//AggroDistance
+			//MinimapScale
 			XML.XmlUtil.Serialize(s, Flags, XML.BBitSetXmlParams.kFlagsSansRoot);
+			//Level
+			//TechLevel
+			//Sound
+			//RecoveringEffect
+			//CanAttackWhileMoving
 		}
 		#endregion
 	};

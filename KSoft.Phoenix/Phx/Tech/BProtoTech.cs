@@ -76,12 +76,22 @@ namespace KSoft.Phoenix.Phx
 		{
 			base.Serialize(s);
 
+			//Alpha
+			//Flag
+			//DisplayNameID
+			//RolloverTextID
+			//PrereqTextID
+			//Cost
+			//ResearchPoints
+			// TODO: just check if this is "Unobtainable" and set the proper flag, don't actively use this field
 			s.StreamElementEnum(kXmlElementStatus, ref mStatus);
-
+			//Icon
+			//ResearchCompleteSound
+			//ResearchAnim
 			if (ShouldStreamPrereqs(s))
 				Prereqs.Serialize(s);
-
 			XML.XmlUtil.Serialize(s, Effects, BProtoTechEffect.kBListXmlParams);
+			//StatsObject
 		}
 		#endregion
 	};
