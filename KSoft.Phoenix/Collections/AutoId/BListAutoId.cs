@@ -92,10 +92,5 @@ namespace KSoft.Collections
 		#endregion
 
 		internal IProtoEnumWithUndefined UndefinedInterface { get; private set; }
-
-		internal void Sort(Comparison<T> comparison)
-		{
-			mList.Sort(comparison);
-		}
 	};
 }

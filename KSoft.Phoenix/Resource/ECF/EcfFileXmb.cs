@@ -40,6 +40,11 @@ namespace KSoft.Phoenix.Resource.ECF
 						SerializeMainChunk(chunk, s);
 						break;
 
+					// chunk.IsResourceTag
+					case ResourceTagHeader.kChunkId:
+						// #TODO
+						break;
+
 					default:
 						throw new KSoft.Debug.UnreachableException(chunk.EntryId.ToString("X16"));
 				}
@@ -63,6 +68,35 @@ namespace KSoft.Phoenix.Resource.ECF
 				Contract.Assert(false);
 
 				chunk.IsDeflateStream = true;
+			}
+		}
+
+		public static void XmbToXml(IO.EndianStream xmbStream, System.IO.Stream outputStream, Shell.ProcessorSize vaSize)
+		{
+			byte[] xmbBytes;
+
+			using (var xmb = new ECF.EcfFileXmb())
+			{
+				xmb.Serialize(xmbStream);
+
+				xmbBytes = xmb.FileData;
+			}
+
+			var context = new Xmb.XmbFileContext()
+			{
+				PointerSize = vaSize,
+			};
+
+			using (var ms = new System.IO.MemoryStream(xmbBytes, false))
+			using (var s = new IO.EndianReader(ms, xmbStream.ByteOrder))
+			{
+				s.UserData = context;
+
+				using (var xmbf = new Phoenix.Xmb.XmbFile())
+				{
+					xmbf.Read(s);
+					xmbf.ToXml(outputStream);
+				}
 			}
 		}
 	};

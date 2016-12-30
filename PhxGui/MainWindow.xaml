@@ -1,9 +1,10 @@
 ﻿<Window x:Class="PhxGui.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:KSoftWpfControls="clr-namespace:KSoft.WPF.Controls;assembly=KSoft.WPF"
         xmlns:local="clr-namespace:PhxGui"
         xmlns:props="clr-namespace:PhxGui.Properties"
-        Title="MainWindow" Height="200" Width="632" AllowDrop="True" Drop="OnDrop" PreviewDragOver="OnPreviewDragOver" PreviewDragEnter="OnPreviewDragEnter" PreviewDragLeave="OnPreviewDragLeave" >
+        Title="MainWindow" Height="Auto" Width="632" AllowDrop="True" Drop="OnDrop" PreviewDragOver="OnPreviewDragOver" PreviewDragEnter="OnPreviewDragEnter" PreviewDragLeave="OnPreviewDragLeave" >
     <Window.Style>
         <Style TargetType="Window">
             <Style.Triggers>
@@ -40,6 +41,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -52,15 +54,18 @@
                 DataContext="{x:Static props:Settings.Default}" SelectedItem="{Binding GameVersion, Mode=TwoWay}" ItemsSource="{Binding GameVersionTypeValues}" />
 
             <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Content="ERA Expand Path" />
-            <local:SelectableFolderControl Grid.Row="1" Grid.Column="1"
+            <KSoftWpfControls:SelectableFolderControl Grid.Row="1" Grid.Column="1"
                 DataContext="{x:Static props:Settings.Default}" Text="{Binding EraExpandOutputPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Content="ERA Build Output" />
-            <local:SelectableFolderControl Grid.Row="2" Grid.Column="1"
+            <KSoftWpfControls:SelectableFolderControl Grid.Row="2" Grid.Column="1"
                 DataContext="{x:Static props:Settings.Default}" Text="{Binding EraBuildOutputPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Messages" />
-            <TextBlock x:Name="mMessagesBlock" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="{Binding MessagesText}" />
+            <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Flags" />
+            <KSoftWpfControls:BitVectorControl Grid.Row="3" Grid.Column="1" BitsUserInterfaceSource="{x:Static local:MainWindowViewModel.FlagsUserInterfaceSource}" BitVector="{Binding Flags}" />
+
+            <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Content="Messages" />
+            <TextBlock x:Name="mMessagesBlock" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding MessagesText}" />
         </Grid>
     </DockPanel>
 </Window>

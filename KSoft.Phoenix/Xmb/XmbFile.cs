@@ -21,7 +21,9 @@ namespace KSoft.Phoenix.Xmb
 		XmbVariantMemoryPool mPool;
 		bool mHasUnicodeStrings;
 
-		Element NewElement(int rootElementIndex = -1)
+		public bool HasUnicodeStrings { get { return mHasUnicodeStrings; } }
+
+		Element NewElement(int rootElementIndex = TypeExtensions.kNone)
 		{
 			var e = new Element();
 			e.Index = mElements.Count;
@@ -175,6 +177,30 @@ namespace KSoft.Phoenix.Xmb
 
 		string ToString(XmbVariant v) { return v.ToString(mPool); }
 
+		public XmlDocument ToXmlDocument()
+		{
+			Contract.Ensures(Contract.Result<XmlDocument>() != null);
+
+			var doc = new XmlDocument();
+
+			return ToXmlDocument(doc);
+		}
+
+		public XmlDocument ToXmlDocument(XmlDocument doc)
+		{
+			Contract.Ensures(doc == null || Contract.Result<XmlDocument>() != null);
+
+			if (doc != null && mElements != null && mElements.Count > 1)
+			{
+				var root = mElements[0];
+				var root_e = root.ToXml(this, doc, null);
+
+				doc.AppendChild(root_e);
+			}
+
+			return doc;
+		}
+
 		#region FromXml
 		public void FromXml(XmlElement root)
 		{
@@ -184,17 +210,23 @@ namespace KSoft.Phoenix.Xmb
 		#region ToXml
 		public void ToXml(string file)
 		{
-			var doc = new XmlDocument();
+			Contract.Requires(!string.IsNullOrEmpty(file));
 
-			var root = mElements[0];
-			var root_e = root.ToXml(this, doc, null);
+			using (var fs = System.IO.File.Create(file))
+			{
+				ToXml(fs);
+			}
+		}
+		public void ToXml(System.IO.Stream stream)
+		{
+			Contract.Requires(stream != null);
+
+			var doc = ToXmlDocument();
 
 			var encoding = mHasUnicodeStrings
 				? System.Text.Encoding.UTF8
 				: System.Text.Encoding.ASCII;
-
-			doc.AppendChild(root_e);
-			using (var xml = new XmlTextWriter(file, encoding))
+			using (var xml = new XmlTextWriter(stream, encoding))
 			{
 				xml.Formatting = Formatting.Indented;
 				xml.IndentChar = '\t';

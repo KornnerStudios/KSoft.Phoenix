@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +16,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using KSoft;
 using KSoft.Collections;
-using ComponentModel = System.ComponentModel;
 
 namespace PhxGui
 {
@@ -84,24 +85,58 @@ namespace PhxGui
 		}
 	};
 
+	public enum MiscFlags
+	{
+		[Display(	Name="Don't overwrite existing files",
+					Description="Files that already exist will not be overwritten (only supported for EXPAND right now!)")]
+		DontOverwriteExistingFiles,
+		[Display(	Name="Don't automatically translate XMB to XML",
+					Description="When expanding, XMB files encountered will not be automatically translated into XML")]
+		DontTranslateXmbFiles,
+		[Display(	Name="Don't automatically remove XMB or XML files",
+					Description="When expanding, don't ignore files when both their XMB or XML exists in the ERA")]
+		DontRemoveXmlOrXmbFiles,
+
+		kNumberOf,
+	};
+
 	internal class MainWindowViewModel
-		: ComponentModel.INotifyPropertyChanged
+		: INotifyPropertyChanged
 	{
 		#region INotifyPropertyChanged
-		public event ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected void NotifyPropertyChanged(ComponentModel.PropertyChangedEventArgs args)
+		protected void NotifyPropertyChanged(PropertyChangedEventArgs args)
 		{
 			PropertyChanged.SafeNotify(this, args);
 		}
-		protected void NotifyPropertiesChanged(ComponentModel.PropertyChangedEventArgs[] argsList, int startIndex = 0)
+		protected void NotifyPropertiesChanged(PropertyChangedEventArgs[] argsList, int startIndex = 0)
 		{
 			PropertyChanged.SafeNotify(this, argsList, startIndex);
 		}
 		#endregion
 
+		#region Flags
+		static readonly PropertyChangedEventArgs kFlagsChanged =
+			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.Flags);
+
+		private static KSoft.WPF.BitVectorUserInterfaceData gFlagsUserInterfaceSource;
+		public static KSoft.WPF.BitVectorUserInterfaceData FlagsUserInterfaceSource { get {
+			if (gFlagsUserInterfaceSource == null)
+				gFlagsUserInterfaceSource = KSoft.WPF.BitVectorUserInterfaceData.ForEnum(typeof(MiscFlags));
+			return gFlagsUserInterfaceSource;
+		} }
+
+		KSoft.Collections.BitVector32 mFlags;
+		public KSoft.Collections.BitVector32 Flags {
+			get { return mFlags; }
+			set { mFlags = value;
+				NotifyPropertyChanged(kFlagsChanged);
+		} }
+		#endregion
+
 		#region StatusText
-		static readonly ComponentModel.PropertyChangedEventArgs kStatusTextChanged =
+		static readonly PropertyChangedEventArgs kStatusTextChanged =
 			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.StatusText);
 
 		string mStatusText;
@@ -113,7 +148,7 @@ namespace PhxGui
 		#endregion
 
 		#region ProcessFilesHelpText
-		static readonly ComponentModel.PropertyChangedEventArgs kProcessFilesHelpTextChanged =
+		static readonly PropertyChangedEventArgs kProcessFilesHelpTextChanged =
 			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.ProcessFilesHelpText);
 
 		string mProcessFilesHelpText;
@@ -125,7 +160,7 @@ namespace PhxGui
 		#endregion
 
 		#region MessagesText
-		static readonly ComponentModel.PropertyChangedEventArgs kMessagesTextChanged =
+		static readonly PropertyChangedEventArgs kMessagesTextChanged =
 			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.MessagesText);
 
 		string mMessagesText;
@@ -137,7 +172,7 @@ namespace PhxGui
 		#endregion
 
 		#region IsProcessing
-		static readonly ComponentModel.PropertyChangedEventArgs kIsProcessingChanged =
+		static readonly PropertyChangedEventArgs kIsProcessingChanged =
 			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.IsProcessing);
 
 		bool mIsProcessing;
@@ -187,6 +222,12 @@ namespace PhxGui
 				return true;
 			}
 
+			if (files.All(file => System.IO.Path.GetExtension(file) == ".xmb"))
+			{
+				ProcessFilesHelpText = "XMB->XML";
+				return true;
+			}
+
 			ProcessFilesHelpText = "Unacceptable file or group of files";
 			return false;
 		}
@@ -209,6 +250,13 @@ namespace PhxGui
 				{
 					ProcessFilesHelpText = "";
 					ProcessEraListing(files[0]);
+					break;
+				}
+
+				if (files.All(file => System.IO.Path.GetExtension(file) == ".xmb"))
+				{
+					ProcessFilesHelpText = "";
+					XmbToXml(files);
 					break;
 				}
 			} while (false);
@@ -250,6 +298,13 @@ namespace PhxGui
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
 				stack.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
 			stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt);
+
+			if (Flags.Test(MiscFlags.DontOverwriteExistingFiles))
+				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontOverwriteExistingFiles);
+			if (Flags.Test(MiscFlags.DontTranslateXmbFiles))
+				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontTranslateXmbFiles);
+			if (Flags.Test(MiscFlags.DontRemoveXmlOrXmbFiles))
+				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontRemoveXmlOrXmbFiles);
 
 			Task.Run((Action)stack.Expand);
 		}
@@ -295,12 +350,14 @@ namespace PhxGui
 
 				task.ContinueWith(t =>
 				{
-					if (!t.Result)
+					if (t.IsFaulted || !t.Result)
 					{
+						bool faulted = t.IsFaulted;
 						Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 							new Action(() =>
 							{
-								ViewModel.MessagesText += string.Format("Expand FAILED {0}{1}",
+								ViewModel.MessagesText += string.Format("Expand {0} {1}{2}",
+									faulted ? "EXCEPTION" : "FAILED",
 									eraFile, Environment.NewLine);
 							}));
 					}
@@ -392,9 +449,10 @@ namespace PhxGui
 
 			task.ContinueWith(t =>
 			{
-				if (!t.Result)
+				if (t.IsFaulted || !t.Result)
 				{
-					MessagesText += string.Format("Build FAILED {0}{1}",
+					MessagesText += string.Format("Build {0} {1}{2}",
+						t.IsFaulted ? "EXCEPTION" : "FAILED",
 						args.ListingPath, Environment.NewLine);
 				}
 
@@ -434,6 +492,56 @@ namespace PhxGui
 			}
 
 			return result;
+		}
+
+		private void XmbToXml(string[] files)
+		{
+			ClearMessages();
+			IsProcessing = true;
+
+			var task = Task.Run(() =>
+			{
+				int error_count = 0;
+				var va_size = Properties.Settings.Default.GameVersion == GameVersionType.Xbox360
+					? KSoft.Shell.ProcessorSize.x32
+					: KSoft.Shell.ProcessorSize.x64;
+				var endian = KSoft.Shell.EndianFormat.Big;
+
+				var p = Parallel.ForEach(files, f =>
+				{
+					try
+					{
+						string xmb_path = f;
+						string xml_path = KSoft.Phoenix.Resource.EraFileUtil.RemoveXmbExtension(xmb_path);
+
+						using (var xmb_fs = System.IO.File.OpenRead(xmb_path))
+						using (var xmb = new KSoft.IO.EndianStream(xmb_fs, endian, System.IO.FileAccess.Read))
+						using (var xml_fs = System.IO.File.Create(xml_path))
+						{
+							xmb.StreamMode = System.IO.FileAccess.Read;
+
+							KSoft.Phoenix.Resource.EraFileUtil.XmbToXml(xmb, xml_fs, va_size);
+						}
+					} catch (Exception)
+					{
+						System.Threading.Interlocked.Increment(ref error_count);
+					}
+
+				});
+				return error_count;
+			});
+
+			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			task.ContinueWith(t =>
+			{
+				if (t.IsFaulted || t.Result > 0)
+				{
+					MessagesText += string.Format("XMB->XML finished with {0} errors",
+						t.IsFaulted ? "FATAL" : t.Result.ToString());
+				}
+
+				FinishProcessing();
+			}, scheduler);
 		}
 	};
 }

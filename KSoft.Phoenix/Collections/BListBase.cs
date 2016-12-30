@@ -11,9 +11,18 @@ namespace KSoft.Collections
 		: IEqualityComparer<BListBase<T>>
 		, IEnumerable<T>
 	{
-		protected static readonly IEqualityComparer<T> kValueEqualityComparer = EqualityComparer<T>.Default;
+		#region kValueEqualityComparer
+		private static IEqualityComparer<T> gValueEqualityComparer;
+		protected static IEqualityComparer<T> kValueEqualityComparer { get {
+			if (gValueEqualityComparer == null)
+				gValueEqualityComparer = EqualityComparer<T>.Default;
 
-		protected class _EqualityComparer
+			return gValueEqualityComparer;
+		} }
+		#endregion
+
+		#region kEqualityComparer
+		protected sealed class _EqualityComparer
 			: IEqualityComparer<BListBase<T>>
 		{
 			#region IEqualityComparer<BListBase<T>> Members
@@ -22,8 +31,9 @@ namespace KSoft.Collections
 				bool equals = x.Count == y.Count;
 				if (equals)
 				{
+					var comparer = kValueEqualityComparer;
 					for (int i = 0; i < x.Count && equals; i++)
-						equals &= kValueEqualityComparer.Equals(x[i], y[i]);
+						equals &= comparer.Equals(x[i], y[i]);
 				}
 
 				return equals;
@@ -32,14 +42,22 @@ namespace KSoft.Collections
 			public int GetHashCode(BListBase<T> obj)
 			{
 				int hash = 0;
+				var comparer = kValueEqualityComparer;
 				foreach (var o in obj)
-					hash ^= kValueEqualityComparer.GetHashCode(o);
+					hash ^= comparer.GetHashCode(o);
 
 				return hash;
 			}
 			#endregion
 		};
-		protected static _EqualityComparer kEqualityComparer = new _EqualityComparer();
+		private static _EqualityComparer gEqualityComparer;
+		protected static _EqualityComparer kEqualityComparer { get {
+			if (gEqualityComparer == null)
+				gEqualityComparer = new _EqualityComparer();
+
+			return gEqualityComparer;
+		} }
+		#endregion
 
 		protected List<T> mList;
 
@@ -79,7 +97,12 @@ namespace KSoft.Collections
 		}
 
 		#region IEnumerable<T> Members
-		public IEnumerator<T> GetEnumerator()
+		public List<T>.Enumerator GetEnumerator()
+		{
+			return mList.GetEnumerator();
+		}
+
+		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
 			return mList.GetEnumerator();
 		}
@@ -110,5 +133,22 @@ namespace KSoft.Collections
 			return kEqualityComparer.GetHashCode(obj);
 		}
 		#endregion
+
+		public void Sort()
+		{
+			mList.Sort();
+		}
+		public void Sort(IComparer<T> comparer)
+		{
+			mList.Sort(comparer);
+		}
+		public void Sort(int index, int count, IComparer<T> comparer)
+		{
+			mList.Sort(index, count, comparer);
+		}
+		public void Sort(Comparison<T> comparison)
+		{
+			mList.Sort(comparison);
+		}
 	};
 }

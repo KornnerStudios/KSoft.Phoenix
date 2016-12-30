@@ -24,6 +24,8 @@ namespace KSoft.Collections
 			return IsEmpty ? 0 : mBits.Cardinality;
 		} }
 
+		public Collections.BitSet RawBits { get { return mBits; } }
+
 		/// <summary>Parameters that dictate the functionality of this list</summary>
 		public BBitSetParams Params { get; private set; }
 
@@ -46,10 +48,12 @@ namespace KSoft.Collections
 		{
 			IProtoEnum penum = null;
 
-				 if (Params.kGetProtoEnum != null)	penum = Params.kGetProtoEnum();
-			else if (db != null)					penum = Params.kGetProtoEnumFromDB(db);
+			if (Params.kGetProtoEnum != null)
+				penum = Params.kGetProtoEnum();
+			else if (db != null)
+				penum = Params.kGetProtoEnumFromDB(db);
 
-			if(penum != null)
+			if (penum != null)
 				mBits = new Collections.BitSet(penum.MemberCount);
 
 			return penum;

@@ -103,6 +103,7 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BBitSet Flags { get; private set; }
 		public Collections.BBitSet ObjectTypes { get; private set; }
 
+		public static bool SortCommandsAfterReading = false;
 		public Collections.BListArray<BProtoObjectCommand> Commands { get; private set; }
 
 		public BProtoObject() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_Cost)
@@ -259,6 +260,24 @@ namespace KSoft.Phoenix.Phx
 			//RevealRadius
 			//TargetBeam
 			//KillBeam
+
+			if (s.IsReading)
+			{
+				if (SortCommandsAfterReading)
+				{
+					Commands.Sort((x, y) =>
+					{
+						if (x.Position != y.Position)
+							return x.Position.CompareTo(y.Position);
+
+						if (x.CommandType != y.CommandType)
+							return ((int)x.CommandType).CompareTo((int)y.CommandType);
+
+						// assuming Proto upgrades are defined after earlier Protos
+						return x.ID.CompareTo(y.ID);
+					});
+				}
+			}
 		}
 		#endregion
 	};
