@@ -4,7 +4,8 @@
         xmlns:KSoftWpfControls="clr-namespace:KSoft.WPF.Controls;assembly=KSoft.WPF"
         xmlns:local="clr-namespace:PhxGui"
         xmlns:props="clr-namespace:PhxGui.Properties"
-        Title="MainWindow" Height="Auto" Width="632" AllowDrop="True" Drop="OnDrop" PreviewDragOver="OnPreviewDragOver" PreviewDragEnter="OnPreviewDragEnter" PreviewDragLeave="OnPreviewDragLeave" >
+        Title="HaloWars1 Tool" Height="Auto" Width="632" AllowDrop="True" Drop="OnDrop"
+        PreviewDragOver="OnPreviewDragOver" PreviewDragEnter="OnPreviewDragEnter" PreviewDragLeave="OnPreviewDragLeave" >
     <Window.Style>
         <Style TargetType="Window">
             <Style.Triggers>
@@ -50,22 +51,27 @@
 
             <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Content="Game Version" />
             <ComboBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"
-                ToolTip="What version of the game are your ERA files for?"
+                ToolTip="What version of Halo Wars 1 are operating on?"
                 DataContext="{x:Static props:Settings.Default}" SelectedItem="{Binding GameVersion, Mode=TwoWay}" ItemsSource="{Binding GameVersionTypeValues}" />
 
             <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Content="ERA Expand Path" />
             <KSoftWpfControls:SelectableFolderControl Grid.Row="1" Grid.Column="1"
+                ToolTip="Where files inside .ERAs will be extracted to"
                 DataContext="{x:Static props:Settings.Default}" Text="{Binding EraExpandOutputPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Content="ERA Build Output" />
             <KSoftWpfControls:SelectableFolderControl Grid.Row="2" Grid.Column="1"
+                ToolTip="Where to save final .ERA files when building from .ERADEF files"
                 DataContext="{x:Static props:Settings.Default}" Text="{Binding EraBuildOutputPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Flags" />
             <KSoftWpfControls:BitVectorControl Grid.Row="3" Grid.Column="1" BitsUserInterfaceSource="{x:Static local:MainWindowViewModel.FlagsUserInterfaceSource}" BitVector="{Binding Flags}" />
 
             <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Content="Messages" />
-            <TextBlock x:Name="mMessagesBlock" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding MessagesText}" />
+            <TextBlock x:Name="mMessagesBlock" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap"
+                ToolTip="Errors and other diagnostics will appear here. Right click text to copy it to your clipboard."
+                Text="{Binding MessagesText}"
+                MouseRightButtonDown="OnMessagesBlockMouseRightButtonDown" />
         </Grid>
     </DockPanel>
 </Window>

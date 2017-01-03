@@ -83,6 +83,15 @@ namespace PhxGui
 
 			mViewModel.ClearProcessFilesHelpText();
 		}
+
+		private void OnMessagesBlockMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (mViewModel.IsProcessing)
+				return;
+
+			if (!string.IsNullOrWhiteSpace(mViewModel.MessagesText))
+				Clipboard.SetText(mViewModel.MessagesText);
+		}
 	};
 
 	public enum MiscFlags
@@ -90,9 +99,11 @@ namespace PhxGui
 		[Display(	Name="Don't overwrite existing files",
 					Description="Files that already exist will not be overwritten (only supported for EXPAND right now!)")]
 		DontOverwriteExistingFiles,
+		[Browsable(false)] // no longer letting the user toggle this, they can just use the tool to convert the desired XMBs
 		[Display(	Name="Don't automatically translate XMB to XML",
 					Description="When expanding, XMB files encountered will not be automatically translated into XML")]
 		DontTranslateXmbFiles,
+		[Browsable(false)]
 		[Display(	Name="Don't automatically remove XMB or XML files",
 					Description="When expanding, don't ignore files when both their XMB or XML exists in the ERA")]
 		DontRemoveXmlOrXmbFiles,
@@ -185,6 +196,9 @@ namespace PhxGui
 
 		public MainWindowViewModel()
 		{
+			mFlags.Set(MiscFlags.DontTranslateXmbFiles);
+			mFlags.Set(MiscFlags.DontRemoveXmlOrXmbFiles);
+
 			ClearStatus();
 			ClearProcessFilesHelpText();
 			ClearMessages();
@@ -215,17 +229,27 @@ namespace PhxGui
 				ProcessFilesHelpText = "Expand ERA(s)";
 				return true;
 			}
-
-			if (files.Length == 1 && System.IO.Path.GetExtension(files[0]) == KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension)
-			{
-				ProcessFilesHelpText = "Build ERA";
-				return true;
-			}
-
 			if (files.All(file => System.IO.Path.GetExtension(file) == ".xmb"))
 			{
 				ProcessFilesHelpText = "XMB->XML";
 				return true;
+			}
+
+			if (files.Length == 1)
+			{
+				if (System.IO.Path.GetExtension(files[0]) == KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension)
+				{
+					ProcessFilesHelpText = "Build ERA";
+					return true;
+				}
+				if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+				{
+					if (System.IO.Path.GetExtension(files[0]) == ".exe")
+					{
+						ProcessFilesHelpText = "Try to patch game EXE for modding";
+						return true;
+					}
+				}
 			}
 
 			ProcessFilesHelpText = "Unacceptable file or group of files";
@@ -246,18 +270,30 @@ namespace PhxGui
 					break;
 				}
 
-				if (files.Length == 1 && System.IO.Path.GetExtension(files[0]) == KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension)
-				{
-					ProcessFilesHelpText = "";
-					ProcessEraListing(files[0]);
-					break;
-				}
-
 				if (files.All(file => System.IO.Path.GetExtension(file) == ".xmb"))
 				{
 					ProcessFilesHelpText = "";
 					XmbToXml(files);
 					break;
+				}
+
+				if (files.Length == 1)
+				{
+					if (System.IO.Path.GetExtension(files[0]) == KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension)
+					{
+						ProcessFilesHelpText = "";
+						ProcessEraListing(files[0]);
+						break;
+					}
+					if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+					{
+						if (System.IO.Path.GetExtension(files[0]) == ".exe")
+						{
+							ProcessFilesHelpText = "";
+							PatchGameExe(files[0]);
+							break;
+						}
+					}
 				}
 			} while (false);
 		}
@@ -273,15 +309,8 @@ namespace PhxGui
 		{
 			if (!System.IO.Directory.Exists(Properties.Settings.Default.EraExpandOutputPath))
 			{
-#if false
-				MessageBox.Show(this,
-					"Specify a valid expand output path",
-					"Cannot expand ERA file(s)",
-					MessageBoxButton.OK);
-#else
 				MessagesText = "Cannot expand ERA file(s)" +
 					"Specify a valid expand output path";
-#endif
 				return;
 			}
 
@@ -413,15 +442,8 @@ namespace PhxGui
 		{
 			if (!System.IO.Directory.Exists(Properties.Settings.Default.EraBuildOutputPath))
 			{
-#if false
-				MessageBox.Show(this,
-					"Specify a valid build output path",
-					"Cannot build ERA file",
-					MessageBoxButton.OK);
-#else
 				MessagesText = "Cannot expand ERA file(s)" +
 					"Specify a valid expand output path";
-#endif
 				return;
 			}
 
@@ -542,6 +564,116 @@ namespace PhxGui
 
 				FinishProcessing();
 			}, scheduler);
+		}
+
+		private void PatchGameExe(string exeFile)
+		{
+			ClearMessages();
+			IsProcessing = true;
+
+			var task = Task.Run(() =>
+			{
+				var exe_file_attrs = System.IO.File.GetAttributes(exeFile);
+				if (exe_file_attrs.HasFlag(System.IO.FileAttributes.ReadOnly))
+				{
+					return string.Format("ERROR Cannot patch read-only file (this tool creates a backup): {0}",
+						exeFile);
+				}
+
+				{
+					string backup_file = System.IO.Path.GetFileNameWithoutExtension(exeFile);
+					backup_file += "_UNTOUCHED.exe";
+					backup_file = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(exeFile), backup_file);
+					System.IO.File.Copy(exeFile, backup_file);
+				}
+
+				byte[] exe_file_sha1_bytes = null;
+				using (var fs = System.IO.File.OpenRead(exeFile))
+				using (var sha1_provider = new System.Security.Cryptography.SHA1CryptoServiceProvider())
+				{
+					exe_file_sha1_bytes = sha1_provider.ComputeHash(fs);
+				}
+
+				var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes);
+				ExePatching.PatchInfo exe_paches;
+				if (!ExePatching.TryGetPatchInfo(exe_file_sha1, out exe_paches))
+				{
+					return string.Format("ERROR Unrecongized file: {0}" +
+						"SHA1={1}{2}" +
+						"File={3}{4}",
+						Environment.NewLine,
+						exe_file_sha1, Environment.NewLine,
+						exeFile, Environment.NewLine);
+				}
+
+				using (var fs = System.IO.File.OpenWrite(exeFile))
+				{
+					foreach (var kvp in exe_paches.Patches)
+					{
+						fs.Seek(kvp.Key, System.IO.SeekOrigin.Begin);
+						fs.Write(kvp.Value, 0, kvp.Value.Length);
+					}
+				}
+
+				return exeFile;
+			});
+
+			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			task.ContinueWith(t =>
+			{
+				if (t.IsFaulted || t.Result.StartsWith("ERROR", StringComparison.Ordinal))
+				{
+					MessagesText += string.Format("Patch EXE finished with errors: {0}{1}",
+						Environment.NewLine,
+						t.IsFaulted ? t.Exception.ToString() : t.Result);
+				}
+				else
+				{
+					MessagesText = string.Format("EXE is now ready for modding use: {0}",
+						t.Result);
+				}
+
+				FinishProcessing();
+			}, scheduler);
+		}
+	};
+
+	static class ExePatching
+	{
+		public sealed class PatchInfo
+		{
+			public string Sha1;
+			public Dictionary<uint, byte[]> Patches = new Dictionary<uint,byte[]>();
+
+			public PatchInfo(string sha1)
+			{
+				Sha1 = sha1;
+			}
+
+			public PatchInfo Add(uint offset, params byte[] newBytes)
+			{
+				Patches[offset] = newBytes;
+				return this;
+			}
+		};
+		private static List<PatchInfo> kPatches = new List<PatchInfo>();
+
+		static ExePatching()
+		{
+			var v1_11088_1_2 = new PatchInfo("2C1E144727CFF2AADDAE6BB71EE66B7820D3E163")
+				.Add(0x6D971F, 0xE9, 0x0A, 0x01, 0x00, 0x00);
+			kPatches.Add(v1_11088_1_2);
+		}
+
+		public static bool TryGetPatchInfo(string actualSha1, out PatchInfo info)
+		{
+			info = null;
+
+			info = (from i in kPatches
+					where i.Sha1 == actualSha1
+					select i).FirstOrDefault();
+
+			return info != null;
 		}
 	};
 }
