@@ -99,6 +99,13 @@ namespace PhxGui
 		[Display(	Name="Don't overwrite existing files",
 					Description="Files that already exist will not be overwritten (only supported for EXPAND right now!)")]
 		DontOverwriteExistingFiles,
+		[Display(	Name="Decompress Scaleform files",
+					Description="During ERA expansion, Scaleform files will be decompressed to a matching .BIN file")]
+		DecompressUIFiles,
+		[Display(	Name="Transform GFX files",
+					Description="During ERA expansion, .GFX files will be transformed to matching .SWF file")]
+		TransformGfxFiles,
+
 		[Browsable(false)] // no longer letting the user toggle this, they can just use the tool to convert the desired XMBs
 		[Display(	Name="Don't automatically translate XMB to XML",
 					Description="When expanding, XMB files encountered will not be automatically translated into XML")]
@@ -330,6 +337,10 @@ namespace PhxGui
 
 			if (Flags.Test(MiscFlags.DontOverwriteExistingFiles))
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontOverwriteExistingFiles);
+			if (Flags.Test(MiscFlags.DecompressUIFiles))
+				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DecompressUIFiles);
+			if (Flags.Test(MiscFlags.TransformGfxFiles))
+				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.TranslateGfxFiles);
 			if (Flags.Test(MiscFlags.DontTranslateXmbFiles))
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontTranslateXmbFiles);
 			if (Flags.Test(MiscFlags.DontRemoveXmlOrXmbFiles))
