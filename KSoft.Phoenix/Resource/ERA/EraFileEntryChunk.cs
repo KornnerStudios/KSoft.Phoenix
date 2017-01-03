@@ -162,7 +162,7 @@ namespace KSoft.Phoenix.Resource
 				(long)DataOffset, DataSize);
 		}
 
-		void CalculateDecompressedDataTiger(System.IO.Stream source, Security.Cryptography.TigerHashBase hasher)
+		void UpdateDecompressedDataTigerHash(System.IO.Stream source, Security.Cryptography.TigerHashBase hasher)
 		{
 			hasher.ComputeHash(source, 0, (int)source.Length,
 				restorePosition: true);
@@ -238,10 +238,12 @@ namespace KSoft.Phoenix.Resource
 			blockStream.AlignToBoundry(base.DataAlignmentBit);
 
 			sourceFile.Seek(0, System.IO.SeekOrigin.Begin);
-			CalculateDecompressedDataTiger(sourceFile, hasher);
+			UpdateDecompressedDataTigerHash(sourceFile, hasher);
 
 			base.DataOffset = blockStream.PositionPtr;
 			this.DataUncompressedSize = (int)sourceFile.Length;
+
+			// #TODO determine if compressing the sourceFile data has any savings (eg, 7% smaller)
 
 			switch (CompressionType)
 			{
@@ -275,202 +277,6 @@ namespace KSoft.Phoenix.Resource
 		{
 			return string.Format("{0}",
 				FileName);
-		}
-
-		bool ShouldUnpack(EraFileExpander expander, string path)
-		{
-			if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DontOverwriteExistingFiles))
-			{
-				// it's an XMB file and the user didn't say NOT to translate them
-				if (EraFile.IsXmbFile(path) && !expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
-				{
-					EraFile.RemoveXmbExtension(ref path);
-				}
-
-				if (System.IO.File.Exists(path))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-		void Unpack(IO.EndianStream blockStream, EraFileExpander expander, string path, byte[] chunk)
-		{
-			const System.IO.FileAccess k_mode = System.IO.FileAccess.Read;
-
-			byte[] buffer = chunk;
-
-			bool translate_xmb_files = true;
-			if (expander != null && expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
-			{
-				translate_xmb_files = false;
-			}
-
-			if (EraFile.IsXmbFile(path) && translate_xmb_files)
-			{
-				#region Read XMB chunk
-				using (var xmb = new ECF.EcfFileXmb())
-				using (var ms = new System.IO.MemoryStream(chunk))
-				using (var es = new IO.EndianStream(ms, blockStream.ByteOrder, permissions: k_mode))
-				{
-					es.StreamMode = k_mode;
-					xmb.Serialize(es);
-
-					buffer = xmb.FileData;
-				}
-				#endregion
-
-				EraFile.RemoveXmbExtension(ref path);
-
-				#region Translate XMB to XML
-				var vaSize = Shell.ProcessorSize.x32;
-				var builtFor64Bit = expander.Options.Test(EraFileUtilOptions.x64);
-				if (builtFor64Bit)
-				{
-					vaSize = Shell.ProcessorSize.x64;
-				}
-
-				var context = new Xmb.XmbFileContext()
-				{
-					PointerSize = vaSize,
-				};
-
-				using (var ms = new System.IO.MemoryStream(buffer, false))
-				using (var s = new IO.EndianReader(ms, blockStream.ByteOrder))
-				{
-					s.UserData = context;
-
-					using (var xmbf = new Phoenix.Xmb.XmbFile())
-					{
-						xmbf.Read(s);
-						xmbf.ToXml(path);
-					}
-				}
-				#endregion
-			}
-			else
-			{
-				using (var fs = System.IO.File.Create(path))
-				{
-					fs.Write(buffer, 0, buffer.Length);
-				}
-
-				if (EraFile.IsScaleformFile(path))
-				{
-					#region DecompressUIFiles
-					if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DecompressUIFiles))
-					{
-						using (var ms = new System.IO.MemoryStream(buffer, false))
-						using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
-						{
-							uint buffer_signature;
-							if (EraFile.IsScaleformBuffer(s, out buffer_signature))
-							{
-								int decompressed_size = s.ReadInt32();
-								int compressed_size = (int)(ms.Length - ms.Position);
-
-								byte[] decompressed_data = EraFile.DecompressScaleform(buffer, decompressed_size);
-								using (var fs = System.IO.File.Create(path + ".bin"))
-								{
-									fs.Write(decompressed_data, 0, decompressed_data.Length);
-								}
-							}
-						}
-					}
-					#endregion
-					#region TranslateGfxFiles
-					if (expander.ExpanderOptions.Test(EraFileExpanderOptions.TranslateGfxFiles))
-					{
-						using (var ms = new System.IO.MemoryStream(buffer, false))
-						using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
-						{
-							uint buffer_signature;
-							if (EraFile.IsScaleformBuffer(s, out buffer_signature))
-							{
-								uint swf_signature = EraFile.GfxHeaderToSwf(buffer_signature);
-								using (var fs = System.IO.File.Create(path + ".swf"))
-								using (var out_s = new IO.EndianWriter(fs, Shell.EndianFormat.Little))
-								{
-									out_s.Write(swf_signature);
-									out_s.Write(buffer, sizeof(uint), buffer.Length - sizeof(uint));
-								}
-							}
-						}
-					}
-					#endregion
-				}
-			}
-		}
-		public void Unpack(IO.EndianStream blockStream, string basePath)
-		{
-			Contract.Requires(blockStream.IsReading);
-
-			string path = System.IO.Path.Combine(basePath, FileName);
-
-			var expander = blockStream.Owner as EraFileExpander;
-			if (expander != null && !ShouldUnpack(expander, path))
-			{
-				return;
-			}
-
-			string folder = System.IO.Path.GetDirectoryName(path);
-			if (!System.IO.Directory.Exists(folder))
-			{
-				System.IO.Directory.CreateDirectory(folder);
-			}
-
-			byte[] buffer = GetBuffer(blockStream);
-			Unpack(blockStream, expander, path, buffer);
-		}
-
-		public bool Pack(IO.EndianStream blockStream, string basePath,
-			Security.Cryptography.TigerHashBase hasher)
-		{
-			Contract.Requires(blockStream.IsWriting);
-
-#if false // only compress if there's a reasonable savings
-			// in case someone fucked up the xml listing
-			if (EraFile.IsXmlBasedFile(FileName))
-			{
-				CompressionType = ECF.EcfCompressionType.DeflateRaw;
-
-			}
-			else if (EraFile.IsXmbFile(FileName))
-			{
-				CompressionType = ECF.EcfCompressionType.Stored;
-			}
-#endif
-
-			string path = System.IO.Path.Combine(basePath, FileName);
-			if (!System.IO.File.Exists(path))
-			{
-				return false;
-			}
-
-			var creation_time = System.IO.File.GetCreationTimeUtc(path);
-			var write_time = System.IO.File.GetLastWriteTimeUtc(path);
-			this.FileDateTime = write_time > creation_time
-				? write_time
-				: creation_time;
-
-			using (var fs = System.IO.File.OpenRead(path))
-			{
-				BuildBuffer(blockStream, fs, hasher);
-			}
-
-			return true;
-		}
-
-		// Interface really only for the ERA's internal filenames table packaging
-		internal bool Pack(IO.EndianStream blockStream, System.IO.MemoryStream source,
-			Security.Cryptography.TigerHashBase hasher)
-		{
-			Contract.Requires(blockStream.IsWriting);
-
-			this.FileDateTime = DateTime.UtcNow;
-			BuildBuffer(blockStream, source, hasher);
-
-			return true;
 		}
 	};
 }

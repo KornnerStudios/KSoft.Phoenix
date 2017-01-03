@@ -226,7 +226,7 @@ namespace KSoft.Phoenix.Phx
 			//ChildObjects
 			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle);
 			XML.XmlUtil.Serialize(s, PopulationsCapAddition, BPopulation.kBListXmlParamsSingle_CapAddition);
-			(xs as XML.BDatabaseXmlSerializerBase).StreamXmlTactic(s, kXmlElementTactics, this, ref mHasTactics);
+			((XML.BDatabaseXmlSerializerBase)xs).StreamXmlTactic(s, kXmlElementTactics, this, ref mHasTactics);
 			//FlightLevel
 			//ExitFromDirection
 			//HPBar

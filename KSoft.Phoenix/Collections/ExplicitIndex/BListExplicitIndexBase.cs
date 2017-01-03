@@ -27,8 +27,10 @@ namespace KSoft.Collections
 		/// <exception cref="ArgumentOutOfRangeException"><paramref name="newCount"/> is less than <see cref="Count"/></exception>
 		internal void ResizeCount(int newCount)
 		{
-			if (newCount < Count) throw new ArgumentOutOfRangeException("new_count", newCount.ToString(),
-				"For resizing to a smaller Count, use Capacity.");
+			if (newCount < Count)
+				throw new ArgumentOutOfRangeException("new_count", newCount.ToString(),
+					"For resizing to a smaller Count, use Capacity.");
+			Contract.EndContractBlock();
 
 			var eip = ExplicitIndexParams;
 
@@ -40,6 +42,7 @@ namespace KSoft.Collections
 		{
 			if (index < 0)
 				throw new ArgumentOutOfRangeException("index", index.ToString());
+			Contract.EndContractBlock();
 
 			var eip = ExplicitIndexParams;
 

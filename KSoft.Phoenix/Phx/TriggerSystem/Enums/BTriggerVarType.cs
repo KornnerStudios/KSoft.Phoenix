@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Phx
 	/// The engine's parsing logic for this duplicates the IsNull and InnerText.IsNullOrEmpty checks for all
 	/// the related cases. Would be more efficient to split these up into diff groups to avoid code dupe
 	/// </remarks>
-	public enum BTriggerVarType : uint
+	public enum BTriggerVarType : byte
 	{
 		#region 0x0
 		None,
@@ -32,7 +32,7 @@ namespace KSoft.Phoenix.Phx
 
 		#region 0x10
 		/// <remarks>Engine defined</remarks>
-		/// <see cref="BAnimType"/>
+		/// <see cref="HaloWars.BAnimType"/>
 		AnimType,
 		/// <see cref="BActionStatus"/>
 		ActionStatus,
@@ -116,7 +116,7 @@ namespace KSoft.Phoenix.Phx
 		Difficulty, // int
 		Integer, // int (XMB specialized)
 		/// <remarks>Engine defined</remarks>
-		/// <see cref="BHUDItem"/>
+		/// <see cref="HaloWars.BHUDItem"/>
 		HUDItem,
 		/// <see cref="BUIControlType"/>
 		ControlType,
@@ -147,7 +147,7 @@ namespace KSoft.Phoenix.Phx
 		AISquadAnalysisComponent,
 		[Obsolete] KBSquadFilterSet,
 		/// <remarks>Engine defined</remarks>
-		/// <see cref="BChatSpeaker"/>
+		/// <see cref="HaloWars.BChatSpeaker"/>
 		ChatSpeaker,
 		/// <see cref="BRumbleType"/>
 		RumbleType,
@@ -171,7 +171,7 @@ namespace KSoft.Phoenix.Phx
 		/// <see cref="BGameData.SquadFlags"/>
 		SquadFlag,
 		/// <remarks>Engine defined</remarks>
-		/// <see cref="BFlashableUIItem"/>
+		/// <see cref="HaloWars.BFlashableUIItem"/>
 		FlashableUIItem, // aka FlashableItems
 		TalkingHead, // int (XMB specialized)
 		Concept, // int

@@ -91,7 +91,7 @@ namespace KSoft.Phoenix.Phx
 				xs.StreamDBID(s, /*xmlName:*/null, ref mStartingUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
 				xs.StreamDBID(s, kXmlElementStartingUnitAttrBuildOther, ref mStartingUnitBuildOtherID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
 			}
-			s.StreamElements(kXmlElementStartingSquad, StartingSquadIDs, xs, XML.BDatabaseXmlSerializerBase.StreamSquadID);
+			s.StreamElements(kXmlElementStartingSquad, StartingSquadIDs, xs, XML.BXmlSerializerInterface.StreamSquadID);
 			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParams);
 		}
 		#endregion

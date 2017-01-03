@@ -89,6 +89,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
+			// #NOTE we don't check the book mark for null here because the root element is optional
 			using (s.EnterCursorBookmarkOpt(Params.GetOptionalRootName()))
 			{
 					 if (s.IsReading)	ReadNodes(s);

@@ -120,6 +120,26 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
+		#region Local file utils
+		private static bool IsLocalScenarioFile(string fileName)
+		{
+			if (0==string.Compare(fileName, "pfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+			else if (0==string.Compare(fileName, "tfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+			else if (0==string.Compare(fileName, "visFileList.txt", System.StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+
+			return false;
+		}
+		#endregion
+
 		const int kAlignmentBit = IntegerMath.kFourKiloAlignmentBit;
 		const string kFileNamesTableName = "_filenames.bin";
 		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig = new Memory.Strings.
@@ -127,6 +147,7 @@ namespace KSoft.Phoenix.Resource
 
 		private EraFileHeader mHeader = new EraFileHeader();
 		private List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
+		private Dictionary<string, string> mLocalFiles = new Dictionary<string, string>();
 		private Dictionary<string, EraFileEntryChunk> mFileNameToChunk = new Dictionary<string, EraFileEntryChunk>();
 
 		public Security.Cryptography.TigerHashBase TigerHasher { get; private set; }
@@ -329,11 +350,43 @@ namespace KSoft.Phoenix.Resource
 				mFiles.Add(f);
 			}
 		}
+		private void ReadLocalFiles(IO.XmlElementStream s)
+		{
+			foreach (var n in s.ElementsByName("file"))
+			{
+				using (s.EnterCursorBookmark(n))
+				{
+					string file_name = null;
+					s.ReadAttribute("name", ref file_name);
+
+					string file_data = "";
+					s.ReadCursor(ref file_data);
+
+					if (!string.IsNullOrEmpty(file_name))
+						mLocalFiles[file_name] = file_data;
+				}
+			}
+		}
+
 		private void WriteChunks(IO.XmlElementStream s)
 		{
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				mFiles[x].Write(s, false);
+			}
+		}
+		private void WriteLocalFiles(IO.XmlElementStream s)
+		{
+			foreach (var kvp in mLocalFiles)
+			{
+				string file_name = kvp.Key;
+				string file_data = kvp.Value;
+
+				using (s.EnterCursorBookmark("file"))
+				{
+					s.WriteAttribute("name", file_name);
+					s.WriteCursor(file_data);
+				}
 			}
 		}
 
@@ -347,6 +400,9 @@ namespace KSoft.Phoenix.Resource
 			using (s.EnterCursorBookmark("Files"))
 				ReadChunks(s);
 
+			using (var bm = s.EnterCursorBookmarkOpt("LocalFiles")) if (bm.IsNotNull)
+				ReadLocalFiles(s);
+
 			// there should be at least one file destined for the ERA, excluding the filenames table
 			return FileChunksCount != 0;
 		}
@@ -354,39 +410,210 @@ namespace KSoft.Phoenix.Resource
 		{
 			using (s.EnterCursorBookmark("Files"))
 				WriteChunks(s);
+
+			using (var bm = s.EnterCursorBookmarkOpt("LocalFiles", mLocalFiles, Predicates.HasItems)) if (bm.IsNotNull)
+				WriteLocalFiles(s);
 		}
 		#endregion
 
-		#region Expand \ Buid
+		#region Expand
 		public void ExpandTo(IO.EndianStream blockStream, string basePath)
 		{
 			Contract.Requires(blockStream.IsReading);
 
-			var eraUtil = blockStream.Owner as EraFileUtil;
+			var eraExpander = (EraFileExpander)blockStream.Owner;
 
-			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			if (eraExpander.VerboseOutput != null)
 			{
-				eraUtil.VerboseOutput.WriteLine("\tUnpacking files...");
+				eraExpander.VerboseOutput.WriteLine("\tUnpacking files...");
 			}
 
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
 
-				if (eraUtil != null && eraUtil.VerboseOutput != null)
+				if (eraExpander.VerboseOutput != null)
 				{
-					eraUtil.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+					eraExpander.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
-				file.Unpack(blockStream, basePath);
+				TryUnpack(blockStream, basePath, eraExpander, file);
 			}
 
-			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			if (eraExpander.VerboseOutput != null)
 			{
-				eraUtil.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
-				eraUtil.VerboseOutput.WriteLine("\tDone");
+				eraExpander.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+				eraExpander.VerboseOutput.WriteLine("\t\tDone");
+			}
+
+			mDirsThatExistForUnpacking = null;
+		}
+
+		private bool TryUnpack(IO.EndianStream blockStream, string basePath, EraFileExpander expander, EraFileEntryChunk file)
+		{
+			string full_path = System.IO.Path.Combine(basePath, file.FileName);
+
+			if (IsLocalScenarioFile(file.FileName))
+			{
+				return false;
+			}
+			else if (!ShouldUnpack(expander, full_path))
+			{
+				return false;
+			}
+
+			CreatePathForUnpacking(full_path);
+
+			UnpackToDisk(blockStream, full_path, expander, file);
+			return true;
+		}
+
+		private void UnpackToDisk(IO.EndianStream blockStream, string fullPath, EraFileExpander expander, EraFileEntryChunk file)
+		{
+			byte[] buffer = file.GetBuffer(blockStream);
+
+			using (var fs = System.IO.File.Create(fullPath))
+			{
+				fs.Write(buffer, 0, buffer.Length);
+			}
+
+			if (IsXmbFile(fullPath))
+			{
+				if (!expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
+				{
+					var va_size = Shell.ProcessorSize.x32;
+					var builtFor64Bit = expander.Options.Test(EraFileUtilOptions.x64);
+					if (builtFor64Bit)
+					{
+						va_size = Shell.ProcessorSize.x64;
+					}
+
+					TransformXmbToXml(buffer, fullPath, blockStream.ByteOrder, va_size);
+				}
+			}
+			else if (EraFile.IsScaleformFile(fullPath))
+			{
+				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DecompressUIFiles))
+				{
+					DecompressUIFileToDisk(buffer, fullPath);
+				}
+				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.TranslateGfxFiles))
+				{
+					TransformGfxToSwfFile(buffer, fullPath);
+				}
 			}
 		}
 
+		private void TransformXmbToXml(byte[] eraFileEntryBuffer, string fullPath, Shell.EndianFormat byteOrder, Shell.ProcessorSize vaSize)
+		{
+			byte[] xmb_buffer;
+
+			using (var xmb = new ECF.EcfFileXmb())
+			using (var ms = new System.IO.MemoryStream(eraFileEntryBuffer))
+			using (var es = new IO.EndianStream(ms, byteOrder, permissions: System.IO.FileAccess.Read))
+			{
+				es.StreamMode = System.IO.FileAccess.Read;
+				xmb.Serialize(es);
+
+				xmb_buffer = xmb.FileData;
+			}
+
+			string xmb_path = fullPath;
+			EraFile.RemoveXmbExtension(ref xmb_path);
+
+			var context = new Xmb.XmbFileContext()
+			{
+				PointerSize = vaSize,
+			};
+
+			using (var ms = new System.IO.MemoryStream(xmb_buffer, false))
+			using (var s = new IO.EndianReader(ms, byteOrder))
+			{
+				s.UserData = context;
+
+				using (var xmbf = new Phoenix.Xmb.XmbFile())
+				{
+					xmbf.Read(s);
+					xmbf.ToXml(xmb_path);
+				}
+			}
+		}
+
+		private void DecompressUIFileToDisk(byte[] eraFileEntryBuffer, string fullPath)
+		{
+			using (var ms = new System.IO.MemoryStream(eraFileEntryBuffer, false))
+			using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
+			{
+				uint buffer_signature;
+				if (IsScaleformBuffer(s, out buffer_signature))
+				{
+					int decompressed_size = s.ReadInt32();
+					int compressed_size = (int)(ms.Length - ms.Position);
+
+					byte[] decompressed_data = EraFile.DecompressScaleform(eraFileEntryBuffer, decompressed_size);
+					using (var fs = System.IO.File.Create(fullPath + ".bin"))
+					{
+						fs.Write(decompressed_data, 0, decompressed_data.Length);
+					}
+				}
+			}
+		}
+
+		private void TransformGfxToSwfFile(byte[] eraFileEntryBuffer, string fullPath)
+		{
+			using (var ms = new System.IO.MemoryStream(eraFileEntryBuffer, false))
+			using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
+			{
+				uint buffer_signature;
+				if (EraFile.IsScaleformBuffer(s, out buffer_signature))
+				{
+					uint swf_signature = EraFile.GfxHeaderToSwf(buffer_signature);
+					using (var fs = System.IO.File.Create(fullPath + ".swf"))
+					using (var out_s = new IO.EndianWriter(fs, Shell.EndianFormat.Little))
+					{
+						out_s.Write(swf_signature);
+						out_s.Write(eraFileEntryBuffer, sizeof(uint), eraFileEntryBuffer.Length - sizeof(uint));
+					}
+				}
+			}
+		}
+
+		private HashSet<string> mDirsThatExistForUnpacking;
+		private void CreatePathForUnpacking(string full_path)
+		{
+			if (mDirsThatExistForUnpacking == null)
+				mDirsThatExistForUnpacking = new HashSet<string>();
+
+			string folder = System.IO.Path.GetDirectoryName(full_path);
+			// don't bother checking the file system if we've already encountered this folder
+			if (mDirsThatExistForUnpacking.Add(folder))
+			{
+				if (!System.IO.Directory.Exists(folder))
+				{
+					System.IO.Directory.CreateDirectory(folder);
+				}
+			}
+		}
+
+		private bool ShouldUnpack(EraFileExpander expander, string path)
+		{
+			if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DontOverwriteExistingFiles))
+			{
+				// it's an XMB file and the user didn't say NOT to translate them
+				if (EraFile.IsXmbFile(path) && !expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
+				{
+					EraFile.RemoveXmbExtension(ref path);
+				}
+
+				if (System.IO.File.Exists(path))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		#endregion
+
+		#region Buid
 		private bool BuildFileNamesTable(IO.EndianStream blockStream)
 		{
 			Contract.Requires(blockStream.IsWriting);
@@ -404,11 +631,12 @@ namespace KSoft.Phoenix.Resource
 				smp.WriteStrings(s);
 
 				var filenames_chunk = mFiles[0];
-				bool success = filenames_chunk.Pack(blockStream, ms, TigerHasher);
+				PackFileNames(blockStream, ms, filenames_chunk);
 
-				return success;
+				return true;
 			}
 		}
+
 		public bool Build(IO.EndianStream blockStream, string basePath)
 		{
 			Contract.Requires(blockStream.IsWriting);
@@ -419,12 +647,13 @@ namespace KSoft.Phoenix.Resource
 			bool success = BuildFileNamesTable(blockStream);
 			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
 			{
+				var file = mFiles[x];
 				if (builder != null && builder.VerboseOutput != null)
 				{
-					builder.VerboseOutput.Write("\r\t\t{0} ", mFiles[x].EntryId.ToString("X16"));
+					builder.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
 
-				success &= mFiles[x].Pack(blockStream, basePath, TigerHasher);
+				success &= TryPack(blockStream, basePath, file);
 			}
 
 			if (builder != null && builder.VerboseOutput != null)
@@ -438,6 +667,63 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			return success;
+		}
+
+		private void PackFileNames(IO.EndianStream blockStream, System.IO.MemoryStream source, EraFileEntryChunk file)
+		{
+			file.FileDateTime = System.DateTime.UtcNow;
+			file.BuildBuffer(blockStream, source, TigerHasher);
+		}
+
+		private bool TryPack(IO.EndianStream blockStream, string basePath,
+			EraFileEntryChunk file)
+		{
+			if (IsLocalScenarioFile(file.FileName))
+			{
+				return TryPackLocalFile(blockStream, file);
+			}
+
+			return TryPackFileFromDisk(blockStream, basePath, file);
+		}
+
+		private bool TryPackLocalFile(IO.EndianStream blockStream,
+			EraFileEntryChunk file)
+		{
+			string file_data;
+			if (!mLocalFiles.TryGetValue(file.FileName, out file_data))
+				return false;
+
+			byte[] file_bytes = System.Text.Encoding.ASCII.GetBytes(file_data);
+
+			using (var ms = new System.IO.MemoryStream(file_bytes, false))
+			{
+				file.BuildBuffer(blockStream, ms, TigerHasher);
+			}
+
+			return true;
+		}
+
+		private bool TryPackFileFromDisk(IO.EndianStream blockStream, string basePath,
+			EraFileEntryChunk file)
+		{
+			string path = System.IO.Path.Combine(basePath, file.FileName);
+			if (!System.IO.File.Exists(path))
+			{
+				return false;
+			}
+
+			var creation_time = System.IO.File.GetCreationTimeUtc(path);
+			var write_time = System.IO.File.GetLastWriteTimeUtc(path);
+			file.FileDateTime = write_time > creation_time
+				? write_time
+				: creation_time;
+
+			using (var fs = System.IO.File.OpenRead(path))
+			{
+				file.BuildBuffer(blockStream, fs, TigerHasher);
+			}
+
+			return true;
 		}
 		#endregion
 
@@ -474,6 +760,8 @@ namespace KSoft.Phoenix.Resource
 					RemoveXmbFilesWhereXmlExists(verboseOutput);
 				}
 			}
+
+			BuildLocalFiles(s);
 		}
 
 		void ReadFileNamesChunk(IO.EndianStream s)
@@ -492,7 +780,7 @@ namespace KSoft.Phoenix.Resource
 			filenames_chunk.FileName = kFileNamesTableName;
 
 			byte[] filenames_buffer = filenames_chunk.GetBuffer(s);
-			using (var ms = new System.IO.MemoryStream(filenames_buffer))
+			using (var ms = new System.IO.MemoryStream(filenames_buffer, false))
 			using (var er = new IO.EndianReader(ms, s.ByteOrder))
 			{
 				for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
@@ -547,6 +835,25 @@ namespace KSoft.Phoenix.Resource
 			{
 				eraUtil.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
 				eraUtil.VerboseOutput.WriteLine("\t\tDone");
+			}
+		}
+
+		void BuildLocalFiles(IO.EndianStream s)
+		{
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
+				var file = mFiles[x];
+				if (!IsLocalScenarioFile(file.FileName))
+					continue;
+
+				byte[] file_bytes = file.GetBuffer(s);
+				using (var ms = new System.IO.MemoryStream(file_bytes, false))
+				using (var sr = new System.IO.StreamReader(ms))
+				{
+					string file_data = sr.ReadToEnd();
+
+					mLocalFiles[file.FileName] = file_data;
+				}
 			}
 		}
 
