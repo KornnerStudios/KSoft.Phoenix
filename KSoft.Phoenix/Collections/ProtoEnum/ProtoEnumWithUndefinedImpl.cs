@@ -70,11 +70,16 @@ namespace KSoft.Collections
 		public string GetMemberNameOrUndefined(int memberId)
 		{
 			string name;
-			
+
 			if (PhxUtil.IsUndefinedReferenceHandle(memberId))
+			{
+				Contract.Assert(mUndefined != null);
 				name = mUndefined[PhxUtil.GetUndefinedReferenceDataIndex(memberId)];
+			}
 			else
+			{
 				name = GetMemberName(memberId);
+			}
 
 			return name;
 		}

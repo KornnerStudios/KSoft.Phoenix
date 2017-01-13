@@ -42,7 +42,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -67,11 +67,13 @@
             <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Flags" />
             <KSoftWpfControls:BitVectorControl Grid.Row="3" Grid.Column="1" BitsUserInterfaceSource="{x:Static local:MainWindowViewModel.FlagsUserInterfaceSource}" BitVector="{Binding Flags}" />
 
-            <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Content="Messages" />
-            <TextBlock x:Name="mMessagesBlock" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap"
-                ToolTip="Errors and other diagnostics will appear here. Right click text to copy it to your clipboard."
-                Text="{Binding MessagesText}"
-                MouseRightButtonDown="OnMessagesBlockMouseRightButtonDown" />
+            <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Top" Content="Messages" />
+            <ScrollViewer Grid.Row="4" Grid.Column="1">
+                <TextBlock x:Name="mMessagesBlock" TextWrapping="Wrap"
+                    ToolTip="Errors and other diagnostics will appear here. Right click text to copy it to your clipboard."
+                    Text="{Binding MessagesText}"
+                    MouseRightButtonDown="OnMessagesBlockMouseRightButtonDown" />
+            </ScrollViewer>
         </Grid>
     </DockPanel>
 </Window>

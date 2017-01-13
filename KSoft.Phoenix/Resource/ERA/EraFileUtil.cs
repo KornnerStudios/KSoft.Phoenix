@@ -122,17 +122,5 @@ namespace KSoft.Phoenix.Resource
 				break;
 			}
 		}
-
-		// #TODO temp API, get rid of this!
-		public static string RemoveXmbExtension(string filename)
-		{
-			EraFile.RemoveXmbExtension(ref filename);
-			return filename;
-		}
-		// #TODO temp API, get rid of this!
-		public static void XmbToXml(IO.EndianStream xmbStream, System.IO.Stream outputStream, Shell.ProcessorSize vaSize)
-		{
-			ECF.EcfFileXmb.XmbToXml(xmbStream, outputStream, vaSize);
-		}
 	};
 }

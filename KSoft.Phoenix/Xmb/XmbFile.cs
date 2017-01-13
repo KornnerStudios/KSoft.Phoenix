@@ -226,11 +226,15 @@ namespace KSoft.Phoenix.Xmb
 			var encoding = mHasUnicodeStrings
 				? System.Text.Encoding.UTF8
 				: System.Text.Encoding.ASCII;
-			using (var xml = new XmlTextWriter(stream, encoding))
+			var xml_writer_settings = new XmlWriterSettings()
 			{
-				xml.Formatting = Formatting.Indented;
-				xml.IndentChar = '\t';
-				xml.Indentation = 1;
+				Indent = true,
+				IndentChars = "\t",
+				CloseOutput = false,
+				Encoding = encoding,
+			};
+			using (var xml = XmlWriter.Create(stream, xml_writer_settings))
+			{
 				doc.Save(xml);
 			}
 		}

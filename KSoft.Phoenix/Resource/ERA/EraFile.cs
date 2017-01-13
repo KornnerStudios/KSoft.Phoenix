@@ -12,136 +12,8 @@ namespace KSoft.Phoenix.Resource
 		public const string kExtensionEncrypted = ".era";
 		public const string kExtensionDecrypted = ".bin";
 
-		#region Compression utils
-		public static byte[] Compress(byte[] bytes, out uint resultAdler, int lvl = 5)
-		{
-			byte[] result = new byte[bytes.Length];
-			uint adler32;
-			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out adler32, result);
-
-			resultAdler = KSoft.Security.Cryptography.Adler32.Compute(result);
-
-			return result;
-		}
-		public static byte[] Decompress(byte[] bytes, int uncompressedSize, out uint resultAdler)
-		{
-			byte[] result = new byte[uncompressedSize];
-			resultAdler = IO.Compression.ZLib.LowLevelDecompress(bytes, result);
-			return result;
-		}
-		public static byte[] DecompressScaleform(byte[] bytes, int uncompressedSize)
-		{
-			return IO.Compression.ZLib.LowLevelDecompress(bytes, uncompressedSize,
-				sizeof(uint) * 2); // skip the header and decompressed size
-		}
-		#endregion
-
-		#region Xml extensions
-		static readonly HashSet<string> kXmlBasedFilesExtensions = new HashSet<string>() {
-			".xml",
-
-			".vis",
-
-			".ability",
-			".ai",
-			".power",
-			".tactics",
-			".triggerscript",
-
-			".fls",
-			".gls",
-			".sc2",
-			".sc3",
-			".scn",
-
-			".blueprint",
-			".physics",
-			".shp",
-		};
-
-		public static bool IsXmlBasedFile(string filename)
-		{
-			string ext = System.IO.Path.GetExtension(filename);
-
-			return kXmlBasedFilesExtensions.Contains(ext);
-		}
-
-		public static bool IsXmbFile(string filename)
-		{
-			string ext = System.IO.Path.GetExtension(filename);
-
-			return ext == ".xmb";
-		}
-
-		public static void RemoveXmbExtension(ref string filename)
-		{
-			filename = filename.Replace(".xmb", "");
-
-			//if (System.IO.Path.GetExtension(filename) != ".xml")
-			//	filename += ".xml";
-		}
-		#endregion
-
-		#region Scaleform extensions
-		const uint kSwfSignature = 0x00535746; // \x00SWF
-		const uint kGfxSignature = 0x00584647; // \x00XFG
-		const uint kSwfCompressedSignature = 0x00535743; // \x00SWC
-		const uint kGfxCompressedSignature = 0x00584643; // \x00XFC
-
-		public static bool IsScaleformFile(string filename)
-		{
-			string ext = System.IO.Path.GetExtension(filename);
-
-			return ext == ".swf" || ext == ".gfx";
-		}
-		public static bool IsScaleformBuffer(IO.EndianReader s, out uint signature)
-		{
-			signature = s.ReadUInt32() & 0x00FFFFFF;
-			switch (signature)
-			{
-			case kSwfSignature:
-			case kGfxSignature:
-			case kSwfCompressedSignature:
-			case kGfxCompressedSignature:
-				return true;
-
-			default: return false;
-			}
-		}
-		public static uint GfxHeaderToSwf(uint signature)
-		{
-			switch (signature)
-			{
-			case kGfxSignature:				return kSwfSignature;
-			case kGfxCompressedSignature:	return kSwfCompressedSignature;
-
-			default: throw new KSoft.Debug.UnreachableException(signature.ToString("X8"));
-			}
-		}
-		#endregion
-
-		#region Local file utils
-		private static bool IsLocalScenarioFile(string fileName)
-		{
-			if (0==string.Compare(fileName, "pfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-			else if (0==string.Compare(fileName, "tfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-			else if (0==string.Compare(fileName, "visFileList.txt", System.StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-
-			return false;
-		}
-		#endregion
-
 		const int kAlignmentBit = IntegerMath.kFourKiloAlignmentBit;
-		const string kFileNamesTableName = "_filenames.bin";
+		const string kFileNamesTableName = "_file_names.bin";
 		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig = new Memory.Strings.
 			StringMemoryPoolSettings(Memory.Strings.StringStorage.CStringAscii, false);
 
@@ -284,11 +156,11 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
-				if (!IsXmbFile(file.FileName))
+				if (!ResourceUtils.IsXmbFile(file.FileName))
 					continue;
 
 				string xml_name = file.FileName;
-				RemoveXmbExtension(ref xml_name);
+				ResourceUtils.RemoveXmbExtension(ref xml_name);
 				EraFileEntryChunk xml_file;
 				if (!mFileNameToChunk.TryGetValue(xml_name, out xml_file))
 					continue;
@@ -309,7 +181,7 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
-				if (!IsXmlBasedFile(file.FileName))
+				if (!ResourceUtils.IsXmlBasedFile(file.FileName))
 					continue;
 
 				string xmb_name = file.FileName;
@@ -330,7 +202,7 @@ namespace KSoft.Phoenix.Resource
 		}
 
 		#region Xml definition Streaming
-		static EraFileEntryChunk GenerateFilenamesTableEntryChunk()
+		static EraFileEntryChunk GenerateFileNamesTableEntryChunk()
 		{
 			var chunk = new EraFileEntryChunk();
 			chunk.CompressionType = ECF.EcfCompressionType.DeflateStream;
@@ -395,13 +267,15 @@ namespace KSoft.Phoenix.Resource
 			mFiles.Clear();
 
 			// first entry should always be the null terminated filenames table
-			mFiles.Add(GenerateFilenamesTableEntryChunk());
+			mFiles.Add(GenerateFileNamesTableEntryChunk());
 
 			using (s.EnterCursorBookmark("Files"))
 				ReadChunks(s);
 
 			using (var bm = s.EnterCursorBookmarkOpt("LocalFiles")) if (bm.IsNotNull)
 				ReadLocalFiles(s);
+
+			AddVersionFile();
 
 			// there should be at least one file destined for the ERA, excluding the filenames table
 			return FileChunksCount != 0;
@@ -450,9 +324,12 @@ namespace KSoft.Phoenix.Resource
 
 		private bool TryUnpack(IO.EndianStream blockStream, string basePath, EraFileExpander expander, EraFileEntryChunk file)
 		{
+			if (IsIgnoredLocalFile(file.FileName))
+				return false;
+
 			string full_path = System.IO.Path.Combine(basePath, file.FileName);
 
-			if (IsLocalScenarioFile(file.FileName))
+			if (ResourceUtils.IsLocalScenarioFile(file.FileName))
 			{
 				return false;
 			}
@@ -476,7 +353,7 @@ namespace KSoft.Phoenix.Resource
 				fs.Write(buffer, 0, buffer.Length);
 			}
 
-			if (IsXmbFile(fullPath))
+			if (ResourceUtils.IsXmbFile(fullPath))
 			{
 				if (!expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 				{
@@ -490,7 +367,7 @@ namespace KSoft.Phoenix.Resource
 					TransformXmbToXml(buffer, fullPath, blockStream.ByteOrder, va_size);
 				}
 			}
-			else if (EraFile.IsScaleformFile(fullPath))
+			else if (ResourceUtils.IsScaleformFile(fullPath))
 			{
 				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DecompressUIFiles))
 				{
@@ -518,7 +395,7 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			string xmb_path = fullPath;
-			EraFile.RemoveXmbExtension(ref xmb_path);
+			ResourceUtils.RemoveXmbExtension(ref xmb_path);
 
 			var context = new Xmb.XmbFileContext()
 			{
@@ -544,12 +421,12 @@ namespace KSoft.Phoenix.Resource
 			using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
 			{
 				uint buffer_signature;
-				if (IsScaleformBuffer(s, out buffer_signature))
+				if (ResourceUtils.IsScaleformBuffer(s, out buffer_signature))
 				{
 					int decompressed_size = s.ReadInt32();
 					int compressed_size = (int)(ms.Length - ms.Position);
 
-					byte[] decompressed_data = EraFile.DecompressScaleform(eraFileEntryBuffer, decompressed_size);
+					byte[] decompressed_data = ResourceUtils.DecompressScaleform(eraFileEntryBuffer, decompressed_size);
 					using (var fs = System.IO.File.Create(fullPath + ".bin"))
 					{
 						fs.Write(decompressed_data, 0, decompressed_data.Length);
@@ -564,9 +441,9 @@ namespace KSoft.Phoenix.Resource
 			using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
 			{
 				uint buffer_signature;
-				if (EraFile.IsScaleformBuffer(s, out buffer_signature))
+				if (ResourceUtils.IsScaleformBuffer(s, out buffer_signature))
 				{
-					uint swf_signature = EraFile.GfxHeaderToSwf(buffer_signature);
+					uint swf_signature = ResourceUtils.GfxHeaderToSwf(buffer_signature);
 					using (var fs = System.IO.File.Create(fullPath + ".swf"))
 					using (var out_s = new IO.EndianWriter(fs, Shell.EndianFormat.Little))
 					{
@@ -599,9 +476,9 @@ namespace KSoft.Phoenix.Resource
 			if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DontOverwriteExistingFiles))
 			{
 				// it's an XMB file and the user didn't say NOT to translate them
-				if (EraFile.IsXmbFile(path) && !expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
+				if (ResourceUtils.IsXmbFile(path) && !expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 				{
-					EraFile.RemoveXmbExtension(ref path);
+					ResourceUtils.RemoveXmbExtension(ref path);
 				}
 
 				if (System.IO.File.Exists(path))
@@ -643,6 +520,8 @@ namespace KSoft.Phoenix.Resource
 
 			var builder = blockStream.Owner as EraFileBuilder;
 
+			Contract.Assert(blockStream.BaseStream.Position == CalculateHeaderAndFileChunksSize());
+
 			BuildFileNameMaps(builder != null ? builder.VerboseOutput : null);
 			bool success = BuildFileNamesTable(blockStream);
 			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
@@ -666,22 +545,45 @@ namespace KSoft.Phoenix.Resource
 				blockStream.AlignToBoundry(kAlignmentBit);
 			}
 
+#if false
+			if (success)
+			{
+				if (builder != null && !builder.Options.Test(EraFileUtilOptions.SkipVerification))
+				{
+					var filenames_chunk = mFiles[0];
+
+					ValidateAdler32(filenames_chunk, blockStream);
+					ValidateHashes(filenames_chunk, blockStream);
+
+					ValidateFileHashes(blockStream);
+				}
+			}
+#endif
+
 			return success;
+		}
+
+		private void PackFileData(IO.EndianStream blockStream, System.IO.Stream source, EraFileEntryChunk file)
+		{
+			file.BuildBuffer(blockStream, source, TigerHasher);
+
+#if false
+			ValidateAdler32(file, blockStream);
+			ValidateHashes(file, blockStream);
+#endif
 		}
 
 		private void PackFileNames(IO.EndianStream blockStream, System.IO.MemoryStream source, EraFileEntryChunk file)
 		{
 			file.FileDateTime = System.DateTime.UtcNow;
-			file.BuildBuffer(blockStream, source, TigerHasher);
+			PackFileData(blockStream, source, file);
 		}
 
 		private bool TryPack(IO.EndianStream blockStream, string basePath,
 			EraFileEntryChunk file)
 		{
-			if (IsLocalScenarioFile(file.FileName))
-			{
+			if (mLocalFiles.ContainsKey(file.FileName))
 				return TryPackLocalFile(blockStream, file);
-			}
 
 			return TryPackFileFromDisk(blockStream, basePath, file);
 		}
@@ -694,10 +596,9 @@ namespace KSoft.Phoenix.Resource
 				return false;
 
 			byte[] file_bytes = System.Text.Encoding.ASCII.GetBytes(file_data);
-
 			using (var ms = new System.IO.MemoryStream(file_bytes, false))
 			{
-				file.BuildBuffer(blockStream, ms, TigerHasher);
+				PackFileData(blockStream, ms, file);
 			}
 
 			return true;
@@ -718,9 +619,10 @@ namespace KSoft.Phoenix.Resource
 				? write_time
 				: creation_time;
 
-			using (var fs = System.IO.File.OpenRead(path))
+			byte[] file_bytes = System.IO.File.ReadAllBytes(path);
+			using (var ms = new System.IO.MemoryStream(file_bytes, false))
 			{
-				file.BuildBuffer(blockStream, fs, TigerHasher);
+				PackFileData(blockStream, ms, file);
 			}
 
 			return true;
@@ -843,7 +745,7 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
-				if (!IsLocalScenarioFile(file.FileName))
+				if (!ResourceUtils.IsLocalScenarioFile(file.FileName))
 					continue;
 
 				byte[] file_bytes = file.GetBuffer(s);
@@ -916,6 +818,33 @@ namespace KSoft.Phoenix.Resource
 					f.Serialize(s);
 				}
 			}
+		}
+		#endregion
+
+		#region Local file utils
+		private static bool IsIgnoredLocalFile(string fileName)
+		{
+			if (0==string.Compare(fileName, "version.txt", System.StringComparison.OrdinalIgnoreCase))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		private void AddVersionFile()
+		{
+			var file = new EraFileEntryChunk();
+			file.CompressionType = ECF.EcfCompressionType.Stored;
+			var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+			file.FileName = "version.txt";
+			file.FileDateTime = System.DateTime.UtcNow;
+			string version = string.Format("{0}\n{1}\n{2}",
+				assembly.FullName,
+				assembly.GetName().Version,
+				System.Reflection.Assembly.GetEntryAssembly().FullName);
+			mLocalFiles[file.FileName] = version;
+			mFiles.Add(file);
 		}
 		#endregion
 	};

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
 
 using FA = System.IO.FileAccess;
 
@@ -120,8 +122,11 @@ namespace KSoft.Phoenix.Resource
 				// we can use our custom VAT system to generate relative-offset (to a given chunk) information which ECFs use
 				era_memory.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
 
-				// seeking now will create null bytes for the header and embedded file chunk descriptors
-				ms.Seek(mEraFile.CalculateHeaderAndFileChunksSize(), SeekOrigin.Begin);
+				// create null bytes for the header and embedded file chunk descriptors
+				// used to just use Seek to do this, but it doesn't update Length.
+				long preamble_size = mEraFile.CalculateHeaderAndFileChunksSize();
+				ms.SetLength(preamble_size);
+				ms.Seek(preamble_size, SeekOrigin.Begin);
 
 				// now we can start embedding the files
 				if (VerboseOutput != null)
@@ -136,6 +141,11 @@ namespace KSoft.Phoenix.Resource
 					// seek back to the start of the ERA and write out the finalized header and file chunk descriptors
 					ms.Seek(0, SeekOrigin.Begin);
 					mEraFile.Serialize(era_memory);
+
+					// Right now we don't actually perform any file removing (eg, duplicates) until EraFile.Build so
+					// we also allow the written size to be LESS THAN the assumed preamble size
+					Contract.Assert(era_memory.BaseStream.Position <= preamble_size,
+						"Written ERA header size is greater than what we calculated");
 
 					// finally, bake the ERA memory stream into a file
 					if (BuilderOptions.Test(EraFileBuilderOptions.Encrypt))

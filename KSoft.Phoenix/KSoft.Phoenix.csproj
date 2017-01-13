@@ -102,6 +102,7 @@
     <Compile Include="Phx\TriggerSystem\TriggerScriptObjectWithArgs.cs" />
     <Compile Include="Phx\TriggerSystem\Database\TriggerSystemProtoObject.cs" />
     <Compile Include="Resource\ResourceTagHeader.cs" />
+    <Compile Include="Resource\ResourceUtils.cs" />
     <Compile Include="Runtime\Actions\BAction.cs" />
     <Compile Include="Runtime\Actions\BActionManager.cs" />
     <Compile Include="Runtime\Actions\BProtoAction.cs" />

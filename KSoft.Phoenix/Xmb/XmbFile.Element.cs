@@ -187,6 +187,16 @@ namespace KSoft.Phoenix.Xmb
 					var attr = doc.CreateAttribute(k);
 					attr.Value = v;
 
+					// #HACK avoids exceptions like:
+					// "The prefix '' cannot be redefined from '' to 'http://www.w3.org/2000/09/xmldsig#' within the same start element tag."
+					// for XML files that weren't meant for the game but were transformed to XMB anyway
+					if (string.CompareOrdinal(k, "xmlns")==0)
+					{
+						var comment = doc.CreateComment(attr.OuterXml);
+						e.AppendChild(comment);
+						continue;
+					}
+
 					e.Attributes.Append(attr);
 				}
 			}

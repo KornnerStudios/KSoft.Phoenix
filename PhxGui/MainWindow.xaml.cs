@@ -226,83 +226,223 @@ namespace PhxGui
 			MessagesText = "";
 		}
 
+		public enum AcceptedFileType
+		{
+			Unaccepted,
+			Directory,
+			Era,
+			EraDef,
+			Exe,
+			Xml,
+			Xmb,
+
+			kNumberOf
+		};
+		public struct AcceptedFilesResults
+		{
+			public BitVector32 AcceptedFileTypes;
+			public int FilesCount;
+		};
+		public static AcceptedFilesResults DetermineAcceptedFiles(string[] files)
+		{
+			var results = new AcceptedFilesResults();
+
+			if (files == null || files.Length == 0)
+				return results;
+
+			results.FilesCount = files.Length;
+
+			foreach (string path in files)
+			{
+				if (System.IO.Directory.Exists(path))
+				{
+					results.AcceptedFileTypes.Set(AcceptedFileType.Directory);
+					continue;
+				}
+
+				string ext = System.IO.Path.GetExtension(path);
+				if (string.IsNullOrEmpty(ext)) // extension-less file
+				{
+					results.AcceptedFileTypes.Set(AcceptedFileType.Unaccepted);
+					continue;
+				}
+
+				switch (ext)
+				{
+					case KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted:
+						results.AcceptedFileTypes.Set(AcceptedFileType.Era);
+						break;
+					case KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension:
+						results.AcceptedFileTypes.Set(AcceptedFileType.EraDef);
+						break;
+					case ".exe":
+						results.AcceptedFileTypes.Set(AcceptedFileType.Exe);
+						break;
+					case ".xmb":
+						results.AcceptedFileTypes.Set(AcceptedFileType.Xmb);
+						break;
+
+					default:
+						if (KSoft.Phoenix.Resource.ResourceUtils.IsXmlBasedFile(path))
+						{
+							results.AcceptedFileTypes.Set(AcceptedFileType.Xml);
+						}
+						break;
+				}
+			}
+
+			return results;
+		}
+
 		public bool AcceptsFiles(string[] files)
 		{
-			if (files == null || files.Length == 0)
+			var results = DetermineAcceptedFiles(files);
+			if (results.FilesCount == 0)
 				return false;
 
-			if (files.All(file => System.IO.Path.GetExtension(file) == ".era"))
+			if (results.AcceptedFileTypes.Cardinality != 0 && !results.AcceptedFileTypes.Test(AcceptedFileType.Unaccepted))
 			{
-				ProcessFilesHelpText = "Expand ERA(s)";
-				return true;
-			}
-			if (files.All(file => System.IO.Path.GetExtension(file) == ".xmb"))
-			{
-				ProcessFilesHelpText = "XMB->XML";
-				return true;
-			}
-
-			if (files.Length == 1)
-			{
-				if (System.IO.Path.GetExtension(files[0]) == KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension)
-				{
-					ProcessFilesHelpText = "Build ERA";
+				if (AcceptsFilesInternal(results, files))
 					return true;
-				}
-				if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
-				{
-					if (System.IO.Path.GetExtension(files[0]) == ".exe")
-					{
-						ProcessFilesHelpText = "Try to patch game EXE for modding";
-						return true;
-					}
-				}
 			}
 
 			ProcessFilesHelpText = "Unacceptable file or group of files";
 			return false;
 		}
-
 		public void ProcessFiles(string[] files)
 		{
-			if (files == null || files.Length == 0)
+			var results = DetermineAcceptedFiles(files);
+			if (results.FilesCount == 0)
 				return;
 
-			do
+			if (results.AcceptedFileTypes.Cardinality != 0 && !results.AcceptedFileTypes.Test(AcceptedFileType.Unaccepted))
 			{
-				if (files.All(file => System.IO.Path.GetExtension(file) == ".era"))
-				{
+				if (ProcessFilesInternal(results, files))
 					ProcessFilesHelpText = "";
-					ProcessEraFiles(files);
-					break;
-				}
+			}
+		}
 
-				if (files.All(file => System.IO.Path.GetExtension(file) == ".xmb"))
+		private bool AcceptsFilesInternal(AcceptedFilesResults results, string[] files)
+		{
+			foreach (int bitIndex in results.AcceptedFileTypes.SetBitIndices)
+			{
+				var type = (AcceptedFileType)bitIndex;
+				switch (type)
 				{
-					ProcessFilesHelpText = "";
-					XmbToXml(files);
-					break;
-				}
-
-				if (files.Length == 1)
-				{
-					if (System.IO.Path.GetExtension(files[0]) == KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension)
+					case AcceptedFileType.EraDef:
 					{
-						ProcessFilesHelpText = "";
-						ProcessEraListing(files[0]);
+						if (results.FilesCount == 1)
+						{
+							ProcessFilesHelpText = "Build ERA";
+							return true;
+						}
 						break;
 					}
-					if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+
+					case AcceptedFileType.Exe:
 					{
-						if (System.IO.Path.GetExtension(files[0]) == ".exe")
+						if (results.FilesCount == 1)
 						{
-							ProcessFilesHelpText = "";
-							PatchGameExe(files[0]);
-							break;
+							ProcessFilesHelpText = "Try to patch game EXE for modding";
+							return true;
 						}
+						break;
+					}
+
+					case AcceptedFileType.Era:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "Expand ERA(s)";
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Xmb:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "XMB->XML";
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Directory:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "XMB->XML (in directories)";
+							return true;
+						}
+						break;
 					}
 				}
-			} while (false);
+			}
+
+			return false;
+		}
+		private bool ProcessFilesInternal(AcceptedFilesResults results, string[] files)
+		{
+			foreach (int bitIndex in results.AcceptedFileTypes.SetBitIndices)
+			{
+				var type = (AcceptedFileType)bitIndex;
+				switch (type)
+				{
+					case AcceptedFileType.EraDef:
+					{
+						if (results.FilesCount == 1)
+						{
+							ProcessEraListing(files[0]);
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Exe:
+					{
+						if (results.FilesCount == 1)
+						{
+							PatchGameExe(files[0]);
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Era:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessEraFiles(files);
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Xmb:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							XmbToXml(files);
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Directory:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							XmbToXmlInDirectories(files);
+							return true;
+						}
+						break;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		private void FinishProcessing()
@@ -390,15 +530,42 @@ namespace PhxGui
 
 				task.ContinueWith(t =>
 				{
-					if (t.IsFaulted || !t.Result)
+					if (t.IsFaulted || t.Result != ExpandEraFileResult.Success)
 					{
-						bool faulted = t.IsFaulted;
+						string error_type;
+						string error_hint;
+						if (t.IsFaulted)
+						{
+							error_type = "EXCEPTION";
+							error_hint = t.Exception.ToString();
+						}
+						else
+						{
+							error_type = "FAILED";
+							switch (t.Result)
+							{
+								case ExpandEraFileResult.Error:
+									error_hint = "NO HINT";
+									break;
+								case ExpandEraFileResult.ReadFailed:
+									error_hint = "Failed reading ERA file";
+									break;
+								case ExpandEraFileResult.ExpandFailed:
+									error_hint = "Failed expanding archive (do you have the correct game version selected?)";
+									break;
+								default:
+									error_hint = "UNKNOWN";
+									break;
+							}
+						}
+						string messag_text = string.Format("Expand {0} {1}{2}{3}",
+							error_type,
+							eraFile, Environment.NewLine, error_hint);
+
 						Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 							new Action(() =>
 							{
-								ViewModel.MessagesText += string.Format("Expand {0} {1}{2}",
-									faulted ? "EXCEPTION" : "FAILED",
-									eraFile, Environment.NewLine);
+								ViewModel.MessagesText += messag_text;
 							}));
 					}
 
@@ -425,9 +592,16 @@ namespace PhxGui
 			public string OutputPath;
 			public string ListingName;
 		};
-		private static bool ExpandEraFile(ExpandEraFileParameters args)
+		private enum ExpandEraFileResult
 		{
-			bool result = false;
+			Success,
+			Error,
+			ReadFailed,
+			ExpandFailed,
+		};
+		private static ExpandEraFileResult ExpandEraFile(ExpandEraFileParameters args)
+		{
+			var result = ExpandEraFileResult.Error;
 			using (var expander = new KSoft.Phoenix.Resource.EraFileExpander(args.EraPath))
 			{
 				expander.Options = args.EraOptions;
@@ -435,14 +609,19 @@ namespace PhxGui
 
 				do
 				{
-					result = expander.Read();
-					if (!result)
+					if (!expander.Read())
+					{
+						result = ExpandEraFileResult.ReadFailed;
 						break;
+					}
 
-					result = expander.ExpandTo(args.OutputPath, args.ListingName);
-					if (!result)
+					if (!expander.ExpandTo(args.OutputPath, args.ListingName))
+					{
+						result = ExpandEraFileResult.ExpandFailed;
 						break;
+					}
 
+					result = ExpandEraFileResult.Success;
 				} while (false);
 			}
 
@@ -482,11 +661,37 @@ namespace PhxGui
 
 			task.ContinueWith(t =>
 			{
-				if (t.IsFaulted || !t.Result)
+				if (t.IsFaulted || t.Result != BuildEraFileResult.Success)
 				{
-					MessagesText += string.Format("Build {0} {1}{2}",
-						t.IsFaulted ? "EXCEPTION" : "FAILED",
-						args.ListingPath, Environment.NewLine);
+					string error_type;
+					string error_hint;
+					if (t.IsFaulted)
+					{
+						error_type = "EXCEPTION";
+						error_hint = t.Exception.ToString();
+					}
+					else
+					{
+						error_type = "FAILED";
+						switch (t.Result)
+						{
+							case BuildEraFileResult.Error:
+								error_hint = "NO HINT";
+								break;
+							case BuildEraFileResult.ReadFailed:
+								error_hint = "Failed reading or initializing .ERADEF data";
+								break;
+							case BuildEraFileResult.BuildFailed:
+								error_hint = "Failed building archive (invalid files?)";
+								break;
+							default:
+								error_hint = "UNKNOWN";
+								break;
+						}
+					}
+					MessagesText += string.Format("Build {0} {1}{2}{3}",
+						error_type,
+						args.ListingPath, Environment.NewLine, error_hint);
 				}
 
 				FinishProcessing();
@@ -503,9 +708,16 @@ namespace PhxGui
 			public string ListingPath;
 			public string EraName;
 		};
-		private static bool BuildEraFile(BuildEraFileParameters args)
+		private enum BuildEraFileResult
 		{
-			bool result = false;
+			Success,
+			Error,
+			ReadFailed,
+			BuildFailed,
+		};
+		private static BuildEraFileResult BuildEraFile(BuildEraFileParameters args)
+		{
+			var result = BuildEraFileResult.Error;
 			using (var builder = new KSoft.Phoenix.Resource.EraFileBuilder(args.ListingPath))
 			{
 				builder.Options = args.EraOptions;
@@ -513,20 +725,205 @@ namespace PhxGui
 
 				do
 				{
-					result = builder.Read();
-					if (!result)
+					if (!builder.Read())
+					{
+						result = BuildEraFileResult.ReadFailed;
 						break;
+					}
 
-					result = builder.Build(args.AssetsPath, args.EraName, args.OutputPath);
-					if (!result)
+					if (!builder.Build(args.AssetsPath, args.EraName, args.OutputPath))
+					{
+						result = BuildEraFileResult.BuildFailed;
 						break;
+					}
 
+					result = BuildEraFileResult.Success;
 				} while (false);
 			}
 
 			return result;
 		}
 
+		private enum XmlConverterMode
+		{
+			XmbToXml,
+			XmlToXmb,
+		};
+		private class XmlConverter
+		{
+			private XmlConverterMode mMode = XmlConverterMode.XmbToXml;
+			public bool DontOverwriteExistingFiles;
+			public System.Windows.Threading.Dispatcher Dispatcher;
+			public MainWindowViewModel ViewModel;
+
+			private KSoft.Shell.ProcessorSize mVaSize;
+			private KSoft.Shell.EndianFormat mEndianFormat;
+			private List<string> mInputFiles;
+
+			public XmlConverter(XmlConverterMode mode, MainWindowViewModel viewModel)
+			{
+				mMode = mode;
+				ViewModel = viewModel;
+				Dispatcher = Application.Current.Dispatcher;
+				DontOverwriteExistingFiles = ViewModel.Flags.Test(MiscFlags.DontOverwriteExistingFiles);
+				mVaSize = Properties.Settings.Default.GameVersion == GameVersionType.Xbox360
+					? KSoft.Shell.ProcessorSize.x32
+					: KSoft.Shell.ProcessorSize.x64;
+				mEndianFormat = KSoft.Shell.EndianFormat.Big;
+			}
+
+			private bool IsAcceptableInputFile(string inputFile)
+			{
+				switch(mMode)
+				{
+					case XmlConverterMode.XmbToXml:
+						return KSoft.Phoenix.Resource.ResourceUtils.IsXmbFile(inputFile);
+					case XmlConverterMode.XmlToXmb:
+						return KSoft.Phoenix.Resource.ResourceUtils.IsXmlBasedFile(inputFile);
+					default:
+						return false;
+				}
+			}
+
+			private void GetConversionFiles(string inputFile, out string xmlFile, out string xmbFile, out string outputFile)
+			{
+				switch (mMode)
+				{
+					case XmlConverterMode.XmbToXml:
+						xmbFile = inputFile;
+						xmlFile = KSoft.Phoenix.Resource.ResourceUtils.RemoveXmbExtension(xmbFile);
+						outputFile = xmlFile;
+						break;
+
+					case XmlConverterMode.XmlToXmb:
+						xmlFile = inputFile;
+						xmbFile = null; // #TODO
+						outputFile = xmbFile;
+						break;
+
+					default:
+						xmlFile = xmbFile = outputFile = null;
+						break;
+				}
+			}
+
+			public void SetInputFiles(string[] files)
+			{
+				mInputFiles = new List<string>(files);
+			}
+
+			public void SearchDirectoriesForInputFiles(string[] inputDirs)
+			{
+				mInputFiles = new List<string>();
+
+				foreach (var input_dir in inputDirs)
+				{
+					var input_files =
+						from file in System.IO.Directory.GetFiles(input_dir, "*.*", System.IO.SearchOption.AllDirectories)
+						where IsAcceptableInputFile(file)
+						select file;
+
+					mInputFiles.AddRange(input_files);
+				}
+			}
+
+			private void NotifyInputFileSkipped(string inputFile)
+			{
+				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+					new Action(() =>
+					{
+						ViewModel.MessagesText += string.Format("Skipped due to existing output {0}{1}",
+							inputFile, Environment.NewLine);
+					}));
+			}
+
+			private void NotifyOutputFileReadOnly(string inputFile, string outputFile)
+			{
+				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+					new Action(() =>
+					{
+						ViewModel.MessagesText += string.Format("Skipped due to read-only output {0}{1}",
+							inputFile, Environment.NewLine);
+					}));
+			}
+
+			private void NotifyInputFileException(string inputFile, Exception e)
+			{
+				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+					new Action(() =>
+					{
+						ViewModel.MessagesText += string.Format("EXCEPTION {0}{1}",
+							inputFile, Environment.NewLine);
+					}));
+			}
+
+			public void Convert()
+			{
+				var p = Parallel.ForEach(mInputFiles, f =>
+				{
+					try
+					{
+						string xml_file, xmb_file, output_file;
+						GetConversionFiles(f, out xml_file, out xmb_file, out output_file);
+
+						var output_info = new System.IO.FileInfo(output_file);
+						if (output_info.Exists)
+						{
+							if (DontOverwriteExistingFiles)
+							{
+								NotifyInputFileSkipped(f);
+								return;
+							}
+							else
+							{
+								if ((output_info.Attributes & System.IO.FileAttributes.ReadOnly) != 0)
+								{
+									NotifyOutputFileReadOnly(f, output_file);
+									return;
+								}
+							}
+						}
+
+						switch (mMode)
+						{
+							case XmlConverterMode.XmbToXml:
+								ConvertXmbToXml(xml_file, xmb_file);
+								break;
+
+							case XmlConverterMode.XmlToXmb:
+								ConvertXmlToXmb(xml_file, xmb_file);
+								break;
+						}
+					}
+					catch (Exception e)
+					{
+						NotifyInputFileException(f, e);
+					}
+				});
+			}
+
+			private void ConvertXmbToXml(string xmlFile, string xmbFile)
+			{
+				byte[] file_bytes = System.IO.File.ReadAllBytes(xmbFile);
+
+				using (var xmb_ms = new System.IO.MemoryStream(file_bytes, false))
+				using (var xmb = new KSoft.IO.EndianStream(xmb_ms, mEndianFormat, System.IO.FileAccess.Read))
+				using (var xml_ms = new System.IO.MemoryStream(IntegerMath.kMega * 1))
+				{
+					xmb.StreamMode = System.IO.FileAccess.Read;
+
+					KSoft.Phoenix.Resource.ResourceUtils.XmbToXml(xmb, xml_ms, mVaSize);
+
+					using (var xml_fs = System.IO.File.Create(xmlFile))
+						xml_ms.WriteTo(xml_fs);
+				}
+			}
+
+			private void ConvertXmlToXmb(string xmlFile, string xmbFile)
+			{
+				throw new NotImplementedException();
+			}
+		};
 		private void XmbToXml(string[] files)
 		{
 			ClearMessages();
@@ -534,43 +931,42 @@ namespace PhxGui
 
 			var task = Task.Run(() =>
 			{
-				int error_count = 0;
-				var va_size = Properties.Settings.Default.GameVersion == GameVersionType.Xbox360
-					? KSoft.Shell.ProcessorSize.x32
-					: KSoft.Shell.ProcessorSize.x64;
-				var endian = KSoft.Shell.EndianFormat.Big;
-
-				var p = Parallel.ForEach(files, f =>
-				{
-					try
-					{
-						string xmb_path = f;
-						string xml_path = KSoft.Phoenix.Resource.EraFileUtil.RemoveXmbExtension(xmb_path);
-
-						using (var xmb_fs = System.IO.File.OpenRead(xmb_path))
-						using (var xmb = new KSoft.IO.EndianStream(xmb_fs, endian, System.IO.FileAccess.Read))
-						using (var xml_fs = System.IO.File.Create(xml_path))
-						{
-							xmb.StreamMode = System.IO.FileAccess.Read;
-
-							KSoft.Phoenix.Resource.EraFileUtil.XmbToXml(xmb, xml_fs, va_size);
-						}
-					} catch (Exception)
-					{
-						System.Threading.Interlocked.Increment(ref error_count);
-					}
-
-				});
-				return error_count;
+				var converter = new XmlConverter(XmlConverterMode.XmbToXml, this);
+				converter.SetInputFiles(files);
+				converter.Convert();
 			});
 
 			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 			task.ContinueWith(t =>
 			{
-				if (t.IsFaulted || t.Result > 0)
+				if (t.IsFaulted)
 				{
-					MessagesText += string.Format("XMB->XML finished with {0} errors",
-						t.IsFaulted ? "FATAL" : t.Result.ToString());
+					MessagesText += string.Format("XMB->XML failure {0}{1}",
+						Environment.NewLine, t.Exception);
+				}
+
+				FinishProcessing();
+			}, scheduler);
+		}
+		private void XmbToXmlInDirectories(string[] dirs)
+		{
+			ClearMessages();
+			IsProcessing = true;
+
+			var task = Task.Run(() =>
+			{
+				var converter = new XmlConverter(XmlConverterMode.XmbToXml, this);
+				converter.SearchDirectoriesForInputFiles(dirs);
+				converter.Convert();
+			});
+
+			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			task.ContinueWith(t =>
+			{
+				if (t.IsFaulted)
+				{
+					MessagesText += string.Format("XMB->XML failure {0}{1}",
+						Environment.NewLine, t.Exception);
 				}
 
 				FinishProcessing();

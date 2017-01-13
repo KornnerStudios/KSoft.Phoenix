@@ -96,7 +96,7 @@ namespace KSoft.Phoenix.Resource
 
 			// When we extract, we decode xmbs
 			string fn = FileName;
-			if (EraFile.IsXmbFile(fn))
+			if (ResourceUtils.IsXmbFile(fn))
 			{
 				bool remove_xmb_ext = true;
 
@@ -105,7 +105,7 @@ namespace KSoft.Phoenix.Resource
 					remove_xmb_ext = false;
 
 				if (remove_xmb_ext)
-					EraFile.RemoveXmbExtension(ref fn);
+					ResourceUtils.RemoveXmbExtension(ref fn);
 			}
 			s.WriteAttribute("name", fn);
 
@@ -176,7 +176,7 @@ namespace KSoft.Phoenix.Resource
 		byte[] DecompressFromBuffer(IO.EndianStream blockStream, byte[] buffer)
 		{
 			uint result_adler;
-			return EraFile.Decompress(buffer, DataUncompressedSize, out result_adler);
+			return ResourceUtils.Decompress(buffer, DataUncompressedSize, out result_adler);
 		}
 		byte[] DecompressFromStream(IO.EndianStream blockStream)
 		{
@@ -220,7 +220,7 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			// Compress the source bytes into a new buffer
-			byte[] result = EraFile.Compress(buffer, out base.Adler32);  // Also update this ECF's checksum
+			byte[] result = ResourceUtils.Compress(buffer, out base.Adler32);  // Also update this ECF's checksum
 			base.DataSize = result.Length; // Update this ECF's size
 
 			// Write the compressed bytes to the block stream
@@ -240,6 +240,8 @@ namespace KSoft.Phoenix.Resource
 			sourceFile.Seek(0, System.IO.SeekOrigin.Begin);
 			UpdateDecompressedDataTigerHash(sourceFile, hasher);
 
+			Contract.Assert(blockStream.BaseStream.Position == blockStream.BaseStream.Length);
+
 			base.DataOffset = blockStream.PositionPtr;
 			this.DataUncompressedSize = (int)sourceFile.Length;
 
@@ -249,8 +251,10 @@ namespace KSoft.Phoenix.Resource
 			{
 				case ECF.EcfCompressionType.Stored:
 				{
-					base.DataSize = (int)sourceFile.Length;  // Update this ECF's size
-					base.Adler32 = Security.Cryptography.Adler32.Compute(sourceFile, base.DataSize); // Also update this ECF's checksum
+					// Update this ECF's size
+					base.DataSize = (int)sourceFile.Length;
+					// Also update this ECF's checksum
+					base.Adler32 = Security.Cryptography.Adler32.Compute(sourceFile, base.DataSize, restorePosition:true);
 					// Copy the source file's bytes to the block stream
 					sourceFile.CopyTo(blockStream.BaseStream);
 					break;
@@ -267,6 +271,8 @@ namespace KSoft.Phoenix.Resource
 				default:
 					throw new KSoft.Debug.UnreachableException(CompressionType.ToString());
 			}
+
+			Contract.Assert(blockStream.BaseStream.Position == ((long)DataOffset + DataSize));
 
 			ComputeHash(blockStream, hasher);
 			System.Array.Copy(hasher.Hash, 0, CompressedDataTiger128, 0, CompressedDataTiger128.Length);
