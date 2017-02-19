@@ -10,10 +10,6 @@ namespace KSoft.Phoenix.Phx
 			RootName = "InfectionMap",
 			ElementName = "InfectionMapEntry",
 		};
-
-		const string kXmlAttrBase = "base";
-		const string kXmlAttrInfected = "infected";
-		const string kXmlAttrInfectedSquad = "infectedSquad";
 		#endregion
 
 		int mBaseObjectID = TypeExtensions.kNone;
@@ -27,10 +23,10 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			xs.StreamDBID(s, kXmlAttrBase, ref mBaseObjectID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
-			xs.StreamDBID(s, kXmlAttrInfected, ref mInfectedObjectID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
+			xs.StreamDBID(s, "base", ref mBaseObjectID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
+			xs.StreamDBID(s, "infected", ref mInfectedObjectID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
 			if(xs.Database.Engine.Build != Engine.PhxEngineBuild.Alpha)
-				xs.StreamDBID(s, kXmlAttrInfectedSquad, ref mInfectedSquadID, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceAttr);
+				xs.StreamDBID(s, "infectedSquad", ref mInfectedSquadID, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceAttr);
 		}
 		#endregion
 	};

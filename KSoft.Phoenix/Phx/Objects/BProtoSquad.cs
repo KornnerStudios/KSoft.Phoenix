@@ -29,8 +29,6 @@ namespace KSoft.Phoenix.Phx
 
 		static readonly Collections.CodeEnum<BProtoSquadFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoSquadFlags>();
 		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
-
-		const string kXmlElementCanAttackWhileMoving = "CanAttackWhileMoving";
 		#endregion
 
 		public Collections.BListArray<BProtoSquadUnit> Units { get; private set; }

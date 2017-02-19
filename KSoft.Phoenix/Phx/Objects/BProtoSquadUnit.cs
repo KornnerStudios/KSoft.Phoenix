@@ -9,13 +9,12 @@ namespace KSoft.Phoenix.Phx
 		{
 			Flags = 0
 		};
-
-		const string kXmlAttrCount = "count";
 		#endregion
 
 		int mCount;
 		public int Count { get { return mCount; } }
 		int mUnitID;
+		[Meta.BProtoObjectReference]
 		public int UnitID { get { return mUnitID; } }
 
 		#region ITagElementStreamable<string> Members
@@ -25,7 +24,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttribute(kXmlAttrCount, ref mCount);
+			s.StreamAttribute("count", ref mCount);
 			xs.StreamDBID(s, /*xmlName:*/null, ref mUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
 		}
 		#endregion

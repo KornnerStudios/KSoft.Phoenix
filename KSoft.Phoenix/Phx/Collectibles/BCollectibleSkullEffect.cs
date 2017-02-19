@@ -1,6 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	//BSkullModifier
 	public sealed class BCollectibleSkullEffect
 		: IO.ITagElementStringNameStreamable
 	{
@@ -9,9 +10,6 @@ namespace KSoft.Phoenix.Phx
 		{
 			ElementName = "Effect",
 		};
-
-		const string kXmlAttrValue = "value";
-		const string kXmlAttrTarget = "target";
 		#endregion
 
 		BCollectibleSkullEffectType mType = BCollectibleSkullEffectType.Invalid;
@@ -24,8 +22,8 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			s.StreamCursorEnum(ref mType);
-			s.StreamAttributeEnumOpt(kXmlAttrTarget, ref mTarget, e => e != BCollectibleSkullTarget.None);
-			s.StreamAttributeOpt    (kXmlAttrValue, ref mValue, PhxPredicates.IsNotInvalid);
+			s.StreamAttributeEnumOpt("target", ref mTarget, e => e != BCollectibleSkullTarget.None);
+			s.StreamAttributeOpt("value", ref mValue, PhxPredicates.IsNotInvalid);
 		}
 		#endregion
 	};

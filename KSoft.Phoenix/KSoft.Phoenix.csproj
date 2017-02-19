@@ -67,6 +67,7 @@
     <Compile Include="PhxDateTime.cs" />
     <Compile Include="Phx\BSoundTable.cs" />
     <Compile Include="Phx\Objects\BProtoObjectCommand.cs" />
+    <Compile Include="Phx\ProtoReference.cs" />
     <Compile Include="Phx\Scenario\BGameType.cs" />
     <Compile Include="Phx\Scenario\BMapType.cs" />
     <Compile Include="Phx\Scenario\BScenario.cs" />

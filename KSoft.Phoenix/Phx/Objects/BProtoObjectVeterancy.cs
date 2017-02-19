@@ -24,7 +24,13 @@ namespace KSoft.Phoenix.Phx
 			}
 			#endregion
 		};
-		public static readonly IEqualityComparer<BProtoObjectVeterancy> kEqualityComparer = new _EqualityComparer();
+		private static _EqualityComparer gEqualityComparer;
+		public static IEqualityComparer<BProtoObjectVeterancy> EqualityComparer { get {
+			if (gEqualityComparer == null)
+				gEqualityComparer = new _EqualityComparer();
+
+			return gEqualityComparer;
+		} }
 
 		#region Constants
 		static readonly BProtoObjectVeterancy kInvalid = new BProtoObjectVeterancy(),
@@ -69,14 +75,6 @@ namespace KSoft.Phoenix.Phx
 			};
 		public static readonly XML.BListExplicitIndexXmlParams<BProtoObjectVeterancy> kBListExplicitIndexXmlParams = new
 			XML.BListExplicitIndexXmlParams<BProtoObjectVeterancy>("Veterancy", "Level");
-
-		const string kXmlAttrXP = "XP";
-		const string kXmlAttrDamage = "Damage";
-		const string kXmlAttrVelocity = "Velocity";
-		const string kXmlAttrAccuracy = "Accuracy";
-		const string kXmlAttrWorkRate = "WorkRate";
-		const string kXmlAttrWeaponRange = "WeaponRange";
-		const string kXmlAttrDamageTaken = "DamageTaken";
 		#endregion
 
 		#region Properties
@@ -102,8 +100,10 @@ namespace KSoft.Phoenix.Phx
 		#region IComparable<BProtoObjectVeterancy> Members
 		int IComparable<BProtoObjectVeterancy>.CompareTo(BProtoObjectVeterancy other)
 		{
-			if (this.XP < other.XP) return -1;
-			else if (this.XP > other.XP) return 1;
+			if (this.XP < other.XP)
+				return -1;
+			else if (this.XP > other.XP)
+				return 1;
 
 			return 0;
 		}
@@ -112,12 +112,12 @@ namespace KSoft.Phoenix.Phx
 		#region IEqualityComparer<BProtoObjectVeterancy> Members
 		public bool Equals(BProtoObjectVeterancy x, BProtoObjectVeterancy y)
 		{
-			return kEqualityComparer.Equals(x, y);
+			return EqualityComparer.Equals(x, y);
 		}
 
 		public int GetHashCode(BProtoObjectVeterancy obj)
 		{
-			return kEqualityComparer.GetHashCode(obj);
+			return EqualityComparer.GetHashCode(obj);
 		}
 		#endregion
 
@@ -126,13 +126,13 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttributeOpt(kXmlAttrXP, ref mXP, Predicates.IsNotZero);
-			s.StreamAttributeOpt(kXmlAttrDamage, ref mDamage, Predicates.IsNotZero);
-			s.StreamAttributeOpt(kXmlAttrVelocity, ref mVelocity, Predicates.IsNotZero);
-			s.StreamAttributeOpt(kXmlAttrAccuracy, ref mAccuracy, Predicates.IsNotZero);
-			s.StreamAttributeOpt(kXmlAttrWorkRate, ref mWorkRate, Predicates.IsNotZero);
-			s.StreamAttributeOpt(kXmlAttrWeaponRange, ref mWeaponRange, Predicates.IsNotZero);
-			s.StreamAttributeOpt(kXmlAttrDamageTaken, ref mDamageTaken, Predicates.IsNotZero);
+			s.StreamAttributeOpt("XP", ref mXP, Predicates.IsNotZero);
+			s.StreamAttributeOpt("Damage", ref mDamage, Predicates.IsNotZero);
+			s.StreamAttributeOpt("Velocity", ref mVelocity, Predicates.IsNotZero);
+			s.StreamAttributeOpt("Accuracy", ref mAccuracy, Predicates.IsNotZero);
+			s.StreamAttributeOpt("WorkRate", ref mWorkRate, Predicates.IsNotZero);
+			s.StreamAttributeOpt("WeaponRange", ref mWeaponRange, Predicates.IsNotZero);
+			s.StreamAttributeOpt("DamageTaken", ref mDamageTaken, Predicates.IsNotZero);
 		}
 		#endregion
 	};

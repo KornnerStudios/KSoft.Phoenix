@@ -22,7 +22,13 @@ namespace KSoft.Phoenix.Phx
 			}
 			#endregion
 		};
-		public static readonly IEqualityComparer<BPopulation> kEqualityComparer = new _EqualityComparer();
+		private static _EqualityComparer gEqualityComparer;
+		public static IEqualityComparer<BPopulation> EqualityComparer { get {
+			if (gEqualityComparer == null)
+				gEqualityComparer = new _EqualityComparer();
+
+			return gEqualityComparer;
+		} }
 
 		#region Xml constants
 		public static readonly Collections.BTypeValuesParams<BPopulation> kBListParams = new
@@ -44,11 +50,9 @@ namespace KSoft.Phoenix.Phx
 			XML.BTypeValuesXmlParams<float>("Pop", "Type".ToLower());
 		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_CapAddition = new
 			XML.BTypeValuesXmlParams<float>("PopCapAddition", "Type");
-
-		const string kXmlAttrMax = "Max";
 		#endregion
 
-		static readonly BPopulation kInvalid = new BPopulation(PhxUtil.kInvalidSingle, PhxUtil.kInvalidSingle);
+		private static BPopulation kInvalid { get { return new BPopulation(PhxUtil.kInvalidSingle, PhxUtil.kInvalidSingle); } }
 
 		float mMax;
 		public float Max { get { return mMax; } }
@@ -71,12 +75,12 @@ namespace KSoft.Phoenix.Phx
 		#region IEqualityComparer<BPopulation> Members
 		public bool Equals(BPopulation x, BPopulation y)
 		{
-			return kEqualityComparer.Equals(x, y);
+			return EqualityComparer.Equals(x, y);
 		}
 
 		public int GetHashCode(BPopulation obj)
 		{
-			return kEqualityComparer.GetHashCode(obj);
+			return EqualityComparer.GetHashCode(obj);
 		}
 		#endregion
 
@@ -85,7 +89,7 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttribute(kXmlAttrMax, ref mMax);
+			s.StreamAttribute("Max", ref mMax);
 			s.StreamCursor(ref mCount);
 		}
 		#endregion

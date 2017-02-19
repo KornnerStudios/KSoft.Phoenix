@@ -1,6 +1,11 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	// CV = CombatValue
+	// HP = Hit points
+	// SP = Shield points
+	// DPS = Damage per second
+
 	public enum BAISquadAnalysisComponent
 	{
 		Invalid,

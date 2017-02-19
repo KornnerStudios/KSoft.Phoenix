@@ -5,17 +5,18 @@ namespace KSoft.Phoenix.Phx
 		: DatabasePurchasableObject
 		, IDatabaseIdObject
 	{
-		#region Xml constants
-		const string kXmlAttrDbId = "dbid";
+		#region DBID
+		protected int mDbId = TypeExtensions.kNone;
+		public int DbId
+		{
+			get { return mDbId; }
+			set { mDbId = value; }
+		}
 		#endregion
-
-		protected int mDbId;
-		public int DbId { get { return mDbId; } }
 
 		protected DatabaseIdObject(Collections.BTypeValuesParams<float> rsrcCostParams, XML.BTypeValuesXmlParams<float> rsrcCostXmlParams)
 			: base(rsrcCostParams, rsrcCostXmlParams)
 		{
-			mDbId = TypeExtensions.kNone;
 		}
 
 		#region IXmlElementStreamable Members
@@ -23,7 +24,7 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttribute(kXmlAttrDbId, ref mDbId);
+			s.StreamAttribute("dbid", ref mDbId);
 		}
 
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

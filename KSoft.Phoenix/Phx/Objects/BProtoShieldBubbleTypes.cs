@@ -8,6 +8,7 @@ namespace KSoft.Phoenix.Phx
 		//Dictionary<int, int> mSquadToShieldBubbleMap;
 
 		int mSquadID = TypeExtensions.kNone;
+		[Meta.BProtoSquadReference]
 		public int SquadID { get { return mSquadID; } }
 	};
 }

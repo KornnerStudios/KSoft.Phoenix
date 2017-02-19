@@ -21,32 +21,6 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Abilities.xml",
 			RootName = kBListXmlParams.RootName
 		};
-
-		const string kXmlElementType = "Type";
-		//const string kXmlElementAmmoCost = "AmmoCost";
-		//const string kXmlElementObject = "Object";
-		const string kXmlElementSquadMode = "SquadMode";
-		//const string kXmlElementRecoverStart = "RecoverStart"; // BRecoverType
-		//const string kXmlElementRecoverType = "RecoverType"; // BRecoverType
-		//const string kXmlElementRecoverTime = "RecoverTime"; // float
-		//const string kXmlElementMovementSpeedModifier = "MovementSpeedModifier"; // float
-		//const string kXmlElementMovementModifierType = "MovementModifierType"; // BMovementModifierType
-		const string kXmlElementDamageTakenModifier = "DamageTakenModifier";
-		//const string kXmlElementDodgeModifier = "DodgeModifier"; // float
-		//const string kXmlElementIcon = "Icon";
-		//const string kXmlElementDisplayName2ID = "DisplayName2ID";
-		const string kXmlElementTargetType = "TargetType";
-		//const string kXmlElementRecoverAnimAttachment = "RecoverAnimAttachment"; // string, AttachmentType
-		//const string kXmlElementRecoverStartAnim = "RecoverStartAnim"; // string
-		//const string kXmlElementRecoverEndAnim = "RecoverEndAnim"; // string
-		//const string kXmlElementSprinting = "Sprinting"; // bool
-		//const string kXmlElementDontInterruptAttack = "DontInterruptAttack"; // bool
-		//const string kXmlElementKeepSquadMode = "KeepSquadMode"; // bool
-		//const string kXmlElementAttackSquadMode = "AttackSquadMode"; // bool
-		const string kXmlElementDuration = "Duration";
-		//const string kXmlElementSmartTargetRange = "SmartTargetRange"; // float
-		//const string kXmlElementCanHeteroCommand = "CanHeteroCommand"; // bool
-		//const string kXmlElementNoAbilityReticle = "NoAbilityReticle"; // bool
 		#endregion
 
 		BAbilityType mType = BAbilityType.Invalid;
@@ -64,16 +38,36 @@ namespace KSoft.Phoenix.Phx
 		float mDuration = PhxUtil.kInvalidSingle;
 		public float Duration { get { return mDuration; } }
 
-		#region ITagElementStreamable<string> Members
+		#region ITagElementStreamable Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			base.Serialize(s);
 
-			s.StreamElementEnumOpt(kXmlElementType, ref mType, e => e != BAbilityType.Invalid);
-			s.StreamElementEnumOpt(kXmlElementSquadMode, ref mSquadMode, e => e != BSquadMode.Invalid);
-			s.StreamElementOpt    (kXmlElementDamageTakenModifier, ref mDamageTakenModifier, PhxPredicates.IsNotInvalid);
-			s.StreamElementEnumOpt(kXmlElementTargetType, ref mTargetType, e => e != BAbilityTargetType.Invalid);
-			s.StreamElementOpt    (kXmlElementDuration, ref mDuration, PhxPredicates.IsNotInvalid);
+			s.StreamElementEnumOpt("Type", ref mType, e => e != BAbilityType.Invalid);
+			//AmmoCost
+			//Object
+			s.StreamElementEnumOpt("SquadMode", ref mSquadMode, e => e != BSquadMode.Invalid);
+			//RecoverStart BRecoverType
+			//RecoverType BRecoverType
+			//RecoverTime float
+			//MovementSpeedModifier float
+			//MovementModifierType BMovementModifierType
+			s.StreamElementOpt("DamageTakenModifier", ref mDamageTakenModifier, PhxPredicates.IsNotInvalid);
+			//DodgeModifier float
+			//Icon
+			//DisplayName2ID (unused in code)
+			s.StreamElementEnumOpt("TargetType", ref mTargetType, e => e != BAbilityTargetType.Invalid);
+			//RecoverAnimAttachment string, AttachmentType
+			//RecoverStartAnim string, AnimType
+			//RecoverEndAnim string, AnimType
+			//Sprinting bool
+			//DontInterruptAttack bool
+			//KeepSquadMode bool
+			//AttackSquadMode bool
+			s.StreamElementOpt("Duration", ref mDuration, PhxPredicates.IsNotInvalid);
+			//SmartTargetRange float
+			//CanHeteroCommand bool
+			//NoAbilityReticle bool
 		}
 		#endregion
 	};

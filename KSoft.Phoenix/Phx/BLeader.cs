@@ -20,43 +20,42 @@ namespace KSoft.Phoenix.Phx
 			RootName = kBListXmlParams.RootName
 		};
 
-		const string kXmlElementTech = "Tech";
-		const string kXmlElementCiv = "Civ";
-		const string kXmlElementPower = "Power";
-		const string kXmlElementNameID = "NameID";
-
-		// TODO: HW's FlashPortrait elements have an ending " character (sans a starting quote). Becareful!
+		// TODO: HW's FlashPortrait elements have an ending " character (sans a starting quote). Be careful!
 
 		const string kXmlElementSupportPower = "SupportPower";
 		const string kXmlElementSupportPowerAttrTechPrereq = "TechPrereq"; // proto tech
 		// Can have multiple powers...
 		const string kXmlElementSupportPowerElementPower = "Power";
 
-		const string kXmlElementStartingUnit = "StartingUnit";
-		const string kXmlElementStartingUnitAttrBuildOther = "BuildOther";
-		const string kXmlElementStartingSquad = "StartingSquad";
-		// we ignore these values. would require use to create a special BLeaderStartingSquad type
+		// we ignore these values. would require us to create a special BLeaderStartingSquad type
 		const string kXmlElementStartingSquadAttrFlyIn = "FlyIn"; // bool
 		const string kXmlElementStartingSquadAttrOffset = "Offset"; // Vector3f
 		#endregion
 
 		int mTechID = TypeExtensions.kNone;
+		[Meta.BProtoTechReference]
 		public int TechID { get { return mTechID; } }
 		int mCivID = TypeExtensions.kNone;
+		[Meta.BCivReference]
 		public int CivID { get { return mCivID; } }
 		int mPowerID = TypeExtensions.kNone;
+		[Meta.BProtoPowerReference]
 		public int PowerID { get { return mPowerID; } }
 
 		int mNameID = TypeExtensions.kNone;
+		[Meta.LocStringReference]
 		public int NameID { get { return mNameID; } }
 
 		/// <summary>Initial resources</summary>
 		public Collections.BTypeValuesSingle Resources { get; private set; }
 
 		int mStartingUnitID = TypeExtensions.kNone;
+		[Meta.BProtoObjectReference]
 		public int StartingUnitID { get { return mStartingUnitID; } }
 		int mStartingUnitBuildOtherID = TypeExtensions.kNone;
+		[Meta.BProtoObjectReference]
 		public int StartingUnitBuildOtherID { get { return mStartingUnitBuildOtherID; } }
+		[Meta.BProtoSquadReference]
 		public List<BProtoSquadID> StartingSquadIDs { get; private set; }
 
 		public Collections.BTypeValues<BPopulation> Populations { get; private set; }
@@ -80,18 +79,18 @@ namespace KSoft.Phoenix.Phx
 
 			var xs = s.GetSerializerInterface();
 
-			xs.StreamDBID(s, kXmlElementTech, ref mTechID, DatabaseObjectKind.Tech);
-			xs.StreamDBID(s, kXmlElementCiv, ref mCivID, DatabaseObjectKind.Civ);
-			xs.StreamDBID(s, kXmlElementPower, ref mPowerID, DatabaseObjectKind.Power);
-			xs.StreamStringID(s, kXmlElementNameID, ref mNameID);
+			xs.StreamDBID(s, "Tech", ref mTechID, DatabaseObjectKind.Tech);
+			xs.StreamDBID(s, "Civ", ref mCivID, DatabaseObjectKind.Civ);
+			xs.StreamDBID(s, "Power", ref mPowerID, DatabaseObjectKind.Power);
+			xs.StreamStringID(s, "NameID", ref mNameID);
 
 			XML.XmlUtil.Serialize(s, Resources, BResource.kBListTypeValuesXmlParams);
-			using (var bm = s.EnterCursorBookmarkOpt(kXmlElementStartingUnit, mStartingUnitID, Predicates.IsNotNone)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("StartingUnit", mStartingUnitID, Predicates.IsNotNone)) if (bm.IsNotNull)
 			{
 				xs.StreamDBID(s, /*xmlName:*/null, ref mStartingUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
-				xs.StreamDBID(s, kXmlElementStartingUnitAttrBuildOther, ref mStartingUnitBuildOtherID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
+				xs.StreamDBID(s, "BuildOther", ref mStartingUnitBuildOtherID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
 			}
-			s.StreamElements(kXmlElementStartingSquad, StartingSquadIDs, xs, XML.BXmlSerializerInterface.StreamSquadID);
+			s.StreamElements("StartingSquad", StartingSquadIDs, xs, XML.BXmlSerializerInterface.StreamSquadID);
 			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParams);
 		}
 		#endregion

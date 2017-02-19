@@ -16,24 +16,29 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Civs.xml",
 			RootName = kBListXmlParams.RootName
 		};
-
-		const string kXmlElementTech = "CivTech";
-
-		const string kXmlElementPowerFromHero = "PowerFromHero";
 		#endregion
 
+		#region TechID
 		int mTechID = TypeExtensions.kNone;
-		public int TechID { get { return mTechID; } }
+		[Meta.BProtoTechReference]
+		public int TechID
+		{
+			get { return mTechID; }
+			set { mTechID = value; }
+		}
+		#endregion
 
+		#region PowerFromHero
 		bool mPowerFromHero;
-		public bool PowerFromHero { get { return mPowerFromHero; } }
+		public bool PowerFromHero
+		{
+			get { return mPowerFromHero; }
+			set { mPowerFromHero = value; }
+		}
+		#endregion
 
 		// Empty Civs just have a name
 		public bool IsEmpty { get { return mTechID.IsNotNone(); } }
-
-		public BCiv()
-		{
-		}
 
 		#region ITagElementStreamable<string> Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -42,8 +47,20 @@ namespace KSoft.Phoenix.Phx
 
 			var xs = s.GetSerializerInterface();
 
-			xs.StreamDBID(s, kXmlElementTech, ref mTechID, DatabaseObjectKind.Tech);
-			s.StreamElementOpt(kXmlElementPowerFromHero, ref mPowerFromHero, Predicates.IsTrue);
+			//Alpha (unused in code)
+			xs.StreamDBID(s, "CivTech", ref mTechID, DatabaseObjectKind.Tech);
+			//CommandAckObject
+			//RallyPointObject
+			//LocalRallyPointObject
+			//Transport
+			//TransportTrigger
+			//ExpandHull
+			//TerrainPushOff
+			//BuildingMagnetRange
+			//SoundBank
+			//LeaderMenuNameID
+			s.StreamElementOpt("PowerFromHero", ref mPowerFromHero, Predicates.IsTrue);
+			//UIControlBackground
 		}
 		#endregion
 	};

@@ -46,24 +46,8 @@ namespace KSoft.Phoenix.Phx
 		static readonly XML.BBitSetXmlParams kObjectTypesXmlParams = new XML.BBitSetXmlParams("ObjectType");
 
 		const string kXmlAttrIs = "is"; // boolean int, only streamed when '0', only used by tools?
-		const string kXmlAttrId = "id";
 
-		const string kXmlElementObjectClass = "ObjectClass";
-
-		const string kXmlElementCostEscalation = "CostEscalation";
-		const string kXmlElementHitpoints = "Hitpoints";
-		const string kXmlElementShieldpoints = "Shieldpoints";
 		internal const string kXmlElementAttackGradeDPS = "AttackGradeDPS";
-		const string kXmlElementCombatValue = "CombatValue";
-		const string kXmlElementBounty = "Bounty";
-
-		const string kXmlElementTactics = "Tactics";
-
-		const string kXmlElementAddRsrcAttrAmount = "Amount";
-
-		const string kXmlElementPlacementRules = "PlacementRules"; // PlacementRules file name (sans extension)
-
-		const string kXmlElementCommand = "Command";
 		#endregion
 
 		int mId = TypeExtensions.kNone;
@@ -129,7 +113,7 @@ namespace KSoft.Phoenix.Phx
 
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttributeOpt(kXmlAttrId, ref mId, Predicates.IsNotNone);
+			s.StreamAttributeOpt("id", ref mId, Predicates.IsNotNone);
 			//MovementType
 			//Hardpoint
 			//SingleBoneIK
@@ -155,7 +139,7 @@ namespace KSoft.Phoenix.Phx
 			//PerturbInitialVelocity
 			//ActiveScanChance
 			//TurnRate
-			s.StreamElementOpt(kXmlElementHitpoints, ref mHitpoints, PhxPredicates.IsNotInvalid);
+			s.StreamElementOpt("Hitpoints", ref mHitpoints, PhxPredicates.IsNotInvalid);
 			//Shieldpoints
 			//LOS
 			//PickRadius
@@ -167,18 +151,18 @@ namespace KSoft.Phoenix.Phx
 			//SelectedRadiusZ
 			//BuildPoints
 			//RepairPoints
-			s.StreamElementEnumOpt(kXmlElementObjectClass, ref mClassType, x => x != BProtoObjectClassType.Invalid);
+			s.StreamElementEnumOpt("ObjectClass", ref mClassType, x => x != BProtoObjectClassType.Invalid);
 			//TrainerType
 			//AutoLockDown
 			//Cost
-			s.StreamElementOpt(kXmlElementCostEscalation, ref mCostEscalation, PhxPredicates.IsNotInvalid);
+			s.StreamElementOpt("CostEscalation", ref mCostEscalation, PhxPredicates.IsNotInvalid);
 			//CostEscalationObject
 			//CaptureCost
-			s.StreamElementOpt(kXmlElementBounty, ref mBounty, PhxPredicates.IsNotInvalid);
+			s.StreamElementOpt("Bounty", ref mBounty, PhxPredicates.IsNotInvalid);
 			//AIAssetValueAdjust
-			s.StreamElementOpt(kXmlElementCombatValue, ref mCombatValue, PhxPredicates.IsNotInvalid);
+			s.StreamElementOpt("CombatValue", ref mCombatValue, PhxPredicates.IsNotInvalid);
 			//ResourceAmount
-			//PlacementRules
+			//PlacementRules, PlacementRules file name (sans extension)
 			//DeathFadeTime
 			//DeathFadeDelayTime
 			//TrainAnim
@@ -202,7 +186,7 @@ namespace KSoft.Phoenix.Phx
 			//Power
 			//Ability
 			XML.XmlUtil.Serialize(s, Veterancy, BProtoObjectVeterancy.kBListExplicitIndexXmlParams);
-			XML.XmlUtil.Serialize(s, AddResource, BResource.kBListTypeValuesXmlParams_AddResource, kXmlElementAddRsrcAttrAmount);
+			XML.XmlUtil.Serialize(s, AddResource, BResource.kBListTypeValuesXmlParams_AddResource, "Amount");
 			//ExistSound
 			//GathererLimit
 			//BlockMovementObject
@@ -226,7 +210,7 @@ namespace KSoft.Phoenix.Phx
 			//ChildObjects
 			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle);
 			XML.XmlUtil.Serialize(s, PopulationsCapAddition, BPopulation.kBListXmlParamsSingle_CapAddition);
-			((XML.BDatabaseXmlSerializerBase)xs).StreamXmlTactic(s, kXmlElementTactics, this, ref mHasTactics);
+			((XML.BDatabaseXmlSerializerBase)xs).StreamXmlTactic(s, "Tactics", this, ref mHasTactics);
 			//FlightLevel
 			//ExitFromDirection
 			//HPBar
@@ -263,22 +247,34 @@ namespace KSoft.Phoenix.Phx
 
 			if (s.IsReading)
 			{
-				if (SortCommandsAfterReading)
-				{
-					Commands.Sort((x, y) =>
-					{
-						if (x.Position != y.Position)
-							return x.Position.CompareTo(y.Position);
+				PostDeserialize();
+			}
+		}
 
-						if (x.CommandType != y.CommandType)
-							return ((int)x.CommandType).CompareTo((int)y.CommandType);
-
-						// assuming Proto upgrades are defined after earlier Protos
-						return x.ID.CompareTo(y.ID);
-					});
-				}
+		private void PostDeserialize()
+		{
+			if (SortCommandsAfterReading)
+			{
+				SortCommands();
 			}
 		}
 		#endregion
+
+		private void SortCommands()
+		{
+			Commands.Sort(CompareCommands);
+		}
+
+		private static int CompareCommands(BProtoObjectCommand x, BProtoObjectCommand y)
+		{
+			if (x.Position != y.Position)
+				return x.Position.CompareTo(y.Position);
+
+			if (x.CommandType != y.CommandType)
+				return ((int)x.CommandType).CompareTo((int)y.CommandType);
+
+			// assuming Proto upgrades are defined after earlier Protos
+			return x.ID.CompareTo(y.ID);
+		}
 	};
 }

@@ -27,15 +27,6 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Techs_Update.xml",
 			RootName = kBListXmlParams.RootName
 		};
-
-		const string kXmlElementFlag = "Flag";
-		/// <remarks>This isn't always used, nor unique</remarks>
-		const string kXmlElementDbId = "DBID";
-
-		const string kXmlElementStatus = "Status";
-		const string kXmlElementIcon = "Icon";
-
-		const string kXmlElementStatsObject = "StatsObject"; // ProtoObject
 		#endregion
 
 		BProtoTechStatus mStatus;
@@ -53,7 +44,8 @@ namespace KSoft.Phoenix.Phx
 		#region IXmlElementStreamable Members
 		protected override void StreamDbId<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			s.StreamElementOpt(kXmlElementDbId, ref mDbId, Predicates.IsNotNone);
+			// This isn't always used, nor unique
+			s.StreamElementOpt("DBID", ref mDbId, Predicates.IsNotNone);
 		}
 
 		bool ShouldStreamPrereqs<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -64,7 +56,8 @@ namespace KSoft.Phoenix.Phx
 			{
 				bool has_prereqs = s.ElementsExists(BProtoTechPrereqs.kXmlRootName);
 
-				if (has_prereqs) Prereqs = new BProtoTechPrereqs();
+				if (has_prereqs)
+					Prereqs = new BProtoTechPrereqs();
 				return has_prereqs;
 			}
 			else if (s.IsWriting)
@@ -84,14 +77,14 @@ namespace KSoft.Phoenix.Phx
 			//Cost
 			//ResearchPoints
 			// TODO: just check if this is "Unobtainable" and set the proper flag, don't actively use this field
-			s.StreamElementEnum(kXmlElementStatus, ref mStatus);
+			s.StreamElementEnum("Status", ref mStatus);
 			//Icon
 			//ResearchCompleteSound
 			//ResearchAnim
 			if (ShouldStreamPrereqs(s))
 				Prereqs.Serialize(s);
 			XML.XmlUtil.Serialize(s, Effects, BProtoTechEffect.kBListXmlParams);
-			//StatsObject
+			//StatsObject ProtoObject
 		}
 		#endregion
 	};

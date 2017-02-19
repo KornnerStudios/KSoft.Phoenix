@@ -7,6 +7,7 @@ namespace KSoft.Phoenix.Phx
 		//List<int> mMergedSquads;
 
 		int mSquadID = TypeExtensions.kNone;
+		[Meta.BProtoSquadReference]
 		public int SquadID { get { return mSquadID; } }
 	};
 }

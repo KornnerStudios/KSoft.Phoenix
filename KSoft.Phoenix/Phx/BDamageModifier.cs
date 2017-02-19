@@ -13,10 +13,6 @@ namespace KSoft.Phoenix.Phx
 			Collections.BTypeValuesParams<BDamageModifier>(db => db.DamageTypes);
 		public static readonly XML.BTypeValuesXmlParams<BDamageModifier> kBListXmlParams = new
 			XML.BTypeValuesXmlParams<BDamageModifier>("DamageModifier", "type");
-
-		const string kXmlAttrRating = "rating";
-		//float reflectDamageFactor
-		//bool bowlable, rammable
 		#endregion
 
 		float mRating;
@@ -29,7 +25,9 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttribute(kXmlAttrRating, ref mRating);
+			s.StreamAttribute("rating", ref mRating);
+			//float reflectDamageFactor
+			//bool bowlable, rammable
 			s.StreamCursor(ref mValue);
 		}
 		#endregion

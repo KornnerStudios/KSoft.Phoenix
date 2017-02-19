@@ -17,25 +17,22 @@ namespace KSoft.Phoenix.Phx
 			FileName = "UserClasses.xml",
 			RootName = kBListXmlParams.RootName
 		};
-
-		const string kXmlAttrDbId = "DBID";
 		#endregion
 
-		int mDbId;
+		int mDbId = TypeExtensions.kNone;
 		public int DbId { get { return mDbId; } }
 
 		public Collections.BListAutoId<BUserClassField> Fields { get; private set; }
 
 		public BUserClass()
 		{
-			mDbId = TypeExtensions.kNone;
 			Fields = new Collections.BListAutoId<BUserClassField>();
 		}
 
 		#region BListAutoIdObject Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			s.StreamAttribute(kXmlAttrDbId, ref mDbId);
+			s.StreamAttribute("DBID", ref mDbId);
 			XML.XmlUtil.Serialize(s, Fields, BUserClassField.kBListXmlParams);
 		}
 		#endregion

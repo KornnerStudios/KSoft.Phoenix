@@ -5,21 +5,22 @@ namespace KSoft.Phoenix.Phx
 	public sealed class BProtoObjectCommand
 		: IO.ITagElementStringNameStreamable
 	{
-		#region Xml constants
-		const string kXmlAttrPosition = "Position";
-		const string kXmlAttrType = "Type";
-		#endregion
-
-		#region Properties
+		#region Position
 		int mPosition;
 		public int Position { get { return mPosition; } }
+		#endregion
 
+		#region CommandType
 		BProtoObjectCommandType mCommandType = BProtoObjectCommandType.Invalid;
 		public BProtoObjectCommandType CommandType { get { return mCommandType; } }
+		#endregion
 
+		#region ID
 		int mID = TypeExtensions.kNone;
 		public int ID { get { return mID; } }
+		#endregion
 
+		#region SquadMode
 		BSquadMode mSquadMode = BSquadMode.Invalid;
 		public BSquadMode SquadMode { get { return mSquadMode; } }
 		#endregion
@@ -31,9 +32,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttribute(kXmlAttrPosition, ref mPosition);
+			s.StreamAttribute("Position", ref mPosition);
 
-			s.StreamAttributeEnum(kXmlAttrType, ref mCommandType);
+			s.StreamAttributeEnum("Type", ref mCommandType);
 			switch (mCommandType)
 			{
 			case BProtoObjectCommandType.Research: // proto tech

@@ -17,13 +17,13 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_Cost = new
 			XML.BTypeValuesXmlParams<float>("Cost", "ResourceType");
 #pragma warning disable 0429
-		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_CostLowercaseType = !kUseLowercaseCostTypeHack ? kBListTypeValuesXmlParams_Cost : new
-			XML.BTypeValuesXmlParams<float>("Cost", "ResourceType".ToLower());
+		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_CostLowercaseType = !kUseLowercaseCostTypeHack
+			? kBListTypeValuesXmlParams_Cost
+			: new XML.BTypeValuesXmlParams<float>("Cost", "ResourceType".ToLower()
+			);
 #pragma warning restore 0429
 		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_AddResource = new
 			XML.BTypeValuesXmlParams<float>("AddResource", null, XML.BCollectionXmlParamsFlags.UseInnerTextForData);
-
-		const string kXmlAttrDeductable = "Deductable";
 		#endregion
 
 		bool mDeductable;
@@ -35,7 +35,7 @@ namespace KSoft.Phoenix.Phx
 		#region BListAutoIdObject Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			s.StreamAttribute(kXmlAttrDeductable, ref mDeductable);
+			s.StreamAttribute("Deductable", ref mDeductable);
 		}
 		#endregion
 	};

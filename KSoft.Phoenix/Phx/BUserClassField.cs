@@ -10,8 +10,6 @@ namespace KSoft.Phoenix.Phx
 			ElementName = "Fields",
 			DataName = "Name",
 		};
-
-		const string kXmlAttrType = "Type";
 		#endregion
 
 		BTriggerVarType mType;
@@ -19,7 +17,7 @@ namespace KSoft.Phoenix.Phx
 		#region IXmlElementStreamable Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			s.StreamAttributeEnum(kXmlAttrType, ref mType);
+			s.StreamAttributeEnum("Type", ref mType);
 		}
 		#endregion
 	};

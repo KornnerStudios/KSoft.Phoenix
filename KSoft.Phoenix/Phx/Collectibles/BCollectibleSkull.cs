@@ -1,6 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	//BProtoSkull
 	public sealed class BCollectibleSkull
 		: DatabaseNamedObject
 	{
@@ -32,10 +33,13 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttribute(kXmlAttrObjectDBID, ref mObjectDBID);
+			s.StreamAttribute("objectdbid", ref mObjectDBID);
 			XML.XmlUtil.Serialize(s, Effects, BCollectibleSkullEffect.kBListXmlParams);
-			xs.StreamStringID(s, kXmlElementDescriptionID, ref mDescriptionID);
-			s.StreamElementNamedFlag(kXmlElementHidden, ref mHidden);
+			xs.StreamStringID(s, "DescriptionID", ref mDescriptionID);
+			//DisplayImageOn
+			//DisplayImageOff
+			//DisplayImageLocked
+			s.StreamElementNamedFlag("Hidden", ref mHidden);
 		}
 		#endregion
 	};

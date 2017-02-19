@@ -13,8 +13,6 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Skulls.xml",
 			RootName = kXmlRootName
 		};
-
-		const string kXmlElementXMLVersion = "CollectiblesXMLVersion";
 		#endregion
 
 		int mXmlVersion = TypeExtensions.kNone;
@@ -30,7 +28,7 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamElementOpt(kXmlElementXMLVersion, ref mXmlVersion, Predicates.IsNotNone);
+			s.StreamElementOpt("CollectiblesXMLVersion", ref mXmlVersion, Predicates.IsNotNone);
 			SkullManager.Serialize(s);
 		}
 		#endregion
