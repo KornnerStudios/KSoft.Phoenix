@@ -12,14 +12,18 @@ namespace KSoft.Phoenix.HaloWars
 		public override Collections.IProtoEnum GameProtoObjectTypes { get { return kGameProtoObjectTypes; } }
 		public override Collections.IProtoEnum GameScenarioWorlds { get { return kGameScenarioWorlds; } }
 
+		[Phx.Meta.BProtoPowerReference]
 		public int RepairPowerID { get; private set; }
+		[Phx.Meta.BProtoPowerReference]
 		public int RallyPointPowerID { get; private set; }
+		[Phx.Meta.BProtoPowerReference]
 		public int HookRepairPowerID { get; private set; }
+		[Phx.Meta.BProtoPowerReference]
 		public int UnscOdstDropPowerID { get; private set; }
 
 		public BDatabase(Engine.PhxEngine engine) : base(engine, kGameObjectTypes)
 		{
-			RepairPowerID = RallyPointPowerID = HookRepairPowerID = UnscOdstDropPowerID = 
+			RepairPowerID = RallyPointPowerID = HookRepairPowerID = UnscOdstDropPowerID =
 				TypeExtensions.kNone;
 		}
 
