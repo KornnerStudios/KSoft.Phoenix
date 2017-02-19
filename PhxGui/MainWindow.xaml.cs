@@ -115,6 +115,10 @@ namespace PhxGui
 					Description="When expanding, don't ignore files when both their XMB or XML exists in the ERA")]
 		DontRemoveXmlOrXmbFiles,
 
+		[Display(	Name="Always build with XML instead of XMB",
+					Description="During ERA generation, if an XMB is referenced but an XML version exists, the XML file will be picked instead")]
+		AlwaysUseXmlOverXmb,
+
 		kNumberOf,
 	};
 
@@ -233,6 +237,7 @@ namespace PhxGui
 			Era,
 			EraDef,
 			Exe,
+			Xex,
 			Xml,
 			Xmb,
 
@@ -276,6 +281,9 @@ namespace PhxGui
 						results.AcceptedFileTypes.Set(AcceptedFileType.EraDef);
 						break;
 					case ".exe":
+						results.AcceptedFileTypes.Set(AcceptedFileType.Exe);
+						break;
+					case ".xex":
 						results.AcceptedFileTypes.Set(AcceptedFileType.Exe);
 						break;
 					case ".xmb":
@@ -340,6 +348,7 @@ namespace PhxGui
 					}
 
 					case AcceptedFileType.Exe:
+					case AcceptedFileType.Xex:
 					{
 						if (results.FilesCount == 1)
 						{
@@ -401,10 +410,11 @@ namespace PhxGui
 					}
 
 					case AcceptedFileType.Exe:
+					case AcceptedFileType.Xex:
 					{
 						if (results.FilesCount == 1)
 						{
-							PatchGameExe(files[0]);
+							PatchGameExe(files[0], type);
 							return true;
 						}
 						break;
@@ -456,7 +466,7 @@ namespace PhxGui
 		{
 			if (!System.IO.Directory.Exists(Properties.Settings.Default.EraExpandOutputPath))
 			{
-				MessagesText = "Cannot expand ERA file(s)" +
+				MessagesText = "Cannot expand ERA file(s)\n" +
 					"Specify a valid expand output path";
 				return;
 			}
@@ -632,7 +642,7 @@ namespace PhxGui
 		{
 			if (!System.IO.Directory.Exists(Properties.Settings.Default.EraBuildOutputPath))
 			{
-				MessagesText = "Cannot expand ERA file(s)" +
+				MessagesText = "Cannot expand ERA file(s)\n" +
 					"Specify a valid expand output path";
 				return;
 			}
@@ -644,6 +654,9 @@ namespace PhxGui
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
 				args.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
 			args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.Encrypt);
+
+			if (Flags.Test(MiscFlags.AlwaysUseXmlOverXmb))
+				args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.AlwaysUseXmlOverXmb);
 
 			args.AssetsPath = System.IO.Path.GetDirectoryName(eraListing);
 			args.OutputPath = Properties.Settings.Default.EraBuildOutputPath;
@@ -973,7 +986,7 @@ namespace PhxGui
 			}, scheduler);
 		}
 
-		private void PatchGameExe(string exeFile)
+		private void PatchGameExe(string exeFile, AcceptedFileType fileType)
 		{
 			ClearMessages();
 			IsProcessing = true;
@@ -988,8 +1001,10 @@ namespace PhxGui
 				}
 
 				{
+					string extension = System.IO.Path.GetExtension(exeFile);
 					string backup_file = System.IO.Path.GetFileNameWithoutExtension(exeFile);
 					backup_file += "_UNTOUCHED.exe";
+					backup_file = System.IO.Path.ChangeExtension(backup_file, extension);
 					backup_file = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(exeFile), backup_file);
 					System.IO.File.Copy(exeFile, backup_file);
 				}
@@ -1067,6 +1082,14 @@ namespace PhxGui
 
 		static ExePatching()
 		{
+			// Xbox360:
+#if false // #TODO
+			var Xbox_v1 = new PatchInfo("0723A9FBAB23DE2B0AB80656174EEF0D2ADC2D98")
+				//.Add(0x6D971F, 0xE9, 0x0A, 0x01, 0x00, 0x00);
+			kPatches.Add(Xbox_v1);
+#endif
+
+			// PC:
 			var v1_11088_1_2 = new PatchInfo("2C1E144727CFF2AADDAE6BB71EE66B7820D3E163")
 				.Add(0x6D971F, 0xE9, 0x0A, 0x01, 0x00, 0x00);
 			kPatches.Add(v1_11088_1_2);

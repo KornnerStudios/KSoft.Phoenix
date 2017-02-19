@@ -49,11 +49,11 @@
       <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
       <Name>KSoft</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\KSoft\KSoft.Security\KSoft.Security.csproj">
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Security\KSoft.Security.csproj">
       <Project>{0632a00b-de9e-4350-a3f8-3a82f9c780af}</Project>
       <Name>KSoft.Security</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Wwise\KSoft.Wwise\KSoft.Wwise.csproj">
+    <ProjectReference Include="$(VitaRootDir)Games\Wwise\KSoft.Wwise\KSoft.Wwise.csproj">
       <Project>{bddec955-6d39-4058-92e5-f1bf170f860f}</Project>
       <Name>KSoft.Wwise</Name>
     </ProjectReference>

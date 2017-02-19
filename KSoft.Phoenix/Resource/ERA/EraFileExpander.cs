@@ -124,9 +124,9 @@ namespace KSoft.Phoenix.Resource
 			return result;
 		}
 
-		void SaveListing(string path, string listingName)
+		void SaveListing(string workPath, string listingName)
 		{
-			string listing_filename = System.IO.Path.Combine(path, listingName);
+			string listing_filename = System.IO.Path.Combine(workPath, listingName);
 
 			using (var xml = IO.XmlElementStream.CreateForWrite("EraArchive", this))
 			{
@@ -138,20 +138,20 @@ namespace KSoft.Phoenix.Resource
 				xml.Document.Save(listing_filename + EraFileBuilder.kNameExtension);
 			}
 		}
-		public bool ExpandTo(string path, string listingName)
+		public bool ExpandTo(string workPath, string listingName)
 		{
 			if (mEraFile == null)
 				return false;
 
-			if (!System.IO.Directory.Exists(path))
-				System.IO.Directory.CreateDirectory(path);
+			if (!System.IO.Directory.Exists(workPath))
+				System.IO.Directory.CreateDirectory(workPath);
 
 			bool result = true;
 
 			if (VerboseOutput != null)
 				VerboseOutput.WriteLine("Outputting listing...");
 
-			try { SaveListing(path, listingName); }
+			try { SaveListing(workPath, listingName); }
 			catch (Exception ex)
 			{
 				if (VerboseOutput != null)
@@ -162,9 +162,9 @@ namespace KSoft.Phoenix.Resource
 			if (result && !ExpanderOptions.Test(EraFileExpanderOptions.OnlyDumpListing))
 			{
 				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("Expanding archive to {0}...", path);
+					VerboseOutput.WriteLine("Expanding archive to {0}...", workPath);
 
-				try { mEraFile.ExpandTo(mEraStream, path); }
+				try { mEraFile.ExpandTo(mEraStream, workPath); }
 				catch (Exception ex)
 				{
 					if (VerboseOutput != null)

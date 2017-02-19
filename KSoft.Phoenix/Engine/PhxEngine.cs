@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
-using FA = System.IO.FileAccess;
-
 namespace KSoft.Phoenix.Engine
 {
 	public sealed class XmlFileInfo

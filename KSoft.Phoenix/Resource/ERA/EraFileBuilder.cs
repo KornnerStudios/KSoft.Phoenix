@@ -11,6 +11,7 @@ namespace KSoft.Phoenix.Resource
 	public enum EraFileBuilderOptions
 	{
 		Encrypt,
+		AlwaysUseXmlOverXmb,
 
 		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 	};
@@ -87,7 +88,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		bool BuildInternal(string path, string eraName, string outputPath)
+		bool BuildInternal(string workPath, string eraName, string outputPath)
 		{
 			string era_filename = Path.Combine(outputPath, eraName);
 			if (!BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
@@ -104,6 +105,14 @@ namespace KSoft.Phoenix.Resource
 				var attrs = System.IO.File.GetAttributes(era_filename);
 				if (attrs.HasFlag(FileAttributes.ReadOnly))
 					throw new IOException("ERA file is readonly, can't build: " + era_filename);
+			}
+
+			if (BuilderOptions.Test(EraFileBuilderOptions.AlwaysUseXmlOverXmb))
+			{
+				if (VerboseOutput != null)
+					VerboseOutput.WriteLine("Finding XML files to use over XMB references...");
+
+				mEraFile.TryToReferenceXmlOverXmbFies(workPath, VerboseOutput);
 			}
 
 			const FA k_mode = FA.Write;
@@ -131,7 +140,7 @@ namespace KSoft.Phoenix.Resource
 				// now we can start embedding the files
 				if (VerboseOutput != null)
 					VerboseOutput.WriteLine("\tPacking files...");
-				result &= mEraFile.Build(era_memory, path);
+				result &= mEraFile.Build(era_memory, workPath);
 
 				if (result)
 				{
@@ -167,18 +176,18 @@ namespace KSoft.Phoenix.Resource
 			return result;
 		}
 		/// <summary>Builds the actual ERA file</summary>
-		/// <param name="path">Base path of the ERA's files (defined by the listing xml)</param>
+		/// <param name="workPath">Base path of the ERA's files (defined by the listing xml)</param>
 		/// <param name="eraName">Name of the final ERA file (without any directory or extension data)</param>
-		/// <param name="outputPath">(Optional) The path to output the final ERA file. Defaults to <paramref name="path"/></param>
+		/// <param name="outputPath">(Optional) The path to output the final ERA file. Defaults to <paramref name="workPath"/></param>
 		/// <returns>True if all build operations were successful, false otherwise</returns>
-		public bool Build(string path, string eraName, string outputPath = null)
+		public bool Build(string workPath, string eraName, string outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
-				outputPath = path;
+				outputPath = workPath;
 
 			bool result = true;
 
-			try { BuildInternal(path, eraName, outputPath); }
+			try { BuildInternal(workPath, eraName, outputPath); }
 			catch (Exception ex)
 			{
 				if (VerboseOutput != null)

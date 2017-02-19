@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
@@ -201,6 +202,38 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
+		public void TryToReferenceXmlOverXmbFies(string workPath, TextWriter verboseOutput)
+		{
+			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
+			{
+				var file = mFiles[x];
+				if (!ResourceUtils.IsXmbFile(file.FileName))
+					continue;
+
+				string xml_name = file.FileName;
+				ResourceUtils.RemoveXmbExtension(ref xml_name);
+
+				// if the user already references the XML file too, just skip doing anything
+				EraFileEntryChunk xml_file;
+				if (mFileNameToChunk.TryGetValue(xml_name, out xml_file))
+					continue;
+
+				// does the XML file exist?
+				string xml_path = Path.Combine(workPath, xml_name);
+				if (!File.Exists(xml_path))
+					continue;
+
+				if (verboseOutput != null)
+					verboseOutput.WriteLine("\tReplacing XMB ref with {0}",
+						xml_name);
+
+				// right now, all we should need to do to update things is remove the XMB mapping and replace it with the XML we found
+				mFileNameToChunk.Remove(file.FileName);
+				file.FileName = xml_name;
+				mFileNameToChunk.Add(xml_name, file);
+			}
+		}
+
 		#region Xml definition Streaming
 		static EraFileEntryChunk GenerateFileNamesTableEntryChunk()
 		{
@@ -291,7 +324,7 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		#region Expand
-		public void ExpandTo(IO.EndianStream blockStream, string basePath)
+		public void ExpandTo(IO.EndianStream blockStream, string workPath)
 		{
 			Contract.Requires(blockStream.IsReading);
 
@@ -310,7 +343,7 @@ namespace KSoft.Phoenix.Resource
 				{
 					eraExpander.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
-				TryUnpack(blockStream, basePath, eraExpander, file);
+				TryUnpack(blockStream, workPath, eraExpander, file);
 			}
 
 			if (eraExpander.VerboseOutput != null)
@@ -322,12 +355,12 @@ namespace KSoft.Phoenix.Resource
 			mDirsThatExistForUnpacking = null;
 		}
 
-		private bool TryUnpack(IO.EndianStream blockStream, string basePath, EraFileExpander expander, EraFileEntryChunk file)
+		private bool TryUnpack(IO.EndianStream blockStream, string workPath, EraFileExpander expander, EraFileEntryChunk file)
 		{
 			if (IsIgnoredLocalFile(file.FileName))
 				return false;
 
-			string full_path = System.IO.Path.Combine(basePath, file.FileName);
+			string full_path = System.IO.Path.Combine(workPath, file.FileName);
 
 			if (ResourceUtils.IsLocalScenarioFile(file.FileName))
 			{
@@ -490,7 +523,7 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
-		#region Buid
+		#region Build
 		private bool BuildFileNamesTable(IO.EndianStream blockStream)
 		{
 			Contract.Requires(blockStream.IsWriting);
@@ -514,7 +547,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		public bool Build(IO.EndianStream blockStream, string basePath)
+		public bool Build(IO.EndianStream blockStream, string workPath)
 		{
 			Contract.Requires(blockStream.IsWriting);
 
@@ -532,7 +565,7 @@ namespace KSoft.Phoenix.Resource
 					builder.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
 
-				success &= TryPack(blockStream, basePath, file);
+				success &= TryPack(blockStream, workPath, file);
 			}
 
 			if (builder != null && builder.VerboseOutput != null)
@@ -579,13 +612,13 @@ namespace KSoft.Phoenix.Resource
 			PackFileData(blockStream, source, file);
 		}
 
-		private bool TryPack(IO.EndianStream blockStream, string basePath,
+		private bool TryPack(IO.EndianStream blockStream, string workPath,
 			EraFileEntryChunk file)
 		{
 			if (mLocalFiles.ContainsKey(file.FileName))
 				return TryPackLocalFile(blockStream, file);
 
-			return TryPackFileFromDisk(blockStream, basePath, file);
+			return TryPackFileFromDisk(blockStream, workPath, file);
 		}
 
 		private bool TryPackLocalFile(IO.EndianStream blockStream,
@@ -604,10 +637,10 @@ namespace KSoft.Phoenix.Resource
 			return true;
 		}
 
-		private bool TryPackFileFromDisk(IO.EndianStream blockStream, string basePath,
+		private bool TryPackFileFromDisk(IO.EndianStream blockStream, string workPath,
 			EraFileEntryChunk file)
 		{
-			string path = System.IO.Path.Combine(basePath, file.FileName);
+			string path = System.IO.Path.Combine(workPath, file.FileName);
 			if (!System.IO.File.Exists(path))
 			{
 				return false;

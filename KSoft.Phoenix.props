@@ -9,11 +9,11 @@ For C#, you have to add it:
 -->
 
   <PropertyGroup>
-	<!--REMINDER: MSBuildProjectDirectory doesn't include final backslash-->
-	<VitaRootDir Condition=" '$(VitaRootDir)' == '' ">$(MSBuildProjectDirectory)\..\..\..\</VitaRootDir>
+    <!--REMINDER: MSBuildProjectDirectory doesn't include final backslash-->
+    <VitaRootDir Condition=" '$(VitaRootDir)' == '' ">$(MSBuildProjectDirectory)\..\..\..\</VitaRootDir>
 
-	<VitaSolutionFamily Condition=" '$(VitaSolutionFamily)' == '' ">Phoenix</VitaSolutionFamily>
-	<VitaUseSolutionFamilyDirs>true</VitaUseSolutionFamilyDirs>
+    <VitaSolutionFamily Condition=" '$(VitaSolutionFamily)' == '' ">Phoenix</VitaSolutionFamily>
+    <VitaUseSolutionFamilyDirs>true</VitaUseSolutionFamilyDirs>
   </PropertyGroup>
 
   <Import Project="$(VitaRootDir)KSoft\shared\config\msbuild\VitaCommon.props" />
