@@ -386,6 +386,9 @@ namespace KSoft.Phoenix.Resource
 				fs.Write(buffer, 0, buffer.Length);
 			}
 
+			System.IO.File.SetCreationTimeUtc(fullPath, file.FileDateTime);
+			System.IO.File.SetLastWriteTimeUtc(fullPath, file.FileDateTime);
+
 			if (ResourceUtils.IsXmbFile(fullPath))
 			{
 				if (!expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))

@@ -11,16 +11,30 @@ namespace KSoft.Phoenix.Resource.Test
 	public sealed class EraFileTest
 		: BaseTestClass
 	{
-		const string kEraCryptInputDir = @"C:\Mount\A\Xbox\Xbox360\Games\Halo Wars\";
+		const string kEraCryptInputDir = @"C:\KStudio\HaloWars\PC\";
 		const string kEraCryptOutputDir = kTestResultsPath;
-		const string kEraCryptTestFileName = "miniloader";
+		const string kEraCryptTestFileName = "root";
 
-		const EraFileExpanderOptions kEraExpanderTestOptions = 0;
+		static readonly Collections.BitVector32 kEraUtilTestOptions = new Collections.BitVector32()
+			.Set(EraFileUtilOptions.x64)
+			;
+		static readonly Collections.BitVector32 kEraExpanderTestOptions = new Collections.BitVector32()
+			//EraFileExpanderOptions
+			.Set(EraFileExpanderOptions.OnlyDumpListing)
+			.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
+			;
+		static readonly Collections.BitVector32 kEraBuilderTestOptions = new Collections.BitVector32()
+			//EraFileBuilderOptions
+			;
 		const string kEraExpanderFileName = kEraCryptTestFileName;
-		const string kEraExpanderInputFile = kEraCryptOutputDir + kEraExpanderFileName
-			+ EraFileUtil.kExtensionEncrypted
-			+ EraFileUtil.kExtensionDecrypted;
+		const string kEraExpanderInputFile =
+			kEraCryptOutputDir
+				+ kEraExpanderFileName
+					+ EraFileUtil.kExtensionEncrypted
+					+ EraFileUtil.kExtensionDecrypted
+			;
 		const string kEraExpanderOutputDir = kTestResultsPath + @"assets\";
+		const string kEraBuilderOutputDir = kEraCryptInputDir;
 
 		[TestMethod]
 		public void EraFile_DecryptTest()
@@ -51,8 +65,10 @@ namespace KSoft.Phoenix.Resource.Test
 		{
 			bool result = false;
 
-			using (var expander = new EraFileExpander(kEraExpanderInputFile, kEraExpanderTestOptions))
+			using (var expander = new EraFileExpander(kEraExpanderInputFile))
 			{
+				expander.Options = kEraUtilTestOptions;
+				expander.ExpanderOptions = kEraExpanderTestOptions;
 				expander.VerboseOutput = Console.Out;
 
 				result = expander.Read();
@@ -72,14 +88,83 @@ namespace KSoft.Phoenix.Resource.Test
 
 			using (var builder = new EraFileBuilder(k_listing_path))
 			{
+				builder.Options = kEraUtilTestOptions;
+				builder.BuilderOptions = kEraBuilderTestOptions;
 				builder.VerboseOutput = Console.Out;
 
 				result = builder.Read();
 				Assert.IsTrue(result, "Read listing failed");
 
-				result = builder.Build(kEraExpanderOutputDir, kEraCryptTestFileName + "_rebuilt");
+				result = builder.Build(kEraExpanderOutputDir, kEraCryptTestFileName + "_rebuilt", kEraBuilderOutputDir);
 				Assert.IsTrue(result, "Build failed");
 			}
+		}
+
+		[TestMethod]
+		public void EraFile_ExpandAndBuildTest()
+		{
+			const string k_input_era =
+				kEraCryptInputDir
+					+ kEraExpanderFileName
+						+ EraFileUtil.kExtensionEncrypted
+				;
+			const string k_listing_path = kEraExpanderOutputDir + kEraExpanderFileName;
+			const string k_rebuilt_name = kEraCryptTestFileName + "_rebuilt";
+			const string k_rebuilt_era =
+				kEraCryptInputDir
+				+ k_rebuilt_name
+					+ EraFileUtil.kExtensionEncrypted
+				;
+
+			bool result = false;
+
+			#region Expand
+			if(false)using (var expander = new EraFileExpander(k_input_era))
+			{
+				expander.Options = kEraUtilTestOptions;
+				expander.ExpanderOptions = kEraExpanderTestOptions
+					//.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
+					.Set(EraFileExpanderOptions.Decrypt);
+				expander.VerboseOutput = Console.Out;
+
+				result = expander.Read();
+				Assert.IsTrue(result, "Read failed");
+
+				result = expander.ExpandTo(kEraExpanderOutputDir, kEraExpanderFileName);
+				Assert.IsTrue(result, "Expansion failed");
+			}
+			#endregion
+			#region Build
+			using (var builder = new EraFileBuilder(k_listing_path))
+			{
+				builder.Options = kEraUtilTestOptions;
+				builder.BuilderOptions = kEraBuilderTestOptions
+					.Set(EraFileBuilderOptions.Encrypt);
+				builder.VerboseOutput = Console.Out;
+
+				result = builder.Read();
+				Assert.IsTrue(result, "Read listing failed");
+
+				result = builder.Build(kEraExpanderOutputDir, k_rebuilt_name, kEraBuilderOutputDir);
+				Assert.IsTrue(result, "Build failed");
+			}
+			#endregion
+			#region Verify
+			using (var expander = new EraFileExpander(k_rebuilt_era))
+			{
+				expander.Options = kEraUtilTestOptions;
+				expander.ExpanderOptions = kEraExpanderTestOptions
+					.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
+					.Set(EraFileExpanderOptions.Decrypt);
+				expander.VerboseOutput = Console.Out;
+
+				result = expander.Read();
+				Assert.IsTrue(result, "Re-Read failed");
+
+				//result = expander.ExpandTo(kTestResultsPath + @"assets2\", k_rebuilt_name);
+				//Assert.IsTrue(result, "Re-Expansion failed");
+			}
+			#endregion
 		}
 	};
 }
