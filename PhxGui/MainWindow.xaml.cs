@@ -1093,6 +1093,10 @@ namespace PhxGui
 			var v1_11088_1_2 = new PatchInfo("2C1E144727CFF2AADDAE6BB71EE66B7820D3E163")
 				.Add(0x6D971F, 0xE9, 0x0A, 0x01, 0x00, 0x00);
 			kPatches.Add(v1_11088_1_2);
+
+			var v1_11279_1_2 = new PatchInfo("BF664000801CAC222514B7ACE88C17768B86CC30")
+				.Add(0x6DE03F, 0xE9, 0x0A, 0x01, 0x00, 0x00);
+			kPatches.Add(v1_11279_1_2);
 		}
 
 		public static bool TryGetPatchInfo(string actualSha1, out PatchInfo info)

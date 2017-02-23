@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
@@ -184,6 +185,40 @@ namespace KSoft.Security.Cryptography
 
 				Array.Copy(result_final, result, result_final.Length);
 			}
+		}
+
+		public static bool Sha1HashFile(string fileName, byte[] result, out long fileLength)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(fileName));
+			Contract.Requires<ArgumentNullException>(result != null);
+			Contract.Requires(result.Length >= kResultSize);
+
+			fileLength = -1;
+
+			try
+			{
+				if (!File.Exists(fileName))
+					return false;
+
+				byte[] result_final;
+
+				using (var fs = File.OpenRead(fileName))
+				using (var sha = new SHA1CryptoServiceProvider())
+				{
+					result_final = sha.ComputeHash(fs, 0, fs.Length);
+
+					fileLength = fs.Length;
+				}
+
+				Array.Copy(result_final, result, result_final.Length);
+			}
+			catch (Exception ex)
+			{
+				Debug.Trace.Security.TraceInformation(ex.ToString());
+				return false;
+			}
+
+			return true;
 		}
 
 		public static TigerHashBase CreateHaloWarsTigerHash()
