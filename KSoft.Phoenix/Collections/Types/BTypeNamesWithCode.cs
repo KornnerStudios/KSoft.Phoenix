@@ -24,7 +24,7 @@ namespace KSoft.Collections
 
 			if (idx.IsNone())
 			{
-				idx = mCodeTypes.GetMemberId(memberName);
+				idx = mCodeTypes.TryGetMemberId(memberName);
 				if (idx.IsNotNone())
 					idx += Count;
 			}
@@ -34,7 +34,7 @@ namespace KSoft.Collections
 		public override string TryGetMemberName(int memberId)
 		{
 			string name = base.TryGetMemberName(memberId);
-			
+
 			if (name == null)
 				return mCodeTypes.TryGetMemberName(memberId);
 

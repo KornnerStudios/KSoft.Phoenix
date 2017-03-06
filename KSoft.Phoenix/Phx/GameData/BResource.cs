@@ -27,7 +27,11 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		bool mDeductable;
-		public bool Deductable { get { return mDeductable; } }
+		public bool Deductable
+		{
+			get { return mDeductable; }
+			set { mDeductable = value; }
+		}
 
 		public BResource() { }
 		internal BResource(bool deductable) { mDeductable = deductable; }

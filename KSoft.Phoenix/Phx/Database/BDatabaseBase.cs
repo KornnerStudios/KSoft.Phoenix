@@ -36,7 +36,9 @@ namespace KSoft.Phoenix.Phx
 		public IReadOnlyDictionary<int, string> StringTable { get { return mStringTable; } }
 
 		public BGameData GameData { get; private set; }
+		// #NOTE place new DatabaseObjectKind code here
 		public Collections.BListAutoId<BDamageType> DamageTypes { get; private set; }
+		public Collections.BListAutoId<BProtoImpactEffect> ImpactEffects { get; private set; }
 		public Collections.BListAutoId<BWeaponType> WeaponTypes { get; private set; }
 		public Collections.BListAutoId<BUserClass> UserClasses { get; private set; }
 		public Collections.BTypeNamesWithCode ObjectTypes { get; private set; }
@@ -58,6 +60,7 @@ namespace KSoft.Phoenix.Phx
 
 			GameData = new BGameData();
 			DamageTypes = new Collections.BListAutoId<BDamageType>();
+			ImpactEffects = new Collections.BListAutoId<BProtoImpactEffect>();
 			WeaponTypes = new Collections.BListAutoId<BWeaponType>();
 			UserClasses = new Collections.BListAutoId<BUserClass>();
 			ObjectTypes = new Collections.BTypeNamesWithCode(gameObjectTypes);
@@ -91,7 +94,10 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Database interfaces
+		// #NOTE place new DatabaseObjectKind code here
+
 		Dictionary<string, BDamageType> mDbiDamageTypes;
+		Dictionary<string, BProtoImpactEffect> mDbiImpactEffects;
 		Dictionary<string, BWeaponType> mDbiWeaponTypes;
 		Dictionary<string, BUserClass> mDbiUserClasses;
 		Dictionary<string, BAbility> mDbiAbilities;
@@ -105,6 +111,7 @@ namespace KSoft.Phoenix.Phx
 		void InitializeDatabaseInterfaces()
 		{
 			DamageTypes.SetupDatabaseInterface(out mDbiDamageTypes);
+			ImpactEffects.SetupDatabaseInterface(out mDbiImpactEffects);
 			WeaponTypes.SetupDatabaseInterface(out mDbiWeaponTypes);
 			UserClasses.SetupDatabaseInterface(out mDbiUserClasses);
 			Abilities.SetupDatabaseInterface(out mDbiAbilities);
@@ -116,25 +123,30 @@ namespace KSoft.Phoenix.Phx
 			Leaders.SetupDatabaseInterface(out mDbiLeaders);
 		}
 
-		static int TryGetId(Collections.BTypeNames dbi, string name)
+		static int TryGetId(Collections.IProtoEnum dbi, string name)
 		{
+			if (dbi == null)
+				return TypeExtensions.kNone;
+
 			return dbi.TryGetMemberId(name);
 		}
 		static string TryGetName(Collections.BTypeNames dbi, int id)
 		{
+			if (dbi == null)
+				return null;
+
 			if (id >= 0 && id < dbi.Count)
 				return dbi[id];
 
 			return null;
 		}
-		static int TryGetId<T>(Collections.BListAutoId<T> dbi, string name)
-			where T : class, Collections.IListAutoIdObject, new()
-		{
-			return dbi.TryGetMemberId(name);
-		}
+
 		internal static string TryGetName<T>(Collections.BListAutoId<T> dbi, int id)
 			where T : class, Collections.IListAutoIdObject, new()
 		{
+			if (dbi == null)
+				return null;
+
 			if (id >= 0 && id < dbi.Count)
 				return dbi[id].Data;
 
@@ -144,6 +156,8 @@ namespace KSoft.Phoenix.Phx
 			where T : class, Collections.IListAutoIdObject, new()
 		{
 			int id = TypeExtensions.kNone;
+			if (dbi == null)
+				return id;
 
 			T obj;
 			if (dbi.TryGetValue(name, out obj))
@@ -152,30 +166,35 @@ namespace KSoft.Phoenix.Phx
 			return id;
 		}
 
-		static int TryGetIdWithUndefined(Collections.BTypeNames dbi, string name)
+		static int TryGetIdWithUndefined(Collections.IHasUndefinedProtoMemberInterface dbi, string name)
 		{
+			if (dbi == null)
+				return TypeExtensions.kNone;
+
 			return dbi.UndefinedInterface.GetMemberIdOrUndefined(name);
 		}
-		static string TryGetNameWithUndefined(Collections.BTypeNames dbi, int id)
+		static string TryGetNameWithUndefined(Collections.IHasUndefinedProtoMemberInterface dbi, int id)
 		{
+			if (dbi == null)
+				return null;
+
 			return dbi.UndefinedInterface.GetMemberNameOrUndefined(id);
 		}
-		static int TryGetIdWithUndefined<T>(Collections.BListAutoId<T> dbi, string name)
-			where T : class, Collections.IListAutoIdObject, new()
-		{
-			return dbi.UndefinedInterface.GetMemberIdOrUndefined(name);
-		}
+
 		internal static string TryGetNameWithUndefined<T>(Collections.BListAutoId<T> dbi, int id)
 			where T : class, Collections.IListAutoIdObject, new()
 		{
+			if (dbi == null)
+				return null;
+
 			return dbi.UndefinedInterface.GetMemberNameOrUndefined(id);
 		}
-		internal static int TryGetIdWithUndefined<T>(Dictionary<string, T> dbi, string name, Collections.BListAutoId<T> list)
+		internal static int TryGetIdWithUndefined<T>(Dictionary<string, T> dbi, string name, Collections.IHasUndefinedProtoMemberInterface list)
 			where T : class, Collections.IListAutoIdObject, new()
 		{
 			int id = TryGetId(dbi, name, null);
 
-			if (id.IsNone())
+			if (id.IsNone() && list != null)
 				id = list.UndefinedInterface.GetMemberIdOrUndefined(name);
 
 			return id;
@@ -198,10 +217,15 @@ namespace KSoft.Phoenix.Phx
 
 		int TryGetIdUnit(string name)
 		{
-			int id = TryGetIdWithUndefined(mDbiObjects, name, Objects);
+			int id = TryGetId/*WithUndefined*/(mDbiObjects, name, Objects);
 
-			if (id.IsNone() && (id = TryGetId(ObjectTypes, name)).IsNotNone())
-				ObjectIdIsObjectTypeBitSet(ref id);
+			if (id.IsNone())
+			{
+				if ((id = TryGetId(ObjectTypes, name)).IsNotNone())
+					ObjectIdIsObjectTypeBitSet(ref id);
+				else
+					id = TryGetIdWithUndefined(mDbiObjects, name, Objects);
+			}
 
 			return id;
 		}
@@ -211,6 +235,45 @@ namespace KSoft.Phoenix.Phx
 				return TryGetNameWithUndefined(ObjectTypes, id);
 
 			return TryGetNameWithUndefined(Objects, id);
+		}
+
+		public Collections.IBTypeNames GetNamesInterface(GameDataObjectKind kind)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+
+			switch (kind)
+			{
+			case GameDataObjectKind.Cost:	return GameData.Resources;
+			case GameDataObjectKind.Pop:	return GameData.Populations;
+			case GameDataObjectKind.Rate:	return GameData.Rates;
+
+			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
+			}
+		}
+		public Collections.IBTypeNames GetNamesInterface(DatabaseObjectKind kind)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != DatabaseObjectKind.None);
+
+			// #NOTE place new DatabaseObjectKind code here
+
+			switch (kind)
+			{
+			case DatabaseObjectKind.Ability:	return Abilities;
+			case DatabaseObjectKind.Civ:		return Civs;
+			case DatabaseObjectKind.DamageType:	return DamageTypes;
+			case DatabaseObjectKind.ImpactEffect: return ImpactEffects;
+			case DatabaseObjectKind.Leader:		return Leaders;
+			case DatabaseObjectKind.Object:		return Objects;
+			case DatabaseObjectKind.ObjectType:	return ObjectTypes;
+			case DatabaseObjectKind.Power:		return Powers;
+			case DatabaseObjectKind.Squad:		return Squads;
+			case DatabaseObjectKind.Tech:		return Techs;
+			case DatabaseObjectKind.Unit:		return null; // #TODO?
+			case DatabaseObjectKind.UserClass:	return UserClasses;
+			case DatabaseObjectKind.WeaponType:	return WeaponTypes;
+
+			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
+			}
 		}
 
 		public int GetId(GameDataObjectKind kind, string name)
@@ -230,11 +293,14 @@ namespace KSoft.Phoenix.Phx
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != DatabaseObjectKind.None);
 
+			// #NOTE place new DatabaseObjectKind code here
+
 			switch (kind)
 			{
 			case DatabaseObjectKind.Ability:	return TryGetIdWithUndefined(mDbiAbilities, name, Abilities);
 			case DatabaseObjectKind.Civ:		return TryGetIdWithUndefined(mDbiCivs, name, Civs);
 			case DatabaseObjectKind.DamageType:	return TryGetIdWithUndefined(mDbiDamageTypes, name, DamageTypes);
+			case DatabaseObjectKind.ImpactEffect: return TryGetIdWithUndefined(mDbiImpactEffects, name, ImpactEffects);
 			case DatabaseObjectKind.Leader:		return TryGetIdWithUndefined(mDbiLeaders, name, Leaders);
 			case DatabaseObjectKind.Object:		return TryGetIdWithUndefined(mDbiObjects, name, Objects);
 			case DatabaseObjectKind.ObjectType:	return TryGetIdWithUndefined(ObjectTypes, name);
@@ -266,11 +332,14 @@ namespace KSoft.Phoenix.Phx
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != DatabaseObjectKind.None);
 
+			// #NOTE place new DatabaseObjectKind code here
+
 			switch (kind)
 			{
 			case DatabaseObjectKind.Ability:	return TryGetNameWithUndefined(Abilities, id);
 			case DatabaseObjectKind.Civ:		return TryGetNameWithUndefined(Civs, id);
 			case DatabaseObjectKind.DamageType:	return TryGetNameWithUndefined(DamageTypes, id);
+			case DatabaseObjectKind.ImpactEffect: return TryGetNameWithUndefined(ImpactEffects, id);
 			case DatabaseObjectKind.Leader:		return TryGetNameWithUndefined(Leaders, id);
 			case DatabaseObjectKind.Object:		return TryGetNameWithUndefined(Objects, id);
 			case DatabaseObjectKind.ObjectType:	return TryGetNameWithUndefined(ObjectTypes, id);

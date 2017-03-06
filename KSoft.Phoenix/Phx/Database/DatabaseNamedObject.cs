@@ -7,8 +7,6 @@ namespace KSoft.Phoenix.Phx
 		#region Xml constants
 		internal const string kXmlAttrName = "name";
 		internal const string kXmlAttrNameN = "Name";
-		const string kXmlElementRolloverTextID = "RolloverTextID";
-		const string kXmlElementPrereqTextID = "PrereqTextID";
 		#endregion
 
 		#region DisplayNameID
@@ -21,12 +19,34 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region RolloverTextID
+		int mRolloverTextID = TypeExtensions.kNone;
+		[Meta.LocStringReference]
+		public int RolloverTextID
+		{
+			get { return mRolloverTextID; }
+			set { mRolloverTextID = value; }
+		}
+		#endregion
+
+		#region PrereqTextID
+		int mPrereqTextID = TypeExtensions.kNone;
+		[Meta.LocStringReference]
+		public int PrereqTextID
+		{
+			get { return mPrereqTextID; }
+			set { mPrereqTextID = value; }
+		}
+		#endregion
+
 		#region IXmlElementStreamable Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			var xs = s.GetSerializerInterface();
 
 			xs.StreamStringID(s, "DisplayNameID", ref mDisplayNameID);
+			xs.StreamStringID(s, "RolloverTextID", ref mRolloverTextID);
+			xs.StreamStringID(s, "PrereqTextID", ref mPrereqTextID);
 		}
 		#endregion
 	};

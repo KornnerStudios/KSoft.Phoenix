@@ -12,12 +12,12 @@ namespace KSoft.Phoenix.Phx
 		{
 			ElementName = "TargetPriority",
 		};
-
-		const string kXmlAttrType = "type"; // proto unit or object type
 		#endregion
 
 		int mUnitTypeID = TypeExtensions.kNone;
+		[Meta.UnitReference]
 		public int UnitTypeID { get { return mUnitTypeID; } }
+
 		float mPriority = PhxUtil.kInvalidSingle;
 		public float Priority { get { return mPriority; } }
 
@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			xs.StreamDBID(s, kXmlAttrType, ref mUnitTypeID, DatabaseObjectKind.Unit, false, XML.XmlUtil.kSourceAttr);
+			xs.StreamDBID(s, "type", ref mUnitTypeID, DatabaseObjectKind.Unit, false, XML.XmlUtil.kSourceAttr);
 			s.StreamCursor(ref mPriority);
 		}
 		#endregion

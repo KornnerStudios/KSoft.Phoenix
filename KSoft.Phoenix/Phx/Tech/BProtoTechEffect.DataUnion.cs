@@ -6,40 +6,23 @@ namespace KSoft.Phoenix.Phx
 {
 	partial class BProtoTechEffect
 	{
-		#region Xml constants
-		const string kXmlAttrODT_Rate = "Rate";
-
-		const string kXmlAttrODT_Cost_Resource = "Resource";
-		const string kXmlAttrODT_Cost_UnitType = "UnitType";
-
-		const string kXmlAttrODT_Command_Type = "commandType";
-		const string kXmlAttrODT_Command_Data = "CommandData";
-
-		const string kXmlAttrODT_DamageModifier_WeapType = "WeaponType";
-		const string kXmlAttrODT_DamageModifier_DmgType = "DamageType";
-
-		const string kXmlAttrODT_Pop_PopType = "popType";
-
-		const string kXmlAttrODT_TrainLimit_Unit = "unitType";
-		const string kXmlAttrODT_TrainLimit_Squad = "squadType";
-
-		const string kXmlAttrODT_Power_Power = "power";
-
-		const string kXmlAttrODT_AbilityRecoverTime_Ability = "Ability";
-		#endregion
-
 		[Interop.StructLayout(Interop.LayoutKind.Explicit, Size = DataUnion.kSizeOf)]
 		struct DataUnion
 		{
-			internal const int kSizeOf = 12;
+			internal const int kSizeOf = 12 // type, 1st and 2nd param
+				+ 4 // pad
+				+ sizeof(ulong) // object reference
+				;
 			/// <summary>Offset of the first parameter</summary>
 			const int kFirstParam = 4;
 			/// <summary>Offset of the second parameter</summary>
 			const int kSecondParam = 8;
+			const int kStringParam = 16;
 
 			[Interop.FieldOffset(0)] public BObjectDataType SubType;
 			[Interop.FieldOffset(kFirstParam)] public int ID;
 			[Interop.FieldOffset(kSecondParam)] public int ID2;
+			[Interop.FieldOffset(kStringParam)] public string StringValue;
 
 			[Interop.FieldOffset(kFirstParam)] public int Cost_Type;
 			[Interop.FieldOffset(kSecondParam)] public int Cost_UnitType; // proto object or type ID
@@ -58,24 +41,32 @@ namespace KSoft.Phoenix.Phx
 
 			[Interop.FieldOffset(kFirstParam)] public BProtoTechEffectSetAgeLevel SetAgeLevel;
 
+			[Interop.FieldOffset(kStringParam)] public string TurretRate_HardpointName;
+
+			[Interop.FieldOffset(kFirstParam)] public BObjectDataIconType Icon_Type;
+			[Interop.FieldOffset(kStringParam)] public string Icon_Name;
+
+			[Interop.FieldOffset(kStringParam)] public string HPBar_Name;
+
 			public void Initialize()
 			{
 				SubType = BObjectDataType.Invalid;
 				ID = ID2 = TypeExtensions.kNone;
+				StringValue = null;
 			}
 
-			public void StreamCost<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
+			public void StreamCost<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs, bool isResourceOptional = false)
 				where TDoc : class
 				where TCursor : class
 			{
-				xs.StreamTypeName(s, kXmlAttrODT_Cost_Resource, ref Cost_Type, GameDataObjectKind.Cost, false, XML.XmlUtil.kSourceAttr);
-				xs.StreamDBID(s, kXmlAttrODT_Cost_UnitType, ref Cost_UnitType, DatabaseObjectKind.Unit, true, XML.XmlUtil.kSourceAttr);
+				xs.StreamTypeName(s, "Resource", ref Cost_Type, GameDataObjectKind.Cost, isResourceOptional, XML.XmlUtil.kSourceAttr);
+				xs.StreamDBID(s, "UnitType", ref Cost_UnitType, DatabaseObjectKind.Object, true, XML.XmlUtil.kSourceAttr);
 			}
 			void StreamCommandData<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
 				where TDoc : class
 				where TCursor : class
 			{
-				const string attr_name = kXmlAttrODT_Command_Data;
+				const string attr_name = "CommandData";
 
 				switch (CommandType)
 				{
@@ -107,51 +98,68 @@ namespace KSoft.Phoenix.Phx
 				where TDoc : class
 				where TCursor : class
 			{
-				if (s.StreamAttributeEnumOpt(kXmlAttrODT_Command_Type, ref CommandType, e => e != BProtoObjectCommandType.Invalid))
+				// #NOTE engine parses this as "CommandType", but its parser ignores case
+				if (s.StreamAttributeEnumOpt("commandType", ref CommandType, e => e != BProtoObjectCommandType.Invalid))
 					StreamCommandData(s, xs);
 			}
 			public void StreamDamageModifier<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
 				where TDoc : class
 				where TCursor : class
 			{
-				xs.StreamDBID(s, kXmlAttrODT_DamageModifier_WeapType, ref DmgMod_WeapType, DatabaseObjectKind.WeaponType, false, XML.XmlUtil.kSourceAttr);
-				xs.StreamDBID(s, kXmlAttrODT_DamageModifier_DmgType, ref DmgMod_DmgType, DatabaseObjectKind.DamageType, false, XML.XmlUtil.kSourceAttr);
+				xs.StreamDBID(s, "WeaponType", ref DmgMod_WeapType, DatabaseObjectKind.WeaponType, false, XML.XmlUtil.kSourceAttr);
+				xs.StreamDBID(s, "DamageType", ref DmgMod_DmgType, DatabaseObjectKind.DamageType, false, XML.XmlUtil.kSourceAttr);
 			}
 			public void StreamTrainLimit<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs, DatabaseObjectKind kind)
 				where TDoc : class
 				where TCursor : class
 			{
+				// #NOTE engine parses these as "UnitType" and "SquadType", but its parser ignores case
+
 				if (kind == DatabaseObjectKind.Object)
-					xs.StreamDBID(s, kXmlAttrODT_TrainLimit_Unit, ref TrainLimitType, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
+					xs.StreamDBID(s, "unitType", ref TrainLimitType, kind, false, XML.XmlUtil.kSourceAttr);
 				else if (kind == DatabaseObjectKind.Squad)
-					xs.StreamDBID(s, kXmlAttrODT_TrainLimit_Squad, ref TrainLimitType, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceAttr);
+					xs.StreamDBID(s, "squadType", ref TrainLimitType, kind, false, XML.XmlUtil.kSourceAttr);
+			}
+			public void StreamIcon<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
+				where TDoc : class
+				where TCursor : class
+			{
+				// #NOTE engine parses this as "IconType", but its parser ignores case
+				s.StreamAttributeEnum("iconType", ref Icon_Type);
+				// #NOTE engine parses this as "IconType", but its parser ignores case
+				s.StreamString("iconName", ref Icon_Name, false);
 			}
 		};
 
 		#region ID variants
+		[Meta.BWeaponTypeReference]
 		public int WeaponTypeID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Data);
 			Contract.Requires(SubType == BObjectDataType.DamageModifier);
 			return mDU.DmgMod_WeapType;
 		} }
+		[Meta.BDamageTypeReference]
 		public int DamageTypeID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Data);
 			Contract.Requires(SubType == BObjectDataType.DamageModifier);
 			return mDU.DmgMod_DmgType;
 		} }
 
+		[Meta.RateReference]
 		public int RateID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Data);
 			Contract.Requires(SubType == BObjectDataType.RateAmount || SubType == BObjectDataType.RateMultiplier);
 			return mDU.ID;
 		} }
 
+		[Meta.PopulationReference]
 		public int PopID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Data);
 			Contract.Requires(SubType == BObjectDataType.PopCap || SubType == BObjectDataType.PopMax);
 			return mDU.ID;
 		} }
 
+		[Meta.BProtoPowerReference]
 		public int PowerID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Data);
 			Contract.Requires(SubType == BObjectDataType.PowerRechargeTime || SubType == BObjectDataType.PowerUseLimit || SubType == BObjectDataType.PowerLevel);
@@ -170,18 +178,22 @@ namespace KSoft.Phoenix.Phx
 			Contract.Requires(Type == BProtoTechEffectType.TransformProtoUnit || Type == BProtoTechEffectType.TransformProtoSquad);
 			return mDU.ToTypeID;
 		} }
+		[Meta.BProtoObjectReference]
 		public int BuildObjectID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Build);
 			return mDU.ToTypeID;
 		} }
+		[Meta.BProtoPowerReference]
 		public int GodPowerID { get {
 			Contract.Requires(Type == BProtoTechEffectType.GodPower);
 			return mDU.ID;
 		} }
+		[Meta.BProtoTechReference]
 		public int TechStatusTechID { get {
 			Contract.Requires(Type == BProtoTechEffectType.TechStatus);
 			return mDU.ID;
 		} }
+		[Meta.BAbilityReference]
 		public int AbilityID { get {
 			Contract.Requires(Type == BProtoTechEffectType.Ability);
 			return mDU.ID;

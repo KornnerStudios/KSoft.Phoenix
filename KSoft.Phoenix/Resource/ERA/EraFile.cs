@@ -522,6 +522,13 @@ namespace KSoft.Phoenix.Resource
 					return false;
 				}
 			}
+
+			if (expander.ExpanderOptions.Test(EraFileExpanderOptions.IgnoreNonDataFiles))
+			{
+				if (!ResourceUtils.IsDataBasedFile(path))
+					return false;
+			}
+
 			return true;
 		}
 		#endregion

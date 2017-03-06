@@ -151,21 +151,29 @@ namespace KSoft.Phoenix.Xmb
 			#endregion
 
 			#region FromXml
-			public void FromXmlProcessChildren(XmbFile xmb, XmlElement e)
+			public void FromXmlProcessChildren(XmbFileBuilder builder, XmlElement e)
 			{
 			}
-			public void FromXmlProcessAttributes(XmbFile xmb, XmlElement e)
+			public void FromXmlProcessAttributes(XmbFileBuilder builder, XmlElement e)
 			{
 			}
-			public void FromXmlInitialize(XmbFile xmb, int rootIndex, int index, XmlElement e)
+			public void FromXmlInitialize(XmbFileBuilder builder, int rootIndex, int index, XmlElement e)
 			{
 				this.Index = index;
 				this.RootElementIndex = rootIndex;
 
-				if (e.HasAttributes) Attributes = new List<KeyValuePair<XmbVariant, XmbVariant>>(e.Attributes.Count);
-				if (e.HasChildNodes) ChildrenIndices = new List<int>(e.ChildNodes.Count);
+				if (e.HasAttributes)
+					Attributes = new List<KeyValuePair<XmbVariant, XmbVariant>>(e.Attributes.Count);
+				if (e.HasChildNodes)
+					ChildrenIndices = new List<int>(e.ChildNodes.Count);
 
 				string name = e.Name;
+				string text = e.Value;
+
+				if (e.HasAttributes)
+					FromXmlProcessAttributes(builder, e);
+				if (e.HasChildNodes)
+					FromXmlProcessChildren(builder, e);
 			}
 			#endregion
 			#region ToXml

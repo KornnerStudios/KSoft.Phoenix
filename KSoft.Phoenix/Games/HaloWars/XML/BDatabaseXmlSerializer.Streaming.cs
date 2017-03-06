@@ -12,6 +12,8 @@ namespace KSoft.Phoenix.HaloWars
 			// as we assume the UndefinedHandle/ProtoEnum shit is in use
 			if (!gRemoveUndefined) return;
 
+			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
+				"Fixing WeaponTypes with missing types");
 			Database.WeaponTypes.DynamicAdd(new Phx.BWeaponType(), "Cannon");
 			Database.WeaponTypes.DynamicAdd(new Phx.BWeaponType(), "needler");
 			Database.WeaponTypes.DynamicAdd(new Phx.BWeaponType(), "HeavyNeedler");
@@ -19,6 +21,7 @@ namespace KSoft.Phoenix.HaloWars
 			Database.WeaponTypes.DynamicAdd(new Phx.BWeaponType(), "HeavyPlasma");
 		}
 
+		#region Fix GameData
 		static void FixGameDataXmlInfectionMapEntryInfected(IO.XmlElementStream s, string infected)
 		{
 			string xpath = string.Format("InfectionMap/InfectionMapEntry[contains(@infected, '{0}')]", infected);
@@ -74,6 +77,25 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		protected override void FixGameDataXml(IO.XmlElementStream s)
 		{
+			string xpath = null;
+			XmlNodeList elements = null;
+			#region Fix LeaderPowerChargeResource
+			if (gRemoveUndefined)
+			{
+				xpath = "LeaderPowerChargeResource";
+				elements = s.Cursor.SelectNodes(xpath);
+				if (elements.Count > 0) foreach (XmlElement e in elements)
+				{
+					if (e.InnerText != "LeaderPowerCharge")
+						continue;
+
+					Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
+						"Fixing GameData XPath={0}");
+					e.InnerText = "";
+				}
+			}
+			#endregion
+
 			FixGameDataXmlInfectionMap(Database.Engine.Build, s);
 		}
 		static void FixGameDataResources(Phx.BGameData gd)
@@ -82,6 +104,8 @@ namespace KSoft.Phoenix.HaloWars
 			// as we assume the UndefinedHandle/ProtoEnum shit is in use
 			if (!gRemoveUndefined) return;
 
+			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
+				"Fixing GameData with missing resource types");
 			gd.Resources.DynamicAdd(new Phx.BResource(true), "Favor"); // [2]
 			gd.Resources.DynamicAdd(new Phx.BResource(true), "Relics");// [3]
 			gd.Resources.DynamicAdd(new Phx.BResource(true), "Honor"); // [4]
@@ -90,7 +114,9 @@ namespace KSoft.Phoenix.HaloWars
 		{
 			//FixGameDataResources(Database.GameData);
 		}
+		#endregion
 
+		#region Fix Objects
 		// Fix float values which are in an invalid format for .NET's parsing
 		static void FixObjectsXmlInvalidSinglesCobra(IO.XmlElementStream s)
 		{
@@ -140,7 +166,9 @@ namespace KSoft.Phoenix.HaloWars
 			if(build == Engine.PhxEngineBuild.Release)
 				FixObjectsXmlInvalidFlags(s);
 		}
+		#endregion
 
+		#region Fix Squads
 		static void FixSquadsXmlAlphaCostElements(IO.XmlElementStream s)
 		{
 			const string kAttrNameOld = "ResourceType";
@@ -179,10 +207,12 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		protected override void FixSquadsXml(IO.XmlElementStream s)
 		{
-			if(Database.Engine.Build == Engine.PhxEngineBuild.Alpha)
+			if (Database.Engine.Build == Engine.PhxEngineBuild.Alpha)
 				FixSquadsXmlAlpha(s);
 		}
+		#endregion
 
+		#region Fix Techs
 		static void FixTechsXmlBadNames(IO.XmlElementStream s, XML.BListXmlParams op, Engine.PhxEngineBuild build)
 		{
 			const string k_attr_command_data = "CommandData";
@@ -340,7 +370,9 @@ namespace KSoft.Phoenix.HaloWars
 			if(gRemoveUndefined)
 				FixTechsXmlBadNames(s, Phx.BProtoTech.kBListXmlParams, Database.Engine.Build);
 		}
+		#endregion
 
+		#region Fix Tactics
 		static void FixTacticsXmlBadWeapons(IO.XmlElementStream s, string name)
 		{
 			string xpath;
@@ -595,5 +627,6 @@ namespace KSoft.Phoenix.HaloWars
 			FixTacticsXmlBadWeapons(s, name);
 			FixTacticsXmlBadActions(s, name);
 		}
+		#endregion
 	};
 }

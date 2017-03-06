@@ -5,10 +5,24 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Collections
 {
+	public interface IBList
+	{
+		BListParams Params { get; }
+
+		int Count { get; }
+
+		void Clear();
+
+		bool IsEmpty { get; }
+
+		void Sort();
+	};
+
 	/// <summary>Our base interface for lists of comparable objects</summary>
 	/// <typeparam name="T">Comparable object's type</typeparam>
 	public abstract class BListBase<T>
-		: IEqualityComparer<BListBase<T>>
+		: IBList
+		, IEqualityComparer<BListBase<T>>
 		, IEnumerable<T>
 	{
 		#region kValueEqualityComparer
@@ -94,6 +108,12 @@ namespace KSoft.Collections
 		internal void AddItem(T item)
 		{
 			mList.Add(item);
+		}
+
+		public virtual void Clear()
+		{
+			if (mList != null)
+				mList.Clear();
 		}
 
 		#region IEnumerable<T> Members

@@ -151,20 +151,32 @@ namespace KSoft.Phoenix.XML
 		}
 		#endregion
 
-		public void StreamStringID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string name,
-			ref int value, IO.TagElementNodeType type = XmlUtil.kSourceElement)
+		public bool StreamStringID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string xmlName,
+			ref int value, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
 			where TDoc : class
 			where TCursor : class
 		{
-				 if (type == XmlUtil.kSourceElement)	s.StreamElementOpt(name, ref value, Predicates.IsNotNone);
-			else if (type == XmlUtil.kSourceAttr)		s.StreamAttributeOpt(name, ref value, Predicates.IsNotNone);
-			else if (type == XmlUtil.kSourceCursor)		s.StreamCursor(ref value);
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+
+			bool was_streamed = false;
+
+			if (xmlSource == XmlUtil.kSourceElement)
+				was_streamed = s.StreamElementOpt(xmlName, ref value, Predicates.IsNotNone);
+			else if (xmlSource == XmlUtil.kSourceAttr)
+				was_streamed = s.StreamAttributeOpt(xmlName, ref value, Predicates.IsNotNone);
+			else if (xmlSource == XmlUtil.kSourceCursor)
+			{
+				was_streamed = true;
+				s.StreamCursor(ref value);
+			}
 
 			if (s.IsReading)
 			{
 				if (value.IsNotNone())
 					Database.AddStringIDReference(value);
 			}
+
+			return was_streamed;
 		}
 
 		[System.Diagnostics.Conditional("TRACE")]
@@ -235,8 +247,14 @@ namespace KSoft.Phoenix.XML
 				else
 					dbid = TypeExtensions.kNone;
 			}
-			else if (s.IsWriting && dbid.IsNotNone())
+			else if (s.IsWriting)
 			{
+				if (dbid.IsNotNone())
+				{
+					was_streamed = false;
+					return was_streamed;
+				}
+
 				id_name = Database.GetName(kind, dbid);
 				Contract.Assert(!string.IsNullOrEmpty(id_name));
 
@@ -249,7 +267,7 @@ namespace KSoft.Phoenix.XML
 			return was_streamed;
 		}
 		public bool StreamDBID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
-			string xmlName, ref int dbid, 
+			string xmlName, ref int dbid,
 			Phx.DatabaseObjectKind kind,
 			bool isOptional = true, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
 			where TDoc : class
@@ -278,8 +296,14 @@ namespace KSoft.Phoenix.XML
 				else
 					dbid = TypeExtensions.kNone;
 			}
-			else if (s.IsWriting && dbid.IsNotNone())
+			else if (s.IsWriting)
 			{
+				if (dbid.IsNotNone())
+				{
+					was_streamed = false;
+					return was_streamed;
+				}
+
 				id_name = Database.GetName(kind, dbid);
 				Contract.Assert(!string.IsNullOrEmpty(id_name));
 
@@ -292,28 +316,75 @@ namespace KSoft.Phoenix.XML
 			return was_streamed;
 		}
 
+		public bool StreamDBID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s
+			, string xmlName, List<int> dbidList
+			, Phx.DatabaseObjectKind kind
+			, bool isOptional = true, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
+			where TDoc : class
+			where TCursor : class
+		{
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource != IO.TagElementNodeType.Attribute);
+
+			bool was_streamed = false;
+
+			if (s.IsReading)
+			{
+				XmlUtil.ReadDetermineListSize(s, dbidList);
+
+				foreach (var n in XmlUtil.ReadGetNodes(s, xmlName, xmlSource))
+				{
+					using (s.EnterCursorBookmark(n))
+					{
+						int dbid = TypeExtensions.kNone;
+						if (StreamDBID(s, xmlName, ref dbid, kind, isOptional, xmlSource))
+						{
+							was_streamed = true;
+							dbidList.Add(dbid);
+						}
+					}
+				}
+			}
+			else if (s.IsWriting && dbidList.Count > 0)
+			{
+				was_streamed = true;
+
+				foreach (int dbid in dbidList)
+				{
+					int dbidCopy = dbid;
+					using (s.EnterCursorBookmark(xmlName))
+						StreamDBID(s, xmlName, ref dbidCopy, kind, isOptional, xmlSource);
+				}
+			}
+
+			return was_streamed;
+		}
+
+		/// <summary>Stream the current element's Text as a DamageType</summary>
 		internal static void StreamDamageType<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
-			ref int damangeType)
+			[Phx.Meta.BDamageTypeReference] ref int damangeType)
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, null, ref damangeType, Phx.DatabaseObjectKind.DamageType,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref damangeType, Phx.DatabaseObjectKind.DamageType,
 				false, XmlUtil.kSourceCursor);
 		}
+		/// <summary>Stream the current element's Text as a ProtoSquad</summary>
 		internal static void StreamSquadID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
-			ref int squadProtoId)
+			[Phx.Meta.BProtoSquadReference] ref int squadProtoId)
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, null, ref squadProtoId, Phx.DatabaseObjectKind.Squad,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref squadProtoId, Phx.DatabaseObjectKind.Squad,
 				false, XmlUtil.kSourceCursor);
 		}
+		/// <summary>Stream the current element's Text as a ProtoObject or ObjectType</summary>
 		internal static void StreamUnitID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
 			ref int unitProtoId)
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, null, ref unitProtoId, Phx.DatabaseObjectKind.Unit,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref unitProtoId, Phx.DatabaseObjectKind.Unit,
 				false, XmlUtil.kSourceCursor);
 		}
 	};

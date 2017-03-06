@@ -19,6 +19,7 @@ namespace KSoft.Phoenix.Resource
 		Decrypt,
 		DontLoadEntireEraIntoMemory,
 		DontRemoveXmlOrXmbFiles,
+		IgnoreNonDataFiles,
 
 		[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 	};

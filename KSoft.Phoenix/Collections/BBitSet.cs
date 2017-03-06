@@ -13,7 +13,7 @@ namespace KSoft.Collections
 
 		/// <summary>Is this bitset void of any ON bits?</summary>
 		public bool IsEmpty { get {
-			return mBits == null;
+			return mBits == null || mBits.IsAllClear;
 		} }
 		/// <summary>Number of bits in the set, both ON and OFF</summary>
 		public int Count { get {
@@ -38,10 +38,29 @@ namespace KSoft.Collections
 			InitializeFromEnum(null);
 		}
 
+		public void Clear()
+		{
+			if (mBits != null)
+				mBits.Clear();
+		}
+
 		internal void OptimizeStorage()
 		{
 			if (EnabledCount == 0)
 				mBits = null;
+		}
+
+		internal void Set(int bitIndex, bool value = true)
+		{
+			if (mBits == null)
+			{
+				InitializeFromEnum(null);
+
+				if (mBits == null)
+					throw new InvalidOperationException("Can't use Set on BBitSet that requires BDatabase to initialize");
+			}
+
+			mBits.Set(bitIndex, value);
 		}
 
 		internal IProtoEnum InitializeFromEnum(Phx.BDatabaseBase db)
@@ -54,7 +73,17 @@ namespace KSoft.Collections
 				penum = Params.kGetProtoEnumFromDB(db);
 
 			if (penum != null)
-				mBits = new Collections.BitSet(penum.MemberCount);
+			{
+				if (mBits == null)
+					mBits = new Collections.BitSet(penum.MemberCount);
+				else
+				{
+					mBits.Clear();
+
+					if (mBits.Length != penum.MemberCount)
+						mBits.Length = penum.MemberCount;
+				}
+			}
 
 			return penum;
 		}

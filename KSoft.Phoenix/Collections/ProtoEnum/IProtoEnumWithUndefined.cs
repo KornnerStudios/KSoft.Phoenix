@@ -53,4 +53,9 @@ namespace KSoft.Collections
 		} }
 		#endregion
 	};
+
+	public interface IHasUndefinedProtoMemberInterface
+	{
+		IProtoEnumWithUndefined UndefinedInterface { get; }
+	};
 }

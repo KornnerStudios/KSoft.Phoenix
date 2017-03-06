@@ -9,6 +9,7 @@ namespace KSoft.Phoenix.XML
 		, IO.ITagElementStringNameStreamable
 	{
 		XML.IBListAutoIdXmlSerializer mDamageTypesSerializer
+			, mImpactEffectsSerializer
 			, mObjectsSerializer
 			, mSquadsSerializer
 			, mPowersSerializer
@@ -32,6 +33,8 @@ namespace KSoft.Phoenix.XML
 		{
 			if (mDamageTypesSerializer == null)
 				mDamageTypesSerializer = XmlUtil.CreateXmlSerializer(Database.DamageTypes, Phx.BDamageType.kBListXmlParams);
+			if (mImpactEffectsSerializer == null)
+				mImpactEffectsSerializer = XmlUtil.CreateXmlSerializer(Database.ImpactEffects, Phx.BProtoImpactEffect.kBListXmlParams);
 
 			if (mObjectsSerializer == null)
 				mObjectsSerializer = XmlUtil.CreateXmlSerializer(Database.Objects, Phx.BProtoObject.kBListXmlParams);
@@ -45,6 +48,7 @@ namespace KSoft.Phoenix.XML
 		protected virtual void AutoIdSerializersDispose()
 		{
 			Util.DisposeAndNull(ref mDamageTypesSerializer);
+			Util.DisposeAndNull(ref mImpactEffectsSerializer);
 
 			Util.DisposeAndNull(ref mObjectsSerializer);
 			Util.DisposeAndNull(ref mSquadsSerializer);

@@ -10,14 +10,22 @@ namespace KSoft.Phoenix.Engine.Test
 	public sealed class HaloWarsTest
 		: BaseTestClass
 	{
-		const string kBaseRoot =
-			@"D:\HW\data\";
-		const string kGameRoot = kBaseRoot + 
-			@"Release\";
-		const string kGameRootAlpha = kBaseRoot + 
-			@"phx_alpha\";
-		const string kUpdateRoot = kBaseRoot + 
-			@"phx_tu6\";
+		const string kBaseRoot
+			//= @"D:\HW\data\"
+			= @"U:\Ensemble\HaloWarsData\work\"
+			;
+		const string kGameRoot
+			= kBaseRoot
+			//+ @"Release\"
+			;
+		const string kGameRootAlpha
+			= kBaseRoot
+			//+ @"phx_alpha\"
+			;
+		const string kUpdateRoot
+			= kBaseRoot
+			//+ @"phx_tu6\"
+			;
 
 		[TestMethod]
 		public void HaloWars_LoadAlphaTest()

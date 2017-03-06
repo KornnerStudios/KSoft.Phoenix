@@ -42,6 +42,8 @@ namespace KSoft.Phoenix.XML
 			mTacticsMap[name] = td;
 		}
 
+		public bool ForceNoRootElementStreaming = true;
+
 		/// <remarks>For streaming directly from gamedata.xml</remarks>
 		void StreamXmlGameData(IO.XmlElementStream s)
 		{
@@ -51,87 +53,95 @@ namespace KSoft.Phoenix.XML
 		}
 		void PreloadDamageTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mDamageTypesSerializer, true);
+			XmlUtil.SerializePreload(s, mDamageTypesSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from damagetypes.xml</remarks>
 		void StreamXmlDamageTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, mDamageTypesSerializer, true);
+			XmlUtil.Serialize(s, mDamageTypesSerializer, ForceNoRootElementStreaming);
+		}
+		/// <remarks>For streaming directly from impacteffects.xml</remarks>
+		void StreamXmlImpactEffects(IO.XmlElementStream s)
+		{
+			XmlUtil.Serialize(s, mImpactEffectsSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from weapontypes.xml</remarks>
 		void StreamXmlWeaponTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.WeaponTypes, Phx.BWeaponType.kBListXmlParams, true);
+			XmlUtil.Serialize(s, Database.WeaponTypes, Phx.BWeaponType.kBListXmlParams, ForceNoRootElementStreaming);
 			if (s.IsReading) FixWeaponTypes();
 		}
 		/// <remarks>For streaming directly from UserClasses.xml</remarks>
 		void StreamXmlUserClasses(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.UserClasses, Phx.BUserClass.kBListXmlParams, true);
+			XmlUtil.Serialize(s, Database.UserClasses, Phx.BUserClass.kBListXmlParams, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from objecttypes.xml</remarks>
 		void StreamXmlObjectTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.ObjectTypes, Phx.BDatabaseBase.kObjectTypesXmlParams, true);
+			XmlUtil.Serialize(s, Database.ObjectTypes, Phx.BDatabaseBase.kObjectTypesXmlParams, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from abilities.xml</remarks>
 		void StreamXmlAbilities(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.Abilities, Phx.BAbility.kBListXmlParams, true);
+			XmlUtil.Serialize(s, Database.Abilities, Phx.BAbility.kBListXmlParams, ForceNoRootElementStreaming);
 		}
 
 		void PreloadObjects(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mObjectsSerializer, true);
+			XmlUtil.SerializePreload(s, mObjectsSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from objects.xml</remarks>
 		void StreamXmlObjects(IO.XmlElementStream s)
 		{
-			if (s.IsReading) FixObjectsXml(s);
-			XmlUtil.Serialize(s, mObjectsSerializer, true);
+			if (s.IsReading)
+				FixObjectsXml(s);
+			XmlUtil.Serialize(s, mObjectsSerializer, ForceNoRootElementStreaming);
 		}
 
 		void PreloadSquads(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mSquadsSerializer, true);
+			XmlUtil.SerializePreload(s, mSquadsSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from squads.xml</remarks>
 		void StreamXmlSquads(IO.XmlElementStream s)
 		{
-			if (s.IsReading) FixSquadsXml(s);
-			XmlUtil.Serialize(s, mSquadsSerializer, true);
+			if (s.IsReading)
+				FixSquadsXml(s);
+			XmlUtil.Serialize(s, mSquadsSerializer, ForceNoRootElementStreaming);
 		}
 
 		void PreloadPowers(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mPowersSerializer, true);
+			XmlUtil.SerializePreload(s, mPowersSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from powers.xml</remarks>
 		void StreamXmlPowers(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, mPowersSerializer, true);
+			XmlUtil.Serialize(s, mPowersSerializer, ForceNoRootElementStreaming);
 		}
 
 		void PreloadTechs(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mTechsSerializer, true);
+			XmlUtil.SerializePreload(s, mTechsSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from techs.xml</remarks>
 		void StreamXmlTechs(IO.XmlElementStream s)
 		{
-			if (s.IsReading) FixTechsXml(s);
-			XmlUtil.Serialize(s, mTechsSerializer, true);
+			if (s.IsReading)
+				FixTechsXml(s);
+			XmlUtil.Serialize(s, mTechsSerializer, ForceNoRootElementStreaming);
 		}
 
 		/// <remarks>For streaming directly from civs.xml</remarks>
 		void StreamXmlCivs(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.Civs, Phx.BCiv.kBListXmlParams, true);
+			XmlUtil.Serialize(s, Database.Civs, Phx.BCiv.kBListXmlParams, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from leaders.xml</remarks>
 		void StreamXmlLeaders(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.Leaders, Phx.BLeader.kBListXmlParams, true);
+			XmlUtil.Serialize(s, Database.Leaders, Phx.BLeader.kBListXmlParams, ForceNoRootElementStreaming);
 		}
 
 		#region Update
@@ -139,21 +149,22 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlObjectsUpdate(IO.XmlElementStream s)
 		{
 			//if(s.IsReading) FixObjectsXml(s);
-			XmlUtil.SerializeUpdate(s, mObjectsSerializer, true);
+			XmlUtil.SerializeUpdate(s, mObjectsSerializer, ForceNoRootElementStreaming);
 		}
 
 		/// <remarks>For streaming directly from squads_update.xml</remarks>
 		void StreamXmlSquadsUpdate(IO.XmlElementStream s)
 		{
 			//if (s.IsReading) FixSquadsXml(s);
-			XmlUtil.SerializeUpdate(s, mSquadsSerializer, true);
+			XmlUtil.SerializeUpdate(s, mSquadsSerializer, ForceNoRootElementStreaming);
 		}
 
 		/// <remarks>For streaming directly from techs_update.xml</remarks>
 		void StreamXmlTechsUpdate(IO.XmlElementStream s)
 		{
-			if (s.IsReading) FixTechsXml(s);
-			XmlUtil.SerializeUpdate(s, mTechsSerializer, true);
+			if (s.IsReading)
+				FixTechsXml(s);
+			XmlUtil.SerializeUpdate(s, mTechsSerializer, ForceNoRootElementStreaming);
 		}
 		#endregion
 
@@ -166,8 +177,10 @@ namespace KSoft.Phoenix.XML
 			PreStreamXml(s.StreamMode);
 
 			db.GameData.Serialize(s);
+			// #NOTE place new DatabaseObjectKind code here
 			XmlUtil.Serialize(s, db.DamageTypes, Phx.BDamageType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.WeaponTypes, Phx.BWeaponType.kBListXmlParams);
+			XmlUtil.Serialize(s, db.ImpactEffects, Phx.BProtoImpactEffect.kBListXmlParams);
 			XmlUtil.Serialize(s, db.UserClasses, Phx.BUserClass.kBListXmlParams);
 			XmlUtil.Serialize(s, db.ObjectTypes, Phx.BDatabaseBase.kObjectTypesXmlParams);
 			XmlUtil.Serialize(s, db.Abilities, Phx.BAbility.kBListXmlParams);

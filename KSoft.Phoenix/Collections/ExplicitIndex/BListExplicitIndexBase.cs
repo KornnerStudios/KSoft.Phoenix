@@ -38,6 +38,14 @@ namespace KSoft.Collections
 				AddItem(eip.kTypeGetInvalid());
 		}
 
+		public override void Clear()
+		{
+			int original_count = Count;
+			base.Clear();
+
+			ResizeCount(original_count);
+		}
+
 		internal void InitializeItem(int index)
 		{
 			if (index < 0)

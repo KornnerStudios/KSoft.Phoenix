@@ -1,7 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	public struct BProtoTechEffectTarget
+	public sealed class BProtoTechEffectTarget
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
@@ -10,23 +10,34 @@ namespace KSoft.Phoenix.Phx
 			RootName = null,
 			Flags = 0
 		};
-
-		const string kXmlAttrType = "type";
 		#endregion
 
-		BProtoTechEffectTargetType mType;
-		public BProtoTechEffectTargetType Type { get { return mType; } }
-		int mValueID;
-		public int ValueID { get { return mValueID; } }
+		BProtoTechEffectTargetType mType = BProtoTechEffectTargetType.None;
+		public BProtoTechEffectTargetType Type
+		{
+			get { return mType; }
+			set { mType = value; }
+		}
+
+		int mValueID = TypeExtensions.kNone;
+		public int ValueID
+		{
+			get { return mValueID; }
+			set { mValueID = value; }
+		}
 
 		public DatabaseObjectKind ObjectKind { get {
 			switch (mType)
 			{
-			case BProtoTechEffectTargetType.ProtoUnit: return DatabaseObjectKind.Unit;
-			case BProtoTechEffectTargetType.ProtoSquad: return DatabaseObjectKind.Squad;
-			case BProtoTechEffectTargetType.Tech: return DatabaseObjectKind.Tech;
+			case BProtoTechEffectTargetType.ProtoUnit:
+				return DatabaseObjectKind.Unit;
+			case BProtoTechEffectTargetType.ProtoSquad:
+				return DatabaseObjectKind.Squad;
+			case BProtoTechEffectTargetType.Tech:
+				return DatabaseObjectKind.Tech;
 
-			default: return DatabaseObjectKind.None;
+			default:
+				return DatabaseObjectKind.None;
 			}
 		} }
 
@@ -38,7 +49,7 @@ namespace KSoft.Phoenix.Phx
 			DatabaseObjectKind kind = ObjectKind;
 
 			if (kind != DatabaseObjectKind.None)
-				xs.StreamDBID(s, /*xmlName:*/null, ref mValueID, kind, false, XML.XmlUtil.kSourceCursor);
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mValueID, kind, false, XML.XmlUtil.kSourceCursor);
 		}
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
@@ -46,7 +57,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttributeEnum(kXmlAttrType, ref mType);
+			s.StreamAttributeEnum("type", ref mType);
 			StreamValueID(s, xs);
 		}
 		#endregion

@@ -105,6 +105,9 @@ namespace PhxGui
 		[Display(	Name="Transform GFX files",
 					Description="During ERA expansion, .GFX files will be transformed to matching .SWF file")]
 		TransformGfxFiles,
+		[Display(	Name="Ignore non-data files",
+					Description="During ERA expansion, only text and .XMB files will be extracted")]
+		IgnoreNonDataFiles,
 
 		[Browsable(false)] // no longer letting the user toggle this, they can just use the tool to convert the desired XMBs
 		[Display(	Name="Don't automatically translate XMB to XML",
@@ -491,6 +494,8 @@ namespace PhxGui
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DecompressUIFiles);
 			if (Flags.Test(MiscFlags.TransformGfxFiles))
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.TranslateGfxFiles);
+			if (Flags.Test(MiscFlags.IgnoreNonDataFiles))
+				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.IgnoreNonDataFiles);
 			if (Flags.Test(MiscFlags.DontTranslateXmbFiles))
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontTranslateXmbFiles);
 			if (Flags.Test(MiscFlags.DontRemoveXmlOrXmbFiles))

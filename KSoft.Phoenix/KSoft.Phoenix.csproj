@@ -18,8 +18,10 @@
       <HintPath>$(VitaRootDir)shared\external_libraries\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +67,7 @@
     <Compile Include="Games\HaloWars\XML\BDatabaseXmlSerializer.cs" />
     <Compile Include="Games\HaloWars\XML\BDatabaseXmlSerializer.Streaming.cs" />
     <Compile Include="PhxDateTime.cs" />
+    <Compile Include="Phx\BProtoImpactEffect.cs" />
     <Compile Include="Phx\BSoundTable.cs" />
     <Compile Include="Phx\Objects\BProtoObjectCommand.cs" />
     <Compile Include="Phx\ProtoReference.cs" />
@@ -102,6 +105,7 @@
     <Compile Include="Phx\TriggerSystem\TriggerScriptObject.cs" />
     <Compile Include="Phx\TriggerSystem\TriggerScriptObjectWithArgs.cs" />
     <Compile Include="Phx\TriggerSystem\Database\TriggerSystemProtoObject.cs" />
+    <Compile Include="Resource\ResourceTag.cs" />
     <Compile Include="Resource\ResourceTagHeader.cs" />
     <Compile Include="Resource\ResourceUtils.cs" />
     <Compile Include="Runtime\Actions\BAction.cs" />
@@ -193,6 +197,7 @@
     <Compile Include="Runtime\UI\BUICallouts.cs" />
     <Compile Include="Runtime\UI\BUIManager.cs" />
     <Compile Include="Runtime\UI\BUIWidget.cs" />
+    <Compile Include="Utils\IsNumericTester.cs" />
     <Compile Include="Utils\PhxPredicates.cs" />
     <Compile Include="Utils\PhxUtil.cs" />
     <Compile Include="Phx\Abilities\BAbility.cs" />
@@ -317,6 +322,7 @@
     <Compile Include="Utils\UndefinedReferenceHandle.cs" />
     <Compile Include="Xmb\XmbFile.cs" />
     <Compile Include="Xmb\XmbFile.Element.cs" />
+    <Compile Include="Xmb\XmbFileBuilder.cs" />
     <Compile Include="Xmb\XmbVariant.cs" />
     <Compile Include="Xmb\XmbVariantMemoryPool.cs" />
     <Compile Include="Xmb\XmbVariantMemoryPool.Entry.cs" />

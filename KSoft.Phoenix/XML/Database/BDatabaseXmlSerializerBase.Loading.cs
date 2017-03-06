@@ -60,11 +60,13 @@ namespace KSoft.Phoenix.XML
 
 		void StreamDataSync(ref bool r, FA mode)
 		{
-			r &= TryStreamData(Phx.BGameData.kXmlFileInfo, mode, StreamXmlGameData);
+			r &= TryStreamData(Phx.BDatabaseBase.kObjectTypesXmlFileInfo, mode, StreamXmlObjectTypes);
 			r &= TryStreamData(Phx.BDamageType.kXmlFileInfo, mode, StreamXmlDamageTypes);
+			r &= TryStreamData(Phx.BProtoImpactEffect.kXmlFileInfo, mode, StreamXmlImpactEffects);
 			r &= TryStreamData(Phx.BWeaponType.kXmlFileInfo, mode, StreamXmlWeaponTypes);
 			r &= TryStreamData(Phx.BUserClass.kXmlFileInfo, mode, StreamXmlUserClasses);
-			r &= TryStreamData(Phx.BDatabaseBase.kObjectTypesXmlFileInfo, mode, StreamXmlObjectTypes);
+
+			r &= TryStreamData(Phx.BGameData.kXmlFileInfo, mode, StreamXmlGameData);
 			r &= TryStreamData(Phx.BAbility.kXmlFileInfo, mode, StreamXmlAbilities);
 			r &= TryStreamData(Phx.BProtoObject.kXmlFileInfo, mode, StreamXmlObjects);
 			r &= TryStreamData(Phx.BProtoSquad.kXmlFileInfo, mode, StreamXmlSquads);
@@ -75,12 +77,18 @@ namespace KSoft.Phoenix.XML
 		}
 		void StreamDataAsync(ref bool r, FA mode)
 		{
-			Task<bool>[] tasks1 = {
-				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BGameData.kXmlFileInfo, mode, StreamXmlGameData)),
+#if false
+			Task<bool>[] tasks0 = {
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BDatabaseBase.kObjectTypesXmlFileInfo, mode, StreamXmlObjectTypes)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BDamageType.kXmlFileInfo, mode, StreamXmlDamageTypes)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BWeaponType.kXmlFileInfo, mode, StreamXmlWeaponTypes)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BUserClass.kXmlFileInfo, mode, StreamXmlUserClasses)),
-				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BDatabaseBase.kObjectTypesXmlFileInfo, mode, StreamXmlObjectTypes)),
+			};
+			UpdateResultWithTaskResults(ref r, tasks0);
+#endif
+
+			Task<bool>[] tasks1 = {
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BGameData.kXmlFileInfo, mode, StreamXmlGameData)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BAbility.kXmlFileInfo, mode, StreamXmlAbilities)),
 			};
 			UpdateResultWithTaskResults(ref r, tasks1);
@@ -119,8 +127,11 @@ namespace KSoft.Phoenix.XML
 			const FA k_mode = FA.Read;
 
 			Task<bool>[] preload_tasks = {
-				// only need to preload damage types when async loading
-				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BDamageType.kXmlFileInfo, k_mode, PreloadDamageTypes)),
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BDatabaseBase.kObjectTypesXmlFileInfo, k_mode, StreamXmlObjectTypes)),
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BDamageType.kXmlFileInfo, k_mode, StreamXmlDamageTypes)),
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoImpactEffect.kXmlFileInfo, k_mode, StreamXmlImpactEffects)),
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BWeaponType.kXmlFileInfo, k_mode, StreamXmlWeaponTypes)),
+				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BUserClass.kXmlFileInfo, k_mode, StreamXmlUserClasses)),
 
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoObject.kXmlFileInfo, k_mode, PreloadObjects)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoSquad.kXmlFileInfo, k_mode, PreloadSquads)),

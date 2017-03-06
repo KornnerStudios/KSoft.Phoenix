@@ -1,6 +1,13 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	public enum BProtoTechAlphaMode
+	{
+		None = -1,
+		Excluded = 0,
+		AlphaOnly = 1,
+	};
+
 	public sealed class BProtoTech
 		: DatabaseIdObject
 	{
@@ -27,64 +34,114 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Techs_Update.xml",
 			RootName = kBListXmlParams.RootName
 		};
+
+		static readonly Collections.CodeEnum<BProtoTechFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoTechFlags>();
+		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
 		#endregion
 
-		BProtoTechStatus mStatus;
+		#region Alpha
+		BProtoTechAlphaMode mAlphaMode = BProtoTechAlphaMode.None;
+		public BProtoTechAlphaMode AlphaMode
+		{
+			get { return mAlphaMode; }
+			set { mAlphaMode = value; }
+		}
+		#endregion
+
+		public Collections.BBitSet Flags { get; private set; }
+
+		#region Icon
+		string mIcon;
+		[Meta.TextureReference]
+		public string Icon
+		{
+			get { return mIcon; }
+			set { mIcon = value; }
+		}
+		#endregion
+
+		#region ResearchCompleteSound
+		string mResearchCompleteSound;
+		[Meta.SoundCueReference]
+		public string ResearchCompleteSound
+		{
+			get { return mResearchCompleteSound; }
+			set { mResearchCompleteSound = value; }
+		}
+		#endregion
+
+		#region ResearchAnim
+		string mResearchAnim;
+		[Meta.BAnimTypeReference]
+		public string ResearchAnim
+		{
+			get { return mResearchAnim; }
+			set { mResearchAnim = value; }
+		}
+		#endregion
 
 		public BProtoTechPrereqs Prereqs { get; private set; }
-		public bool HasPrereqs { get { return Prereqs != null; } }
-
 		public Collections.BListArray<BProtoTechEffect> Effects { get; private set; }
+
+		#region StatsObjectID
+		int mStatsObjectID = TypeExtensions.kNone;
+		[Meta.BProtoObjectReference]
+		public int StatsObjectID
+		{
+			get { return mStatsObjectID; }
+			set { mStatsObjectID = value; }
+		}
+		#endregion
+
+		public bool HasPrereqs { get { return Prereqs != null && Prereqs.IsNotEmpty; } }
 
 		public BProtoTech() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_CostLowercaseType)
 		{
+			Flags = new Collections.BBitSet(kFlagsParams);
+			Prereqs = new BProtoTechPrereqs();
 			Effects = new Collections.BListArray<BProtoTechEffect>();
 		}
 
 		#region IXmlElementStreamable Members
 		protected override void StreamDbId<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			// This isn't always used, nor unique
+			// This isn't always used, nor unique.
+			// In fact, the engine doesn't even use it beyond reading it!
 			s.StreamElementOpt("DBID", ref mDbId, Predicates.IsNotNone);
 		}
 
-		bool ShouldStreamPrereqs<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
-			where TDoc : class
-			where TCursor : class
-		{
-			if (s.IsReading)
-			{
-				bool has_prereqs = s.ElementsExists(BProtoTechPrereqs.kXmlRootName);
-
-				if (has_prereqs)
-					Prereqs = new BProtoTechPrereqs();
-				return has_prereqs;
-			}
-			else if (s.IsWriting)
-				return HasPrereqs;
-
-			return false;
-		}
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			base.Serialize(s);
 
-			//Alpha
-			//Flag
-			//DisplayNameID
-			//RolloverTextID
-			//PrereqTextID
-			//Cost
-			//ResearchPoints
-			// TODO: just check if this is "Unobtainable" and set the proper flag, don't actively use this field
-			s.StreamElementEnum("Status", ref mStatus);
-			//Icon
-			//ResearchCompleteSound
-			//ResearchAnim
-			if (ShouldStreamPrereqs(s))
+			var xs = s.GetSerializerInterface();
+
+			int alpha = (int)mAlphaMode;
+			s.StreamAttributeOpt("Alpha", ref alpha, Predicates.IsNotNone);
+			mAlphaMode = (BProtoTechAlphaMode)alpha;
+
+			XML.XmlUtil.Serialize(s, Flags, XML.BBitSetXmlParams.kFlagsSansRoot);
+
+			if (s.IsReading)
+			{
+				using (var bm = s.EnterCursorBookmarkOpt("Status")) if (bm.IsNotNull)
+				{
+					string statusValue = null;
+					s.ReadCursor(ref statusValue);
+					if (string.Equals(statusValue, "Unobtainable", System.StringComparison.OrdinalIgnoreCase))
+						Flags.Set((int)BProtoTechFlags.Unobtainable);
+				}
+			}
+
+			s.StreamStringOpt("Icon", ref mIcon, toLower: false, type: XML.XmlUtil.kSourceElement);
+			s.StreamStringOpt("ResearchCompleteSound", ref mIcon, toLower: false, type: XML.XmlUtil.kSourceElement);
+			s.StreamStringOpt("ResearchAnim", ref mResearchAnim, toLower: false, type: XML.XmlUtil.kSourceElement);
+			using (var bm = s.EnterCursorBookmarkOpt("Prereqs", this, v => v.HasPrereqs)) if (bm.IsNotNull)
+			{
 				Prereqs.Serialize(s);
+			}
 			XML.XmlUtil.Serialize(s, Effects, BProtoTechEffect.kBListXmlParams);
-			//StatsObject ProtoObject
+			xs.StreamDBID(s, "StatsObject", ref mStatsObjectID, DatabaseObjectKind.Object);
 		}
 		#endregion
 	};

@@ -3,8 +3,9 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BProtoObjectClassType
 	{
-		Invalid,
+		Invalid = TypeExtensions.kNone,
 
+		Object,
 		Squad,
 		Building,
 		Unit,

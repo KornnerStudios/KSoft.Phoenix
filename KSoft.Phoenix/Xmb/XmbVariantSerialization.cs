@@ -67,8 +67,14 @@ namespace KSoft.Phoenix.Xmb
 
 		static void StringFromVariant(XmbVariant v, ref uint data)
 		{
-			if (v.IsIndirect)		data |= v.Offset & kValueBitMask;
-			else if (v.IsUnicode)	throw new System.IO.InvalidDataException("Unicode should always be indirect");//data |= (ushort)v.Char0;
+			if (v.IsIndirect)
+			{
+				data |= v.Offset & kValueBitMask;
+			}
+			else if (v.IsUnicode)
+			{
+				throw new System.IO.InvalidDataException("Unicode should always be indirect");//data |= (ushort)v.Char0;
+			}
 			else
 			{
 				data |= (uint)(v.Char0 << 0);
@@ -78,8 +84,14 @@ namespace KSoft.Phoenix.Xmb
 		}
 		static void StringToVariant(ref XmbVariant v, uint data)
 		{
-			if (v.IsIndirect)		v.Offset = data;
-			else if(v.IsUnicode)	throw new System.IO.InvalidDataException("Unicode should always be indirect");//v.Char0 = (char)data;
+			if (v.IsIndirect)
+			{
+				v.Offset = data;
+			}
+			else if (v.IsUnicode)
+			{
+				throw new System.IO.InvalidDataException("Unicode should always be indirect");//v.Char0 = (char)data;
+			}
 			else
 			{
 				v.Char0 = (byte)((data >> 0)  & 0xFF);
@@ -182,7 +194,7 @@ namespace KSoft.Phoenix.Xmb
 		#region Read
 		static void Compose(out XmbVariant v, uint data)
 		{
-			v = XmbVariant.kEmpty;
+			v = XmbVariant.Empty;
 
 			RawVariantType type = GetType(data);
 			RawVariantLength length = GetLength(data);
@@ -301,7 +313,7 @@ namespace KSoft.Phoenix.Xmb
 				Int24FromVariant(v, out data);
 			}
 		}
-		static void Decompose(XmbVariant v, 
+		static void Decompose(XmbVariant v,
 			out RawVariantType t, out RawVariantLength l, out RawVariantFlags f, out uint data)
 		{
 			t = RawVariantType.Null;

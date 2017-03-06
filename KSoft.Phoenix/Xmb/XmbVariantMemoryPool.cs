@@ -27,11 +27,13 @@ namespace KSoft.Phoenix.Xmb
 
 		public XmbVariantMemoryPool(int initialEntryCount = kEntryStartCount)
 		{
-			if (initialEntryCount < 0) initialEntryCount = kEntryStartCount;
+			if (initialEntryCount < 0)
+				initialEntryCount = kEntryStartCount;
 
 			mEntries = new Dictionary<uint, PoolEntry>(kEntryStartCount);
 		}
-		public XmbVariantMemoryPool(byte[] buffer, Shell.EndianFormat byteOrder = Shell.EndianFormat.Big) : this()
+		public XmbVariantMemoryPool(byte[] buffer, Shell.EndianFormat byteOrder = Shell.EndianFormat.Big)
+			: this()
 		{
 			mPoolSize = (uint)buffer.Length;
 			var ms = new System.IO.MemoryStream(buffer, false);
@@ -57,7 +59,7 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Add
-		uint Add(PoolEntry e)
+		uint Add(XmbFileBuilder builder, PoolEntry e)
 		{
 			uint size = e.CalculateSize();
 
@@ -69,62 +71,78 @@ namespace KSoft.Phoenix.Xmb
 			return offset;
 		}
 
-		public uint Add(int v)
+		public uint Add(XmbFileBuilder builder, int v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(uint v)
+		public uint Add(XmbFileBuilder builder, uint v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(float v)
+		public uint Add(XmbFileBuilder builder, float v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(double v)
+		public uint Add(XmbFileBuilder builder, double v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(string v, bool isUnicode = false)
+		public uint Add(XmbFileBuilder builder, string v, bool isUnicode = false)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
 			entry.IsUnicode = isUnicode;
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(Vector2f v)
+		public uint Add(XmbFileBuilder builder, Vector2f v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(Vector3f v)
+		public uint Add(XmbFileBuilder builder, Vector3f v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
-		public uint Add(Vector4f v)
+		public uint Add(XmbFileBuilder builder, Vector4f v)
 		{
-			foreach (var kv in mEntries) if (kv.Value.Equals(v)) return kv.Key;
+			foreach (var kv in mEntries)
+				if (kv.Value.Equals(v))
+					return kv.Key;
 
 			var entry = PoolEntry.New(v);
-			return Add(entry);
+			return Add(builder, entry);
 		}
 		#endregion
 
@@ -133,8 +151,9 @@ namespace KSoft.Phoenix.Xmb
 
 		PoolEntry DeBuffer(XmbVariantType type, uint offset, byte flags = 0)
 		{
-			if (!ValidOffset(offset)) throw new ArgumentOutOfRangeException("offset",
-				string.Format("{0} > {1}", offset.ToString("X8"), mPoolSize.ToString("X6")));
+			if (!ValidOffset(offset))
+				throw new ArgumentOutOfRangeException("offset", string.Format("{0} > {1}",
+					offset.ToString("X8"), mPoolSize.ToString("X6")));
 
 			PoolEntry e;
 			if (!mEntries.TryGetValue(offset, out e))
@@ -217,6 +236,102 @@ namespace KSoft.Phoenix.Xmb
 		{
 			foreach (var e in mEntries.Values)
 				e.Write(s);
+		}
+
+		public static bool IsInt32(string str, ref int value, bool useInt24)
+		{
+			if (str == "0")
+			{
+				value = 0;
+				return true;
+			}
+
+			int v;
+			try
+			{
+				v = Convert.ToInt32(str, (int)NumeralBase.Decimal);
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+
+			// VC++'s strtol returns 0, LONG_MIN, LONG_MAX when a conversion cannot be performed or when there's overflow
+			if (v == 0 || v == int.MinValue || v == int.MaxValue)
+				return false;
+
+			if (useInt24)
+			{
+				var int24 = v & 0x00FFFFFF;
+				if (int24 != v)
+					return false;
+			}
+
+			var unpackedV = v;
+			if ((unpackedV & 0x800000) != 0)
+				unpackedV |= unchecked( (int)0xFF000000 );
+
+			if (unpackedV != v)
+				return false;
+
+			value = unpackedV;
+			return true;
+		}
+
+		public static bool IsUInt32(string str, ref uint value, bool useInt24)
+		{
+			if (str == "0")
+			{
+				value = 0;
+				return true;
+			}
+
+			uint v;
+			try
+			{
+				v = Convert.ToUInt32(str, (int)NumeralBase.Decimal);
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+
+			// VC++'s strtoul returns 0, ULONG_MAX when a conversion cannot be performed or when there's overflow
+			if (v == uint.MinValue || v == uint.MaxValue)
+				return false;
+
+			if (useInt24)
+			{
+				var int24 = v & 0x00FFFFFF;
+				if (int24 != v)
+					return false;
+			}
+
+			value = v;
+			return true;
+		}
+
+		public static bool IsFloat(string str, ref uint value, double epsilon, bool useInt24)
+		{
+			double v;
+			try
+			{
+				v = Convert.ToDouble(str);
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+
+			// VC++'s strtod returns 0, +HUGE_VAL, -HUGE_VAL when a conversion cannot be performed or when there's overflow
+			if (v == 0.0f)
+				return false;
+			if (double.IsNegativeInfinity(v) || double.IsPositiveInfinity(v))
+				return false;
+
+			// #TODO finish this
+
+			return false;
 		}
 	};
 }

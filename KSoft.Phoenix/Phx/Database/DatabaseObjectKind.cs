@@ -5,9 +5,12 @@ namespace KSoft.Phoenix.Phx
 	{
 		None,
 
+		// #NOTE place new DatabaseObjectKind code here
+
 		Ability,
 		Civ,
 		DamageType,
+		ImpactEffect,
 		Leader,
 		Object,
 		ObjectType,

@@ -22,9 +22,47 @@ namespace KSoft.Phoenix.Phx.Meta
 		}
 	};
 
+	/// <summary>For fields in ProtoData that are not actually used in any meaningful way</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class UnusedDataAttribute : Attribute
+	{
+		public UnusedDataAttribute() { }
+		public UnusedDataAttribute(string note) { }
+	};
+
 	/// <summary>Localized string reference</summary>
 	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple=false)]
-	public sealed class LocStringReference : Attribute
+	public sealed class LocStringReferenceAttribute : Attribute
+	{
+	};
+
+	/// <summary>DDX reference</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple=false)]
+	public sealed class TextureReferenceAttribute : Attribute
+	{
+	};
+
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class SoundCueReferenceAttribute : Attribute
+	{
+	};
+
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class BAnimTypeReferenceAttribute : Attribute
+	{
+	};
+
+	/// <summary>Cost/Resource type reference</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class ResourceReferenceAttribute : Attribute
+	{
+	};
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class PopulationReferenceAttribute : Attribute
+	{
+	};
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class RateReferenceAttribute : Attribute
 	{
 	};
 
@@ -41,6 +79,11 @@ namespace KSoft.Phoenix.Phx.Meta
 	public sealed class BDamageTypeReferenceAttribute : ProtoReferenceAttribute
 	{
 		public BDamageTypeReferenceAttribute() : base(typeof(BDamageType), DatabaseObjectKind.DamageType) { }
+	};
+
+	public sealed class BProtoImpactEffectReferenceAttribute : ProtoReferenceAttribute
+	{
+		public BProtoImpactEffectReferenceAttribute() : base(typeof(BProtoImpactEffect), DatabaseObjectKind.ImpactEffect) { }
 	};
 
 	public sealed class BLeaderReferenceAttribute : ProtoReferenceAttribute

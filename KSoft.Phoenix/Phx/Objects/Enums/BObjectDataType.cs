@@ -87,7 +87,7 @@ namespace KSoft.Phoenix.Phx
 		HPBar,
 		WeaponPhysicsMultiplier,
 		DeathSpawn,
-		
+
 
 
 
@@ -95,5 +95,15 @@ namespace KSoft.Phoenix.Phx
 
 
 		#endregion
+	};
+
+	public enum BObjectDataIconType : int
+	{
+		Invalid = TypeExtensions.kNone,
+
+		unit,
+		building,
+		misc,
+		tech,
 	};
 }

@@ -94,5 +94,10 @@ namespace KSoft.Phoenix.HaloWars
 		RageLeap,
 		HotDropDown,
 		PowerIdle,
+
+		kNumberOf,
+
+		/// <summary>The maximum number of types, defined by code and visual data, supported</summary>
+		kMaxTypes = 1024
 	};
 }

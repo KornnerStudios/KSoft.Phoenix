@@ -26,6 +26,12 @@ namespace KSoft.Collections
 				mUndefined = new List<string>();
 		}
 
+		public void Clear()
+		{
+			if (mUndefined != null)
+				mUndefined.Clear();
+		}
+
 		#region IProtoEnum Members
 		public int TryGetMemberId(string memberName)		{ return mRoot.TryGetMemberId(memberName); }
 		public string TryGetMemberName(int memberId)		{ return mRoot.TryGetMemberName(memberId); }

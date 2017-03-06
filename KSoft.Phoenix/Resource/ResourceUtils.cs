@@ -84,6 +84,29 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
+		#region IsDataBasedFile
+		static readonly HashSet<string> kDataBasedFileExtensions = new HashSet<string>() {
+			".cfg",
+			".txt",
+		};
+
+		public static bool IsDataBasedFile(string filename)
+		{
+			string ext = Path.GetExtension(filename);
+
+			if (ext == ".xmb")
+				return true;
+
+			if (kXmlBasedFilesExtensions.Contains(ext))
+				return true;
+
+			if (kDataBasedFileExtensions.Contains(ext))
+				return true;
+
+			return false;
+		}
+		#endregion
+
 		#region Scaleform extensions
 		const uint kSwfSignature = 0x00535746; // \x00SWF
 		const uint kGfxSignature = 0x00584647; // \x00XFG

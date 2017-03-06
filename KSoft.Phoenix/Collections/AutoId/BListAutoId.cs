@@ -9,7 +9,7 @@ namespace KSoft.Collections
 
 	public sealed class BListAutoId<T>
 		: BListBase<T>
-		, IProtoEnum
+		, IBTypeNames
 		// For now, I don't see a reason to support struct types in AutoIds
 		// If structs are needed, the streaming logic will need to be adjusted
 		where T : class, IListAutoIdObject, new()
@@ -23,7 +23,18 @@ namespace KSoft.Collections
 		public BListAutoId()
 		{
 			kUnregisteredMessage = BuildUnRegisteredMsg();
-			UndefinedInterface = new ProtoEnumWithUndefinedImpl(this);
+			mUndefinedInterface = new ProtoEnumWithUndefinedImpl(this);
+		}
+
+		public override void Clear()
+		{
+			base.Clear();
+
+			if (mDBI != null)
+				mDBI.Clear();
+
+			if (mUndefinedInterface != null)
+				mUndefinedInterface.Clear();
 		}
 
 		#region Database interfaces
@@ -41,7 +52,9 @@ namespace KSoft.Collections
 		{
 			PreAdd(item, itemName, id);
 			if (mDBI != null)
+			{
 				mDBI.Add(item.Data, item);
+			}
 			base.AddItem(item);
 
 			return item.AutoId;
@@ -91,6 +104,8 @@ namespace KSoft.Collections
 		public int MemberCount { get { return Count; } }
 		#endregion
 
-		internal IProtoEnumWithUndefined UndefinedInterface { get; private set; }
+		private ProtoEnumWithUndefinedImpl mUndefinedInterface;
+		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface { get { return mUndefinedInterface; } }
+		internal IProtoEnumWithUndefined UndefinedInterface { get { return mUndefinedInterface; } }
 	};
 }

@@ -2,7 +2,7 @@
 namespace KSoft.Phoenix.Phx
 {
 	// TODO: Nothing in HW uses this
-	public struct BProtoTechPrereqTypeCount
+	public sealed class BProtoTechPrereqTypeCount
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
@@ -10,15 +10,37 @@ namespace KSoft.Phoenix.Phx
 		{
 			ElementName = "TypeCount",
 		};
-
-		const string kXmlAttrUnit = "unit"; // ProtoObject
-		const string kXmlAttrOperator = "operator";
-		const string kXmlAttrCount = "count";
 		#endregion
 
-		int mUnitID;
+		#region UnitID
+		int mUnitID = TypeExtensions.kNone;
+		[Meta.BProtoObjectReference]
+		public int UnitID
+		{
+			get { return mUnitID; }
+			set { mUnitID = value; }
+		}
+		#endregion
+
+		#region Operator
 		BProtoTechTypeCountOperator mOperator;
-		short mCount;
+		public BProtoTechTypeCountOperator Operator
+		{
+			get { return mOperator; }
+			set { mOperator = value; }
+		}
+		#endregion
+
+		#region Count
+		int mCount;
+		public int Count
+		{
+			get { return mCount; }
+			set { mCount = value; }
+		}
+
+		public const int cMaxCount = 2048;
+		#endregion
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -27,11 +49,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			xs.StreamDBID(s, kXmlAttrUnit, ref mUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
-			if (!s.StreamAttributeEnumOpt(kXmlAttrOperator, ref mOperator, e => e != BProtoTechTypeCountOperator.None))
-				mOperator = BProtoTechTypeCountOperator.None;
-			if (!s.StreamAttributeOpt(kXmlAttrCount, ref mCount, Predicates.IsNotNone))
-				mCount = TypeExtensions.kNone;
+			xs.StreamDBID(s, "unit", ref mUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
+			s.StreamAttributeEnumOpt("operator", ref mOperator, e => e != BProtoTechTypeCountOperator.e);
+			s.StreamAttributeOpt("count", ref mCount, Predicates.IsNotZero);
 		}
 		#endregion
 	};

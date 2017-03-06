@@ -7,8 +7,24 @@ namespace KSoft.Phoenix.Phx
 		Normal,
 		Hard,
 		Legendary,
-		Custom,
+
+		kNumberOfStandardTypes,
+
+		Custom = kNumberOfStandardTypes,
 		Automatic,
+
+		kNumberOf
+	};
+
+	public enum BDifficultyTypeModifier
+	{
+		Easy,
+		Normal,
+		Hard,
+		Legendary,
 		Default,
+		SPCAIDefault,
+
+		kNumberOf
 	};
 }

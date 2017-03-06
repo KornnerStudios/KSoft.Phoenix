@@ -10,7 +10,7 @@ namespace KSoft.Phoenix.Xmb
 	{
 		internal const int kSizeOf = 8;
 
-		public static readonly XmbVariant kEmpty = new XmbVariant() { Type = XmbVariantType.Null };
+		public static XmbVariant Empty { get { return new XmbVariant() { Type = XmbVariantType.Null }; } }
 
 		#region Properties
 		[System.Runtime.InteropServices.FieldOffset(0)]
@@ -57,21 +57,21 @@ namespace KSoft.Phoenix.Xmb
 			float x = 0, y = 0, z = 0, w = 0;
 			switch (length)
 			{
-			case 1:
-				x = pool.GetSingle(offset);
-				break;
-			case 2: {
+				case 1: {
+					x = pool.GetSingle(offset);
+				} break;
+				case 2: {
 					var v = pool.GetVector2D(offset);
 					x = v.X;
 					y = v.Y;
 				} break;
-			case 3: {
+				case 3: {
 					var v = pool.GetVector3D(offset);
 					x = v.X;
 					y = v.Y;
 					z = v.Z;
 				} break;
-			case 4:{
+				case 4: {
 					var v = pool.GetVector4D(offset);
 					x = v.X;
 					y = v.Y;
@@ -79,14 +79,19 @@ namespace KSoft.Phoenix.Xmb
 					w = v.W;
 				} break;
 
-				default: throw new ArgumentOutOfRangeException("length", length.ToString());
+				default:
+					throw new ArgumentOutOfRangeException("length", length.ToString());
 			}
 
 			var sb = new System.Text.StringBuilder(32);
-			if (length >= 1) sb.Append(x);
-			if (length >= 2) sb.AppendFormat(", {0}", y.ToString());
-			if (length >= 3) sb.AppendFormat(", {0}", z.ToString());
-			if (length >= 4) sb.AppendFormat(", {0}", w.ToString());
+			if (length >= 1)
+				sb.Append(x);
+			if (length >= 2)
+				sb.AppendFormat(",{0}", y.ToString());
+			if (length >= 3)
+				sb.AppendFormat(",{0}", z.ToString());
+			if (length >= 4)
+				sb.AppendFormat(",{0}", w.ToString());
 
 			return sb.ToString();
 		}
@@ -103,9 +108,12 @@ namespace KSoft.Phoenix.Xmb
 				//else
 				{
 					var sb = new System.Text.StringBuilder(3);
-					if (Char0 != '\0') sb.Append((char)Char0);
-					if (Char1 != '\0') sb.Append((char)Char1);
-					if (Char2 != '\0') sb.Append((char)Char2);
+					if (Char0 != '\0')
+						sb.Append((char)Char0);
+					if (Char1 != '\0')
+						sb.Append((char)Char1);
+					if (Char2 != '\0')
+						sb.Append((char)Char2);
 
 					result = sb.ToString();
 				}
@@ -118,35 +126,39 @@ namespace KSoft.Phoenix.Xmb
 
 			switch (Type)
 			{
-				case XmbVariantType.Single:
+				case XmbVariantType.Single: {
 					float f = Single;
-					if (IsIndirect) f = pool.GetSingle(Offset);
+					if (IsIndirect)
+						f = pool.GetSingle(Offset);
 					result = f.ToString();
-					break;
+				} break;
 
-				case XmbVariantType.Int:
+				case XmbVariantType.Int: {
 					uint i = Int;
-					if (IsIndirect) i = pool.GetUInt32(Offset);
-					result = IsUnsigned ? i.ToString() : ((int)i).ToString();
-					break;
+					if (IsIndirect)
+						i = pool.GetUInt32(Offset);
+					result = IsUnsigned
+						? i.ToString()
+						: ((int)i).ToString();
+				} break;
 
-				case XmbVariantType.Double:
+				case XmbVariantType.Double: {
 					double d = pool.GetDouble(Offset);
 					result = d.ToString();
-					break;
+				} break;
 
-				case XmbVariantType.Bool:
+				case XmbVariantType.Bool: {
 					// Phoenix uses lower case and Boolean.ToString uppercases the first letter
 					result = Bool ? "true" : "false";
-					break;
+				} break;
 
-				case XmbVariantType.String:
+				case XmbVariantType.String: {
 					result = StringToString(pool);
-					break;
+				} break;
 
-				case XmbVariantType.Vector:
+				case XmbVariantType.Vector: {
 					result = VectorToString(Offset, VectorLength, pool);
-					break;
+				} break;
 			}
 
 			return result;
