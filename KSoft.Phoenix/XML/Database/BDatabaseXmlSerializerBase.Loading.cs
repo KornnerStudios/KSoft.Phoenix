@@ -135,7 +135,6 @@ namespace KSoft.Phoenix.XML
 
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoObject.kXmlFileInfo, k_mode, PreloadObjects)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoSquad.kXmlFileInfo, k_mode, PreloadSquads)),
-				// only need to preload powers when async loading
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoPower.kXmlFileInfo, k_mode, PreloadPowers)),
 				Task<bool>.Factory.StartNew(() => TryStreamData(Phx.BProtoTech.kXmlFileInfo, k_mode, PreloadTechs)),
 			};

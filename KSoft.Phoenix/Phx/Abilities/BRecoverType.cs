@@ -3,8 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BRecoverType
 	{
-		Invalid,
-
+		Move,
 		Attack,
 		Ability,
 	};

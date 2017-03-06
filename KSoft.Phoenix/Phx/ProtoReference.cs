@@ -51,6 +51,10 @@ namespace KSoft.Phoenix.Phx.Meta
 	public sealed class BAnimTypeReferenceAttribute : Attribute
 	{
 	};
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class AttachmentTypeReferenceAttribute : Attribute
+	{
+	};
 
 	/// <summary>Cost/Resource type reference</summary>
 	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]

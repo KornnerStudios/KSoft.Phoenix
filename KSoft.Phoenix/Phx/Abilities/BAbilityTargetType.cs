@@ -3,8 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BAbilityTargetType
 	{
-		Invalid,
-
+		None,
 		Location,
 		Unit,
 		UnitOrLocation,

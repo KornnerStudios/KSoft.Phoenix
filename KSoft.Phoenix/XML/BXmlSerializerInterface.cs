@@ -369,6 +369,15 @@ namespace KSoft.Phoenix.XML
 			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref damangeType, Phx.DatabaseObjectKind.DamageType,
 				false, XmlUtil.kSourceCursor);
 		}
+		/// <summary>Stream the current element's Text as a ProtoObject</summary>
+		internal static void StreamObjectID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
+			ref int objectProtoId)
+			where TDoc : class
+			where TCursor : class
+		{
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref objectProtoId, Phx.DatabaseObjectKind.Object,
+				false, XmlUtil.kSourceCursor);
+		}
 		/// <summary>Stream the current element's Text as a ProtoSquad</summary>
 		internal static void StreamSquadID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
 			[Phx.Meta.BProtoSquadReference] ref int squadProtoId)
