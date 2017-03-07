@@ -36,11 +36,21 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region FileName
+		string mFileName;
+		public string FileName
+		{
+			get { return mFileName; }
+			set { mFileName = value; }
+		}
+		#endregion
+
 		#region BListAutoIdObject Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			s.StreamAttributeOpt("limit", ref mLimit, x => x != 2);
 			s.StreamAttributeOpt("lifespan", ref mLifespan, x => x != 3.0f);
+			s.StreamCursor(ref mFileName);
 		}
 		#endregion
 	};

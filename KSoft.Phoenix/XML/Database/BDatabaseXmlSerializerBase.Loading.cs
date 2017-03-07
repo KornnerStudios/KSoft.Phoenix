@@ -10,10 +10,222 @@ namespace KSoft.Phoenix.XML
 
 	partial class BDatabaseXmlSerializerBase
 	{
-		static bool UpdateResultWithTaskResults(ref bool r, Task<bool>[] tasks)
+		public enum StreamXmlPriority
+		{
+			None,
+
+			Lists,
+			GameData,
+			ProtoData,
+
+			kNumberOf
+		};
+		public enum StreamXmlStage
+		{
+			Preload,
+			Stream,
+			StreamUpdates,
+
+			kNumberOf
+		};
+		public delegate void StreamXmlCallback(IO.XmlElementStream s);
+		public sealed class StreamXmlContextData
+		{
+			public StreamXmlPriority Priority;
+			public Engine.XmlFileInfo FileInfo;
+			public Engine.XmlFileInfo FileInfoWithUpdates;
+			public Action<IO.XmlElementStream> Preload;
+			public Action<IO.XmlElementStream> Stream;
+			public Action<IO.XmlElementStream> StreamUpdates;
+
+			public StreamXmlContextData(StreamXmlPriority priority, Engine.XmlFileInfo fileInfo, Engine.XmlFileInfo fileInfoWithUpdates = null)
+			{
+				Priority = priority;
+				FileInfo = fileInfo;
+			}
+		};
+		private List<StreamXmlContextData> mStreamXmlContexts;
+		private void SetupStreamXmlContexts()
+		{
+			if (mStreamXmlContexts != null)
+				return;
+
+			mStreamXmlContexts = new List<StreamXmlContextData>()
+			{
+				#region Lists
+				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BDatabaseBase.kObjectTypesXmlFileInfo)
+				{
+					Preload=StreamXmlObjectTypes,
+				},
+				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BDamageType.kXmlFileInfo)
+				{
+					Preload=PreloadDamageTypes,
+					Stream=StreamXmlDamageTypes,
+				},
+				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BProtoImpactEffect.kXmlFileInfo)
+				{
+					Preload=StreamXmlImpactEffects,
+				},
+				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BWeaponType.kXmlFileInfo)
+				{
+					Preload=StreamXmlWeaponTypes,
+				},
+				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BUserClass.kXmlFileInfo)
+				{
+					Preload=StreamXmlUserClasses,
+				},
+				#endregion
+
+				#region GameData
+				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.BGameData.kXmlFileInfo)
+				{
+					Stream=StreamXmlGameData,
+				},
+				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.BAbility.kXmlFileInfo)
+				{
+					Stream=StreamXmlAbilities,
+				},
+				#endregion
+
+				#region ProtoData
+				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoObject.kXmlFileInfo, Phx.BProtoObject.kXmlFileInfoUpdate)
+				{
+					Preload=PreloadObjects,
+					Stream=StreamXmlObjects,
+					StreamUpdates=StreamXmlObjectsUpdate,
+				},
+				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoSquad.kXmlFileInfo, Phx.BProtoSquad.kXmlFileInfoUpdate)
+				{
+					Preload=PreloadSquads,
+					Stream=StreamXmlSquads,
+					StreamUpdates=StreamXmlSquadsUpdate,
+				},
+				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoPower.kXmlFileInfo)
+				{
+					Preload=PreloadPowers,
+					Stream=StreamXmlPowers,
+				},
+				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoTech.kXmlFileInfo, Phx.BProtoTech.kXmlFileInfoUpdate)
+				{
+					Preload=PreloadTechs,
+					Stream=StreamXmlTechs,
+					StreamUpdates=StreamXmlTechsUpdate,
+				},
+
+				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BCiv.kXmlFileInfo)
+				{
+					//Preload=PreloadCivs,
+					Stream=StreamXmlCivs,
+				},
+				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BLeader.kXmlFileInfo)
+				{
+					//Preload=PreloadLeaders,
+					Stream=StreamXmlLeaders,
+				},
+				#endregion
+			};
+		}
+		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous)
+		{
+			SetupStreamXmlContexts();
+
+			for (var s = StreamXmlStage.Preload; s < StreamXmlStage.kNumberOf; s++)
+			{
+				List<Task<bool>> tasks = null;
+				List<Exception> taskExceptions = null;
+				if (!synchronous)
+				{
+					tasks = new List<Task<bool>>();
+					taskExceptions = new List<Exception>();
+				}
+
+				for (var p = StreamXmlPriority.Lists; p < StreamXmlPriority.kNumberOf; p++)
+				{
+					foreach (var ctxt in mStreamXmlContexts)
+					{
+						if (ctxt.Priority != p)
+							continue;
+
+						switch (s)
+						{
+							case StreamXmlStage.Preload:
+								if (ctxt.Preload == null)
+									break;
+
+								if (synchronous)
+									r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Preload);
+								else
+								{
+									var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
+									tasks.Add(task);
+								}
+								break;
+							case StreamXmlStage.Stream:
+								if (ctxt.Stream == null)
+									break;
+
+								if (synchronous)
+									r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Stream);
+								else
+								{
+									var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
+									tasks.Add(task);
+								}
+								break;
+							case StreamXmlStage.StreamUpdates:
+								if (ctxt.FileInfoWithUpdates == null)
+									break;
+								if (ctxt.StreamUpdates == null)
+									break;
+
+								if (synchronous)
+									r &= TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates);
+								else
+								{
+									var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
+									tasks.Add(task);
+								}
+								break;
+						}
+
+						if (synchronous)
+						{
+							if (!r)
+								throw new InvalidOperationException(string.Format(
+									"Failed to process {0} during stage {1}",
+									ctxt.FileInfo.FileName, s));
+						}
+					}
+
+					if (tasks != null)
+					{
+						if (!UpdateResultWithTaskResults(ref r, tasks.ToArray(), taskExceptions))
+						{
+							throw new InvalidOperationException(string.Format(
+								"Failed to process one or more files for priority={0}",
+								p),
+								new AggregateException(taskExceptions));
+						}
+
+						tasks.Clear();
+						taskExceptions.Clear();
+					}
+				}
+			}
+		}
+
+		static bool UpdateResultWithTaskResults(ref bool r, Task<bool>[] tasks, List<Exception> exceptions = null)
 		{
 			foreach (var task in tasks)
+			{
+				if (task.IsFaulted)
+				{
+					r = false;
+					if (exceptions != null)
+						exceptions.Add(task.Exception);
+				}
 				r &= task.Result;
+			}
 
 			return r;
 		}
@@ -68,6 +280,7 @@ namespace KSoft.Phoenix.XML
 
 			r &= TryStreamData(Phx.BGameData.kXmlFileInfo, mode, StreamXmlGameData);
 			r &= TryStreamData(Phx.BAbility.kXmlFileInfo, mode, StreamXmlAbilities);
+
 			r &= TryStreamData(Phx.BProtoObject.kXmlFileInfo, mode, StreamXmlObjects);
 			r &= TryStreamData(Phx.BProtoSquad.kXmlFileInfo, mode, StreamXmlSquads);
 			r &= TryStreamData(Phx.BProtoPower.kXmlFileInfo, mode, StreamXmlPowers);
@@ -105,12 +318,17 @@ namespace KSoft.Phoenix.XML
 		}
 		void StreamData(FA mode, bool synchronous)
 		{
+#if false
 			bool r = true;
 
 			if (!synchronous)
 				StreamDataAsync(ref r, mode);
 			else
 				StreamDataSync(ref r, mode);
+#else
+			bool r = true;
+			ProcessStreamXmlContexts(ref r, mode, synchronous: false);
+#endif
 		}
 
 		void PreloadSync(ref bool r)
@@ -143,12 +361,14 @@ namespace KSoft.Phoenix.XML
 		// objects, objects_update, objectTypes, squads, squads_update, tech, techs_update, leaders, civs, powers, damageTypes
 		void Preload(bool synchronous)
 		{
+#if false
 			bool r = true;
 
 			if (!synchronous)
 				PreloadAsync(ref r);
 			else
 				PreloadSync(ref r);
+#endif
 		}
 
 		void StreamDataUpdatesSync(ref bool r)
@@ -183,12 +403,14 @@ namespace KSoft.Phoenix.XML
 		}
 		void StreamDataUpdates(bool synchronous)
 		{
+#if false
 			bool r = true;
 
 			if (!synchronous)
 				StreamDataUpdatesAsync(ref r);
 			else
 				StreamDataUpdatesSync(ref r);
+#endif
 		}
 
 
