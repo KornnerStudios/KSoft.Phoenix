@@ -1,8 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	//BProtoSkull
-	public sealed class BCollectibleSkull
+	public sealed class BProtoSkull
 		: DatabaseNamedObject
 	{
 		#region Xml constants
@@ -11,11 +10,6 @@ namespace KSoft.Phoenix.Phx
 			ElementName = "Skull",
 			DataName = DatabaseIdObject.kXmlAttrName,
 		};
-
-		const string kXmlAttrObjectDBID = "objectdbid";
-		const string kXmlElementDescriptionID = "DescriptionID";
-
-		const string kXmlElementHidden = "Hidden";
 		#endregion
 
 		int mObjectDBID = TypeExtensions.kNone;
@@ -23,8 +17,12 @@ namespace KSoft.Phoenix.Phx
 		int mDescriptionID = TypeExtensions.kNone;
 		bool mHidden;
 
-		public BCollectibleSkull()
+		public BProtoSkull()
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDescriptionID = true;
+			textData.HasDisplayNameID = true;
+
 			Effects = new Collections.BListArray<BCollectibleSkullEffect>();
 		}
 
@@ -35,7 +33,6 @@ namespace KSoft.Phoenix.Phx
 
 			s.StreamAttribute("objectdbid", ref mObjectDBID);
 			XML.XmlUtil.Serialize(s, Effects, BCollectibleSkullEffect.kBListXmlParams);
-			xs.StreamStringID(s, "DescriptionID", ref mDescriptionID);
 			//DisplayImageOn
 			//DisplayImageOff
 			//DisplayImageLocked

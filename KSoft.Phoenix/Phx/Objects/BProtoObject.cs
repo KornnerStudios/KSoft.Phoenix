@@ -92,6 +92,15 @@ namespace KSoft.Phoenix.Phx
 
 		public BProtoObject() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_Cost)
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDisplayNameID = true;
+			textData.HasRolloverTextID = true;
+			textData.HasStatsNameID = true;
+			textData.HasGaiaRolloverTextID = true;
+			textData.HasEnemyRolloverTextID = true;
+			textData.HasPrereqTextID = true;
+			textData.HasRoleTextID = true;
+
 			Veterancy = new Collections.BListExplicitIndex<BProtoObjectVeterancy>(BProtoObjectVeterancy.kBListExplicitIndexParams);
 
 			Populations = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);

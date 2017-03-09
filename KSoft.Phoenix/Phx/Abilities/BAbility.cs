@@ -5,9 +5,6 @@ using BProtoObjectID = System.Int32;
 
 namespace KSoft.Phoenix.Phx
 {
-	/// <remarks>
-	/// * Has no PrereqTextID property
-	/// </remarks>
 	public sealed class BAbility
 		: DatabaseNamedObject
 	{
@@ -44,6 +41,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		[Meta.BProtoObjectReference]
 		public List<BProtoObjectID> ObjectIDs { get; private set; }
 
 		#region SquadMode
@@ -125,17 +123,6 @@ namespace KSoft.Phoenix.Phx
 		{
 			get { return mIcon; }
 			set { mIcon = value; }
-		}
-		#endregion
-
-		#region DisplayName2ID
-		int mDisplayName2ID = TypeExtensions.kNone;
-		[Meta.UnusedData("unused in code")]
-		[Meta.LocStringReference]
-		public int DisplayName2ID
-		{
-			get { return mDisplayName2ID; }
-			set { mDisplayName2ID = value; }
 		}
 		#endregion
 
@@ -254,6 +241,11 @@ namespace KSoft.Phoenix.Phx
 
 		public BAbility()
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDisplayNameID = true;
+			textData.HasDisplayName2ID = true;
+			textData.HasRolloverTextID = true;
+
 			ObjectIDs = new List<BProtoObjectID>();
 		}
 
@@ -275,7 +267,6 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("DamageTakenModifier", ref mDamageTakenModifier, Predicates.IsNotZero);
 			s.StreamElementOpt("DodgeModifier", ref mDodgeModifier, Predicates.IsNotZero);
 			s.StreamStringOpt("Icon", ref mIcon, toLower: false, type: XML.XmlUtil.kSourceElement);
-			xs.StreamStringID(s, "DisplayName2ID", ref mDisplayName2ID);
 			s.StreamElementEnumOpt("TargetType", ref mTargetType, e => e != BAbilityTargetType.None);
 			s.StreamStringOpt("RecoverAnimAttachment", ref mRecoverAnimAttachment, toLower: false, type: XML.XmlUtil.kSourceElement);
 			s.StreamStringOpt("RecoverStartAnim", ref mRecoverStartAnim, toLower: false, type: XML.XmlUtil.kSourceElement);

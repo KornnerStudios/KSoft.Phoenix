@@ -77,6 +77,12 @@ namespace KSoft.Phoenix.Phx
 
 		public BProtoPower()
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDisplayNameID = true;
+			textData.HasRolloverTextID = true;
+			textData.HasPrereqTextID = true;
+			textData.HasChooseTextID = true;
+
 			Cost = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
 
 			Populations = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);

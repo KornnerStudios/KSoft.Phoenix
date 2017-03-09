@@ -97,6 +97,11 @@ namespace KSoft.Phoenix.Phx
 
 		public BProtoTech() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_CostLowercaseType)
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDisplayNameID = true;
+			textData.HasRolloverTextID = true;
+			textData.HasPrereqTextID = true;
+
 			Flags = new Collections.BBitSet(kFlagsParams);
 			Prereqs = new BProtoTechPrereqs();
 			Effects = new Collections.BListArray<BProtoTechEffect>();

@@ -156,6 +156,12 @@ namespace KSoft.Phoenix.Phx
 		// Empty Civs just have a name
 		public bool IsEmpty { get { return mTechID.IsNotNone(); } }
 
+		public BCiv()
+		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDisplayNameID = true;
+		}
+
 		#region ITagElementStreamable<string> Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{

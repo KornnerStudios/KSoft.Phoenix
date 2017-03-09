@@ -1,4 +1,6 @@
-﻿
+﻿using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
+
 namespace KSoft.Phoenix.Phx
 {
 	public abstract class DatabaseNamedObject
@@ -9,44 +11,23 @@ namespace KSoft.Phoenix.Phx
 		internal const string kXmlAttrNameN = "Name";
 		#endregion
 
-		#region DisplayNameID
-		int mDisplayNameID = TypeExtensions.kNone;
-		[Meta.LocStringReference]
-		public int DisplayNameID
-		{
-			get { return mDisplayNameID; }
-			set { mDisplayNameID = value; }
-		}
-		#endregion
+		#region UserInterfaceTextData
+		public DatabaseObjectUserInterfaceTextData UserInterfaceTextData { get; private set; }
 
-		#region RolloverTextID
-		int mRolloverTextID = TypeExtensions.kNone;
-		[Meta.LocStringReference]
-		public int RolloverTextID
+		protected DatabaseObjectUserInterfaceTextData CreateDatabaseObjectUserInterfaceTextData()
 		{
-			get { return mRolloverTextID; }
-			set { mRolloverTextID = value; }
-		}
-		#endregion
+			Contract.Requires(UserInterfaceTextData != null);
 
-		#region PrereqTextID
-		int mPrereqTextID = TypeExtensions.kNone;
-		[Meta.LocStringReference]
-		public int PrereqTextID
-		{
-			get { return mPrereqTextID; }
-			set { mPrereqTextID = value; }
+			UserInterfaceTextData = new DatabaseObjectUserInterfaceTextData();
+			return UserInterfaceTextData;
 		}
 		#endregion
 
 		#region IXmlElementStreamable Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			var xs = s.GetSerializerInterface();
-
-			xs.StreamStringID(s, "DisplayNameID", ref mDisplayNameID);
-			xs.StreamStringID(s, "RolloverTextID", ref mRolloverTextID);
-			xs.StreamStringID(s, "PrereqTextID", ref mPrereqTextID);
+			if (UserInterfaceTextData != null)
+				UserInterfaceTextData.Serialize(s);
 		}
 		#endregion
 	};

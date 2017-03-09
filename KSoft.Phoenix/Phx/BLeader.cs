@@ -87,26 +87,6 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		#region NameID
-		int mNameID = TypeExtensions.kNone;
-		[Meta.LocStringReference]
-		public int NameID
-		{
-			get { return mNameID; }
-			set { mNameID = value; }
-		}
-		#endregion
-
-		#region DescriptionID
-		int mDescriptionID = TypeExtensions.kNone;
-		[Meta.LocStringReference]
-		public int DescriptionID
-		{
-			get { return mDescriptionID; }
-			set { mDescriptionID = value; }
-		}
-		#endregion
-
 		#region FlashImg
 		string mFlashImg;
 		[Meta.UnusedData]
@@ -192,6 +172,10 @@ namespace KSoft.Phoenix.Phx
 
 		public BLeader()
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasNameID = true;
+			textData.HasDescriptionID = true;
+
 			SupportPowers = new Collections.BListArray<BLeaderSupportPower>();
 			StartingSquads = new Collections.BListArray<BLeaderStartingSquad>();
 			StartingUnits = new Collections.BListArray<BLeaderStartingUnit>();
@@ -215,8 +199,6 @@ namespace KSoft.Phoenix.Phx
 			xs.StreamDBID(s, "Tech", ref mTechID, DatabaseObjectKind.Tech);
 			xs.StreamDBID(s, "Civ", ref mCivID, DatabaseObjectKind.Civ);
 			xs.StreamDBID(s, "Power", ref mPowerID, DatabaseObjectKind.Power);
-			xs.StreamStringID(s, "NameID", ref mNameID);
-			xs.StreamStringID(s, "DescriptionID", ref mDescriptionID);
 			s.StreamStringOpt("FlashImg", ref mFlashImg, toLower: false, type: XML.XmlUtil.kSourceElement);
 			// TODO: HW360's FlashPortrait elements have an ending " character (sans a starting quote). Be careful!
 			s.StreamStringOpt("FlashPortrait", ref mFlashImg, toLower: false, type: XML.XmlUtil.kSourceElement);

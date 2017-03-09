@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Phx
 	public sealed class BCollectiblesSkullManager
 		: IO.ITagElementStringNameStreamable
 	{
-		public Collections.BListAutoId<BCollectibleSkull> Skulls { get; private set; }
+		public Collections.BListAutoId<BProtoSkull> Skulls { get; private set; }
 
 		// bool RocketAllGrunts, MinimapHidden
 		// int BonusSquadLevels, DeathExplodeObjectType, DeathExplodeProtoObject
@@ -12,7 +12,7 @@ namespace KSoft.Phoenix.Phx
 
 		public BCollectiblesSkullManager()
 		{
-			Skulls = new Collections.BListAutoId<BCollectibleSkull>();
+			Skulls = new Collections.BListAutoId<BProtoSkull>();
 		}
 
 		#region ITagElementStreamable<string> Members
@@ -20,7 +20,7 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			XML.XmlUtil.Serialize(s, Skulls, BCollectibleSkull.kBListXmlParams);
+			XML.XmlUtil.Serialize(s, Skulls, BProtoSkull.kBListXmlParams);
 			//TimeLineEvent BProtoTimeLineEvent
 		}
 		#endregion

@@ -42,6 +42,13 @@ namespace KSoft.Phoenix.Phx
 
 		public BProtoSquad() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_CostLowercaseType)
 		{
+			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
+			textData.HasDisplayNameID = true;
+			textData.HasRolloverTextID = true;
+			textData.HasStatsNameID = true;
+			textData.HasPrereqTextID = true;
+			textData.HasRoleTextID = true;
+
 			Units = new Collections.BListArray<BProtoSquadUnit>();
 
 			Flags = new Collections.BBitSet(kFlagsParams);
@@ -63,11 +70,6 @@ namespace KSoft.Phoenix.Phx
 			base.Serialize(s);
 
 			//formationType
-			//DisplayNameID
-			//RolloverTextID
-			//StatsNameID
-			//PrereqTextID
-			//RoleTextID
 			//PortraitIcon
 			//AltIcon
 			//BuildPoints
