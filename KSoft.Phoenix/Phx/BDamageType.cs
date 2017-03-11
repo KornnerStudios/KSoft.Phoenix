@@ -14,6 +14,8 @@ namespace KSoft.Phoenix.Phx
 
 	public enum DamageDirection
 	{
+		Invalid = TypeExtensions.kNone,
+
 		Full,
 		FrontHalf,
 		BackHalf,

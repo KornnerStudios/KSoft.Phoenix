@@ -3,8 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BProtoObjectMovementType
 	{
-		Invalid,
-
+		None,
 		Land,
 		Air,
 		Flood,

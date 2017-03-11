@@ -50,6 +50,8 @@ namespace KSoft.Phoenix.XML
 			if (mStreamXmlContexts != null)
 				return;
 
+			// #NOTE place new DatabaseObjectKind code here
+
 			mStreamXmlContexts = new List<StreamXmlContextData>()
 			{
 				#region Lists
@@ -65,6 +67,10 @@ namespace KSoft.Phoenix.XML
 				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BProtoImpactEffect.kXmlFileInfo)
 				{
 					Preload=StreamXmlImpactEffects,
+				},
+				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.TerrainTileType.kXmlFileInfo)
+				{
+					Preload=StreamXmlTerrainTileTypes,
 				},
 				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BWeaponType.kXmlFileInfo)
 				{

@@ -51,6 +51,9 @@ namespace KSoft.Phoenix.XML
 				FixGameDataXml(s);
 			Database.GameData.StreamGameData(s);
 		}
+
+		// #NOTE place new DatabaseObjectKind code here
+
 		void PreloadDamageTypes(IO.XmlElementStream s)
 		{
 			XmlUtil.SerializePreload(s, mDamageTypesSerializer, ForceNoRootElementStreaming);
@@ -64,6 +67,11 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlImpactEffects(IO.XmlElementStream s)
 		{
 			XmlUtil.Serialize(s, mImpactEffectsSerializer, ForceNoRootElementStreaming);
+		}
+		/// <remarks>For streaming directly from terraintiletypes.xml</remarks>
+		void StreamXmlTerrainTileTypes(IO.XmlElementStream s)
+		{
+			XmlUtil.Serialize(s, Database.TerrainTileTypes, Phx.TerrainTileType.kBListXmlParams, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from weapontypes.xml</remarks>
 		void StreamXmlWeaponTypes(IO.XmlElementStream s)
@@ -181,6 +189,7 @@ namespace KSoft.Phoenix.XML
 			XmlUtil.Serialize(s, db.DamageTypes, Phx.BDamageType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.WeaponTypes, Phx.BWeaponType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.ImpactEffects, Phx.BProtoImpactEffect.kBListXmlParams);
+			XmlUtil.Serialize(s, db.TerrainTileTypes, Phx.TerrainTileType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.UserClasses, Phx.BUserClass.kBListXmlParams);
 			XmlUtil.Serialize(s, db.ObjectTypes, Phx.BDatabaseBase.kObjectTypesXmlParams);
 			XmlUtil.Serialize(s, db.Abilities, Phx.BAbility.kBListXmlParams);

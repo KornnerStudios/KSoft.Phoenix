@@ -18,5 +18,7 @@ namespace KSoft.Phoenix.Phx
 		ScarabScan,
 		ScarabTarget,
 		ScarabKill,
+
+		kNumberOf
 	};
 }

@@ -159,12 +159,73 @@ namespace KSoft.Phoenix.HaloWars
 					fc.Value = "NonCollideable";
 				}
 		}
+		static void FixObjectsXmlInvalidSoundsPowGpWave(IO.XmlElementStream s, XmlNode node)
+		{
+			//Birth->Exist
+
+			var nodes = node.ChildNodes;
+			foreach (XmlNode element in nodes)
+				if (element.Name == "Sound")
+				{
+					var en = (XmlElement)element;
+					if (!en.HasAttribute("Type"))
+						continue;
+					var typeAttr = en.GetAttributeNode("Type");
+					if (typeAttr.Value != "Birth")
+						continue;
+
+					typeAttr.Value = "Exist";
+				}
+		}
+		static void FixObjectsXmlInvalidSounds(IO.XmlElementStream s)
+		{
+			XmlNode node;
+
+			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "pow_gp_wave_01");
+			if (node != null)
+				FixObjectsXmlInvalidSoundsPowGpWave(s, node);
+
+			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "pow_gp_wave_02");
+			if (node != null)
+				FixObjectsXmlInvalidSoundsPowGpWave(s, node);
+
+			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "pow_gp_wave_03");
+			if (node != null)
+				FixObjectsXmlInvalidSoundsPowGpWave(s, node);
+		}
+		static void FixObjectsXmlInvalidCommandId(IO.XmlElementStream s)
+		{
+			XmlNode node;
+
+			//cov_bldg_megaTurret_01
+			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "cov_bldg_megaTurret_01");
+			if (node != null)
+			{
+				string xpath;
+				XmlNodeList elements;
+
+				xpath = "./Command[text()='CovUnitMegaTurret']";
+				elements = node.SelectNodes(xpath);
+				if (elements.Count > 0)
+				{
+					foreach (XmlElement e in elements)
+					{
+						var fc = e.FirstChild;
+						fc.Value = "HookMegaTurret";
+					}
+				}
+			}
+		}
 		protected override void FixObjectsXml(IO.XmlElementStream s)
 		{
 			var build = Database.Engine.Build;
 			FixObjectsXmlInvalidSingles(build, s);
-			if(build == Engine.PhxEngineBuild.Release)
+			if (build == Engine.PhxEngineBuild.Release)
+			{
 				FixObjectsXmlInvalidFlags(s);
+				FixObjectsXmlInvalidSounds(s); // #TODO does this need to be done for Alpha too?
+				FixObjectsXmlInvalidCommandId(s);
+			}
 		}
 		#endregion
 

@@ -47,6 +47,7 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BListAutoId<BProtoSquad> Squads { get; private set; }
 		public Collections.BListAutoId<BProtoPower> Powers { get; private set; }
 		public Collections.BListAutoId<BProtoTech> Techs { get; private set; }
+		public Collections.BListAutoId<TerrainTileType> TerrainTileTypes { get; private set; }
 		public Collections.BListAutoId<BCiv> Civs { get; private set; }
 		public Collections.BListAutoId<BLeader> Leaders { get; private set; }
 
@@ -69,6 +70,7 @@ namespace KSoft.Phoenix.Phx
 			Squads = new Collections.BListAutoId<BProtoSquad>();
 			Powers = new Collections.BListAutoId<BProtoPower>();
 			Techs = new Collections.BListAutoId<BProtoTech>();
+			TerrainTileTypes = new Collections.BListAutoId<TerrainTileType>();
 			Civs = new Collections.BListAutoId<BCiv>();
 			Leaders = new Collections.BListAutoId<BLeader>();
 
@@ -105,6 +107,7 @@ namespace KSoft.Phoenix.Phx
 		Dictionary<string, BProtoSquad> mDbiSquads;
 		Dictionary<string, BProtoPower> mDbiPowers;
 		Dictionary<string, BProtoTech> mDbiTechs;
+		Dictionary<string, TerrainTileType> mDbiTerrainTileTypes;
 		Dictionary<string, BCiv> mDbiCivs;
 		Dictionary<string, BLeader> mDbiLeaders;
 
@@ -118,6 +121,7 @@ namespace KSoft.Phoenix.Phx
 			Objects.SetupDatabaseInterface(out mDbiObjects);
 			Squads.SetupDatabaseInterface(out mDbiSquads);
 			Techs.SetupDatabaseInterface(out mDbiTechs);
+			TerrainTileTypes.SetupDatabaseInterface(out mDbiTerrainTileTypes);
 			Powers.SetupDatabaseInterface(out mDbiPowers);
 			Civs.SetupDatabaseInterface(out mDbiCivs);
 			Leaders.SetupDatabaseInterface(out mDbiLeaders);
@@ -268,6 +272,7 @@ namespace KSoft.Phoenix.Phx
 			case DatabaseObjectKind.Power:		return Powers;
 			case DatabaseObjectKind.Squad:		return Squads;
 			case DatabaseObjectKind.Tech:		return Techs;
+			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes;
 			case DatabaseObjectKind.Unit:		return null; // #TODO?
 			case DatabaseObjectKind.UserClass:	return UserClasses;
 			case DatabaseObjectKind.WeaponType:	return WeaponTypes;
@@ -307,6 +312,7 @@ namespace KSoft.Phoenix.Phx
 			case DatabaseObjectKind.Power:		return TryGetIdWithUndefined(mDbiPowers, name, Powers);
 			case DatabaseObjectKind.Squad:		return TryGetIdWithUndefined(mDbiSquads, name, Squads);
 			case DatabaseObjectKind.Tech:		return TryGetIdWithUndefined(mDbiTechs, name, Techs);
+			case DatabaseObjectKind.TerrainTileType: return TryGetIdWithUndefined(mDbiTerrainTileTypes, name, TerrainTileTypes);
 			// TODO: Should just use the Objects DBI AFAICT
 			case DatabaseObjectKind.Unit:		return TryGetIdUnit(name);
 			case DatabaseObjectKind.UserClass:	return TryGetIdWithUndefined(mDbiUserClasses, name, UserClasses);
@@ -346,6 +352,7 @@ namespace KSoft.Phoenix.Phx
 			case DatabaseObjectKind.Power:		return TryGetNameWithUndefined(Powers, id);
 			case DatabaseObjectKind.Squad:		return TryGetNameWithUndefined(Squads, id);
 			case DatabaseObjectKind.Tech:		return TryGetNameWithUndefined(Techs, id);
+			case DatabaseObjectKind.TerrainTileType: return TryGetNameWithUndefined(TerrainTileTypes, id);
 			// TODO: Should just use the Objects DBI AFAICT
 			case DatabaseObjectKind.Unit:		return TryGetNameUnit(id);
 			case DatabaseObjectKind.UserClass:	return TryGetNameWithUndefined(UserClasses, id);

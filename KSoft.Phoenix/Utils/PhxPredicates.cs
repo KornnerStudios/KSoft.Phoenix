@@ -13,6 +13,7 @@ namespace KSoft.Phoenix
 
 		public static bool IsNotOne(float x) { return x != 1.0f; }
 		public static bool IsNotOne(uint x) { return x != 1; }
+		public static bool IsNotOne(int x) { return x != 1; }
 
 		public static bool IsZero(BVector vector)
 		{

@@ -17,6 +17,7 @@ namespace KSoft.Phoenix.Phx
 		Power,
 		Squad,
 		Tech,
+		TerrainTileType,
 		/// <summary>Object or ObjectType</summary>
 		Unit,
 		UserClass,

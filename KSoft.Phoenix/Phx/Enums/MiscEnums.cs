@@ -65,25 +65,6 @@ namespace KSoft.Phoenix.Phx
 		Approved,
 	};
 
-	public enum BRumbleType
-	{
-		Invalid,
-
-		Fixed,
-		SineWave,
-		IntervalBurst,
-		RandomNoise,
-		Incline,
-		Decline,
-		BumpLRL,
-	};
-	public enum BRumbleMotor
-	{
-		Both,
-		Left,
-		Right,
-	};
-
 	public enum BEventType
 	{
 		Invalid,
@@ -185,5 +166,25 @@ namespace KSoft.Phoenix.Phx
 		HasResources,
 		HasTech,
 		GameTime,
+	};
+
+	public enum BPlayerScope
+	{
+		Invalid = TypeExtensions.kNone,
+
+		Any,
+		Player,
+		Team,
+		Enemy,
+		Gaia,
+
+		kNumberOf
+	};
+
+	public enum BVisualDisplayPriority
+	{
+		Normal = 1,
+		Combat,
+		High,
 	};
 }

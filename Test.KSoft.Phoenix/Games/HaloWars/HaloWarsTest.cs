@@ -89,7 +89,8 @@ namespace KSoft.Phoenix.Engine.Test
 					{
 						s.WriteAttribute("dbid", obj.DbId);
 						s.WriteAttribute("name", obj.Name);
-						s.WriteAttributeOptOnTrue("id", obj.Id, Predicates.IsNotNone);
+						s.WriteAttributeOptOnTrue("is", obj.UnusedIs, Predicates.IsNotNone);
+						s.WriteAttributeOptOnTrue("id", obj.UnusedId, Predicates.IsNotNone);
 					}
 				}
 				s.Document.Save(kTestResultsPath + "ObjectDBIDs.xml");

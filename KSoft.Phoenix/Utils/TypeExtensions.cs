@@ -5,7 +5,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 namespace KSoft.Phoenix
 {
 	/// <summary>Extension methods for types in this assembly</summary>
-	public static class TypeExtensionsPhx
+	public static partial class TypeExtensionsPhx
 	{
 		static readonly Memory.Strings.StringStorage Pascal32Storage =
 					new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);

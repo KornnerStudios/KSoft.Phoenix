@@ -16,7 +16,7 @@ namespace KSoft.Phoenix.Phx
 
 		protected DatabaseObjectUserInterfaceTextData CreateDatabaseObjectUserInterfaceTextData()
 		{
-			Contract.Requires(UserInterfaceTextData != null);
+			Contract.Requires(UserInterfaceTextData == null);
 
 			UserInterfaceTextData = new DatabaseObjectUserInterfaceTextData();
 			return UserInterfaceTextData;

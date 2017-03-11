@@ -1,0 +1,52 @@
+﻿using System.Drawing;
+
+namespace KSoft.Phoenix.Phx
+{
+	public sealed class TerrainTileType
+		: Collections.BListAutoIdObject
+	{
+		public const int cUndefinedIndex = 0;
+
+		#region Xml constants
+		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("TerrainTileType")
+		{
+			DataName = "name",
+			Flags = 0,
+		};
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		{
+			Directory = Engine.GameDirectory.Data,
+			FileName = "TerrainTileTypes.xml",
+			RootName = "TerrainTileTypes"//kBListXmlParams.RootName
+		};
+		#endregion
+
+		#region EditorColor
+		uint mEditorColor;
+		public System.Drawing.Color EditorColor
+		{
+			get { return System.Drawing.Color.FromArgb((int)mEditorColor); }
+			set { mEditorColor = (uint)value.ToArgb(); }
+		}
+		#endregion
+
+		#region ImpactEffect
+		string mImpactEffect;
+		[Meta.UnusedData]
+		[Meta.VisualReference]
+		public string ImpactEffect
+		{
+			get { return mImpactEffect; }
+			set { mImpactEffect = value; }
+		}
+		#endregion
+
+		#region BListAutoIdObject Members
+		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
+		{
+			s.StreamAttribute("EditorColor", ref mEditorColor, NumeralBase.Hex);
+			s.StreamElementOpt("ImpactEffect", ref mImpactEffect, Predicates.IsNotNullOrEmpty);
+		}
+		#endregion
+	};
+}

@@ -42,6 +42,24 @@ namespace KSoft.Phoenix.Phx.Meta
 	{
 	};
 
+	/// <summary>.physics reference</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class PhysicsInfoReferenceAttribute : Attribute
+	{
+	};
+
+	/// <summary>.TriggerScript reference</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class TriggerScriptReferenceAttribute : Attribute
+	{
+	};
+
+	/// <summary>.vis reference</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class VisualReferenceAttribute : Attribute
+	{
+	};
+
 	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
 	public sealed class SoundCueReferenceAttribute : Attribute
 	{
@@ -53,6 +71,12 @@ namespace KSoft.Phoenix.Phx.Meta
 	};
 	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
 	public sealed class AttachmentTypeReferenceAttribute : Attribute
+	{
+	};
+
+	/// <summary>Reference to an Action in a Tactic</summary>
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class BProtoActionReferenceAttribute : Attribute
 	{
 	};
 
@@ -118,6 +142,11 @@ namespace KSoft.Phoenix.Phx.Meta
 	public sealed class BProtoTechReferenceAttribute : ProtoReferenceAttribute
 	{
 		public BProtoTechReferenceAttribute() : base(typeof(BProtoTech), DatabaseObjectKind.Tech) { }
+	};
+
+	public sealed class TerrainTileTypeReferenceAttribute : ProtoReferenceAttribute
+	{
+		public TerrainTileTypeReferenceAttribute() : base(typeof(TerrainTileType), DatabaseObjectKind.TerrainTileType) { }
 	};
 
 	/// <summary>Object or ObjectType</summary>

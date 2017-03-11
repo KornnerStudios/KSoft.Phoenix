@@ -181,6 +181,7 @@ namespace KSoft.Phoenix.XML
 
 		[System.Diagnostics.Conditional("TRACE")]
 		static void TraceUndefinedHandle<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string name,
+			string xmlName,
 			int id, string kind)
 			where TDoc : class
 			where TCursor : class
@@ -197,8 +198,9 @@ namespace KSoft.Phoenix.XML
 			}
 
 			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
-				"Generated UndefinedHandle in '{0} @ {1}' for '{2}' ({3}). {4}={5}",
-				s.StreamName, Text.TextLineInfo.ToString(line_info, true), cursor_name,
+				"Generated UndefinedHandle in '{0} @ {1}' for '{2}.{3}' ({4}). {5}={6}",
+				s.StreamName, Text.TextLineInfo.ToString(line_info, true),
+				cursor_name, xmlName ?? "InnerText",
 				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString());
 		}
 
@@ -242,7 +244,7 @@ namespace KSoft.Phoenix.XML
 					dbid = Database.GetId(kind, id_name);
 					Contract.Assert(dbid.IsNotNone());
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
-						TraceUndefinedHandle(s, id_name, dbid, kind.ToString());
+						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
 				}
 				else
 					dbid = TypeExtensions.kNone;
@@ -291,7 +293,7 @@ namespace KSoft.Phoenix.XML
 					dbid = Database.GetId(kind, id_name);
 					Contract.Assert(dbid.IsNotNone());
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
-						TraceUndefinedHandle(s, id_name, dbid, kind.ToString());
+						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
 				}
 				else
 					dbid = TypeExtensions.kNone;
@@ -360,6 +362,14 @@ namespace KSoft.Phoenix.XML
 			return was_streamed;
 		}
 
+		/// <summary>Stream the current element's Text as a a string</summary>
+		internal static void StreamStringValue<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
+			ref string value)
+			where TDoc : class
+			where TCursor : class
+		{
+			s.StreamCursor(ref value);
+		}
 		/// <summary>Stream the current element's Text as a DamageType</summary>
 		internal static void StreamDamageType<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
 			[Phx.Meta.BDamageTypeReference] ref int damangeType)
@@ -369,9 +379,18 @@ namespace KSoft.Phoenix.XML
 			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref damangeType, Phx.DatabaseObjectKind.DamageType,
 				false, XmlUtil.kSourceCursor);
 		}
+		/// <summary>Stream the current element's Text as a ObjectType</summary>
+		internal static void StreamObjectType<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
+			[Phx.Meta.ObjectTypeReference] ref int objectType)
+			where TDoc : class
+			where TCursor : class
+		{
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref objectType, Phx.DatabaseObjectKind.ObjectType,
+				false, XmlUtil.kSourceCursor);
+		}
 		/// <summary>Stream the current element's Text as a ProtoObject</summary>
 		internal static void StreamObjectID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs,
-			ref int objectProtoId)
+			[Phx.Meta.BProtoObjectReference] ref int objectProtoId)
 			where TDoc : class
 			where TCursor : class
 		{
