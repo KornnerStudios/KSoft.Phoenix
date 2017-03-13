@@ -59,3 +59,24 @@ namespace KSoft.Collections
 		IProtoEnumWithUndefined UndefinedInterface { get; }
 	};
 }
+
+namespace KSoft.Phoenix
+{
+	partial class TypeExtensionsPhx
+	{
+		internal static int TryGetIdWithUndefined(this Collections.IHasUndefinedProtoMemberInterface dbi, string name)
+		{
+			if (dbi == null)
+				return TypeExtensions.kNone;
+
+			return dbi.UndefinedInterface.GetMemberIdOrUndefined(name);
+		}
+		internal static string TryGetNameWithUndefined(this Collections.IHasUndefinedProtoMemberInterface dbi, int id)
+		{
+			if (dbi == null)
+				return null;
+
+			return dbi.UndefinedInterface.GetMemberNameOrUndefined(id);
+		}
+	};
+}

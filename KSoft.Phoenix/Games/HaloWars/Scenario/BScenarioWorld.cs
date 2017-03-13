@@ -3,7 +3,7 @@ namespace KSoft.Phoenix.HaloWars
 {
 	public enum BScenarioWorld
 	{
-		Undefined,
+		None,
 
 		Harvest,
 		Arcadia,

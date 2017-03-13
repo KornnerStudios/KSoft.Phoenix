@@ -83,6 +83,10 @@ namespace KSoft.Phoenix.XML
 				#endregion
 
 				#region GameData
+				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.HPBarData.kXmlFileInfo)
+				{
+					Stream=StreamXmlHPBars,
+				},
 				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.BGameData.kXmlFileInfo)
 				{
 					Stream=StreamXmlGameData,

@@ -1,7 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	public struct BProtoSquadUnit
+	public sealed class BProtoSquadUnit
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
@@ -11,11 +11,33 @@ namespace KSoft.Phoenix.Phx
 		};
 		#endregion
 
+		#region Count
 		int mCount;
-		public int Count { get { return mCount; } }
+		public int Count
+		{
+			get { return mCount; }
+			set { mCount = value; }
+		}
+		#endregion
+
+		#region UnitID
 		int mUnitID;
 		[Meta.BProtoObjectReference]
-		public int UnitID { get { return mUnitID; } }
+		public int UnitID
+		{
+			get { return mUnitID; }
+			set { mUnitID = value; }
+		}
+		#endregion
+
+		#region UnitRole
+		BUnitRole mUnitRole;
+		public BUnitRole UnitRole
+		{
+			get { return mUnitRole; }
+			set { mUnitRole = value; }
+		}
+		#endregion
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -25,7 +47,8 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			s.StreamAttribute("count", ref mCount);
-			xs.StreamDBID(s, /*xmlName:*/null, ref mUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
+			s.StreamAttributeEnumOpt("role", ref mUnitRole, e => e != BUnitRole.Normal);
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mUnitID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
 		}
 		#endregion
 	};

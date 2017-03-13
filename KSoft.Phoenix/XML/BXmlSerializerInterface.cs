@@ -156,7 +156,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 
 			bool was_streamed = false;
 
@@ -226,7 +226,56 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+
+			string id_name = null;
+			bool was_streamed = true;
+			bool to_lower = false;
+
+			if (s.IsReading)
+			{
+				if (isOptional)
+					was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				else
+					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+
+				if (was_streamed)
+				{
+					dbid = Database.GetId(kind, id_name);
+					Contract.Assert(dbid.IsNotNone());
+					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
+						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
+				}
+				else
+					dbid = TypeExtensions.kNone;
+			}
+			else if (s.IsWriting)
+			{
+				if (dbid.IsNotNone())
+				{
+					was_streamed = false;
+					return was_streamed;
+				}
+
+				id_name = Database.GetName(kind, dbid);
+				Contract.Assert(!string.IsNullOrEmpty(id_name));
+
+				if (isOptional)
+					s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				else
+					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+			}
+
+			return was_streamed;
+		}
+		public bool StreamHPBarName<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
+			string xmlName, ref int dbid,
+			Phx.HPBarDataObjectKind kind,
+			bool isOptional = true, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
+			where TDoc : class
+			where TCursor : class
+		{
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -275,7 +324,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -325,7 +374,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 			Contract.Requires(xmlSource != IO.TagElementNodeType.Attribute);
 
 			bool was_streamed = false;

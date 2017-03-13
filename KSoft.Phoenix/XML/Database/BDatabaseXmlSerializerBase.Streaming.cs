@@ -52,6 +52,12 @@ namespace KSoft.Phoenix.XML
 			Database.GameData.StreamGameData(s);
 		}
 
+		/// <remarks>For streaming directly from hpbars.xml</remarks>
+		void StreamXmlHPBars(IO.XmlElementStream s)
+		{
+			Database.HPBars.StreamHPBarData(s);
+		}
+
 		// #NOTE place new DatabaseObjectKind code here
 
 		void PreloadDamageTypes(IO.XmlElementStream s)
@@ -185,6 +191,7 @@ namespace KSoft.Phoenix.XML
 			PreStreamXml(s.StreamMode);
 
 			db.GameData.Serialize(s);
+			db.HPBars.Serialize(s);
 			// #NOTE place new DatabaseObjectKind code here
 			XmlUtil.Serialize(s, db.DamageTypes, Phx.BDamageType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.WeaponTypes, Phx.BWeaponType.kBListXmlParams);

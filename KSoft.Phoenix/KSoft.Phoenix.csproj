@@ -77,6 +77,11 @@
     <Compile Include="Phx\HPBar\BProtoHPBarColorStages.cs" />
     <Compile Include="Phx\HPBar\BProtoPieProgress.cs" />
     <Compile Include="Phx\HPBar\BProtoVeterancyBar.cs" />
+    <Compile Include="Phx\HPBar\HPBarData.cs" />
+    <Compile Include="Phx\HPBar\HPBarDataObjectKind.cs" />
+    <Compile Include="Phx\Objects\Enums\BSquadBirthType.cs" />
+    <Compile Include="Phx\Objects\Enums\BSquadStance.cs" />
+    <Compile Include="Phx\Objects\Enums\BUnitRole.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BGroundIKNode.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BHardpoint.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BHitZone.cs" />
@@ -95,6 +100,7 @@
     <Compile Include="Phx\Objects\ProtoObject\BProtoObjectSquadModeAnim.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BProtoObjectTrainLimit.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BSweetSpotIKNode.cs" />
+    <Compile Include="Phx\Objects\ProtoSquad\BProtoSquadSound.cs" />
     <Compile Include="Phx\ProtoReference.cs" />
     <Compile Include="Phx\Scenario\BGameType.cs" />
     <Compile Include="Phx\Scenario\BMapType.cs" />

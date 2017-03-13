@@ -19,6 +19,7 @@ namespace KSoft.Phoenix.Phx.Meta
 		protected ProtoReferenceAttribute(Type protoType, DatabaseObjectKind kind = DatabaseObjectKind.None)
 		{
 			ProtoType = protoType;
+			ProtoKind = kind;
 		}
 	};
 
@@ -80,6 +81,7 @@ namespace KSoft.Phoenix.Phx.Meta
 	{
 	};
 
+	#region GameData
 	/// <summary>Cost/Resource type reference</summary>
 	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
 	public sealed class ResourceReferenceAttribute : Attribute
@@ -93,7 +95,54 @@ namespace KSoft.Phoenix.Phx.Meta
 	public sealed class RateReferenceAttribute : Attribute
 	{
 	};
+	#endregion
 
+	#region HPBar data
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public abstract class ProtoHPBarObjectReferenceAttribute : Attribute
+	{
+		public Type ProtoType { get; private set; }
+		public HPBarDataObjectKind ProtoKind { get; private set; }
+
+		protected ProtoHPBarObjectReferenceAttribute(Type protoType, HPBarDataObjectKind kind = HPBarDataObjectKind.None)
+		{
+			ProtoType = protoType;
+			ProtoKind = kind;
+		}
+	};
+
+	public sealed class BProtoHPBarReferenceAttribute : ProtoHPBarObjectReferenceAttribute
+	{
+		public BProtoHPBarReferenceAttribute() : base(typeof(BProtoHPBar), HPBarDataObjectKind.HPBar) { }
+	};
+
+	public sealed class BProtoHPBarColorStagesReferenceAttribute : ProtoHPBarObjectReferenceAttribute
+	{
+		public BProtoHPBarColorStagesReferenceAttribute() : base(typeof(BProtoHPBarColorStages), HPBarDataObjectKind.ColorStages) { }
+	};
+
+	public sealed class BProtoVeterancyBarReferenceAttribute : ProtoHPBarObjectReferenceAttribute
+	{
+		public BProtoVeterancyBarReferenceAttribute() : base(typeof(BProtoVeterancyBar), HPBarDataObjectKind.VeterancyBar) { }
+	};
+
+	public sealed class BProtoPieProgressReferenceAttribute : ProtoHPBarObjectReferenceAttribute
+	{
+		public BProtoPieProgressReferenceAttribute() : base(typeof(BProtoPieProgress), HPBarDataObjectKind.PieProgress) { }
+	};
+
+	public sealed class BProtoBobbleHeadReferenceAttribute : ProtoHPBarObjectReferenceAttribute
+	{
+		public BProtoBobbleHeadReferenceAttribute() : base(typeof(BProtoBobbleHead), HPBarDataObjectKind.BobbleHead) { }
+	};
+
+	public sealed class BProtoBuildingStrengthReferenceAttribute : ProtoHPBarObjectReferenceAttribute
+	{
+		public BProtoBuildingStrengthReferenceAttribute() : base(typeof(BProtoBuildingStrength), HPBarDataObjectKind.BuildingStrength) { }
+	};
+	#endregion
+
+	#region Proto data
 	public sealed class BAbilityReferenceAttribute : ProtoReferenceAttribute
 	{
 		public BAbilityReferenceAttribute() : base(typeof(BAbility), DatabaseObjectKind.Ability) { }
@@ -164,4 +213,5 @@ namespace KSoft.Phoenix.Phx.Meta
 	{
 		public BWeaponTypeReferenceAttribute() : base(typeof(BWeaponType), DatabaseObjectKind.WeaponType) { }
 	};
+	#endregion
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -676,6 +678,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region Hero globals
 		#region HeroDownedLOS
 		float mHeroDownedLOS;
 		public float HeroDownedLOS
@@ -719,6 +722,7 @@ namespace KSoft.Phoenix.Phx
 			get { return mMaxDeadHeroTransportDist; }
 			set { mMaxDeadHeroTransportDist = value; }
 		}
+		#endregion
 		#endregion
 
 		#region Transport
@@ -890,6 +894,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region Cyro globals
 		#region TimeFrozenToThaw
 		float mTimeFrozenToThaw;
 		public float TimeFrozenToThaw
@@ -951,6 +956,7 @@ namespace KSoft.Phoenix.Phx
 			get { return mFrozenDamageModifier; }
 			set { mFrozenDamageModifier = value; }
 		}
+		#endregion
 		#endregion
 
 		#region SmallDotSize
@@ -1015,6 +1021,44 @@ namespace KSoft.Phoenix.Phx
 			SquadFlags = new Collections.BTypeNames();
 			#endregion
 		}
+
+		#region Database interfaces
+		internal Collections.IBTypeNames GetNamesInterface(GameDataObjectKind kind)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+
+			switch (kind)
+			{
+			case GameDataObjectKind.Cost:	return Resources;
+			case GameDataObjectKind.Pop:	return Populations;
+			case GameDataObjectKind.Rate:	return Rates;
+
+			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
+			}
+		}
+
+		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(GameDataObjectKind kind)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+
+			switch (kind)
+			{
+			case GameDataObjectKind.Cost:	return Resources;
+			case GameDataObjectKind.Pop:	return Populations;
+			case GameDataObjectKind.Rate:	return Rates;
+
+			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
+			}
+		}
+
+		internal string GetName(GameDataObjectKind kind, int id)
+		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+
+			var dbi = GetMembersInterface(kind);
+			return dbi.TryGetNameWithUndefined(id);
+		}
+		#endregion
 
 		#region ITagElementStreamable<string> Members
 		/// <remarks>For streaming directly from gamedata.xml</remarks>
@@ -1125,11 +1169,13 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("OverrunJumpForce", ref mOverrunJumpForce, Predicates.IsNotZero);
 			s.StreamElementOpt("OverrunDistance", ref mOverrunDistance, Predicates.IsNotZero);
 			s.StreamElementOpt("CoopResourceSplitRate", ref mCoopResourceSplitRate, PhxPredicates.IsNotOne);
+			#region Hero globals
 			s.StreamElementOpt("HeroDownedLOS", ref mHeroDownedLOS, Predicates.IsNotZero);
 			s.StreamElementOpt("HeroHPRegenTime", ref mHeroHPRegenTime, Predicates.IsNotZero);
 			s.StreamElementOpt("HeroRevivalDistance", ref mHeroRevivalDistance, Predicates.IsNotZero);
 			s.StreamElementOpt("HeroPercentHPRevivalThreshhold", ref mHeroPercentHPRevivalThreshhold, Predicates.IsNotZero);
 			s.StreamElementOpt("MaxDeadHeroTransportDist", ref mMaxDeadHeroTransportDist, Predicates.IsNotZero);
+			#endregion
 			#region Transport
 			s.StreamElementOpt("TransportClearRadiusScale", ref mTransportClearRadiusScale, PhxPredicates.IsNotOne);
 			s.StreamElementOpt("TransportMaxSearchRadiusScale", ref mTransportMaxSearchRadiusScale, PhxPredicates.IsNotOne);
@@ -1159,6 +1205,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("TransportMax", ref mTransportMax, Predicates.IsNotZero);
 			#endregion
 			s.StreamElementOpt("HitchOffset", ref mHitchOffset, Predicates.IsNotZero);
+			#region Cryo globals
 			s.StreamElementOpt("TimeFrozenToThaw", ref mTimeFrozenToThaw, Predicates.IsNotZero);
 			s.StreamElementOpt("TimeFreezingToThaw", ref mTimeFreezingToThaw, Predicates.IsNotZero);
 			s.StreamElementOpt("DefaultCryoPoints", ref mDefaultCryoPoints, Predicates.IsNotZero);
@@ -1166,6 +1213,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("FreezingSpeedModifier", ref mFreezingSpeedModifier, Predicates.IsNotZero);
 			s.StreamElementOpt("FreezingDamageModifier", ref mFreezingDamageModifier, Predicates.IsNotZero);
 			s.StreamElementOpt("FrozenDamageModifier", ref mFrozenDamageModifier, Predicates.IsNotZero);
+			#endregion
 			using (s.EnterCursorBookmark("Dot"))
 			{
 				s.StreamElementOpt("small", ref mSmallDotSize, Predicates.IsNotZero);

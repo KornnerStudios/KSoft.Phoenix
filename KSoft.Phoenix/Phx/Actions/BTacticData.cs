@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Phx
 
 			Weapons = new Collections.BListAutoId<BWeapon>();
 			Actions = new Collections.BListAutoId<BProtoAction>();
-			
+
 			Tactic = new BTactic();
 
 			InitializeDatabaseInterfaces();
@@ -50,9 +50,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			switch (kind)
 			{
-			case TacticDataObjectKind.Weapon:		return BDatabaseBase.TryGetIdWithUndefined(mDbiWeapons, name, Weapons);
-			//case TacticDataObjectKind.TacticState:	return BDatabaseBase.TryGetIdWithUndefined(mDbiTacticStates, name, TacticStates);
-			case TacticDataObjectKind.Action:		return BDatabaseBase.TryGetIdWithUndefined(mDbiActions, name, Actions);
+			case TacticDataObjectKind.Weapon:		return Weapons.TryGetIdWithUndefined(name);
+			//case TacticDataObjectKind.TacticState:	return TacticStates.TryGetIdWithUndefined(name);
+			case TacticDataObjectKind.Action:		return Actions.TryGetIdWithUndefined(name);
 
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
@@ -61,9 +61,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			switch (kind)
 			{
-			case TacticDataObjectKind.Weapon:		return BDatabaseBase.TryGetNameWithUndefined(Weapons, id);
-			//case TacticDataObjectKind.TacticState:	return BDatabaseBase.TryGetNameWithUndefined(TacticStates, id);
-			case TacticDataObjectKind.Action:		return BDatabaseBase.TryGetNameWithUndefined(Actions, id);
+			case TacticDataObjectKind.Weapon:		return Weapons.TryGetNameWithUndefined(id);
+			//case TacticDataObjectKind.TacticState:	return TacticStates.TryGetNameWithUndefined(id);
+			case TacticDataObjectKind.Action:		return Actions.TryGetNameWithUndefined(id);
 
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
@@ -77,7 +77,7 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -116,14 +116,14 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			td.StreamID(s, null, ref id, TacticDataObjectKind.Weapon, false, XML.XmlUtil.kSourceCursor);
+			td.StreamID(s, XML.XmlUtil.kNoXmlName, ref id, TacticDataObjectKind.Weapon, false, XML.XmlUtil.kSourceCursor);
 		}
 		internal static void StreamProtoActionID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BTacticData td,
 			ref int protoActionId)
 			where TDoc : class
 			where TCursor : class
 		{
-			td.StreamID(s, null, ref protoActionId, TacticDataObjectKind.Action, false, XML.XmlUtil.kSourceCursor);
+			td.StreamID(s, XML.XmlUtil.kNoXmlName, ref protoActionId, TacticDataObjectKind.Action, false, XML.XmlUtil.kSourceCursor);
 		}
 
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

@@ -82,3 +82,20 @@ namespace KSoft.Collections
 		internal IProtoEnumWithUndefined UndefinedInterface { get { return mUndefinedInterface; } }
 	};
 }
+
+namespace KSoft.Phoenix
+{
+	partial class TypeExtensionsPhx
+	{
+		public static string TryGetName(this Collections.BTypeNames dbi, int id)
+		{
+			if (dbi == null)
+				return null;
+
+			if (id >= 0 && id < dbi.Count)
+				return dbi[id];
+
+			return null;
+		}
+	};
+}

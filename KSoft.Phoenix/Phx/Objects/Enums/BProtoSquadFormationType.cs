@@ -3,7 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BProtoSquadFormationType
 	{
-		Invalid,
+		Standard,
 
 		Flock,
 		Gaggle,

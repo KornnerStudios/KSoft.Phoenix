@@ -57,3 +57,17 @@ namespace KSoft.Collections
 		#endregion
 	};
 }
+
+namespace KSoft.Phoenix
+{
+	partial class TypeExtensionsPhx
+	{
+		public static int TryGetId(this Collections.IProtoEnum dbi, string name)
+		{
+			if (dbi == null)
+				return TypeExtensions.kNone;
+
+			return dbi.TryGetMemberId(name);
+		}
+	};
+}

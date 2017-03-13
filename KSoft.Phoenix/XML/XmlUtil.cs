@@ -32,7 +32,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 			Contract.Requires(xmlSource != IO.TagElementNodeType.Attribute);
 
 			return xmlSource == IO.TagElementNodeType.Text
@@ -52,7 +52,7 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 
 			string string_value = null;
 			bool was_streamed = true;
@@ -103,7 +103,7 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != null));
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
 
 			string string_value = null;
 			bool was_streamed = true;
@@ -139,6 +139,57 @@ namespace KSoft.Phoenix
 					s.StreamStringOpt(xmlName, ref string_value, to_lower, xmlSource);
 				else
 					s.StreamString(xmlName, ref string_value, to_lower, xmlSource);
+			}
+
+			return was_streamed;
+		}
+
+		public static bool StreamProtoEnum<TDoc, TCursor>(this IO.TagElementStream<TDoc, TCursor, string> s
+			, string xmlName, ref int dbid
+			, Collections.IProtoEnum protoEnum
+			, bool isOptional = true, IO.TagElementNodeType xmlSource = XML.XmlUtil.kSourceElement
+			, int isOptionaDefaultValue = TypeExtensions.kNone)
+			where TDoc : class
+			where TCursor : class
+		{
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			Contract.Requires(protoEnum != null);
+
+			string id_name = null;
+			bool was_streamed = true;
+			bool to_lower = false;
+
+			if (s.IsReading)
+			{
+				if (isOptional)
+					was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				else
+					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+
+				if (was_streamed)
+				{
+					dbid = protoEnum.TryGetMemberId(id_name);
+					Contract.Assert(dbid.IsNotNone(), id_name);
+				}
+				else
+					dbid = TypeExtensions.kNone;
+			}
+			else if (s.IsWriting)
+			{
+				if (isOptional && isOptionaDefaultValue.IsNotNone() && isOptionaDefaultValue == dbid)
+				{
+					was_streamed = false;
+					return was_streamed;
+				}
+
+				id_name = protoEnum.TryGetMemberName(dbid);
+				if (id_name.IsNullOrEmpty())
+					Contract.Assert(!id_name.IsNullOrEmpty(), dbid.ToString());
+
+				if (isOptional)
+					s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				else
+					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
 			}
 
 			return was_streamed;

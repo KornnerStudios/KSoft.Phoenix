@@ -197,7 +197,6 @@ namespace KSoft.Phoenix.HaloWars
 		{
 			XmlNode node;
 
-			//cov_bldg_megaTurret_01
 			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "cov_bldg_megaTurret_01");
 			if (node != null)
 			{
@@ -266,10 +265,41 @@ namespace KSoft.Phoenix.HaloWars
 				);
 			FixSquadsXmlAlphaCostElements(s);
 		}
+
+		static void FixSquadsXmlSounds(IO.XmlElementStream s)
+		{
+			XmlNode node;
+
+			node = XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "cov_veh_bruteChopper_01");
+			FixSquadsXmlSoundsKillEnemy(node);
+			node = XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "cov_veh_ghost_01");
+			FixSquadsXmlSoundsKillEnemy(node);
+		}
+		static void FixSquadsXmlSoundsKillEnemy(XmlNode node)
+		{
+			if (node == null)
+				return;
+
+			var xpath = "./Sound[@Type='KillEnemy']";
+			var elements = node.SelectNodes(xpath);
+			if (elements.Count > 0)
+			{
+				foreach (XmlElement e in elements)
+				{
+					var typeAttr = e.GetAttributeNode("Type");
+					typeAttr.Value = Phx.BSquadSoundType.KilledEnemy.ToString();
+				}
+			}
+		}
+
 		protected override void FixSquadsXml(IO.XmlElementStream s)
 		{
 			if (Database.Engine.Build == Engine.PhxEngineBuild.Alpha)
 				FixSquadsXmlAlpha(s);
+			else
+			{
+				FixSquadsXmlSounds(s);
+			}
 		}
 		#endregion
 

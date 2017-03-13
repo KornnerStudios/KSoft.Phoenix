@@ -63,7 +63,25 @@ namespace KSoft.Collections
 		Dictionary<string, T> mDBI;
 		internal void SetupDatabaseInterface(out Dictionary<string, T> dbi)
 		{
-			mDBI = dbi = new Dictionary<string, T>(Params != null ? Params.InitialCapacity : BCollectionParams.kDefaultCapacity);
+			SetupDatabaseInterface();
+			dbi = mDBI;
+		}
+		internal void SetupDatabaseInterface()
+		{
+			mDBI = new Dictionary<string, T>(Params != null ? Params.InitialCapacity : BCollectionParams.kDefaultCapacity);
+		}
+
+		internal int TryGetId(string name)
+		{
+			int id = TypeExtensions.kNone;
+			if (mDBI == null)
+				return id;
+
+			T obj;
+			if (mDBI.TryGetValue(name, out obj))
+				id = obj.AutoId;
+
+			return id;
 		}
 		#endregion
 
@@ -107,5 +125,23 @@ namespace KSoft.Collections
 		private ProtoEnumWithUndefinedImpl mUndefinedInterface;
 		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface { get { return mUndefinedInterface; } }
 		internal IProtoEnumWithUndefined UndefinedInterface { get { return mUndefinedInterface; } }
+	};
+}
+
+namespace KSoft.Phoenix
+{
+	partial class TypeExtensionsPhx
+	{
+		internal static string TryGetName<T>(this Collections.BListAutoId<T> dbi, int id)
+			where T : class, Collections.IListAutoIdObject, new()
+		{
+			if (dbi == null)
+				return null;
+
+			if (id >= 0 && id < dbi.Count)
+				return dbi[id].Data;
+
+			return null;
+		}
 	};
 }
