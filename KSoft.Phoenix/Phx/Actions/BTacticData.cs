@@ -41,9 +41,9 @@ namespace KSoft.Phoenix.Phx
 
 		void InitializeDatabaseInterfaces()
 		{
-			Weapons.SetupDatabaseInterface(out mDbiWeapons);
-			//TacticStates.SetupDatabaseInterface(out mDbiTacticStates);
-			Actions.SetupDatabaseInterface(out mDbiActions);
+			Weapons.SetupDatabaseInterface();
+			//TacticStates.SetupDatabaseInterface();
+			Actions.SetupDatabaseInterface();
 		}
 
 		public int GetId(TacticDataObjectKind kind, string name)

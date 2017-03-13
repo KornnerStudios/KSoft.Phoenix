@@ -106,33 +106,20 @@ namespace KSoft.Phoenix.Phx
 		#region Database interfaces
 		// #NOTE place new DatabaseObjectKind code here
 
-		Dictionary<string, BDamageType> mDbiDamageTypes;
-		Dictionary<string, BProtoImpactEffect> mDbiImpactEffects;
-		Dictionary<string, BWeaponType> mDbiWeaponTypes;
-		Dictionary<string, BUserClass> mDbiUserClasses;
-		Dictionary<string, BAbility> mDbiAbilities;
-		Dictionary<string, BProtoObject> mDbiObjects;
-		Dictionary<string, BProtoSquad> mDbiSquads;
-		Dictionary<string, BProtoPower> mDbiPowers;
-		Dictionary<string, BProtoTech> mDbiTechs;
-		Dictionary<string, TerrainTileType> mDbiTerrainTileTypes;
-		Dictionary<string, BCiv> mDbiCivs;
-		Dictionary<string, BLeader> mDbiLeaders;
-
 		void InitializeDatabaseInterfaces()
 		{
-			DamageTypes.SetupDatabaseInterface(out mDbiDamageTypes);
-			ImpactEffects.SetupDatabaseInterface(out mDbiImpactEffects);
-			WeaponTypes.SetupDatabaseInterface(out mDbiWeaponTypes);
-			UserClasses.SetupDatabaseInterface(out mDbiUserClasses);
-			Abilities.SetupDatabaseInterface(out mDbiAbilities);
-			Objects.SetupDatabaseInterface(out mDbiObjects);
-			Squads.SetupDatabaseInterface(out mDbiSquads);
-			Techs.SetupDatabaseInterface(out mDbiTechs);
-			TerrainTileTypes.SetupDatabaseInterface(out mDbiTerrainTileTypes);
-			Powers.SetupDatabaseInterface(out mDbiPowers);
-			Civs.SetupDatabaseInterface(out mDbiCivs);
-			Leaders.SetupDatabaseInterface(out mDbiLeaders);
+			DamageTypes.SetupDatabaseInterface();
+			ImpactEffects.SetupDatabaseInterface();
+			WeaponTypes.SetupDatabaseInterface();
+			UserClasses.SetupDatabaseInterface();
+			Abilities.SetupDatabaseInterface();
+			Objects.SetupDatabaseInterface();
+			Squads.SetupDatabaseInterface();
+			Techs.SetupDatabaseInterface();
+			TerrainTileTypes.SetupDatabaseInterface();
+			Powers.SetupDatabaseInterface();
+			Civs.SetupDatabaseInterface();
+			Leaders.SetupDatabaseInterface();
 		}
 
 		const int kObjectIdIsObjectTypeBitMask = 1<<30;

@@ -61,11 +61,6 @@ namespace KSoft.Collections
 		}
 
 		Dictionary<string, T> mDBI;
-		internal void SetupDatabaseInterface(out Dictionary<string, T> dbi)
-		{
-			SetupDatabaseInterface();
-			dbi = mDBI;
-		}
 		internal void SetupDatabaseInterface()
 		{
 			mDBI = new Dictionary<string, T>(Params != null ? Params.InitialCapacity : BCollectionParams.kDefaultCapacity);
