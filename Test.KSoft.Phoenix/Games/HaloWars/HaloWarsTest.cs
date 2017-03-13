@@ -53,7 +53,15 @@ namespace KSoft.Phoenix.Engine.Test
 				s.StreamMode = FA.Write;
 
 				hw.Database.Serialize(s);
-				s.Document.Save(kTestResultsPath + "Serina.xml");
+
+				var xw_settings = new System.Xml.XmlWriterSettings();
+				xw_settings.Indent = true;
+				xw_settings.IndentChars = "\t";
+				xw_settings.NewLineChars = "\n";
+				using (var xw = System.Xml.XmlWriter.Create(kTestResultsPath + "Serina.xml", xw_settings))
+				{
+					s.Document.Save(xw);
+				}
 			}
 		}
 		[TestMethod]

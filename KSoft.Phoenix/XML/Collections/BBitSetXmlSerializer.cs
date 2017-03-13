@@ -61,7 +61,7 @@ namespace KSoft.Phoenix.XML
 					Params.StreamDataName(s, ref name);
 
 					int id = penum.GetMemberId(name);
-					Bits[id] = true;
+					Bits.Set(id);
 				}
 			}
 
@@ -76,6 +76,16 @@ namespace KSoft.Phoenix.XML
 
 			Collections.IProtoEnum penum = GetProtoEnum(s.GetSerializerInterface().Database);
 
+			foreach (var bitIndex in Bits.RawBits.SetBitIndices)
+			{
+				using (s.EnterCursorBookmark(Params.ElementName))
+				{
+					string name = penum.GetMemberName(bitIndex);
+					Params.StreamDataName(s, ref name);
+				}
+			}
+
+#if false
 			for (int x = 0; x < Bits.Count; x++)
 				if (Bits[x])
 					using (s.EnterCursorBookmark(Params.ElementName))
@@ -83,6 +93,7 @@ namespace KSoft.Phoenix.XML
 						string name = penum.GetMemberName(x);
 						Params.StreamDataName(s, ref name);
 					}
+#endif
 		}
 
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

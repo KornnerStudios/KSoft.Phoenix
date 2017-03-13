@@ -74,6 +74,8 @@ namespace KSoft.Phoenix.XML
 
 			if (s.IsReading) // If the stream doesn't have the expected element, don't try to stream
 				should_stream = root_name == null || s.ElementsExists(root_name);
+			else if (s.IsWriting)
+				should_stream = List != null && List.IsEmpty == false;
 
 			if (should_stream) using (s.EnterCursorBookmark(root_name))
 			{

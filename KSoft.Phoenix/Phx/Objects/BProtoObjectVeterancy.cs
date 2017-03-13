@@ -13,14 +13,24 @@ namespace KSoft.Phoenix.Phx
 			#region IEqualityComparer<BProtoObjectVeterancy> Members
 			public bool Equals(BProtoObjectVeterancy x, BProtoObjectVeterancy y)
 			{
-				return x.XP == y.XP && x.Damage == y.Damage && x.Velocity == y.Velocity && x.Accuracy == y.Accuracy &&
-					x.WorkRate == y.WorkRate && x.WeaponRange == y.WeaponRange && x.DamageTaken == y.DamageTaken;
+				return x.XP == y.XP
+					&& x.Damage == y.Damage
+					&& x.Velocity == y.Velocity
+					&& x.Accuracy == y.Accuracy
+					&& x.WorkRate == y.WorkRate
+					&& x.WeaponRange == y.WeaponRange
+					&& x.DamageTaken == y.DamageTaken;
 			}
 
 			public int GetHashCode(BProtoObjectVeterancy obj)
 			{
-				return obj.XP.GetHashCode() ^ obj.Damage.GetHashCode() ^ obj.Velocity.GetHashCode() ^ obj.Accuracy.GetHashCode() ^
-					obj.WorkRate.GetHashCode() ^ obj.WeaponRange.GetHashCode() ^ obj.DamageTaken.GetHashCode();
+				return obj.XP.GetHashCode()
+					^ obj.Damage.GetHashCode()
+					^ obj.Velocity.GetHashCode()
+					^ obj.Accuracy.GetHashCode()
+					^ obj.WorkRate.GetHashCode()
+					^ obj.WeaponRange.GetHashCode()
+					^ obj.DamageTaken.GetHashCode();
 			}
 			#endregion
 		};
@@ -80,30 +90,46 @@ namespace KSoft.Phoenix.Phx
 		#region Properties
 		float mXP;
 		public float XP { get { return mXP; } }
-		float mDamage;
+		float mDamage = 1.0f;
 		public float Damage { get { return mDamage; } }
-		float mVelocity;
+		float mVelocity = 1.0f;
 		public float Velocity { get { return mVelocity; } }
-		float mAccuracy;
+		float mAccuracy = 1.0f;
 		public float Accuracy { get { return mAccuracy; } }
-		float mWorkRate;
+		float mWorkRate = 1.0f;
 		public float WorkRate { get { return mWorkRate; } }
-		float mWeaponRange;
+		float mWeaponRange = 1.0f;
 		public float WeaponRange { get { return mWeaponRange; } }
-		float mDamageTaken;
+		float mDamageTaken = 1.0f;
 		public float DamageTaken { get { return mDamageTaken; } }
 		#endregion
 
 		public bool IsInvalid { get { return object.ReferenceEquals(this, kInvalid); } }
-		public bool IsNull { get { return mXP == 0.0f; } }
+		public bool IsIgnored { get { return mXP == 0.0f; } }
 
-		#region IComparable<BProtoObjectVeterancy> Members
+		#region IComparable Members
 		int IComparable<BProtoObjectVeterancy>.CompareTo(BProtoObjectVeterancy other)
 		{
-			if (this.XP < other.XP)
-				return -1;
-			else if (this.XP > other.XP)
-				return 1;
+			if (XP != other.XP)
+				return XP.CompareTo(other.XP);
+
+			if (Damage != other.Damage)
+				return Damage.CompareTo(other.Damage);
+
+			if (Velocity != other.Velocity)
+				return Velocity.CompareTo(other.Velocity);
+
+			if (Accuracy != other.Accuracy)
+				return Accuracy.CompareTo(other.Accuracy);
+
+			if (WorkRate != other.WorkRate)
+				return WorkRate.CompareTo(other.WorkRate);
+
+			if (WeaponRange != other.WeaponRange)
+				return WeaponRange.CompareTo(other.WeaponRange);
+
+			if (DamageTaken != other.DamageTaken)
+				return DamageTaken.CompareTo(other.DamageTaken);
 
 			return 0;
 		}
@@ -127,12 +153,12 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			s.StreamAttributeOpt("XP", ref mXP, Predicates.IsNotZero);
-			s.StreamAttributeOpt("Damage", ref mDamage, Predicates.IsNotZero);
-			s.StreamAttributeOpt("Velocity", ref mVelocity, Predicates.IsNotZero);
-			s.StreamAttributeOpt("Accuracy", ref mAccuracy, Predicates.IsNotZero);
-			s.StreamAttributeOpt("WorkRate", ref mWorkRate, Predicates.IsNotZero);
-			s.StreamAttributeOpt("WeaponRange", ref mWeaponRange, Predicates.IsNotZero);
-			s.StreamAttributeOpt("DamageTaken", ref mDamageTaken, Predicates.IsNotZero);
+			s.StreamAttributeOpt("Damage", ref mDamage, PhxPredicates.IsNotOne);
+			s.StreamAttributeOpt("Velocity", ref mVelocity, PhxPredicates.IsNotOne);
+			s.StreamAttributeOpt("Accuracy", ref mAccuracy, PhxPredicates.IsNotOne);
+			s.StreamAttributeOpt("WorkRate", ref mWorkRate, PhxPredicates.IsNotOne);
+			s.StreamAttributeOpt("WeaponRange", ref mWeaponRange, PhxPredicates.IsNotOne);
+			s.StreamAttributeOpt("DamageTaken", ref mDamageTaken, PhxPredicates.IsNotOne);
 		}
 		#endregion
 	};

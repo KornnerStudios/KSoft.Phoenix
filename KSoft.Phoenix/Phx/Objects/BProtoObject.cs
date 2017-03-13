@@ -389,7 +389,7 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		bool HasTrainerTypeData { get {
-			return TrainerType.IsNone()
+			return TrainerType.IsNotNone()
 				|| TrainerApplyFormation;
 		} }
 		#endregion
