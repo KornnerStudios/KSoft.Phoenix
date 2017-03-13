@@ -20,11 +20,15 @@ namespace KSoft.Phoenix.Phx
 		};
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("ChildObject");
+		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		{
+			RootName = "ChildObjects",
+			ElementName = "Object",
+		};
 		#endregion
 
 		#region Type
-		ChildObjectType mType;
+		ChildObjectType mType = ChildObjectType.Object;
 		public ChildObjectType Type
 		{
 			get { return mType; }
@@ -92,7 +96,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttributeEnum("Type", ref mType);
+			s.StreamAttributeEnumOpt("Type", ref mType, e => e != ChildObjectType.Object);
 
 			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mID, TypeObjectKind, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 			s.StreamAttributeOpt("AttachBone", ref mAttachBone, Predicates.IsNotNullOrEmpty);
