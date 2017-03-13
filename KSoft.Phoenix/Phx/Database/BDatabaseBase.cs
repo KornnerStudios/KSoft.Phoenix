@@ -52,6 +52,9 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BListAutoId<BCiv> Civs { get; private set; }
 		public Collections.BListAutoId<BLeader> Leaders { get; private set; }
 
+		public Collections.BListArray<BProtoMergedSquads> MergedSquads { get; private set; }
+		public BProtoShieldBubbleTypes ShieldBubbleTypes { get; private set; }
+
 		public Dictionary<int, BTacticData> ObjectTacticsMap { get; private set; }
 
 		protected BDatabaseBase(Engine.PhxEngine engine, Collections.IProtoEnum gameObjectTypes)
@@ -75,6 +78,9 @@ namespace KSoft.Phoenix.Phx
 			TerrainTileTypes = new Collections.BListAutoId<TerrainTileType>();
 			Civs = new Collections.BListAutoId<BCiv>();
 			Leaders = new Collections.BListAutoId<BLeader>();
+
+			MergedSquads = new Collections.BListArray<BProtoMergedSquads>();
+			ShieldBubbleTypes = new BProtoShieldBubbleTypes();
 
 			InitializeDatabaseInterfaces();
 		}

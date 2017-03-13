@@ -100,6 +100,7 @@
     <Compile Include="Phx\Objects\ProtoObject\BProtoObjectSquadModeAnim.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BProtoObjectTrainLimit.cs" />
     <Compile Include="Phx\Objects\ProtoObject\BSweetSpotIKNode.cs" />
+    <Compile Include="Phx\Objects\ProtoSquad\BProtoSquadShieldBubble.cs" />
     <Compile Include="Phx\Objects\ProtoSquad\BProtoSquadSound.cs" />
     <Compile Include="Phx\ProtoReference.cs" />
     <Compile Include="Phx\Scenario\BGameType.cs" />

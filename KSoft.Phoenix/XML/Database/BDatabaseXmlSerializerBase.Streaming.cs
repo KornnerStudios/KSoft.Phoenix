@@ -123,6 +123,9 @@ namespace KSoft.Phoenix.XML
 			if (s.IsReading)
 				FixSquadsXml(s);
 			XmlUtil.Serialize(s, mSquadsSerializer, ForceNoRootElementStreaming);
+
+			XML.XmlUtil.Serialize(s, Database.MergedSquads, Phx.BProtoMergedSquads.kBListXmlParams);
+			Database.ShieldBubbleTypes.Serialize(s);
 		}
 
 		void PreloadPowers(IO.XmlElementStream s)
@@ -206,6 +209,9 @@ namespace KSoft.Phoenix.XML
 			XmlUtil.Serialize(s, db.Techs, Phx.BProtoTech.kBListXmlParams);
 			XmlUtil.Serialize(s, db.Civs, Phx.BCiv.kBListXmlParams);
 			XmlUtil.Serialize(s, db.Leaders, Phx.BLeader.kBListXmlParams);
+
+			XML.XmlUtil.Serialize(s, db.MergedSquads, Phx.BProtoMergedSquads.kBListXmlParams);
+			db.ShieldBubbleTypes.Serialize(s);
 
 			PostStreamXml(s.StreamMode);
 		}
