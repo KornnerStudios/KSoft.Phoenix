@@ -148,7 +148,7 @@ namespace KSoft.Phoenix
 			, string xmlName, ref int dbid
 			, Collections.IProtoEnum protoEnum
 			, bool isOptional = true, IO.TagElementNodeType xmlSource = XML.XmlUtil.kSourceElement
-			, int isOptionaDefaultValue = TypeExtensions.kNone)
+			, int isOptionalDefaultValue = TypeExtensions.kNone)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -171,12 +171,12 @@ namespace KSoft.Phoenix
 					dbid = protoEnum.TryGetMemberId(id_name);
 					Contract.Assert(dbid.IsNotNone(), id_name);
 				}
-				else
-					dbid = TypeExtensions.kNone;
+				//else
+				//	dbid = isOptionalDefaultValue;
 			}
 			else if (s.IsWriting)
 			{
-				if (isOptional && isOptionaDefaultValue.IsNotNone() && isOptionaDefaultValue == dbid)
+				if (isOptional && isOptionalDefaultValue.IsNotNone() && isOptionalDefaultValue == dbid)
 				{
 					was_streamed = false;
 					return was_streamed;

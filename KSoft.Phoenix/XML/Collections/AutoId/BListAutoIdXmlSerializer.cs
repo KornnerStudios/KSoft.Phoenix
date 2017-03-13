@@ -146,7 +146,15 @@ namespace KSoft.Phoenix.XML
 			if (item_name != null)
 				Params.StreamDataName(s, ref item_name);
 
-			data.Serialize(s);
+			try
+			{
+				data.Serialize(s);
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidOperationException(string.Format("Failed to write {0}", item_name),
+					ex);
+			}
 		}
 		protected override void WriteNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
 		{

@@ -251,7 +251,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (s.IsWriting)
 			{
-				if (dbid.IsNotNone())
+				if (dbid.IsNone())
 				{
 					was_streamed = false;
 					return was_streamed;
@@ -300,7 +300,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (s.IsWriting)
 			{
-				if (dbid.IsNotNone())
+				if (dbid.IsNone())
 				{
 					was_streamed = false;
 					return was_streamed;
@@ -349,7 +349,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (s.IsWriting)
 			{
-				if (dbid.IsNotNone())
+				if (dbid.IsNone())
 				{
 					was_streamed = false;
 					return was_streamed;

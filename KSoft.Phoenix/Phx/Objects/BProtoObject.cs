@@ -1397,7 +1397,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt(kXmlElementAttackGradeDPS, ref mAttackGradeDPS, Predicates.IsNotZero);
 			s.StreamElementOpt("RamDodgeFactor", ref mRamDodgeFactor, Predicates.IsNotZero);
 			#region HoveringRumble
-			using (var bm = s.EnterCursorBookmarkOpt("HoveringRumble", ImpactDecal, Predicates.IsNotNull)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("HoveringRumble", HoveringRumble, Predicates.IsNotNull)) if (bm.IsNotNull)
 			{
 				if (s.IsReading)
 					HoveringRumble = new BRumbleEvent();
@@ -1414,7 +1414,7 @@ namespace KSoft.Phoenix.Phx
 			#region AutoParkingLot
 			using (var bm = s.EnterCursorBookmarkOpt("AutoParkingLot", this, v => v.HasAutoParkingLotData)) if (bm.IsNotNull)
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mRateID, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mAutoParkingLotObjectID, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 				s.StreamAttributeOpt("Rotation", ref mAutoParkingLotRotation, Predicates.IsNotZero);
 				s.StreamBVector("Offset", ref mAutoParkingLotOffset, xmlSource: XML.XmlUtil.kSourceAttr);
 			}

@@ -76,7 +76,7 @@ namespace KSoft.Phoenix.Phx
 				// #NOTE Engine, in debug builds, asserts the world ID is not cWorldIdNone when the World value is defined.
 				// It doesn't explicitly parse None, but defaults to None when it doesn't recognize the provided value
 				s.StreamProtoEnum("World", ref mWorldID, xs.Database.GameScenarioWorlds, xmlSource: XML.XmlUtil.kSourceAttr
-					, isOptionaDefaultValue: cWorldIdNone);
+					, isOptionalDefaultValue: cWorldIdNone);
 				s.StreamAttributeOpt("CastingUnitOnly", ref mCastingUnitOnly, Predicates.IsTrue);
 			}
 		}
