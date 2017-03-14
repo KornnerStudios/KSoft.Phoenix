@@ -39,7 +39,7 @@ namespace KSoft.Phoenix.XML
 		{
 			BCollectionXmlParams.StreamValue(s, DataName, ref name,
 				UseInnerTextForData, UseElementForData, InternDataNames,
-				ToLowerDataNames);
+				false/*ToLowerDataNames*/);
 		}
 	};
 }

@@ -13,10 +13,16 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Object")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrName,
-			Flags = XML.BCollectionXmlParamsFlags.ToLowerDataNames |
-				XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading |
-				XML.BCollectionXmlParamsFlags.SupportsUpdating
+			Flags = 0
+				| XML.BCollectionXmlParamsFlags.ToLowerDataNames
+				| XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
+				| XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
+		public static readonly Collections.BListAutoIdParams kBListParams = new Collections.BListAutoIdParams()
+		{
+			ToLowerDataNames = kBListXmlParams.ToLowerDataNames,
+		};
+
 		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
 		{
 			Location = Engine.ContentStorage.Game,

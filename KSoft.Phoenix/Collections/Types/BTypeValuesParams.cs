@@ -13,11 +13,9 @@ namespace KSoft.Collections
 		/// <summary>Get the source IProtoEnum from an engine's main database</summary>
 		public readonly Func<Phx.BDatabaseBase, IProtoEnum> kGetProtoEnumFromDB;
 
-		public BTypeValuesParams(Func<Phx.BDatabaseBase, IProtoEnum> protoEnumGetter,
-			Collections.BCollectionParamsFlags flags = 0)
+		public BTypeValuesParams(Func<Phx.BDatabaseBase, IProtoEnum> protoEnumGetter)
 		{
 			kGetProtoEnumFromDB = protoEnumGetter;
-			Flags = flags;
 		}
 	};
 }

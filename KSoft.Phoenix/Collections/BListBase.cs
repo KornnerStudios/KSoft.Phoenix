@@ -85,8 +85,6 @@ namespace KSoft.Collections
 		protected BListBase(BListParams @params)
 			: this(@params != null ? @params.InitialCapacity : BCollectionParams.kDefaultCapacity)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
-
 			Params = @params;
 		}
 

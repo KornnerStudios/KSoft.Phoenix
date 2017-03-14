@@ -1,4 +1,5 @@
-﻿
+﻿//SQUAD_NEEDS_ToLowerDataNames
+
 using BVector = SlimMath.Vector4;
 
 namespace KSoft.Phoenix.Phx
@@ -10,10 +11,23 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Squad")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrName,
-			Flags = //XML.BCollectionXmlParamsFlags.ToLowerDataNames |
-				XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading |
-				XML.BCollectionXmlParamsFlags.SupportsUpdating
+			Flags = 0
+#if SQUAD_NEEDS_ToLowerDataNames
+				| XML.BCollectionXmlParamsFlags.ToLowerDataNames |
+#endif
+				| XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
+				| XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
+		public static readonly Collections.BListAutoIdParams kBListParams
+#if SQUAD_NEEDS_ToLowerDataNames
+			= new Collections.BListAutoIdParams()
+		{
+			ToLowerDataNames = kBListXmlParams.ToLowerDataNames,
+		};
+#else
+			= null;
+#endif
+
 		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
 		{
 			Location = Engine.ContentStorage.Game,

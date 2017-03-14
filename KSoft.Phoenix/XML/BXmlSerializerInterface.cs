@@ -209,14 +209,20 @@ namespace KSoft.Phoenix.XML
 		{
 			switch (kind)
 			{
+#if false
 			case Phx.DatabaseObjectKind.Object:
-			case Phx.DatabaseObjectKind.Unit: return Phx.BProtoObject.kBListXmlParams.ToLowerDataNames;
+			case Phx.DatabaseObjectKind.Unit:
+				return Phx.BProtoObject.kBListXmlParams.ToLowerDataNames;
 
-			case Phx.DatabaseObjectKind.Squad: return Phx.BProtoSquad.kBListXmlParams.ToLowerDataNames;
+			case Phx.DatabaseObjectKind.Squad:
+				return Phx.BProtoSquad.kBListXmlParams.ToLowerDataNames;
 
-			case Phx.DatabaseObjectKind.Tech: return Phx.BProtoTech.kBListXmlParams.ToLowerDataNames;
+			case Phx.DatabaseObjectKind.Tech:
+				return Phx.BProtoTech.kBListXmlParams.ToLowerDataNames;
+#endif
 
-			default: return false;
+			default:
+				return false;
 			}
 		}
 		public bool StreamTypeName<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,

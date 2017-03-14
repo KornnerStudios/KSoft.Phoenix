@@ -1,4 +1,5 @@
-﻿
+﻿//#define TECH_NEEDS_ToLowerDataNames
+
 namespace KSoft.Phoenix.Phx
 {
 	public enum BProtoTechAlphaMode
@@ -16,10 +17,23 @@ namespace KSoft.Phoenix.Phx
 		{
 			RootName = "TechTree",
 			DataName = "name",
-			Flags = //XML.BCollectionXmlParamsFlags.ToLowerDataNames |
-				XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading |
-				XML.BCollectionXmlParamsFlags.SupportsUpdating
+			Flags = 0
+#if TECH_NEEDS_ToLowerDataNames
+				| XML.BCollectionXmlParamsFlags.ToLowerDataNames
+#endif
+				| XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
+				| XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
+		public static readonly Collections.BListAutoIdParams kBListParams
+#if TECH_NEEDS_ToLowerDataNames
+			= new Collections.BListAutoIdParams()
+		{
+			ToLowerDataNames = kBListXmlParams.ToLowerDataNames,
+		};
+#else
+			= null;
+#endif
+
 		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
 		{
 			Location = Engine.ContentStorage.Game,

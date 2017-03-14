@@ -7,6 +7,11 @@ namespace KSoft.Collections
 {
 	using PhxUtil = KSoft.Phoenix.PhxUtil;
 
+	public sealed class BListAutoIdParams
+		: BListParams
+	{
+	};
+
 	public sealed class BListAutoId<T>
 		: BListBase<T>
 		, IBTypeNames
@@ -20,7 +25,7 @@ namespace KSoft.Collections
 		{
 			return string.Format("Unregistered {0}!", typeof(T).Name);
 		}
-		public BListAutoId()
+		public BListAutoId(BListAutoIdParams @params = null) : base(@params)
 		{
 			kUnregisteredMessage = BuildUnRegisteredMsg();
 			mUndefinedInterface = new ProtoEnumWithUndefinedImpl(this);
@@ -54,6 +59,13 @@ namespace KSoft.Collections
 			if (mDBI != null)
 			{
 				mDBI.Add(item.Data, item);
+
+				if (Params != null && Params.ToLowerDataNames)
+				{
+					string lower_name = Phoenix.PhxUtil.ToLowerIfContainsUppercase(item.Data);
+					if (!object.ReferenceEquals(lower_name, item.Data))
+						mDBI.Add(lower_name, item);
+				}
 			}
 			base.AddItem(item);
 

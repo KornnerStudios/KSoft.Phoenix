@@ -71,10 +71,10 @@ namespace KSoft.Phoenix.Phx
 			UserClasses = new Collections.BListAutoId<BUserClass>();
 			ObjectTypes = new Collections.BTypeNamesWithCode(gameObjectTypes);
 			Abilities = new Collections.BListAutoId<BAbility>();
-			Objects = new Collections.BListAutoId<BProtoObject>();
-			Squads = new Collections.BListAutoId<BProtoSquad>();
+			Objects = new Collections.BListAutoId<BProtoObject>(BProtoObject.kBListParams);
+			Squads = new Collections.BListAutoId<BProtoSquad>(BProtoSquad.kBListParams);
 			Powers = new Collections.BListAutoId<BProtoPower>();
-			Techs = new Collections.BListAutoId<BProtoTech>();
+			Techs = new Collections.BListAutoId<BProtoTech>(BProtoTech.kBListParams);
 			TerrainTileTypes = new Collections.BListAutoId<TerrainTileType>();
 			Civs = new Collections.BListAutoId<BCiv>();
 			Leaders = new Collections.BListAutoId<BLeader>();

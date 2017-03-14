@@ -8,6 +8,9 @@ namespace KSoft.Collections
 	[Flags]
 	public enum BCollectionParamsFlags
 	{
+		ToLowerDataNames,
+
+		kNumberOf
 	};
 
 	public abstract class BCollectionParams
@@ -18,10 +21,14 @@ namespace KSoft.Collections
 		public /*readonly*/ int InitialCapacity = kDefaultCapacity;
 
 		#region Flags
-		public /*readonly*/ BCollectionParamsFlags Flags;
+		/// <summary>BCollectionParamsFlags</summary>
+		public BitVector32 Flags;
 
-		[Contracts.Pure]
-		protected bool HasFlag(BCollectionParamsFlags flag) { return (Flags & flag) == flag; }
+		public bool ToLowerDataNames
+		{
+			get { return Flags.Test(BCollectionParamsFlags.ToLowerDataNames); }
+			set { Flags.Set(BCollectionParamsFlags.ToLowerDataNames, value); }
+		}
 		#endregion
 
 		protected BCollectionParams() {}

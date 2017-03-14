@@ -36,6 +36,21 @@ namespace KSoft.Phoenix
 			return string.Compare(str1, str2, true) == 0;
 		}
 
+		public static string ToLowerIfContainsUppercase(this string str)
+		{
+			if (str == null)
+				return str;
+
+			for (int x = 0; x < str.Length; x++)
+			{
+				char c = str[x];
+				if (c >= 'A' && c <= 'Z')
+					return str.ToLowerInvariant();
+			}
+
+			return str;
+		}
+
 		public static bool StreamPointerizedCString(IO.EndianStream s, ref Values.PtrHandle pointer, ref string value)
 		{
 			Contract.Requires(s != null);

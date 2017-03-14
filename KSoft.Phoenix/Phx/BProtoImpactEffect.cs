@@ -8,7 +8,7 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("TerrainEffect")
 		{
 			DataName = "name",
-			Flags = XML.BCollectionXmlParamsFlags.ToLowerDataNames
+			Flags = 0
 		};
 		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
 		{
