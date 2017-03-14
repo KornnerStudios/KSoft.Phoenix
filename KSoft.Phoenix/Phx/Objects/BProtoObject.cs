@@ -6,6 +6,14 @@ using BVector = SlimMath.Vector4;
 
 namespace KSoft.Phoenix.Phx
 {
+	/* Deprecate fields:
+	 * - TrackInterceptDistance: This was made a global and moved to GameData.
+	 * - FlashUI: these are no longer defined in this proto.
+	 *
+	 * #NOTE
+	 * - "fx_impact_effect_01" - Hitpoints field with value "20000000" gets written as "2E+07" with TagElementTextStream's ToString("r") impl. This *should* get parsed correctly.
+	*/
+
 	public sealed class BProtoObject
 		: DatabaseIdObject
 	{
@@ -52,6 +60,7 @@ namespace KSoft.Phoenix.Phx
 		const string kXmlAttrIs = "is"; // boolean int, only streamed when '0', only used by tools?
 
 		internal const string kXmlElementAttackGradeDPS = "AttackGradeDPS";
+		internal const string kXmlElementReverseSpeed = "ReverseSpeed";
 		#endregion
 
 		#region Unused poop
@@ -1200,7 +1209,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("PhysicsReplacementInfo", ref mPhysicsReplacementInfo, Predicates.IsNotNullOrEmpty);
 			s.StreamElementOpt("Velocity", ref mVelocity, Predicates.IsNotZero);
 			s.StreamElementOpt("MaxVelocity", ref mMaxVelocity, Predicates.IsNotZero);
-			s.StreamElementOpt("ReverseSpeed", ref mReverseSpeed, f => f != cDefaultReverseSpeed);
+			s.StreamElementOpt(kXmlElementReverseSpeed, ref mReverseSpeed, f => f != cDefaultReverseSpeed);
 			s.StreamElementOpt("Acceleration", ref mAcceleration, Predicates.IsNotZero);
 			s.StreamElementOpt("TrackingDelay", ref mTrackingDelay, Predicates.IsNotZero);
 			s.StreamElementOpt("StartingVelocity", ref mStartingVelocity, Predicates.IsNotZero);
@@ -1273,7 +1282,7 @@ namespace KSoft.Phoenix.Phx
 			#region DeathSpawnSquad
 			using (var bm = s.EnterCursorBookmarkOpt("DeathSpawnSquad", this, v => v.HasDeathSpawnSquadData)) if (bm.IsNotNull)
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDeathReplacementID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceCursor);
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDeathSpawnSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceCursor);
 
 				// #NOTE engine streams this as CheckPos, but it is also case insensitive
 				const string kCheckPosName = "checkPos";
@@ -1291,7 +1300,7 @@ namespace KSoft.Phoenix.Phx
 				s.StreamAttributeOpt("MaxPopCount", ref mDeathSpawnSquadMaxPopCount, Predicates.IsNotZero);
 			}
 			#endregion
-			s.StreamElementOpt("SurfaceType", ref mSurfaceType, Predicates.IsNotZero);
+			xs.StreamDBID(s, "SurfaceType", ref mSurfaceType, DatabaseObjectKind.TerrainTileType);
 			s.StreamElementOpt("Visual", ref mVisual, Predicates.IsNotNullOrEmpty);
 			s.StreamElementOpt("CorpseDeath", ref mCorpseDeath, Predicates.IsNotNullOrEmpty);
 			xs.StreamDBID(s, "AbilityCommand", ref mAbilityCommandID, DatabaseObjectKind.Ability);
