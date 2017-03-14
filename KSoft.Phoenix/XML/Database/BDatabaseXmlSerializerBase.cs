@@ -75,13 +75,16 @@ namespace KSoft.Phoenix.XML
 				{
 					id_name = System.IO.Path.GetFileNameWithoutExtension(id_name);
 
-					mObjectIdToTacticsMap[obj.AutoId] = id_name;
-					mTacticsMap[id_name] = null;
+					mObjectIdToTacticsMap.Add(obj.AutoId, id_name);
+					if (!mTacticsMap.ContainsKey(id_name))
+						mTacticsMap.Add(id_name, null);
 				}
 			}
 			else if (s.IsWriting && wasStreamed)
 			{
-				id_name = obj.Name + Phx.BTacticData.kFileExt;
+				if (!mObjectIdToTacticsMap.TryGetValue(obj.AutoId, out id_name))
+					Contract.Assert(false, obj.Name);
+				id_name += Phx.BTacticData.kFileExt;
 				s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource);
 			}
 

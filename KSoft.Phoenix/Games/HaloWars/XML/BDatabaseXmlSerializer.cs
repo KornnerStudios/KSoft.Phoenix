@@ -25,6 +25,8 @@ namespace KSoft.Phoenix.HaloWars
 
 		protected override void PostStreamXml(FA mode)
 		{
+			base.PostStreamXml(mode);
+
 			if (mode == FA.Read)
 			{
 				mDatabase.SetupDBIDs();

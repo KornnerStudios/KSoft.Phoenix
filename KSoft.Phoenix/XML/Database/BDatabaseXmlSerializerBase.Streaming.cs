@@ -6,7 +6,13 @@ namespace KSoft.Phoenix.XML
 	partial class BDatabaseXmlSerializerBase
 	{
 		protected virtual void PreStreamXml(FA mode)
-		{ }
+		{
+			if (mode == FA.Write)
+			{
+				foreach (var kvp in Database.ObjectTacticsMap)
+					mObjectIdToTacticsMap.Add(kvp.Key, kvp.Value.Name);
+			}
+		}
 		protected virtual void PostStreamXml(FA mode)
 		{
 			if (mode == FA.Read)

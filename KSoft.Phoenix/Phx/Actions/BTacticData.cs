@@ -35,10 +35,6 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		#region Database interfaces
-		Dictionary<string, BWeapon> mDbiWeapons;
-		//Dictionary<string, BTacticState> mDbiTacticStates;
-		Dictionary<string, BProtoAction> mDbiActions;
-
 		void InitializeDatabaseInterfaces()
 		{
 			Weapons.SetupDatabaseInterface();

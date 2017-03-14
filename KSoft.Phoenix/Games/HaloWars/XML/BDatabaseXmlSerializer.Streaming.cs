@@ -215,6 +215,31 @@ namespace KSoft.Phoenix.HaloWars
 				}
 			}
 		}
+
+		static void FixObjectsXmlInvalidLifeSpan(IO.XmlElementStream s, params string[] objectNames)
+		{
+			foreach (string name in objectNames)
+			{
+				var node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, name);
+				FixObjectXmlInvalidLifeSpan(s.Document, node);
+			}
+		}
+		static void FixObjectXmlInvalidLifeSpan(XmlDocument doc, XmlNode node)
+		{
+			if (node == null)
+				return;
+
+			var badLifeSpan = node["LifeSpan"];
+			if (badLifeSpan == null)
+				return;
+
+			var lifespan = doc.CreateElement("Lifespan");
+			foreach (XmlNode srcNodes in badLifeSpan.ChildNodes)
+				lifespan.AppendChild(srcNodes.CloneNode(true));
+
+			node.ReplaceChild(lifespan, badLifeSpan);
+		}
+
 		protected override void FixObjectsXml(IO.XmlElementStream s)
 		{
 			var build = Database.Engine.Build;
@@ -224,6 +249,11 @@ namespace KSoft.Phoenix.HaloWars
 				FixObjectsXmlInvalidFlags(s);
 				FixObjectsXmlInvalidSounds(s); // #TODO does this need to be done for Alpha too?
 				FixObjectsXmlInvalidCommandId(s);
+				FixObjectsXmlInvalidLifeSpan(s,
+					"fx_hijacked",
+					"fx_unitLevelUp",
+					"fx_unitLevelUpHigh",
+					"fx_unitLevelUpLow");
 			}
 		}
 		#endregion
