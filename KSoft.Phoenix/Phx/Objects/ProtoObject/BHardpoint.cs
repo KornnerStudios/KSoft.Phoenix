@@ -166,7 +166,7 @@ namespace KSoft.Phoenix.Phx
 		#region PitchMinAngle
 		const float cDefaultPitchMinAngle = (float)+(System.Math.PI * TypeExtensions.kDegreesPerRadian);
 
-		float mPitchMinAngle;
+		float mPitchMinAngle = cDefaultPitchMinAngle;
 		// angle
 		public float PitchMinAngle
 		{
@@ -227,7 +227,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("singleboneik", ref mSingleBoneIK, Predicates.IsTrue);
 			s.StreamAttributeOpt("combined", ref mCombined, Predicates.IsTrue);
 			s.StreamAttributeOpt("hardpitchlimits", ref mHardPitchLimits, Predicates.IsTrue);
-			s.StreamAttributeOpt("relativetounit", ref mRelativeToUnit, Predicates.IsTrue);
+			s.StreamAttributeOpt("relativeToUnit", ref mRelativeToUnit, Predicates.IsTrue);
 			s.StreamAttributeOpt("useYawAndPitchAsTolerance", ref mUseYawAndPitchAsTolerance, Predicates.IsTrue);
 			s.StreamAttributeOpt("infiniteRateWhenHasTarget", ref mInfiniteRateWhenHasTarget, Predicates.IsTrue);
 			s.StreamAttributeOpt("yawrate", ref mYawRotationRate, x => x != cPiOver12InDegrees);
@@ -237,7 +237,9 @@ namespace KSoft.Phoenix.Phx
 			if (s.IsReading)
 			{
 				float yawMaxAngle = PhxUtil.kInvalidSingleNaN;
-				if (s.ReadAttributeOpt("yawMaxAngle", ref yawMaxAngle))
+				if (s.ReadAttributeOpt("yawMaxAngle", ref yawMaxAngle) ||
+					// #HACK fucking deal with original HW game data that was hand edited, but only when reading
+					s.ReadAttributeOpt("yawmaxangle", ref yawMaxAngle))
 				{
 					mYawLeftMaxAngle = -yawMaxAngle;
 					mYawRightMaxAngle = yawMaxAngle;
@@ -253,7 +255,7 @@ namespace KSoft.Phoenix.Phx
 				{
 					// don't stream anything
 				}
-				else if (+mYawLeftMaxAngle == mYawRightMaxAngle)
+				else if (System.Math.Abs(mYawLeftMaxAngle) == mYawRightMaxAngle)
 				{
 					s.WriteAttribute("yawMaxAngle", mYawRightMaxAngle);
 				}

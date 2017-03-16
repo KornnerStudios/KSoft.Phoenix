@@ -60,7 +60,7 @@ namespace KSoft.Phoenix.Phx
 
 			if (s.StreamAttributeEnumOpt("Type", ref mType, e => e != BObjectSoundType.None))
 			{
-				xs.StreamDBID(s, "Squad", ref mSquadID, DatabaseObjectKind.Object);
+				xs.StreamDBID(s, "Squad", ref mSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceAttr);
 				s.StreamAttributeOpt("Action", ref mAction, Predicates.IsNotNullOrEmpty);
 			}
 		}

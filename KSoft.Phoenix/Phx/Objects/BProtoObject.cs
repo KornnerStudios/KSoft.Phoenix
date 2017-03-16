@@ -9,6 +9,8 @@ namespace KSoft.Phoenix.Phx
 	/* Deprecate fields:
 	 * - TrackInterceptDistance: This was made a global and moved to GameData.
 	 * - FlashUI: these are no longer defined in this proto.
+	 * - UIVisual: Not sure what happened with this. There's just the Visual field now though.
+	 * - DazeResist: This was moved to ProtoSquad.
 	 *
 	 * #NOTE
 	 * - "fx_impact_effect_01" - Hitpoints field with value "20000000" gets written as "2E+07" with TagElementTextStream's ToString("r") impl. This *should* get parsed correctly.
@@ -46,11 +48,6 @@ namespace KSoft.Phoenix.Phx
 			RootName = kBListXmlParams.RootName
 		};
 
-		static readonly XML.BListXmlParams kSingleBoneIKXmlParams = new XML.BListXmlParams
-		{
-			ElementName = "SingleBoneIK",
-		};
-
 		static readonly Collections.CodeEnum<BProtoObjectFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoObjectFlags>();
 		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
 
@@ -69,6 +66,8 @@ namespace KSoft.Phoenix.Phx
 		int mUnusedId = TypeExtensions.kNone;
 		public int UnusedId { get { return mUnusedId; } }
 		#endregion
+		bool mUpdate;
+		public bool Update { get { return mUpdate; } }
 
 		#region MovementType
 		BProtoObjectMovementType mMovementType = BProtoObjectMovementType.None;
@@ -80,7 +79,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		public Collections.BListArray<BHardpoint> Hardpoints { get; private set; }
-		public Collections.BTypeNames SingleBoneIKs { get; private set; }
+		public List<string> SingleBoneIKs { get; private set; }
 		public Collections.BListArray<BGroundIKNode> GroundIKs { get; private set; }
 		public Collections.BListArray<BSweetSpotIKNode> SweetSpotIKs { get; private set; }
 
@@ -790,6 +789,7 @@ namespace KSoft.Phoenix.Phx
 		const float cDefaultFlightLevel = 10.0f;
 
 		float mFlightLevel = cDefaultFlightLevel;
+		/// <summary>relative Y displacement of the object</summary>
 		public float FlightLevel
 		{
 			get { return mFlightLevel; }
@@ -1125,6 +1125,14 @@ namespace KSoft.Phoenix.Phx
 			set { mKillBeam = value; }
 		}
 		#endregion
+		#region MinimapIconName (EDITOR ONLY)
+		string mMinimapIconName;
+		public string MinimapIconName
+		{
+			get { return mMinimapIconName; }
+			set { mMinimapIconName = value; }
+		}
+		#endregion
 
 		public BProtoObject() : base(BResource.kBListTypeValuesParams, BResource.kBListTypeValuesXmlParams_Cost)
 		{
@@ -1138,7 +1146,7 @@ namespace KSoft.Phoenix.Phx
 			textData.HasRoleTextID = true;
 
 			Hardpoints = new Collections.BListArray<BHardpoint>();
-			SingleBoneIKs = new Collections.BTypeNames();
+			SingleBoneIKs = new List<string>();
 			GroundIKs = new Collections.BListArray<BGroundIKNode>();
 			SweetSpotIKs = new Collections.BListArray<BSweetSpotIKNode>();
 
@@ -1176,9 +1184,10 @@ namespace KSoft.Phoenix.Phx
 
 			s.StreamAttributeOpt("is", ref mUnusedIs, Predicates.IsNotNone);
 			s.StreamAttributeOpt("id", ref mUnusedId, Predicates.IsNotNone);
+			s.StreamAttributeOpt("update", ref mUpdate, Predicates.IsTrue);
 			s.StreamElementEnumOpt("MovementType", ref mMovementType, e => e != BProtoObjectMovementType.None);
 			XML.XmlUtil.Serialize(s, Hardpoints, BHardpoint.kBListXmlParams);
-			XML.XmlUtil.Serialize(s, SingleBoneIKs, kSingleBoneIKXmlParams);
+			s.StreamElements("SingleBoneIK", SingleBoneIKs, xs, XML.BDatabaseXmlSerializerBase.StreamStringValue, dummy => (string)null);
 			XML.XmlUtil.Serialize(s, GroundIKs, BGroundIKNode.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, SweetSpotIKs, BSweetSpotIKNode.kBListXmlParams);
 			#region ObstructionRadius
@@ -1236,7 +1245,14 @@ namespace KSoft.Phoenix.Phx
 			#endregion
 			s.StreamElementOpt("TurnRate", ref mTurnRate, Predicates.IsNotZero);
 			s.StreamElementOpt("Hitpoints", ref mHitpoints, Predicates.IsNotZero);
-			s.StreamElementOpt("Shieldpoints", ref mShieldpoints, Predicates.IsNotZero);
+			#region Shieldpoints
+			{
+				bool streamedShieldpoints = s.StreamElementOpt("Shieldpoints", ref mShieldpoints, Predicates.IsNotZero);
+				// #HACK fucking deal with original HW game data that was hand edited, but only when reading
+				if (s.IsReading && !streamedShieldpoints)
+					s.StreamElementOpt("ShieldPoints", ref mShieldpoints, Predicates.IsNotZero);
+			}
+			#endregion
 			s.StreamElementOpt("LOS", ref mLOS, Predicates.IsNotZero);
 			#region Pick and Select
 			s.StreamElementOpt("PickRadius", ref mPickRadius, Predicates.IsNotZero);
@@ -1439,6 +1455,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("RevealRadius", ref mRevealRadius, Predicates.IsNotZero);
 			xs.StreamDBID(s, "TargetBeam", ref mTargetBeam, DatabaseObjectKind.Object);
 			xs.StreamDBID(s, "KillBeam", ref mKillBeam, DatabaseObjectKind.Object);
+			s.StreamElementOpt("MinimapIconName", ref mMinimapIconName, Predicates.IsNotNullOrEmpty);
 
 			if (s.IsReading)
 			{

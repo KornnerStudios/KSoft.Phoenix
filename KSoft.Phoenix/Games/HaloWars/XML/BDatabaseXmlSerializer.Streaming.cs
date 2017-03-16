@@ -6,6 +6,27 @@ namespace KSoft.Phoenix.HaloWars
 	{
 		static bool gRemoveUndefined = false;
 
+		static void RemoveAllButTheLastElement(XmlElement node, string elementName)
+		{
+			if (node == null)
+				return;
+
+			XmlElement prevNode = null;
+			foreach (XmlNode n in node.ChildNodes)
+			{
+				if (!(n is XmlElement) || n.Name != elementName)
+					continue;
+
+				if (prevNode == null)
+				{
+					prevNode = (XmlElement)n;
+					continue;
+				}
+
+				node.RemoveChild(prevNode);
+			}
+		}
+
 		protected override void FixWeaponTypes()
 		{
 			// Don't add the types if we're not removing undefined data
@@ -240,6 +261,33 @@ namespace KSoft.Phoenix.HaloWars
 			node.ReplaceChild(lifespan, badLifeSpan);
 		}
 
+		static void FixObjectsXml_fld_air_bomber_01(XmlElement node)
+		{
+			// remove duplicate FlightLevel values, preferring the last entry
+			RemoveAllButTheLastElement(node, "FlightLevel");
+		}
+
+		static void FixObjectsXml_hook_spawner_FloodRelease(XmlElement node)
+		{
+			// remove duplicate MaxContained values, preferring the last entry
+			RemoveAllButTheLastElement(node, "MaxContained");
+		}
+
+		static void FixObjectsXml_for_air_monitor(XmlElement node)
+		{
+			// remove duplicate CombatValue values, preferring the last entry
+			RemoveAllButTheLastElement(node, "CombatValue");
+		}
+
+		static void FixObjectsXml_for_air_attractor_01(XmlElement node)
+		{
+			// remove duplicate LOS values, preferring the last entry
+			RemoveAllButTheLastElement(node, "LOS");
+		}
+
+		/* #NOTE:
+		 * - cpgn_scn07_scarabBoss_02's DeathFadeDelayTime value, 99999999, gets rounded up to 1E+08 when we serialize it
+		*/
 		protected override void FixObjectsXml(IO.XmlElementStream s)
 		{
 			var build = Database.Engine.Build;
@@ -254,6 +302,13 @@ namespace KSoft.Phoenix.HaloWars
 					"fx_unitLevelUp",
 					"fx_unitLevelUpHigh",
 					"fx_unitLevelUpLow");
+				FixObjectsXml_fld_air_bomber_01((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "fld_air_bomber_01"));
+				FixObjectsXml_hook_spawner_FloodRelease((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_01"));
+				FixObjectsXml_hook_spawner_FloodRelease((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_02"));
+				FixObjectsXml_for_air_monitor((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_01"));
+				FixObjectsXml_for_air_monitor((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_02"));
+				FixObjectsXml_for_air_monitor((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_04"));
+				FixObjectsXml_for_air_attractor_01((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_attractor_01"));
 			}
 		}
 		#endregion

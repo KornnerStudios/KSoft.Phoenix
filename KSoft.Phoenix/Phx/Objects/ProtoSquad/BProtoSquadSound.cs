@@ -72,7 +72,7 @@ namespace KSoft.Phoenix.Phx
 			if (s.StreamAttributeEnumOpt("Type", ref mType, e => e != BSquadSoundType.None))
 			{
 				// #NOTE Engine, in debug builds, asserts Squad is valid when specified
-				xs.StreamDBID(s, "Squad", ref mSquadID, DatabaseObjectKind.Object);
+				xs.StreamDBID(s, "Squad", ref mSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceAttr);
 				// #NOTE Engine, in debug builds, asserts the world ID is not cWorldIdNone when the World value is defined.
 				// It doesn't explicitly parse None, but defaults to None when it doesn't recognize the provided value
 				s.StreamProtoEnum("World", ref mWorldID, xs.Database.GameScenarioWorlds, xmlSource: XML.XmlUtil.kSourceAttr

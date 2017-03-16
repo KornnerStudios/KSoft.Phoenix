@@ -74,7 +74,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("sizeZ", ref mSize.Z, f => f != 2.0f);
 			s.StreamAttributeOpt("timeFullyOpaque", ref mTimeFullyOpaque, f => f != 5.0f);
 			s.StreamAttributeOpt("fadeOutTime", ref mFadeOutTime, f => f != 10.0f);
-			s.StreamAttributeEnumOpt("sizeX", ref mOrientation, e => e != OrientationType.Random);
+			s.StreamAttributeEnumOpt("orientation", ref mOrientation, e => e != OrientationType.Random);
 			s.StreamCursor(ref mTextureName);
 		}
 		#endregion
