@@ -14,6 +14,7 @@ namespace KSoft.Phoenix.Phx
 	 *
 	 * #NOTE
 	 * - "fx_impact_effect_01" - Hitpoints field with value "20000000" gets written as "2E+07" with TagElementTextStream's ToString("r") impl. This *should* get parsed correctly.
+	 * - "cpgn_scn07_scarabBoss_02" - DeathFadeDelayTime value, 99999999, gets rounded up to 1E+08 when we serialize it
 	*/
 
 	public sealed class BProtoObject

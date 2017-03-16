@@ -4,6 +4,10 @@ using BVector = SlimMath.Vector4;
 
 namespace KSoft.Phoenix.Phx
 {
+	/* Deprecate fields:
+	 * - MinimapIcon: This is in ProtoObject now.
+	*/
+
 	public sealed class BProtoSquad
 		: DatabaseIdObject
 	{
@@ -55,6 +59,8 @@ namespace KSoft.Phoenix.Phx
 			set { mFormationType = value; }
 		}
 		#endregion
+		bool mUpdate;
+		public bool Update { get { return mUpdate; } }
 
 		#region PortraitIcon
 		string mPortraitIcon;
@@ -485,6 +491,7 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			s.StreamAttributeEnumOpt("formationType", ref mFormationType, e => e != BProtoSquadFormationType.Standard);
+			s.StreamAttributeOpt("update", ref mUpdate, Predicates.IsTrue);
 
 			s.StreamElementOpt("PortraitIcon", ref mPortraitIcon, Predicates.IsNotNullOrEmpty);
 			s.StreamElementOpt("AltIcon", ref mAltIcon, Predicates.IsNotNullOrEmpty);
@@ -543,7 +550,7 @@ namespace KSoft.Phoenix.Phx
 			using (var bm = s.EnterCursorBookmarkOpt("Birth", this, v => v.HasBirthData)) if (bm.IsNotNull)
 			{
 				s.StreamCursorEnum(ref mBirthType);
-				s.StreamAttributeOpt("spawnPoint", ref mBirthBone, Predicates.IsNotNullOrEmpty);
+				s.StreamAttributeOpt("spawnpoint", ref mBirthBone, Predicates.IsNotNullOrEmpty);
 				s.StreamAttributeOpt("endPoint", ref mBirthEndBone, Predicates.IsNotNullOrEmpty);
 				s.StreamAttributeOpt("anim0", ref mBirthAnim0, Predicates.IsNotNullOrEmpty);
 				s.StreamAttributeOpt("anim1", ref mBirthAnim1, Predicates.IsNotNullOrEmpty);

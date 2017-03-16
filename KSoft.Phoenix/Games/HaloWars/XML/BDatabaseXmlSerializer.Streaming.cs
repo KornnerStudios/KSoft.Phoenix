@@ -285,9 +285,6 @@ namespace KSoft.Phoenix.HaloWars
 			RemoveAllButTheLastElement(node, "LOS");
 		}
 
-		/* #NOTE:
-		 * - cpgn_scn07_scarabBoss_02's DeathFadeDelayTime value, 99999999, gets rounded up to 1E+08 when we serialize it
-		*/
 		protected override void FixObjectsXml(IO.XmlElementStream s)
 		{
 			var build = Database.Engine.Build;
@@ -377,6 +374,12 @@ namespace KSoft.Phoenix.HaloWars
 			}
 		}
 
+		static void FixSquadsXml_for_air_sentinel_03(XmlElement node)
+		{
+			// remove duplicate BuildPoints values, preferring the last entry
+			RemoveAllButTheLastElement(node, "BuildPoints");
+		}
+
 		protected override void FixSquadsXml(IO.XmlElementStream s)
 		{
 			if (Database.Engine.Build == Engine.PhxEngineBuild.Alpha)
@@ -384,6 +387,7 @@ namespace KSoft.Phoenix.HaloWars
 			else
 			{
 				FixSquadsXmlSounds(s);
+				FixSquadsXml_for_air_sentinel_03((XmlElement)XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "for_air_sentinel_03"));
 			}
 		}
 		#endregion
