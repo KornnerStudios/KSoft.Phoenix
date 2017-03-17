@@ -143,6 +143,18 @@ namespace KSoft.Phoenix.Resource
 			default: throw new KSoft.Debug.UnreachableException(signature.ToString("X8"));
 			}
 		}
+		public static bool IsSwfHeader(uint signature)
+		{
+			switch(signature)
+			{
+			case kSwfSignature:
+			case kSwfCompressedSignature:
+				return true;
+
+			default:
+				return false;
+			}
+		}
 		#endregion
 
 		#region Local file utils

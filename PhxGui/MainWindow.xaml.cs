@@ -573,9 +573,9 @@ namespace PhxGui
 									break;
 							}
 						}
-						string messag_text = string.Format("Expand {0} {1}{2}{3}",
+						string messag_text = string.Format("Expand {0} {1}{2}{3}{4}",
 							error_type,
-							eraFile, Environment.NewLine, error_hint);
+							eraFile, Environment.NewLine, error_hint, Environment.NewLine);
 
 						Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 							new Action(() =>

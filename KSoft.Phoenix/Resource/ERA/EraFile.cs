@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
@@ -407,11 +408,54 @@ namespace KSoft.Phoenix.Resource
 			{
 				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DecompressUIFiles))
 				{
-					DecompressUIFileToDisk(buffer, fullPath);
+					bool success = false;
+
+					try
+					{
+						success = DecompressUIFileToDisk(buffer, fullPath);
+					}
+					catch (Exception ex)
+					{
+						Debug.Trace.Resource.TraceEvent(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+							"Exception during {0} of '{1}': {2}",
+							EraFileExpanderOptions.DecompressUIFiles, fullPath, ex);
+						success = false;
+					}
+
+					if (!success && expander.VerboseOutput != null)
+					{
+						expander.VerboseOutput.WriteLine("Option {0} failed on '{1}'",
+							EraFileExpanderOptions.DecompressUIFiles, fullPath);
+					}
 				}
 				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.TranslateGfxFiles))
 				{
-					TransformGfxToSwfFile(buffer, fullPath);
+					var result = TransformGfxToSwfFileResult.Failed;
+
+					try
+					{
+						result = TransformGfxToSwfFile(buffer, fullPath);
+					}
+					catch (Exception ex)
+					{
+						Debug.Trace.Resource.TraceEvent(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+							"Exception during {0} of '{1}': {2}",
+							EraFileExpanderOptions.TranslateGfxFiles, fullPath, ex);
+					}
+
+					if (expander.VerboseOutput != null)
+					{
+						if (result == TransformGfxToSwfFileResult.Failed)
+						{
+							expander.VerboseOutput.WriteLine("Option {0} failed on '{1}'",
+								EraFileExpanderOptions.TranslateGfxFiles, fullPath);
+						}
+						else if (result == TransformGfxToSwfFileResult.InputIsAlreadySwf)
+						{
+							expander.VerboseOutput.WriteLine("Option {0} skipped on '{1}', it is already an SWF-based file",
+								EraFileExpanderOptions.TranslateGfxFiles, fullPath);
+						}
+					}
 				}
 			}
 		}
@@ -451,8 +495,10 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		private void DecompressUIFileToDisk(byte[] eraFileEntryBuffer, string fullPath)
+		private bool DecompressUIFileToDisk(byte[] eraFileEntryBuffer, string fullPath)
 		{
+			bool success = false;
+
 			using (var ms = new System.IO.MemoryStream(eraFileEntryBuffer, false))
 			using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
 			{
@@ -467,26 +513,50 @@ namespace KSoft.Phoenix.Resource
 					{
 						fs.Write(decompressed_data, 0, decompressed_data.Length);
 					}
+
+					success = true;
 				}
 			}
+
+			return success;
 		}
 
-		private void TransformGfxToSwfFile(byte[] eraFileEntryBuffer, string fullPath)
+		enum TransformGfxToSwfFileResult
 		{
+			Success,
+			Failed,
+			InputIsAlreadySwf,
+		}
+		private TransformGfxToSwfFileResult TransformGfxToSwfFile(byte[] eraFileEntryBuffer, string fullPath)
+		{
+			var result = TransformGfxToSwfFileResult.Failed;
+
 			using (var ms = new System.IO.MemoryStream(eraFileEntryBuffer, false))
 			using (var s = new IO.EndianReader(ms, Shell.EndianFormat.Little))
 			{
 				uint buffer_signature;
 				if (ResourceUtils.IsScaleformBuffer(s, out buffer_signature))
 				{
-					uint swf_signature = ResourceUtils.GfxHeaderToSwf(buffer_signature);
-					using (var fs = System.IO.File.Create(fullPath + ".swf"))
-					using (var out_s = new IO.EndianWriter(fs, Shell.EndianFormat.Little))
+					if (ResourceUtils.IsSwfHeader(buffer_signature))
+						result = TransformGfxToSwfFileResult.InputIsAlreadySwf;
+					else
 					{
-						out_s.Write(swf_signature);
-						out_s.Write(eraFileEntryBuffer, sizeof(uint), eraFileEntryBuffer.Length - sizeof(uint));
+						TransformGfxToSwfFileInternal(eraFileEntryBuffer, fullPath, buffer_signature);
+						result = TransformGfxToSwfFileResult.Success;
 					}
 				}
+			}
+
+			return result;
+		}
+		private void TransformGfxToSwfFileInternal(byte[] eraFileEntryBuffer, string fullPath, uint bufferSignature)
+		{
+			uint swf_signature = ResourceUtils.GfxHeaderToSwf(bufferSignature);
+			using (var fs = System.IO.File.Create(fullPath + ".swf"))
+			using (var out_s = new IO.EndianWriter(fs, Shell.EndianFormat.Little))
+			{
+				out_s.Write(swf_signature);
+				out_s.Write(eraFileEntryBuffer, sizeof(uint), eraFileEntryBuffer.Length - sizeof(uint));
 			}
 		}
 
