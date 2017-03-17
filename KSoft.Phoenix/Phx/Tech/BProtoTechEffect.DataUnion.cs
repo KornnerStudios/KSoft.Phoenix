@@ -60,7 +60,10 @@ namespace KSoft.Phoenix.Phx
 				where TCursor : class
 			{
 				xs.StreamTypeName(s, "Resource", ref Cost_Type, GameDataObjectKind.Cost, isResourceOptional, XML.XmlUtil.kSourceAttr);
-				xs.StreamDBID(s, "UnitType", ref Cost_UnitType, DatabaseObjectKind.Object, true, XML.XmlUtil.kSourceAttr);
+				bool streamedUnitType = xs.StreamDBID(s, "UnitType", ref Cost_UnitType, DatabaseObjectKind.Object, true, XML.XmlUtil.kSourceAttr);
+				// #HACK deal with hand edited data in Halo Wars
+				if (!streamedUnitType && s.IsReading)
+					xs.StreamDBID(s, "unitType", ref Cost_UnitType, DatabaseObjectKind.Object, true, XML.XmlUtil.kSourceAttr);
 			}
 			void StreamCommandData<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
 				where TDoc : class

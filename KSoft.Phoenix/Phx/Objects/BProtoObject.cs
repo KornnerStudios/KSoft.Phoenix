@@ -6,7 +6,7 @@ using BVector = SlimMath.Vector4;
 
 namespace KSoft.Phoenix.Phx
 {
-	/* Deprecate fields:
+	/* Deprecated fields:
 	 * - TrackInterceptDistance: This was made a global and moved to GameData.
 	 * - FlashUI: these are no longer defined in this proto.
 	 * - UIVisual: Not sure what happened with this. There's just the Visual field now though.

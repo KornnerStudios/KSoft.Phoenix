@@ -4,7 +4,7 @@ using BVector = SlimMath.Vector4;
 
 namespace KSoft.Phoenix.Phx
 {
-	/* Deprecate fields:
+	/* Deprecated fields:
 	 * - MinimapIcon: This is in ProtoObject now.
 	*/
 

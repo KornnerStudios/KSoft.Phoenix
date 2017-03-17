@@ -2,6 +2,10 @@
 
 namespace KSoft.Phoenix.Phx
 {
+	/* Deprecated fields:
+	 * - type: This attribute is no longer a thing.
+	*/
+
 	public enum BProtoTechAlphaMode
 	{
 		None = -1,
@@ -153,7 +157,7 @@ namespace KSoft.Phoenix.Phx
 			}
 
 			s.StreamStringOpt("Icon", ref mIcon, toLower: false, type: XML.XmlUtil.kSourceElement);
-			s.StreamStringOpt("ResearchCompleteSound", ref mIcon, toLower: false, type: XML.XmlUtil.kSourceElement);
+			s.StreamStringOpt("ResearchCompleteSound", ref mResearchCompleteSound, toLower: false, type: XML.XmlUtil.kSourceElement);
 			s.StreamStringOpt("ResearchAnim", ref mResearchAnim, toLower: false, type: XML.XmlUtil.kSourceElement);
 			using (var bm = s.EnterCursorBookmarkOpt("Prereqs", this, v => v.HasPrereqs)) if (bm.IsNotNull)
 			{
