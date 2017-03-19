@@ -75,6 +75,11 @@ namespace KSoft.Phoenix.Phx.Meta
 	{
 	};
 
+	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
+	public sealed class CameraEffectReferenceAttribute : Attribute
+	{
+	};
+
 	/// <summary>Reference to an Action in a Tactic</summary>
 	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple = false)]
 	public sealed class BProtoActionReferenceAttribute : Attribute

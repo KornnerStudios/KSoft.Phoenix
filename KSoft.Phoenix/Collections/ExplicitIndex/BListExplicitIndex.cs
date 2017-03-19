@@ -11,7 +11,7 @@ namespace KSoft.Collections
 	/// <typeparam name="T">Game Data's type</typeparam>
 	public sealed class BListExplicitIndex<T>
 		: BListExplicitIndexBase<T>
-		where T : IEqualityComparer<T>, IO.ITagElementStringNameStreamable, new()
+		where T : IO.ITagElementStringNameStreamable, new()
 	{
 		public BListExplicitIndex(BListExplicitIndexParams<T> @params) : base(@params)
 		{

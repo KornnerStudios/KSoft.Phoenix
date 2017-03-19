@@ -6,6 +6,9 @@ namespace KSoft.Phoenix.XML
 {
 	partial class XmlUtil
 	{
+		[ThreadStatic]
+		private static BBitSetXmlSerializer gBitSetXmlSerializer;
+
 		public static void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
 			Collections.BBitSet bits, BBitSetXmlParams @params)
 			where TDoc : class
@@ -14,8 +17,14 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(s != null);
 			Contract.Requires(bits != null);
 			Contract.Requires(@params != null);
+			Contract.Requires(@params.UseElementName || @params.ElementItselfMeansTrue,
+				"Collection only supports element name filtering");
 
-			using (var xs = new BBitSetXmlSerializer(@params, bits))
+			if (gBitSetXmlSerializer == null)
+				gBitSetXmlSerializer = new BBitSetXmlSerializer();
+			var xs = gBitSetXmlSerializer;
+
+			using (xs.Reset(@params, bits))
 			{
 				xs.Serialize(s);
 			}
@@ -25,43 +34,59 @@ namespace KSoft.Phoenix.XML
 		: IDisposable
 		, IO.ITagElementStringNameStreamable
 	{
-		public BListXmlParams Params { get; private set; }
+		public BBitSetXmlParams Params { get; private set; }
 		public Collections.BBitSet Bits { get; private set; }
 
-		public BBitSetXmlSerializer(BListXmlParams @params, Collections.BBitSet bits)
+		internal BBitSetXmlSerializer()
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
-			Contract.Requires<ArgumentNullException>(bits != null);
-			Contract.Requires(@params.UseElementName, "Collection only supports element name filtering");
+		}
 
+		internal BBitSetXmlSerializer Reset(BBitSetXmlParams @params, Collections.BBitSet bits)
+		{
 			Params = @params;
 			Bits = bits;
+
+			return this;
 		}
 
-		#region IXmlElementStreamable Members
-		Collections.IProtoEnum GetProtoEnum(Phx.BDatabaseBase db)
-		{
-			if (Bits.Params.kGetProtoEnum != null)
-				return Bits.Params.kGetProtoEnum();
-
-			return Bits.Params.kGetProtoEnumFromDB(db);
-		}
-
+		#region ITagElementStringNameStreamable Members
 		void ReadNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
-			Collections.IProtoEnum penum = Bits.InitializeFromEnum(s.GetSerializerInterface().Database);
+			var xs = s.GetSerializerInterface();
+			Collections.IProtoEnum penum = Bits.InitializeFromEnum(xs.Database);
 
-			foreach (var n in s.ElementsByName(Params.ElementName))
+			if (Params.ElementItselfMeansTrue)
 			{
-				using (s.EnterCursorBookmark(n))
+				foreach (var e in s.Elements)
 				{
-					string name = null;
-					Params.StreamDataName(s, ref name);
+					var element_name = s.GetElementName(e);
+					int id = penum.TryGetMemberId(element_name);
+					if (id.IsNone())
+						continue;
 
-					int id = penum.GetMemberId(name);
+					bool flag = true;
+					s.StreamElementOpt(element_name, ref flag);
+
+					if (!flag)
+						continue;
+
 					Bits.Set(id);
+				}
+			}
+			else
+			{
+				foreach (var n in s.ElementsByName(Params.ElementName))
+				{
+					using (s.EnterCursorBookmark(n))
+					{
+						string name = null;
+						Params.StreamDataName(s, ref name);
+
+						int id = penum.GetMemberId(name);
+						Bits.Set(id);
+					}
 				}
 			}
 
@@ -74,26 +99,28 @@ namespace KSoft.Phoenix.XML
 			if (Bits.EnabledCount == 0)
 				return;
 
-			Collections.IProtoEnum penum = GetProtoEnum(s.GetSerializerInterface().Database);
+			var xs = s.GetSerializerInterface();
+			Collections.IProtoEnum penum = Bits.InitializeFromEnum(xs.Database);
 
 			foreach (var bitIndex in Bits.RawBits.SetBitIndices)
 			{
-				using (s.EnterCursorBookmark(Params.ElementName))
-				{
-					string name = penum.GetMemberName(bitIndex);
-					Params.StreamDataName(s, ref name);
-				}
-			}
+				string name = penum.GetMemberName(bitIndex);
 
-#if false
-			for (int x = 0; x < Bits.Count; x++)
-				if (Bits[x])
+				if (Params.ElementItselfMeansTrue)
+				{
+					using (s.EnterCursorBookmark(name))
+					{
+						// do nothing
+					}
+				}
+				else
+				{
 					using (s.EnterCursorBookmark(Params.ElementName))
 					{
-						string name = penum.GetMemberName(x);
 						Params.StreamDataName(s, ref name);
 					}
-#endif
+				}
+			}
 		}
 
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -112,6 +139,8 @@ namespace KSoft.Phoenix.XML
 		#region IDisposable Members
 		public void Dispose()
 		{
+			Params = null;
+			Bits = null;
 		}
 		#endregion
 	};

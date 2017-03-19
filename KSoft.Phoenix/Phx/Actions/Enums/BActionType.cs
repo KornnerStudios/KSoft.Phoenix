@@ -4,10 +4,8 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BActionType : byte
 	{
-		Invalid = unchecked((byte)TypeExtensions.kNone),
-
 		#region 0x00
-		[XmlIgnore] Idle = 0, // entity
+		[XmlIgnore] Idle, // entity
 		[XmlIgnore] Listen, // entity
 		Move, GaggleMove = Move, // unit...
 		MoveAir,
@@ -99,7 +97,7 @@ namespace KSoft.Phoenix.Phx
 		#region 0x50
 		Wander,
 		Cloak,
-		[XmlIgnore] CloakDetect,
+		CloakDetector,
 		Daze,
 		[XmlIgnore] SquadJump,
 		AmbientLife,
@@ -111,8 +109,10 @@ namespace KSoft.Phoenix.Phx
 		Dome,
 		SpiritBond, // squad
 		Rage, // unit
-		CloakDetector, // ?
+		//
 		//
 		#endregion
+
+		Invalid = 0x5E
 	};
 }

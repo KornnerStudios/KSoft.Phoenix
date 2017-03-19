@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BProtoPower
@@ -17,63 +18,192 @@ namespace KSoft.Phoenix.Phx
 			RootName = kBListXmlParams.RootName
 		};
 
-		const string kXmlElementAttributes = "Attributes";
-
-		// can have multiple dynamic costs
-//		const string kXmlElementDynamicCost = "DynamicCost"; // inner text is a float (the actual cost)
-//		const string kXmlElementDynamicCostAttrObjectType = "ObjectType"; // GameObjectTypes
-		// can have multiple
-//		const string kXmlElementTargetEffectiveness = "TargetEffectiveness"; // inner text is an integer
-//		const string kXmlElementTargetEffectivenessAttrObjectType = "ObjectType"; // GameObjectTypes
-//		const string kXmlElementUIRadius = "UIRadius"; // float
-		const string kXmlElementPowerType = "PowerType";
-		const string kXmlElementAutoRecharge = "AutoRecharge";
-		const string kXmlElementUseLimit = "UseLimit"; // integer
-//		const string kXmlElementIcon = "Icon";
-		// can have multiple
-//		const string kXmlElementIconLocation = "IconLocation"; // string id
-		// can have multiple
-		const string kXmlElementTechPrereq = "TechPrereq"; // proto tech
-//		const string kXmlElementChooseTextID = "ChooseTextID";
-//		const string kXmlElementAction = "Action"; // BActionType
-//		const string kXmlElementMinigame = "Minigame"; // BMinigameType
-//		const string kXmlElementCameraZoomMin = "CameraZoomMin"; // float
-//		const string kXmlElementCameraZoomMax = "CameraZoomMax"; // float
-//		const string kXmlElementCameraPitchMin = "CameraPitchMin"; // float
-//		const string kXmlElementCameraPitchMax = "CameraPitchMax"; // float
-//		const string kXmlElementCameraEffectIn = "CameraEffectIn"; // camera effect name
-//		const string kXmlElementCameraEffectOut = "CameraEffectOut"; // camera effect name
-//		const string kXmlElementMinDistanceToSquad = "MinDistanceToSquad"; // float
-//		const string kXmlElementMaxDistanceToSquad = "MaxDistanceToSquad"; // float
-//		const string kXmlElementCameraEnableUserScroll = "CameraEnableUserScroll"; // bool
-//		const string kXmlElementCameraEnableUserYaw = "CameraEnableUserYaw"; // bool
-//		const string kXmlElementCameraEnableUserZoom = "CameraEnableUserZoom"; // bool
-//		const string kXmlElementCameraEnableAutoZoomInstant = "CameraEnableAutoZoomInstant"; // bool
-//		const string kXmlElementCameraEnableAutoZoom = "CameraEnableAutoZoom"; // bool
-//		const string kXmlElementShowTargetHighlight = "ShowTargetHighlight";
-//		const string kXmlElementShowTargetHighlightAttrObjectType = "ObjectType"; // GameObjectTypes
-//		const string kXmlElementShowTargetHighlightAttrRelation = "Relation"; // BDiplomacy
-//		const string kXmlElementShowInPowerMenu = "ShowInPowerMenu"; // bool
-//		const string kXmlElementShowTransportArrows = "ShowTransportArrows"; // bool
-//		const string kXmlElementChildObjects = "ChildObjects";
-//		const string kXmlElementChildObjectsObject = "Object"; // proto object name
-		const string kXmlElementDataLevel = "DataLevel";
-		const string kXmlElementBaseDataLevel = "BaseDataLevel";
-
-		const string kXmlElementTriggerScript = "TriggerScript";
-		const string kXmlElementCommandTriggerScript = "CommandTriggerScript";
+		static readonly Collections.CodeEnum<BPowerFlags> kFlagsProtoEnum = new Collections.CodeEnum<BPowerFlags>();
+		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
 		#endregion
 
 		public Collections.BTypeValuesSingle Cost { get; private set; }
-
+		public Collections.BListArray<BPowerDynamicCost> DynamicCosts { get; private set; }
+		public Collections.BListArray<BPowerTargetEffectiveness> TargetEffectiveness { get; private set; }
 		public Collections.BTypeValuesSingle Populations { get; private set; }
+		#region UIRadius
+		float mUIRadius;
+		public float UIRadius
+		{
+			get { return mUIRadius; }
+			set { mUIRadius = value; }
+		}
+		#endregion
+		#region PowerType
+		BPowerType mPowerType = BPowerType.Invalid;
+		public BPowerType PowerType
+		{
+			get { return mPowerType; }
+			set { mPowerType = value; }
+		}
+		#endregion
+		#region AutoRecharge
+		int mAutoRecharge;
+		/// <remarks>In milliseconds</remarks>
+		public int AutoRecharge
+		{
+			get { return mAutoRecharge; }
+			set { mAutoRecharge = value; }
+		}
+		#endregion
+		#region UseLimit
+		int mUseLimit;
+		public int UseLimit
+		{
+			get { return mUseLimit; }
+			set { mUseLimit = value; }
+		}
+		#endregion
+		public Collections.BBitSet Flags { get; private set; }
+		#region IconTextureName
+		string mIconTextureName;
+		[Meta.TextureReference]
+		public string IconTextureName
+		{
+			get { return mIconTextureName; }
+			set { mIconTextureName = value; }
+		}
+		#endregion
+		public List<int> IconLocations { get; private set; }
+		[Meta.BProtoTechReference]
+		public List<int> TechPrereqs { get; private set; }
+		#region ActionType
+		BActionType mActionType = BActionType.Invalid;
+		public BActionType ActionType
+		{
+			get { return mActionType; }
+			set { mActionType = value; }
+		}
+		#endregion
+		#region MinigameType
+		BMinigameType mMinigameType;
+		public BMinigameType MinigameType
+		{
+			get { return mMinigameType; }
+			set { mMinigameType = value; }
+		}
+		#endregion
+		#region CameraZoomMin
+		float mCameraZoomMin;
+		public float CameraZoomMin
+		{
+			get { return mCameraZoomMin; }
+			set { mCameraZoomMin = value; }
+		}
+		#endregion
+		#region CameraZoomMax
+		float mCameraZoomMax;
+		public float CameraZoomMax
+		{
+			get { return mCameraZoomMax; }
+			set { mCameraZoomMax = value; }
+		}
+		#endregion
+		#region CameraPitchMin
+		float mCameraPitchMin;
+		public float CameraPitchMin
+		{
+			get { return mCameraPitchMin; }
+			set { mCameraPitchMin = value; }
+		}
+		#endregion
+		#region CameraPitchMax
+		float mCameraPitchMax;
+		public float CameraPitchMax
+		{
+			get { return mCameraPitchMax; }
+			set { mCameraPitchMax = value; }
+		}
+		#endregion
+		#region CameraEffectIn
+		string mCameraEffectIn;
+		[Meta.CameraEffectReference]
+		public string CameraEffectIn
+		{
+			get { return mCameraEffectIn; }
+			set { mCameraEffectIn = value; }
+		}
+		#endregion
+		#region CameraEffectOut
+		string mCameraEffectOut;
+		[Meta.CameraEffectReference]
+		public string CameraEffectOut
+		{
+			get { return mCameraEffectOut; }
+			set { mCameraEffectOut = value; }
+		}
+		#endregion
+		#region MinDistanceToSquad
+		float mMinDistanceToSquad = PhxUtil.kInvalidSingle;
+		public float MinDistanceToSquad
+		{
+			get { return mMinDistanceToSquad; }
+			set { mMinDistanceToSquad = value; }
+		}
+		#endregion
+		#region MaxDistanceToSquad
+		float mMaxDistanceToSquad = PhxUtil.kInvalidSingle;
+		public float MaxDistanceToSquad
+		{
+			get { return mMaxDistanceToSquad; }
+			set { mMaxDistanceToSquad = value; }
+		}
+		#endregion
+		#region ShowTargetHighlight
 
-		BPowerType mPowerType = BPowerType.None;
-		float mAutoRecharge = PhxUtil.kInvalidSingle;
-		int mUseLimit = TypeExtensions.kNone;
-//		BPowerFlags mFlags; // TODO
+		int mShowTargetHighlightObjectType = TypeExtensions.kNone;
+		[Meta.ObjectTypeReference]
+		public int ShowTargetHighlightObjectType
+		{
+			get { return mShowTargetHighlightObjectType; }
+			set { mShowTargetHighlightObjectType = value; }
+		}
 
-		string mTriggerScript, mCommandTriggerScript;
+		BDiplomacy mShowTargetHighlightRelation = BDiplomacy.Any;
+		public BDiplomacy ShowTargetHighlightRelation
+		{
+			get { return mShowTargetHighlightRelation; }
+			set { mShowTargetHighlightRelation = value; }
+		}
+
+		bool HasShowTargetHighlightData { get {
+			return mShowTargetHighlightObjectType.IsNotNone()
+				|| mShowTargetHighlightRelation != BDiplomacy.Any;
+		} }
+		#endregion
+		public List<int> ChildObjectIDs { get; private set; }
+		#region BaseDataLevel
+		BProtoPowerDataLevel mBaseDataLevel;
+		public BProtoPowerDataLevel BaseDataLevel
+		{
+			get { return mBaseDataLevel; }
+			set { mBaseDataLevel = value; }
+		}
+		#endregion
+		public Collections.BListExplicitIndex<BProtoPowerDataLevel> LevelData { get; private set; }
+		#region TriggerScript
+		string mTriggerScript;
+		[Meta.TriggerScriptReference]
+		public string TriggerScript
+		{
+			get { return mTriggerScript; }
+			set { mTriggerScript = value; }
+		}
+		#endregion
+		#region CommandTriggerScript
+		string mCommandTriggerScript;
+		[Meta.TriggerScriptReference]
+		public string CommandTriggerScript
+		{
+			get { return mCommandTriggerScript; }
+			set { mCommandTriggerScript = value; }
+		}
+		#endregion
 
 		public BProtoPower()
 		{
@@ -84,36 +214,337 @@ namespace KSoft.Phoenix.Phx
 			textData.HasChooseTextID = true;
 
 			Cost = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
-
+			DynamicCosts = new Collections.BListArray<BPowerDynamicCost>();
+			TargetEffectiveness = new Collections.BListArray<BPowerTargetEffectiveness>();
 			Populations = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
+
+			Flags = new Collections.BBitSet(kFlagsParams);
+
+			IconLocations = new List<int>();
+			TechPrereqs = new List<int>();
+
+			ChildObjectIDs = new List<int>();
+			LevelData = new Collections.BListExplicitIndex<BProtoPowerDataLevel>(BProtoPowerDataLevel.kBListExplicitIndexParams);
 		}
 
 		#region ITagElementStreamable<string> Members
-		void StreamFlags<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
-			where TDoc : class
-			where TCursor : class
-		{
-			// TODO: enabled flags are written as xml elements without any attributes or text. Eg:
-			// <InfiniteUses /> means the BPowerFlags.InfiniteUses bit is set
-		}
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			using (s.EnterCursorBookmark(kXmlElementAttributes))
+			base.Serialize(s);
+			var xs = s.GetSerializerInterface();
+
+			using (s.EnterCursorBookmark("Attributes"))
 			{
 				base.Serialize(s);
 
 				XML.XmlUtil.SerializeCostHack(s, Cost);
-				// DynamicCost
-				// TargetEffectiveness
+				XML.XmlUtil.Serialize(s, DynamicCosts, BPowerDynamicCost.kBListXmlParams);
+				XML.XmlUtil.Serialize(s, TargetEffectiveness, BPowerTargetEffectiveness.kBListXmlParams);
 				XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle_LowerCase);
+				s.StreamElementOpt("UIRadius", ref mUIRadius, Predicates.IsNotZero);
+				s.StreamElementEnumOpt("PowerType", ref mPowerType, e => e != BPowerType.Invalid);
+				s.StreamElementOpt("AutoRecharge", ref mAutoRecharge, Predicates.IsNotZero);
+				s.StreamElementOpt("UseLimit", ref mUseLimit, Predicates.IsNotZero);
+				XML.XmlUtil.Serialize(s, Flags, XML.BBitSetXmlParams.kFlagsAreElementNamesThatMeanTrue);
+				s.StreamElementOpt("Icon", ref mIconTextureName, Predicates.IsNotNullOrEmpty);
+				s.StreamElements("IconLocation", IconLocations, xs, StreamIconLocation);
+				s.StreamElements("TechPrereq", TechPrereqs, xs, XML.BDatabaseXmlSerializerBase.StreamTechID);
+				s.StreamElementEnumOpt("Action", ref mActionType, e => e != BActionType.Invalid);
+				s.StreamElementEnumOpt("Minigame", ref mMinigameType, e => e != BMinigameType.None);
+				s.StreamElementOpt("CameraZoomMin", ref mCameraZoomMin, Predicates.IsNotZero);
+				s.StreamElementOpt("CameraZoomMax", ref mCameraZoomMax, Predicates.IsNotZero);
+				s.StreamElementOpt("CameraPitchMin", ref mCameraPitchMin, Predicates.IsNotZero);
+				s.StreamElementOpt("CameraPitchMax", ref mCameraPitchMax, Predicates.IsNotZero);
+				s.StreamElementOpt("CameraEffectIn", ref mCameraEffectIn, Predicates.IsNotNullOrEmpty);
+				s.StreamElementOpt("CameraEffectOut", ref mCameraEffectOut, Predicates.IsNotNullOrEmpty);
+				s.StreamElementOpt("MinDistanceToSquad", ref mMinDistanceToSquad, PhxPredicates.IsNotInvalid);
+				s.StreamElementOpt("MaxDistanceToSquad", ref mMaxDistanceToSquad, PhxPredicates.IsNotInvalid);
+				using (var bm = s.EnterCursorBookmarkOpt("ShowTargetHighlight", this, x => x.HasShowTargetHighlightData)) if (bm.IsNotNull)
+				{
+					xs.StreamDBID(s, "ObjectType", ref mShowTargetHighlightObjectType, DatabaseObjectKind.ObjectType, xmlSource: XML.XmlUtil.kSourceAttr);
+					s.StreamAttributeEnumOpt("Relation", ref mShowTargetHighlightRelation, e => e != BDiplomacy.Any);
+				}
+				using (var bm = s.EnterCursorBookmarkOpt("ChildObjects", ChildObjectIDs, Predicates.HasItems)) if (bm.IsNotNull)
+				{
+					s.StreamElements("Object", ChildObjectIDs, xs, XML.BDatabaseXmlSerializerBase.StreamObjectID);
+				}
+				using (var bm = s.EnterCursorBookmarkOpt("BaseDataLevel", this, x => x.BaseDataLevel != null)) if (bm.IsNotNull)
+				{
+					if (s.IsReading)
+						mBaseDataLevel = new BProtoPowerDataLevel();
 
-				s.StreamElementEnumOpt(kXmlElementPowerType, ref mPowerType, e => e != BPowerType.None);
-				s.StreamElementOpt    (kXmlElementAutoRecharge, ref mAutoRecharge, PhxPredicates.IsNotInvalid);
-				s.StreamElementOpt    (kXmlElementUseLimit, ref mUseLimit, Predicates.IsNotNone);
-				StreamFlags(s);
+					BaseDataLevel.Serialize(s);
+				}
+				XML.XmlUtil.Serialize(s, LevelData, BProtoPowerDataLevel.kBListExplicitIndexXmlParams);
 			}
-			s.StreamElementOpt(kXmlElementTriggerScript, ref mTriggerScript, Predicates.IsNotNullOrEmpty);
-			s.StreamElementOpt(kXmlElementCommandTriggerScript, ref mCommandTriggerScript, Predicates.IsNotNullOrEmpty);
+			s.StreamElementOpt("TriggerScript", ref mTriggerScript, Predicates.IsNotNullOrEmpty);
+			s.StreamElementOpt("CommandTriggerScript", ref mCommandTriggerScript, Predicates.IsNotNullOrEmpty);
+		}
+
+		static void StreamIconLocation<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs,
+			ref int value)
+			where TDoc : class
+			where TCursor : class
+		{
+			s.StreamCursor(ref value);
+		}
+		#endregion
+	};
+
+	public sealed class BPowerDynamicCost
+		: IO.ITagElementStringNameStreamable
+	{
+		#region Xml constants
+		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		{
+			ElementName = "DynamicCost",
+		};
+		#endregion
+
+		#region ObjectType
+		int mObjectType = TypeExtensions.kNone;
+		[Meta.ObjectTypeReference]
+		public int ObjectType
+		{
+			get { return mObjectType; }
+			set { mObjectType = value; }
+		}
+		#endregion
+
+		#region Multiplier
+		float mMultiplier = 1.0f;
+		public float Multiplier
+		{
+			get { return mMultiplier; }
+			set { mMultiplier = value; }
+		}
+		#endregion
+
+		#region ITagElementStreamable<string> Members
+		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
+			where TDoc : class
+			where TCursor : class
+		{
+			var xs = s.GetSerializerInterface();
+
+			xs.StreamDBID(s, "ObjectType", ref mObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
+			s.StreamCursor(ref mMultiplier);
+		}
+		#endregion
+	};
+
+	public sealed class BPowerTargetEffectiveness
+		: IO.ITagElementStringNameStreamable
+	{
+		#region Xml constants
+		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		{
+			ElementName = "TargetEffectiveness",
+		};
+		#endregion
+
+		#region ObjectType
+		int mObjectType = TypeExtensions.kNone;
+		[Meta.ObjectTypeReference]
+		public int ObjectType
+		{
+			get { return mObjectType; }
+			set { mObjectType = value; }
+		}
+		#endregion
+
+		#region Effectiveness
+		int mEffectiveness;
+		public int Effectiveness
+		{
+			get { return mEffectiveness; }
+			set { mEffectiveness = value; }
+		}
+		#endregion
+
+		#region ITagElementStreamable<string> Members
+		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
+			where TDoc : class
+			where TCursor : class
+		{
+			var xs = s.GetSerializerInterface();
+
+			xs.StreamDBID(s, "ObjectType", ref mObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
+			s.StreamCursor(ref mEffectiveness);
+		}
+		#endregion
+	};
+
+	public sealed class BProtoPowerDataLevel
+		: IO.ITagElementStringNameStreamable
+	{
+		#region Xml constants
+		public static readonly Collections.BListExplicitIndexParams<BProtoPowerDataLevel> kBListExplicitIndexParams = new
+			Collections.BListExplicitIndexParams<BProtoPowerDataLevel>()
+		{
+			kTypeGetInvalid = () => new BProtoPowerDataLevel()
+		};
+		public static readonly XML.BListExplicitIndexXmlParams<BProtoPowerDataLevel> kBListExplicitIndexXmlParams = new
+			XML.BListExplicitIndexXmlParams<BProtoPowerDataLevel>("DataLevel", "level")
+		{
+			IndexBase = 0
+		};
+		#endregion
+
+		public Collections.BListArray<BProtoPowerData> Data { get; private set; }
+
+		public BProtoPowerDataLevel()
+		{
+			Data = new Collections.BListArray<BProtoPowerData>();
+		}
+
+		#region ITagElementStreamable<string> Members
+		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
+			where TDoc : class
+			where TCursor : class
+		{
+			var xs = s.GetSerializerInterface();
+
+			XML.XmlUtil.Serialize(s, Data, BProtoPowerData.kBListXmlParams);
+		}
+		#endregion
+	};
+
+	public sealed class BProtoPowerData
+		: IO.ITagElementStringNameStreamable
+	{
+		#region Xml constants
+		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		{
+			ElementName = "Data",
+		};
+		#endregion
+
+		#region Name
+		string mName;
+		public string Name
+		{
+			get { return mName; }
+			set { mName = value; }
+		}
+		#endregion
+
+		#region DataType
+		ProtoPowerDataType mDataType = ProtoPowerDataType.Invalid;
+		public ProtoPowerDataType DataType
+		{
+			get { return mDataType; }
+			set { mDataType = value; }
+		}
+		#endregion
+
+		#region Data
+		float mDataFloat;
+		int mDataInt = TypeExtensions.kNone;
+		bool mDataBool;
+		string mDataString;
+
+		public float Float
+		{
+			get { return mDataFloat; }
+			set { mDataFloat = value; }
+		}
+
+		public int Int
+		{
+			get { return mDataInt; }
+			set { mDataInt = value; }
+		}
+		[Meta.BProtoObjectReference]
+		public int ObjectID
+		{
+			get { return mDataInt; }
+			set { mDataInt = value; }
+		}
+		[Meta.BProtoSquadReference]
+		public int SquadID
+		{
+			get { return mDataInt; }
+			set { mDataInt = value; }
+		}
+		[Meta.BProtoTechReference]
+		public int TechID
+		{
+			get { return mDataInt; }
+			set { mDataInt = value; }
+		}
+		[Meta.ObjectTypeReference]
+		public int ObjectType
+		{
+			get { return mDataInt; }
+			set { mDataInt = value; }
+		}
+
+		public bool Bool
+		{
+			get { return mDataBool; }
+			set { mDataBool = value; }
+		}
+
+		[Meta.SoundCueReference]
+		public string SoundCue
+		{
+			get { return mDataString; }
+			set { mDataString = value; }
+		}
+		[Meta.TextureReference]
+		public string TextureName
+		{
+			get { return mDataString; }
+			set { mDataString = value; }
+		}
+		#endregion
+
+		#region ITagElementStreamable<string> Members
+		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
+			where TDoc : class
+			where TCursor : class
+		{
+			var xs = s.GetSerializerInterface();
+
+			s.StreamAttributeEnum("type", ref mDataType);
+			s.StreamAttribute("name", ref mName);
+
+			switch (DataType)
+			{
+			case ProtoPowerDataType.Float:
+				s.StreamCursor(ref mDataFloat);
+				break;
+
+			case ProtoPowerDataType.Int:
+				s.StreamCursor(ref mDataInt);
+				break;
+			case ProtoPowerDataType.ProtoObject:
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+				break;
+			case ProtoPowerDataType.ProtoSquad:
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Squad, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+				break;
+			case ProtoPowerDataType.Tech:
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Tech, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+				break;
+			case ProtoPowerDataType.ObjectType:
+				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+				break;
+
+			case ProtoPowerDataType.Bool:
+				s.StreamCursor(ref mDataBool);
+				break;
+
+			case ProtoPowerDataType.Sound:
+				s.StreamCursor(ref mDataString);
+				break;
+			case ProtoPowerDataType.Texture:
+				s.StreamCursor(ref mDataString);
+				break;
+			}
+
+			//xs.StreamDBID(s, "ObjectType", ref mObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
 		}
 		#endregion
 	};

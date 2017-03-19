@@ -20,7 +20,7 @@ namespace KSoft.Phoenix.Phx
 			Air,
 		};
 
-		static readonly Predicate<BActionType> kNotInvalidActionType = e => e != BActionType.Invalid;
+		public static readonly Predicate<BActionType> kNotInvalidActionType = e => e != BActionType.Invalid;
 		static readonly Predicate<BSquadMode> kNotInvalidSquadMode = e => e != BSquadMode.Invalid;
 
 		#region Xml constants
@@ -77,7 +77,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Properties
-		BActionType mActionType;
+		BActionType mActionType = BActionType.Invalid;
 		float mProjectileSpread = PhxUtil.kInvalidSingle;
 
 		int mSquadTypeID = TypeExtensions.kNone;
@@ -188,7 +188,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				// TODO: This IS optional, right? Only on 'true'?
 				s.StreamAttributeOpt(kXmlElementProtoObjectAttrSquad, ref mProtoObjectIsSquad, Predicates.IsTrue);
-				xs.StreamDBID(s, null, ref mSquadTypeID, 
+				xs.StreamDBID(s, null, ref mSquadTypeID,
 					mProtoObjectIsSquad ? DatabaseObjectKind.Squad : DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
 			}
 			#endregion

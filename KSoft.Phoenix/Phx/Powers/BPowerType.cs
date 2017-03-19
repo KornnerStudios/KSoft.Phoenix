@@ -3,7 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum BPowerType
 	{
-		None,
+		Invalid,
 
 		Cleansing,
 		Orbital,
@@ -15,5 +15,20 @@ namespace KSoft.Phoenix.Phx
 		Transport,
 		ODST,
 		Repair,
+	};
+
+	public enum ProtoPowerDataType
+	{
+		Invalid,
+		Float,
+		Int,
+		ProtoObject,
+		ProtoSquad,
+		Tech,
+		Bool,
+		[System.Obsolete] Cost,
+		ObjectType,
+		Sound,
+		Texture,
 	};
 }

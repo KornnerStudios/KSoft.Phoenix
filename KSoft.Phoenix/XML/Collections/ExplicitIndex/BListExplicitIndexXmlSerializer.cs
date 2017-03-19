@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.XML
 	{
 		public static void Serialize<T, TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
 			Collections.BListExplicitIndex<T> list, BListExplicitIndexXmlParams<T> @params)
-			where T : IEqualityComparer<T>, IO.ITagElementStringNameStreamable, new()
+			where T : IO.ITagElementStringNameStreamable, new()
 			where TDoc : class
 			where TCursor : class
 		{
@@ -26,7 +26,7 @@ namespace KSoft.Phoenix.XML
 
 	internal class BListExplicitIndexXmlSerializer<T>
 		: BListExplicitIndexXmlSerializerBase<T>
-		where T : IEqualityComparer<T>, IO.ITagElementStringNameStreamable, new()
+		where T : IO.ITagElementStringNameStreamable, new()
 	{
 		Collections.BListExplicitIndex<T> mList;
 

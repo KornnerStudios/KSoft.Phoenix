@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.HaloWars
 	{
 		static bool gRemoveUndefined = false;
 
-		static void RemoveAllButTheLastElement(XmlElement node, string elementName)
+		static void RemoveAllButTheLastElement(IO.XmlElementStream s, XmlElement node, string elementName)
 		{
 			if (node == null)
 				return;
@@ -22,6 +22,9 @@ namespace KSoft.Phoenix.HaloWars
 					prevNode = (XmlElement)n;
 					continue;
 				}
+
+				FixXmlTraceFixEvent(s, node, "Removing duplicate node {0}",
+					n.Name);
 
 				node.RemoveChild(prevNode);
 			}
@@ -261,28 +264,28 @@ namespace KSoft.Phoenix.HaloWars
 			node.ReplaceChild(lifespan, badLifeSpan);
 		}
 
-		static void FixObjectsXml_fld_air_bomber_01(XmlElement node)
+		static void FixObjectsXml_fld_air_bomber_01(IO.XmlElementStream s, XmlElement node)
 		{
 			// remove duplicate FlightLevel values, preferring the last entry
-			RemoveAllButTheLastElement(node, "FlightLevel");
+			RemoveAllButTheLastElement(s, node, "FlightLevel");
 		}
 
-		static void FixObjectsXml_hook_spawner_FloodRelease(XmlElement node)
+		static void FixObjectsXml_hook_spawner_FloodRelease(IO.XmlElementStream s, XmlElement node)
 		{
 			// remove duplicate MaxContained values, preferring the last entry
-			RemoveAllButTheLastElement(node, "MaxContained");
+			RemoveAllButTheLastElement(s, node, "MaxContained");
 		}
 
-		static void FixObjectsXml_for_air_monitor(XmlElement node)
+		static void FixObjectsXml_for_air_monitor(IO.XmlElementStream s, XmlElement node)
 		{
 			// remove duplicate CombatValue values, preferring the last entry
-			RemoveAllButTheLastElement(node, "CombatValue");
+			RemoveAllButTheLastElement(s, node, "CombatValue");
 		}
 
-		static void FixObjectsXml_for_air_attractor_01(XmlElement node)
+		static void FixObjectsXml_for_air_attractor_01(IO.XmlElementStream s, XmlElement node)
 		{
 			// remove duplicate LOS values, preferring the last entry
-			RemoveAllButTheLastElement(node, "LOS");
+			RemoveAllButTheLastElement(s, node, "LOS");
 		}
 
 		protected override void FixObjectsXml(IO.XmlElementStream s)
@@ -299,13 +302,13 @@ namespace KSoft.Phoenix.HaloWars
 					"fx_unitLevelUp",
 					"fx_unitLevelUpHigh",
 					"fx_unitLevelUpLow");
-				FixObjectsXml_fld_air_bomber_01((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "fld_air_bomber_01"));
-				FixObjectsXml_hook_spawner_FloodRelease((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_01"));
-				FixObjectsXml_hook_spawner_FloodRelease((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_02"));
-				FixObjectsXml_for_air_monitor((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_01"));
-				FixObjectsXml_for_air_monitor((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_02"));
-				FixObjectsXml_for_air_monitor((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_04"));
-				FixObjectsXml_for_air_attractor_01((XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_attractor_01"));
+				FixObjectsXml_fld_air_bomber_01(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "fld_air_bomber_01"));
+				FixObjectsXml_hook_spawner_FloodRelease(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_01"));
+				FixObjectsXml_hook_spawner_FloodRelease(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_02"));
+				FixObjectsXml_for_air_monitor(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_01"));
+				FixObjectsXml_for_air_monitor(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_02"));
+				FixObjectsXml_for_air_monitor(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_04"));
+				FixObjectsXml_for_air_attractor_01(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_attractor_01"));
 			}
 		}
 		#endregion
@@ -374,10 +377,10 @@ namespace KSoft.Phoenix.HaloWars
 			}
 		}
 
-		static void FixSquadsXml_for_air_sentinel_03(XmlElement node)
+		static void FixSquadsXml_for_air_sentinel_03(IO.XmlElementStream s, XmlElement node)
 		{
 			// remove duplicate BuildPoints values, preferring the last entry
-			RemoveAllButTheLastElement(node, "BuildPoints");
+			RemoveAllButTheLastElement(s, node, "BuildPoints");
 		}
 
 		protected override void FixSquadsXml(IO.XmlElementStream s)
@@ -387,7 +390,7 @@ namespace KSoft.Phoenix.HaloWars
 			else
 			{
 				FixSquadsXmlSounds(s);
-				FixSquadsXml_for_air_sentinel_03((XmlElement)XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "for_air_sentinel_03"));
+				FixSquadsXml_for_air_sentinel_03(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "for_air_sentinel_03"));
 			}
 		}
 		#endregion
@@ -533,6 +536,9 @@ namespace KSoft.Phoenix.HaloWars
 				{
 					if (e.InnerText != "unsc_turret_upgrade3") continue;
 
+					FixXmlTraceFixEvent(s, e, "Removing undefined Target from Tech Effect",
+						e.InnerText);
+
 					var p = e.ParentNode;
 					p.ParentNode.RemoveChild(p);
 				}
@@ -549,6 +555,42 @@ namespace KSoft.Phoenix.HaloWars
 			FixTechsXmlEffectsInvalid(s, Phx.BProtoTech.kBListXmlParams, Database.Engine.Build);
 			if(gRemoveUndefined)
 				FixTechsXmlBadNames(s, Phx.BProtoTech.kBListXmlParams, Database.Engine.Build);
+		}
+		#endregion
+
+		#region Fix Powers
+		protected override void FixPowersXml(KSoft.IO.XmlElementStream s)
+		{
+			FixPowersXmlUndefinedTechPrereqs(s, Phx.BProtoPower.kBListXmlParams, Database.Engine.Build);
+		}
+		static void FixPowersXmlUndefinedTechPrereqs(IO.XmlElementStream s, XML.BListXmlParams op, Engine.PhxEngineBuild build)
+		{
+			string xpath_target = string.Format(
+				"/{0}/{1}/Attributes/TechPrereq",
+				op.RootName, op.ElementName);
+			XmlNodeList elements;
+
+			if (build == Engine.PhxEngineBuild.Release)
+			{
+				elements = s.Document.SelectNodes(xpath_target);
+
+				foreach (XmlElement e in elements)
+				{
+					if ( // UnscOdstDrop
+						e.InnerText != "unsc_odst_upgrade1" &&
+						// CpgnOdstDrop
+						e.InnerText != "cpgn_odst_upgrade" &&
+						// UnscCpgn13OrbitalBombard
+						e.InnerText != "unsc_age4")
+						continue;
+
+					FixXmlTraceFixEvent(s, e, "Removing undefined TechPrereq from Power '{0}'",
+						e.InnerText);
+
+					var p = e.ParentNode;
+					p.RemoveChild(e);
+				}
+			}
 		}
 		#endregion
 

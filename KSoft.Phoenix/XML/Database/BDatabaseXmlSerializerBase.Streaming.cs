@@ -141,6 +141,8 @@ namespace KSoft.Phoenix.XML
 		/// <remarks>For streaming directly from powers.xml</remarks>
 		void StreamXmlPowers(IO.XmlElementStream s)
 		{
+			if (s.IsReading)
+				FixPowersXml(s);
 			XmlUtil.Serialize(s, mPowersSerializer, ForceNoRootElementStreaming);
 		}
 

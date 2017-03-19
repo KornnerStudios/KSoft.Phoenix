@@ -29,6 +29,9 @@ namespace KSoft.Phoenix.XML
 		protected virtual void FixTechsXml(KSoft.IO.XmlElementStream s)
 		{ }
 
+		protected virtual void FixPowersXml(KSoft.IO.XmlElementStream s)
+		{ }
+
 		protected static void FixTacticsTraceFixEvent(string tacticName, string xpath)
 		{
 			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
@@ -36,5 +39,20 @@ namespace KSoft.Phoenix.XML
 		}
 		protected virtual void FixTacticsXml(KSoft.IO.XmlElementStream s, string name)
 		{ }
+
+		protected static void FixXmlTraceFixEvent(IO.XmlElementStream s, XmlNode node, string message, params object[] args)
+		{
+			var lineInfo = node as Text.ITextLineInfo;
+			string lineInfoString = lineInfo != null
+				? string.Format("{0} ({1})", s.StreamName, Text.TextLineInfo.ToString(lineInfo, verboseString: true))
+				: s.StreamName;
+
+			string messageOutput = message;
+			if (!args.IsNullOrEmpty())
+				messageOutput = message.Format(args);
+
+			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
+				"{0}: {1}", lineInfoString, messageOutput);
+		}
 	};
 }
