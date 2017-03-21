@@ -30,6 +30,37 @@ namespace KSoft.Phoenix.HaloWars
 			}
 		}
 
+		static bool RemoveAllButTheFirstElement(XmlNodeList elements)
+		{
+			bool removed = false;
+
+			int x = 0;
+			foreach (XmlElement e in elements)
+			{
+				if (x != 0)
+				{
+					e.ParentNode.RemoveChild(e);
+					removed = true;
+				}
+
+				x++;
+			}
+
+			return removed;
+		}
+
+		static bool RemoveAllElements(XmlNodeList elements)
+		{
+			bool removed = false;
+			foreach (XmlElement e in elements)
+			{
+				e.ParentNode.RemoveChild(e);
+				removed = true;
+			}
+
+			return removed;
+		}
+
 		protected override void FixWeaponTypes()
 		{
 			// Don't add the types if we're not removing undefined data
@@ -600,6 +631,7 @@ namespace KSoft.Phoenix.HaloWars
 			string xpath;
 			XmlNodeList elements;
 
+#if false
 			xpath = "Weapon[WeaponType='plasma']";
 			elements = s.Cursor.SelectNodes(xpath);
 			if (elements.Count > 0)
@@ -612,6 +644,7 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
+#endif
 
 			// see: fx_proj_beam_01
 			xpath = "Weapon[WeaponType='ForunnerBeam']";
@@ -627,6 +660,7 @@ namespace KSoft.Phoenix.HaloWars
 				return;
 			}
 
+#if false
 			// see: pow_proj_cleansing_01, pow_proj_wave_explode_01, pow_proj_wave_lightning_01,
 			// cov_inf_brutechief_01
 			xpath = "Weapon[WeaponType='leaderPower']";
@@ -640,16 +674,13 @@ namespace KSoft.Phoenix.HaloWars
 				}
 				FixTacticsTraceFixEvent(name, xpath);
 			}
+#endif
 
 			// see: pow_gp_orbitalbombardment
 			xpath = "Weapon/DamageRatingOverride[@type='TurretBuilding']";
 			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
+			if (RemoveAllElements(elements))
 			{
-				foreach (XmlElement e in elements)
-				{
-					e.ParentNode.RemoveChild(e);
-				}
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
@@ -659,15 +690,13 @@ namespace KSoft.Phoenix.HaloWars
 				+ " | Weapon/DamageRatingOverride[@type='Air']"
 				+ " | Weapon/DamageRatingOverride[@type='Vehicle']";
 			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
+			if (RemoveAllElements(elements))
 			{
-				foreach (XmlElement e in elements)
-				{
-					e.ParentNode.RemoveChild(e);
-				}
 				FixTacticsTraceFixEvent(name, xpath);
+				return;
 			}
 
+#if false
 			// see: unsc_air_vulture_01
 			xpath = "Weapon[AirBurstSpan='25.0f']";
 			elements = s.Cursor.SelectNodes(xpath);
@@ -681,7 +710,9 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
+#endif
 
+#if false
 			// see: cov_inf_brute_01
 			xpath = "Weapon[contains(Name, 'IncoverBrutegun')]";
 			elements = s.Cursor.SelectNodes(xpath);
@@ -695,7 +726,9 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
+#endif
 
+#if false
 			// see: cov_inf_brutechief_01
 			xpath = "Weapon[Name='stunHammer']"
 				+ " | Weapon[Name='stunPullHammer']";
@@ -710,6 +743,7 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
+#endif
 		}
 		static void FixTacticsXmlBadActionWeaponNames(IO.XmlElementStream s, string name)
 		{
@@ -735,17 +769,14 @@ namespace KSoft.Phoenix.HaloWars
 			{
 				xpath = "Action[Weapon='RageShockwave']";
 				elements = s.Cursor.SelectNodes(xpath);
-				if (elements.Count > 0)
+				if (RemoveAllElements(elements))
 				{
-					foreach (XmlElement e in elements)
-					{
-						e.ParentNode.RemoveChild(e);
-					}
 					FixTacticsTraceFixEvent(name, xpath);
 					return;
 				}
 			}
 
+#if false
 			// see: unsc_inf_cyclops_01
 			xpath = "Action[Weapon='Buildingjackhammer']";
 			elements = s.Cursor.SelectNodes(xpath);
@@ -759,7 +790,9 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
+#endif
 
+#if false
 			// see: unsc_veh_elephant_02
 			xpath = "Action[Weapon='lightCannon']";
 			elements = s.Cursor.SelectNodes(xpath);
@@ -773,6 +806,7 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
+#endif
 		}
 		static void FixTacticsXmlBadActions(IO.XmlElementStream s, string name)
 		{
@@ -780,6 +814,7 @@ namespace KSoft.Phoenix.HaloWars
 			string xpath;
 			XmlNodeList elements;
 
+#if false
 			// see: fx_proj_fldbomb_01
 			if (!ToLowerName(Phx.DatabaseObjectKind.Squad))
 			{
@@ -796,17 +831,14 @@ namespace KSoft.Phoenix.HaloWars
 					return;
 				}
 			}
+#endif
 
-			// see: cov_inf_elitecommando_01, cpgn_scn10_warthog_01
+			// see: cov_inf_elitecommando_01
 			xpath = "Action[Name='GatherSupplies']";
 			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 1)
+			// I'm going to assume the first Action supersedes all proceeding Actions with the same name
+			if (RemoveAllButTheFirstElement(elements))
 			{
-				// I'm going to assume the first Action supersedes all proceeding Actions with the same name
-				foreach (XmlElement e in elements)
-				{
-					e.ParentNode.RemoveChild(e);
-				}
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
@@ -814,18 +846,17 @@ namespace KSoft.Phoenix.HaloWars
 			// see: cpgn_scn10_warthog_01
 			xpath = "Action[Name='Capture']";
 			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 1)
+			// I'm going to assume the first Action supersedes all proceeding Actions with the same name
+			if (RemoveAllButTheFirstElement(elements))
 			{
-				// I'm going to assume the first Action supersedes all proceeding Actions with the same name
-				foreach (XmlElement e in elements)
-				{
-					e.ParentNode.RemoveChild(e);
-				}
+				// #TODO: Should this be added? It appears in the 2nd instance
+				// <Anim>Build</Anim>
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
 
-			if (!gRemoveUndefined) return;
+			if (!gRemoveUndefined)
+				return;
 
 			// see: cov_inf_grunt_01, cov_inf_needlergrunt_01, cov_inf_elite_01,
 			// creep_inf_grunt_01, creep_inf_needlergrunt_01
@@ -834,12 +865,8 @@ namespace KSoft.Phoenix.HaloWars
 				+ " | Action[BaseDPSWeapon='IcCoverPlasmaRifleAttackAction']"
 				+ " | Action[BaseDPSWeapon='PlasmaPistolAttackAction']";
 			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
+			if (RemoveAllElements(elements))
 			{
-				foreach (XmlElement e in elements)
-				{
-					e.ParentNode.RemoveChild(e);
-				}
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
