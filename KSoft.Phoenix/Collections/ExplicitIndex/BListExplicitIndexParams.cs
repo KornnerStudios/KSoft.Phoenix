@@ -8,7 +8,7 @@ namespace KSoft.Collections
 	public class BListExplicitIndexParams<T>
 		: BListParams
 	{
-		public readonly IComparer<T> kComparer = Comparer<T>.Default;
+		public IComparer<T> kComparer = Comparer<T>.Default;
 
 		/// <summary>Get the 'invalid' value for a value</summary>
 		public Func<T> kTypeGetInvalid = () => default(T);

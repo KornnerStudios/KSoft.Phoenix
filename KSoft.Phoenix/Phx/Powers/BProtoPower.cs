@@ -20,6 +20,28 @@ namespace KSoft.Phoenix.Phx
 
 		static readonly Collections.CodeEnum<BPowerFlags> kFlagsProtoEnum = new Collections.CodeEnum<BPowerFlags>();
 		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
+
+		static readonly Collections.CodeEnum<BPowerToggableFlags> kFlags2ProtoEnum = new Collections.CodeEnum<BPowerToggableFlags>();
+		static readonly Collections.BBitSetParams kFlags2Params = new Collections.BBitSetParams(() => kFlags2ProtoEnum)
+		{
+			kGetMemberDefaultValue = (id) =>
+			{
+				switch (id)
+				{
+				case (int)BPowerToggableFlags.CameraEnableUserScroll:
+				case (int)BPowerToggableFlags.CameraEnableUserYaw:
+				case (int)BPowerToggableFlags.CameraEnableUserZoom:
+				case (int)BPowerToggableFlags.CameraEnableAutoZoomInstant:
+				case (int)BPowerToggableFlags.CameraEnableAutoZoom:
+				case (int)BPowerToggableFlags.ShowInPowerMenu:
+					return true;
+
+				case (int)BPowerToggableFlags.ShowTransportArrows:
+				default:
+					return false;
+				}
+			}
+		};
 		#endregion
 
 		public Collections.BTypeValuesSingle Cost { get; private set; }
@@ -60,6 +82,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		public Collections.BBitSet Flags { get; private set; }
+		public Collections.BBitSet Flags2 { get; private set; }
 		#region IconTextureName
 		string mIconTextureName;
 		[Meta.TextureReference]
@@ -219,6 +242,7 @@ namespace KSoft.Phoenix.Phx
 			Populations = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
 
 			Flags = new Collections.BBitSet(kFlagsParams);
+			Flags2 = new Collections.BBitSet(kFlags2Params);
 
 			IconLocations = new List<int>();
 			TechPrereqs = new List<int>();
@@ -230,7 +254,6 @@ namespace KSoft.Phoenix.Phx
 		#region ITagElementStreamable<string> Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			base.Serialize(s);
 			var xs = s.GetSerializerInterface();
 
 			using (s.EnterCursorBookmark("Attributes"))
@@ -246,6 +269,7 @@ namespace KSoft.Phoenix.Phx
 				s.StreamElementOpt("AutoRecharge", ref mAutoRecharge, Predicates.IsNotZero);
 				s.StreamElementOpt("UseLimit", ref mUseLimit, Predicates.IsNotZero);
 				XML.XmlUtil.Serialize(s, Flags, XML.BBitSetXmlParams.kFlagsAreElementNamesThatMeanTrue);
+				XML.XmlUtil.Serialize(s, Flags2, XML.BBitSetXmlParams.kFlagsAreElementNamesThatMeanTrue);
 				s.StreamElementOpt("Icon", ref mIconTextureName, Predicates.IsNotNullOrEmpty);
 				s.StreamElements("IconLocation", IconLocations, xs, StreamIconLocation);
 				s.StreamElements("TechPrereq", TechPrereqs, xs, XML.BDatabaseXmlSerializerBase.StreamTechID);
@@ -382,12 +406,28 @@ namespace KSoft.Phoenix.Phx
 		public static readonly Collections.BListExplicitIndexParams<BProtoPowerDataLevel> kBListExplicitIndexParams = new
 			Collections.BListExplicitIndexParams<BProtoPowerDataLevel>()
 		{
+			kComparer = new ComparerForDataCount(),//PhxUtil.CreateDummyComparerAlwaysNonZero<BProtoPowerDataLevel>(),
 			kTypeGetInvalid = () => new BProtoPowerDataLevel()
 		};
 		public static readonly XML.BListExplicitIndexXmlParams<BProtoPowerDataLevel> kBListExplicitIndexXmlParams = new
 			XML.BListExplicitIndexXmlParams<BProtoPowerDataLevel>("DataLevel", "level")
 		{
 			IndexBase = 0
+		};
+
+		private sealed class ComparerForDataCount
+			: IComparer<BProtoPowerDataLevel>
+		{
+			public int Compare(BProtoPowerDataLevel x, BProtoPowerDataLevel y)
+			{
+				if (x == null || y == null)
+					return -1;
+
+				if (x.Data.Count == 0 && y.Data.Count == 0)
+					return 0;
+
+				return -1;
+			}
 		};
 		#endregion
 

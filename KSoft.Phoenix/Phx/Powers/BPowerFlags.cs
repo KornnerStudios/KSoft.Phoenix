@@ -9,11 +9,13 @@ namespace KSoft.Phoenix.Phx
 		NotDisruptable,
 		MultiRechargePower,
 		ShowLimit,
-		ShowTargetHighlight,
+		//ShowTargetHighlight,
 		LeaderPower,
+	};
 
-		// The following flags respect the true/false value in the XmlText
-
+	// The following flags respect the true/false value in the XmlText
+	public enum BPowerToggableFlags
+	{
 		CameraEnableUserScroll,
 		CameraEnableUserYaw,
 		CameraEnableUserZoom,

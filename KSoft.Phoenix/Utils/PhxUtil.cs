@@ -364,5 +364,21 @@ namespace KSoft.Phoenix
 
 			return sb.ToString();
 		}
+
+		#region Dummy comparer
+		private sealed class DummyComparerAlwaysNonZero<T>
+			: IComparer<T>
+		{
+			public int Compare(T x, T y)
+			{
+				return -1;
+			}
+		};
+
+		public static IComparer<T> CreateDummyComparerAlwaysNonZero<T>()
+		{
+			return new DummyComparerAlwaysNonZero<T>();
+		}
+		#endregion
 	};
 }

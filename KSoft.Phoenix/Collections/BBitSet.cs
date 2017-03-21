@@ -29,13 +29,13 @@ namespace KSoft.Collections
 		/// <summary>Parameters that dictate the functionality of this list</summary>
 		public BBitSetParams Params { get; private set; }
 
-		public BBitSet(BBitSetParams @params)
+		public BBitSet(BBitSetParams @params, Phx.BDatabaseBase db = null)
 		{
 			Contract.Requires<ArgumentNullException>(@params != null);
 
 			Params = @params;
 
-			InitializeFromEnum(null);
+			InitializeFromEnum(db);
 		}
 
 		public void Clear()
@@ -83,9 +83,24 @@ namespace KSoft.Collections
 					if (mBits.Length != penum.MemberCount)
 						mBits.Length = penum.MemberCount;
 				}
+
+				InitializeDefaultValues(penum);
 			}
 
 			return penum;
+		}
+
+		private void InitializeDefaultValues(IProtoEnum penum)
+		{
+			if (Params.kGetMemberDefaultValue == null)
+				return;
+
+			for (int x = 0; x < penum.MemberCount; x++)
+			{
+				bool bitDefault = Params.kGetMemberDefaultValue(x);
+				if (bitDefault)
+					mBits[x] = true;
+			}
 		}
 
 		public bool this[int bit_index]

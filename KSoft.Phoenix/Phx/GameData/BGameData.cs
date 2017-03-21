@@ -1215,8 +1215,8 @@ namespace KSoft.Phoenix.Phx
 			#endregion
 			using (s.EnterCursorBookmark("Dot"))
 			{
-				s.StreamElementOpt("small", ref mSmallDotSize, Predicates.IsNotZero);
-				s.StreamElementOpt("medium", ref mMediumDotSize, Predicates.IsNotZero);
+				s.StreamAttributeOpt("small", ref mSmallDotSize, Predicates.IsNotZero);
+				s.StreamAttributeOpt("medium", ref mMediumDotSize, Predicates.IsNotZero);
 			}
 
 			XML.XmlUtil.Serialize(s, CodeProtoObjects, kCodeProtoObjectsXmlParams);

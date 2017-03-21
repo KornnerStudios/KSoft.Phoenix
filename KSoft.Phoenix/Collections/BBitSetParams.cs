@@ -13,6 +13,7 @@ namespace KSoft.Collections
 		public readonly Func<IProtoEnum> kGetProtoEnum;
 		/// <summary>Get the source IProtoEnum from an engine's main database</summary>
 		public readonly Func<Phx.BDatabaseBase, IProtoEnum> kGetProtoEnumFromDB;
+		public Func<int, bool> kGetMemberDefaultValue;
 
 		public BBitSetParams(Func<Phx.BDatabaseBase, IProtoEnum> protoEnumGetter)
 		{

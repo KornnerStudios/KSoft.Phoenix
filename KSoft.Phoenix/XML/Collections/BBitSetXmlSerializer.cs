@@ -50,6 +50,14 @@ namespace KSoft.Phoenix.XML
 		}
 
 		#region ITagElementStringNameStreamable Members
+		Collections.IProtoEnum GetProtoEnum(Phx.BDatabaseBase db)
+		{
+			if (Bits.Params.kGetProtoEnum != null)
+				return Bits.Params.kGetProtoEnum();
+
+			return Bits.Params.kGetProtoEnumFromDB(db);
+		}
+
 		void ReadNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
@@ -59,6 +67,7 @@ namespace KSoft.Phoenix.XML
 
 			if (Params.ElementItselfMeansTrue)
 			{
+				var getDefault = Bits.Params.kGetMemberDefaultValue;
 				foreach (var e in s.Elements)
 				{
 					var element_name = s.GetElementName(e);
@@ -69,10 +78,14 @@ namespace KSoft.Phoenix.XML
 					bool flag = true;
 					s.StreamElementOpt(element_name, ref flag);
 
-					if (!flag)
+					if (getDefault != null && flag != getDefault(id))
+					{
+						// do nothing, allow the Set call below
+					}
+					else if (!flag)
 						continue;
 
-					Bits.Set(id);
+					Bits.Set(id, flag);
 				}
 			}
 			else
@@ -100,7 +113,14 @@ namespace KSoft.Phoenix.XML
 				return;
 
 			var xs = s.GetSerializerInterface();
-			Collections.IProtoEnum penum = Bits.InitializeFromEnum(xs.Database);
+			Collections.IProtoEnum penum = GetProtoEnum(xs.Database);
+
+			if (Bits.Params.kGetMemberDefaultValue != null)
+			{
+				Contract.Assert(Params.ElementItselfMeansTrue);
+				WriteNodesNotEqualToDefaultValues(s, penum);
+				return;
+			}
 
 			foreach (var bitIndex in Bits.RawBits.SetBitIndices)
 			{
@@ -119,6 +139,25 @@ namespace KSoft.Phoenix.XML
 					{
 						Params.StreamDataName(s, ref name);
 					}
+				}
+			}
+		}
+		void WriteNodesNotEqualToDefaultValues<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, Collections.IProtoEnum penum)
+			where TDoc : class
+			where TCursor : class
+		{
+			var getDefault = Bits.Params.kGetMemberDefaultValue;
+			for (int x = 0; x < penum.MemberCount; x++)
+			{
+				bool bitDefault = getDefault(x);
+				if (bitDefault == Bits[x])
+					continue;
+
+				string name = penum.GetMemberName(x);
+				using (s.EnterCursorBookmark(name))
+				{
+					bool writtenValue = !bitDefault;
+					s.WriteCursor(writtenValue);
 				}
 			}
 		}
