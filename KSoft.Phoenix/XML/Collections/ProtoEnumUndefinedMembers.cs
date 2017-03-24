@@ -11,6 +11,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
+			if (p.DoNotWriteUndefinedData)
+				return;
+
 			if (undefined.MemberUndefinedCount == 0)
 				return;
 

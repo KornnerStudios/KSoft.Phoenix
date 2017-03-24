@@ -8,7 +8,8 @@ namespace KSoft.Phoenix.Phx
 		const bool kUseLowercaseCostTypeHack = true;
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Resource");
+		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Resource",
+			additionalFlags: XML.BCollectionXmlParamsFlags.DoNotWriteUndefinedData);
 
 		public static readonly Collections.BTypeValuesParams<float> kBListTypeValuesParams = new
 			Collections.BTypeValuesParams<float>(db => db.GameData.Resources) { kTypeGetInvalid = PhxUtil.kGetInvalidSingle };

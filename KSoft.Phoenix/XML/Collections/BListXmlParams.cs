@@ -21,6 +21,8 @@ namespace KSoft.Phoenix.XML
 		public bool RequiresDataNamePreloading { get { return HasFlag(BCollectionXmlParamsFlags.RequiresDataNamePreloading); } }
 		[Contracts.Pure]
 		public bool SupportsUpdating { get { return HasFlag(BCollectionXmlParamsFlags.SupportsUpdating); } }
+		[Contracts.Pure]
+		public bool DoNotWriteUndefinedData { get { return HasFlag(BCollectionXmlParamsFlags.DoNotWriteUndefinedData); } }
 		#endregion
 
 		public BListXmlParams() { }

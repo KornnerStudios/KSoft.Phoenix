@@ -23,6 +23,8 @@ namespace KSoft.Phoenix.XML
 		ForceNoRootElementStreaming = 1<<5,
 		SupportsUpdating = 1<<6,
 
+		DoNotWriteUndefinedData = 1<<7,
+
 		InternEverything = InternDataNames,
 	};
 }
