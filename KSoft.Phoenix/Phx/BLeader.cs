@@ -201,7 +201,7 @@ namespace KSoft.Phoenix.Phx
 			xs.StreamDBID(s, "Power", ref mPowerID, DatabaseObjectKind.Power);
 			s.StreamStringOpt("FlashImg", ref mFlashImg, toLower: false, type: XML.XmlUtil.kSourceElement);
 			// TODO: HW360's FlashPortrait elements have an ending " character (sans a starting quote). Be careful!
-			s.StreamStringOpt("FlashPortrait", ref mFlashImg, toLower: false, type: XML.XmlUtil.kSourceElement);
+			s.StreamStringOpt("FlashPortrait", ref mFlashPortrait, toLower: false, type: XML.XmlUtil.kSourceElement);
 			XML.XmlUtil.Serialize(s, SupportPowers, BLeaderSupportPower.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, StartingSquads, BLeaderStartingSquad.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, StartingUnits, BLeaderStartingUnit.kBListXmlParams);
@@ -209,7 +209,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("RepairRate", ref mRepairRate, Predicates.IsNotZero);
 			s.StreamElementOpt("RepairDelay", ref mRepairDelay, Predicates.IsNotZero);
 			XML.XmlUtil.Serialize(s, RepairCost, kRepairCostTypeValuesXmlParams);
-			s.StreamElementOpt("RepairTime", ref mRepairDelay, Predicates.IsNotZero);
+			s.StreamElementOpt("RepairTime", ref mRepairTime, Predicates.IsNotZero);
 			XML.XmlUtil.Serialize(s, ReverseHotDropCost, kReverseHotDropCostTypeValuesXmlParams);
 			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, Resources, BResource.kBListTypeValuesXmlParams);
