@@ -260,7 +260,8 @@ namespace KSoft.Phoenix.Phx
 			{
 				base.Serialize(s);
 
-				XML.XmlUtil.SerializeCostHack(s, Cost);
+				using (var bm = s.EnterCursorBookmarkOpt("Cost", Cost, x => x.HasNonZeroItems)) if (bm.IsNotNull)
+					XML.XmlUtil.SerializeCostHack(s, Cost);
 				XML.XmlUtil.Serialize(s, DynamicCosts, BPowerDynamicCost.kBListXmlParams);
 				XML.XmlUtil.Serialize(s, TargetEffectiveness, BPowerTargetEffectiveness.kBListXmlParams);
 				XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle_LowerCase);

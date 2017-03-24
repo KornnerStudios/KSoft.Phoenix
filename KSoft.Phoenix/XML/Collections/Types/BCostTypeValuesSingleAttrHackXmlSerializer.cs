@@ -25,7 +25,7 @@ namespace KSoft.Phoenix.XML
 		BListExplicitIndexXmlSerializerBase<float>
 	{
 		// Just an alias for less typing and code
-		static readonly XML.BTypeValuesXmlParams<float> kParams = Phx.BResource.kBListTypeValuesXmlParams_Cost;
+		static XML.BTypeValuesXmlParams<float> kParams { get { return Phx.BResource.kBListTypeValuesXmlParams_Cost; } }
 
 		Collections.BTypeValuesSingle mList;
 

@@ -12,5 +12,13 @@ namespace KSoft.Collections
 		{
 			Contract.Requires<ArgumentNullException>(@params != null);
 		}
+
+		public bool HasNonZeroItems { get {
+			for (int x = 0; x < Count; x++)
+				if (this[x] != 0.0f)
+					return true;
+
+			return false;
+		} }
 	};
 }
