@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using KSoft.Collections;
 
 namespace PhxGui
@@ -54,7 +56,7 @@ namespace PhxGui
 			public BitVector32 EraExpanderOptions;
 			public string OutputPath;
 
-			public System.Windows.Threading.Dispatcher Dispatcher;
+			public Dispatcher Dispatcher;
 			public string[] EraFiles;
 			private int mEraFilesIndex;
 
@@ -63,14 +65,14 @@ namespace PhxGui
 				if (mEraFilesIndex >= EraFiles.Length)
 					return;
 
-				var args = new ExpandEraFileParameters();
+				var args = new ExpandEraFileParameters(ViewModel.Flags.Test(MiscFlags.UseVerboseOutput));
 				args.EraOptions = EraOptions;
 				args.EraExpanderOptions = EraExpanderOptions;
 				args.OutputPath = OutputPath;
 
 				string eraFile = EraFiles[mEraFilesIndex++];
 
-				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+				Dispatcher.BeginInvoke(DispatcherPriority.Background,
 					new Action(() =>
 					{
 						ViewModel.StatusText = string.Format("Expanding {0}",
@@ -78,7 +80,7 @@ namespace PhxGui
 					}));
 
 				args.EraPath = eraFile;
-				args.ListingName = System.IO.Path.GetFileNameWithoutExtension(eraFile);
+				args.ListingName = Path.GetFileNameWithoutExtension(eraFile);
 
 				var task = Task.Run(() =>
 				{
@@ -87,6 +89,9 @@ namespace PhxGui
 
 				task.ContinueWith(t =>
 				{
+					string message_text = "";
+					string verbose_output = args.GetVerboseOutput();
+
 					if (t.IsFaulted || t.Result != ExpandEraFileResult.Success)
 					{
 						string error_type;
@@ -115,14 +120,25 @@ namespace PhxGui
 									break;
 							}
 						}
-						string messag_text = string.Format("Expand {0} {1}{2}{3}{4}",
+						message_text = string.Format("Expand {0} {1}{2}{3}{4}",
 							error_type,
-							eraFile, Environment.NewLine, error_hint, Environment.NewLine);
+							eraFile, Environment.NewLine,
+							error_hint, Environment.NewLine);
+					}
 
-						Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+					if (!string.IsNullOrEmpty(verbose_output))
+					{
+						message_text = string.Format("VerboseOutput:{0}{1}{2}" + "{3}{4}",
+							Environment.NewLine,
+							args.VerboseOutput.GetStringBuilder(), Environment.NewLine,
+							message_text, Environment.NewLine);
+					}
+					if (!string.IsNullOrEmpty(message_text))
+					{
+						Dispatcher.BeginInvoke(DispatcherPriority.Background,
 							new Action(() =>
 							{
-								ViewModel.MessagesText += messag_text;
+								ViewModel.MessagesText += message_text;
 							}));
 					}
 
@@ -130,7 +146,7 @@ namespace PhxGui
 						Expand();
 					else
 					{
-						Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
+						Dispatcher.BeginInvoke(DispatcherPriority.Background,
 							new Action(() =>
 							{
 								ViewModel.FinishProcessing();
@@ -144,10 +160,26 @@ namespace PhxGui
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraExpanderOptions;
+			public StringWriter VerboseOutput;
 
 			public string EraPath;
 			public string OutputPath;
 			public string ListingName;
+
+			public ExpandEraFileParameters(bool useVerboseOutput)
+			{
+				if (useVerboseOutput)
+					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
+			}
+
+			public string GetVerboseOutput()
+			{
+				string output = "";
+				if (VerboseOutput != null)
+					output = VerboseOutput.GetStringBuilder().ToString();
+
+				return output;
+			}
 		};
 		private enum ExpandEraFileResult
 		{
@@ -163,6 +195,7 @@ namespace PhxGui
 			{
 				expander.Options = args.EraOptions;
 				expander.ExpanderOptions = args.EraExpanderOptions;
+				expander.VerboseOutput = args.VerboseOutput;
 
 				do
 				{

@@ -34,6 +34,10 @@ namespace PhxGui
 					Description="During ERA generation, if an XMB is referenced but an XML version exists, the XML file will be picked instead")]
 		AlwaysUseXmlOverXmb,
 
+		[Display(	Name="Verbose Output",
+					Description="When performing operations, include any verbose details")]
+		UseVerboseOutput,
+
 		kNumberOf,
 	};
 

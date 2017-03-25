@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using KSoft.Collections;
 
@@ -18,7 +19,7 @@ namespace PhxGui
 			ClearMessages();
 			IsProcessing = true;
 
-			var args = new BuildEraFileParameters();
+			var args = new BuildEraFileParameters(Flags.Test(MiscFlags.UseVerboseOutput));
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
 				args.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
 			args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.Encrypt);
@@ -42,6 +43,9 @@ namespace PhxGui
 
 			task.ContinueWith(t =>
 			{
+				string message_text = "";
+				string verbose_output = args.GetVerboseOutput();
+
 				if (t.IsFaulted || t.Result != BuildEraFileResult.Success)
 				{
 					string error_type;
@@ -70,9 +74,21 @@ namespace PhxGui
 								break;
 						}
 					}
-					MessagesText += string.Format("Build {0} {1}{2}{3}",
+					message_text += string.Format("Build {0} {1}{2}{3}",
 						error_type,
 						args.ListingPath, Environment.NewLine, error_hint);
+				}
+
+				if (!string.IsNullOrEmpty(verbose_output))
+				{
+					message_text = string.Format("VerboseOutput:{0}{1}{2}" + "{3}{4}",
+						Environment.NewLine,
+						args.VerboseOutput.GetStringBuilder(), Environment.NewLine,
+						message_text, Environment.NewLine);
+				}
+				if (!string.IsNullOrEmpty(message_text))
+				{
+					MessagesText += message_text;
 				}
 
 				FinishProcessing();
@@ -83,11 +99,27 @@ namespace PhxGui
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraBuilderOptions;
+			public StringWriter VerboseOutput;
 
 			public string AssetsPath;
 			public string OutputPath;
 			public string ListingPath;
 			public string EraName;
+
+			public BuildEraFileParameters(bool useVerboseOutput)
+			{
+				if (useVerboseOutput)
+					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
+			}
+
+			public string GetVerboseOutput()
+			{
+				string output = "";
+				if (VerboseOutput != null)
+					output = VerboseOutput.GetStringBuilder().ToString();
+
+				return output;
+			}
 		};
 		private enum BuildEraFileResult
 		{
@@ -103,6 +135,7 @@ namespace PhxGui
 			{
 				builder.Options = args.EraOptions;
 				builder.BuilderOptions = args.EraBuilderOptions;
+				builder.VerboseOutput = args.VerboseOutput;
 
 				do
 				{
