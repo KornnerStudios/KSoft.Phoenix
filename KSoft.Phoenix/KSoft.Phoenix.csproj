@@ -71,6 +71,7 @@
     <Compile Include="Phx\Actions\ActionsEnums.cs" />
     <Compile Include="Phx\BProtoImpactEffect.cs" />
     <Compile Include="Phx\BSoundTable.cs" />
+    <Compile Include="Phx\Collectibles\CollectiblesEnum.cs" />
     <Compile Include="Phx\Database\DatabaseObjectUserInterfaceTextData.cs" />
     <Compile Include="Phx\Database\LocString.cs" />
     <Compile Include="Phx\HPBar\BProtoBobbleHead.cs" />
@@ -251,9 +252,6 @@
     <Compile Include="Phx\BWeaponType.cs" />
     <Compile Include="Phx\Collectibles\BCollectibleSkull.cs" />
     <Compile Include="Phx\Collectibles\BCollectibleSkullEffect.cs" />
-    <Compile Include="Phx\Collectibles\BCollectibleSkullEffectType.cs" />
-    <Compile Include="Phx\Collectibles\BCollectibleSkullFlags.cs" />
-    <Compile Include="Phx\Collectibles\BCollectibleSkullTarget.cs" />
     <Compile Include="Phx\Collectibles\BCollectiblesManager.cs" />
     <Compile Include="Phx\Collectibles\BCollectiblesSkullManager.cs" />
     <Compile Include="Phx\Database\BDatabaseBase.cs" />
@@ -279,7 +277,6 @@
     <Compile Include="Phx\Objects\Enums\BObjectDataType.cs" />
     <Compile Include="Phx\Objects\Enums\BProtoObjectCommandType.cs" />
     <Compile Include="Phx\Objects\Enums\BProtoObjectFlags.cs" />
-    <Compile Include="Phx\Objects\Enums\BProtoObjectSelectType.cs" />
     <Compile Include="Phx\PlacementRules.cs" />
     <Compile Include="Phx\Powers\BProtoPower.cs" />
     <Compile Include="Phx\Tech\BProtoTech.cs" />
