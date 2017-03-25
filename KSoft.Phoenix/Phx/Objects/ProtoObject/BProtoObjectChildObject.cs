@@ -3,22 +3,9 @@ using BVector = SlimMath.Vector4;
 
 namespace KSoft.Phoenix.Phx
 {
-	public sealed class BProtoObjectChildObject
+	public sealed partial class BProtoObjectChildObject
 		: IO.ITagElementStringNameStreamable
 	{
-		public enum ChildObjectType
-		{
-			Object,
-			ParkingLot,
-			Socket,
-			Rally,
-			OneTimeSpawnSquad,
-			Unit,
-			Foundation,
-
-			kNumberOf
-		};
-
 		#region Xml constants
 		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
 		{

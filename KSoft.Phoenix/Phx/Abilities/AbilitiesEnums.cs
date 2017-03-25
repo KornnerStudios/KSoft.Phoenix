@@ -1,6 +1,27 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	public enum BAbilityTargetType
+	{
+		None,
+		Location,
+		Unit,
+		UnitOrLocation,
+	};
+
+	public enum BMovementModifierType
+	{
+		Ability,
+		Mode,
+	};
+
+	public enum BRecoverType
+	{
+		Move,
+		Attack,
+		Ability,
+	};
+
 	public enum BSquadMode
 	{
 		Invalid = TypeExtensions.kNone,
@@ -18,7 +39,5 @@ namespace KSoft.Phoenix.Phx
 		ScarabScan,
 		ScarabTarget,
 		ScarabKill,
-
-		kNumberOf
 	};
 }

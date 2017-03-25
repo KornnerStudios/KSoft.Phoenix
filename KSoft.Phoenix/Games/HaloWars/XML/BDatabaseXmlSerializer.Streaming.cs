@@ -6,6 +6,7 @@ namespace KSoft.Phoenix.HaloWars
 	{
 		static bool gRemoveUndefined = false;
 
+		#region Utils
 		static void RemoveAllButTheLastElement(IO.XmlElementStream s, XmlElement node, string elementName)
 		{
 			if (node == null)
@@ -60,6 +61,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			return removed;
 		}
+		#endregion
 
 		protected override void FixWeaponTypes()
 		{
@@ -168,6 +170,8 @@ namespace KSoft.Phoenix.HaloWars
 		protected override void FixGameData()
 		{
 			//FixGameDataResources(Database.GameData);
+
+			// #TODO fix ALPreyCheckFrequency. data provides float, engine expects DWORD
 		}
 		#endregion
 

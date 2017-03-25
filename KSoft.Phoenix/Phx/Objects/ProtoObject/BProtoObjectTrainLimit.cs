@@ -1,17 +1,9 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	public sealed class BProtoObjectTrainLimit
+	public sealed partial class BProtoObjectTrainLimit
 		: IO.ITagElementStringNameStreamable
 	{
-		public enum LimitType
-		{
-			Invalid = TypeExtensions.kNone,
-
-			Unit,
-			Squad,
-		};
-
 		#region Xml constants
 		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
 		{

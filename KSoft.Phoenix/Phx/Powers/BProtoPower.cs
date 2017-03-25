@@ -187,8 +187,8 @@ namespace KSoft.Phoenix.Phx
 			set { mShowTargetHighlightObjectType = value; }
 		}
 
-		BDiplomacy mShowTargetHighlightRelation = BDiplomacy.Any;
-		public BDiplomacy ShowTargetHighlightRelation
+		BRelationType mShowTargetHighlightRelation = BRelationType.Any;
+		public BRelationType ShowTargetHighlightRelation
 		{
 			get { return mShowTargetHighlightRelation; }
 			set { mShowTargetHighlightRelation = value; }
@@ -196,7 +196,7 @@ namespace KSoft.Phoenix.Phx
 
 		bool HasShowTargetHighlightData { get {
 			return mShowTargetHighlightObjectType.IsNotNone()
-				|| mShowTargetHighlightRelation != BDiplomacy.Any;
+				|| mShowTargetHighlightRelation != BRelationType.Any;
 		} }
 		#endregion
 		public List<int> ChildObjectIDs { get; private set; }
@@ -274,7 +274,7 @@ namespace KSoft.Phoenix.Phx
 				s.StreamElementOpt("Icon", ref mIconTextureName, Predicates.IsNotNullOrEmpty);
 				s.StreamElements("IconLocation", IconLocations, xs, StreamIconLocation);
 				s.StreamElements("TechPrereq", TechPrereqs, xs, XML.BDatabaseXmlSerializerBase.StreamTechID);
-				s.StreamElementEnumOpt("Action", ref mActionType, e => e != BActionType.Invalid);
+				s.StreamElementEnumOpt("Action", ref mActionType, BProtoAction.kNotInvalidActionType);
 				s.StreamElementEnumOpt("Minigame", ref mMinigameType, e => e != BMinigameType.None);
 				s.StreamElementOpt("CameraZoomMin", ref mCameraZoomMin, Predicates.IsNotZero);
 				s.StreamElementOpt("CameraZoomMax", ref mCameraZoomMax, Predicates.IsNotZero);
@@ -287,7 +287,7 @@ namespace KSoft.Phoenix.Phx
 				using (var bm = s.EnterCursorBookmarkOpt("ShowTargetHighlight", this, x => x.HasShowTargetHighlightData)) if (bm.IsNotNull)
 				{
 					xs.StreamDBID(s, "ObjectType", ref mShowTargetHighlightObjectType, DatabaseObjectKind.ObjectType, xmlSource: XML.XmlUtil.kSourceAttr);
-					s.StreamAttributeEnumOpt("Relation", ref mShowTargetHighlightRelation, e => e != BDiplomacy.Any);
+					s.StreamAttributeEnumOpt("Relation", ref mShowTargetHighlightRelation, e => e != BRelationType.Any);
 				}
 				using (var bm = s.EnterCursorBookmarkOpt("ChildObjects", ChildObjectIDs, Predicates.HasItems)) if (bm.IsNotNull)
 				{

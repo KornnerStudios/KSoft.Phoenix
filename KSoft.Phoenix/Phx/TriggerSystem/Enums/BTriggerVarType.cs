@@ -90,7 +90,7 @@ namespace KSoft.Phoenix.Phx
 		PopBucket,
 		/// <see cref="BListPosition"/>
 		ListPosition,
-		/// <see cref="BDiplomacy"/>
+		/// <see cref="BRelationType"/>
 		Diplomacy,
 		/// <see cref="BExposedAction"/>
 		ExposedAction,

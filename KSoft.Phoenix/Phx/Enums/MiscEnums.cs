@@ -1,6 +1,52 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	public enum BDifficultyType
+	{
+		Easy,
+		Normal,
+		Hard,
+		Legendary,
+
+		kNumberOfStandardTypes,
+
+		Custom = kNumberOfStandardTypes,
+		Automatic,
+
+		kNumberOf
+	};
+
+	public enum BDifficultyTypeModifier
+	{
+		Easy,
+		Normal,
+		Hard,
+		Legendary,
+		Default,
+		SPCAIDefault,
+
+		kNumberOf
+	};
+
+	public enum BOperatorType
+	{
+		NotEqualTo,
+		LessThan,
+		LessThanOrEqualTo,
+		EqualTo,
+		GreaterThanOrEqualTo,
+		GreaterThan,
+	};
+
+	public enum BMathOperatorType
+	{
+		Add,
+		Subtract,
+		Multiply,
+		Divide,
+		Modulus,
+	};
+
 	public enum BActionStatus
 	{
 		NotDone,
@@ -186,5 +232,16 @@ namespace KSoft.Phoenix.Phx
 		Normal = 1,
 		Combat,
 		High,
+	};
+
+	public enum BRelationType
+	{
+		Any,
+		Self,
+		Ally,
+		Enemy,
+		Neutral,
+
+		Invalid,
 	};
 }

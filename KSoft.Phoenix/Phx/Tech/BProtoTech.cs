@@ -6,13 +6,6 @@ namespace KSoft.Phoenix.Phx
 	 * - type: This attribute is no longer a thing.
 	*/
 
-	public enum BProtoTechAlphaMode
-	{
-		None = -1,
-		Excluded = 0,
-		AlphaOnly = 1,
-	};
-
 	public sealed class BProtoTech
 		: DatabaseIdObject
 	{

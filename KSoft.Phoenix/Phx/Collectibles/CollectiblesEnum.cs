@@ -23,4 +23,26 @@ namespace KSoft.Phoenix.Phx
 		UnitModWarthog,
 		UnitModWraith,
 	};
+
+	public enum BCollectibleSkullFlags
+	{
+		// 0x3C
+		// 0
+		OnFromBeginning, // 1
+		// 2
+		Hidden, // 3
+		// 4
+		SelfActive, // 5
+		// 6
+		Active, // 7
+	};
+
+	public enum BCollectibleSkullTarget
+	{
+		None,
+
+		PlayerUnits,
+		NonPlayerUnits,
+		OwnerOnly,
+	};
 }
