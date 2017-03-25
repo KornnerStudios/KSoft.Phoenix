@@ -331,26 +331,26 @@ namespace KSoft.Phoenix.Resource
 
 			var eraExpander = (EraFileExpander)blockStream.Owner;
 
-			if (eraExpander.VerboseOutput != null)
+			if (eraExpander.ProgressOutput != null)
 			{
-				eraExpander.VerboseOutput.WriteLine("\tUnpacking files...");
+				eraExpander.ProgressOutput.WriteLine("\tUnpacking files...");
 			}
 
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
 
-				if (eraExpander.VerboseOutput != null)
+				if (eraExpander.ProgressOutput != null)
 				{
-					eraExpander.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+					eraExpander.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
 				TryUnpack(blockStream, workPath, eraExpander, file);
 			}
 
-			if (eraExpander.VerboseOutput != null)
+			if (eraExpander.ProgressOutput != null)
 			{
-				eraExpander.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
-				eraExpander.VerboseOutput.WriteLine("\t\tDone");
+				eraExpander.ProgressOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+				eraExpander.ProgressOutput.WriteLine("\t\tDone");
 			}
 
 			mDirsThatExistForUnpacking = null;
@@ -640,17 +640,17 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count && success; x++)
 			{
 				var file = mFiles[x];
-				if (builder != null && builder.VerboseOutput != null)
+				if (builder != null && builder.ProgressOutput != null)
 				{
-					builder.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+					builder.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
 
 				success &= TryPack(blockStream, workPath, file);
 			}
 
-			if (builder != null && builder.VerboseOutput != null)
+			if (builder != null && builder.ProgressOutput != null)
 			{
-				builder.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+				builder.ProgressOutput.Write("\r\t\t{0} \r", new string(' ', 16));
 			}
 
 			if (success)
@@ -751,6 +751,7 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			var expander = s.Owner as EraFileExpander;
+			var progressOutput = expander != null ? expander.ProgressOutput : null;
 			var verboseOutput = expander != null ? expander.VerboseOutput : null;
 
 			ReadFileNamesChunk(s);
@@ -762,15 +763,15 @@ namespace KSoft.Phoenix.Resource
 			{
 				if (expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 				{
-					if (verboseOutput != null)
-						verboseOutput.WriteLine("Removing any XML files if their XMB counterpart exists...");
+					if (progressOutput != null)
+						progressOutput.WriteLine("Removing any XML files if their XMB counterpart exists...");
 
 					RemoveXmlFilesWhereXmbExists(verboseOutput);
 				}
 				else
 				{
-					if (verboseOutput != null)
-						verboseOutput.WriteLine("Removing any XMB files if their XML counterpart exists...");
+					if (progressOutput != null)
+						progressOutput.WriteLine("Removing any XMB files if their XML counterpart exists...");
 
 					RemoveXmbFilesWhereXmlExists(verboseOutput);
 				}
@@ -828,28 +829,28 @@ namespace KSoft.Phoenix.Resource
 				return;
 			}
 
-			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			if (eraUtil != null && eraUtil.ProgressOutput != null)
 			{
-				eraUtil.VerboseOutput.WriteLine("\tVerifying file hashes...");
+				eraUtil.ProgressOutput.WriteLine("\tVerifying file hashes...");
 			}
 
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
 
-				if (eraUtil != null && eraUtil.VerboseOutput != null)
+				if (eraUtil != null && eraUtil.ProgressOutput != null)
 				{
-					eraUtil.VerboseOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+					eraUtil.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
 				}
 
 				ValidateAdler32(file, s);
 				ValidateHashes(file, s);
 			}
 
-			if (eraUtil != null && eraUtil.VerboseOutput != null)
+			if (eraUtil != null && eraUtil.ProgressOutput != null)
 			{
-				eraUtil.VerboseOutput.Write("\r\t\t{0} \r", new string(' ', 16));
-				eraUtil.VerboseOutput.WriteLine("\t\tDone");
+				eraUtil.ProgressOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+				eraUtil.ProgressOutput.WriteLine("\t\tDone");
 			}
 		}
 

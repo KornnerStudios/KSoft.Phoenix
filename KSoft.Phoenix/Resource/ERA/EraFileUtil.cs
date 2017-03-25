@@ -29,6 +29,7 @@ namespace KSoft.Phoenix.Resource
 
 		/*protected*/ internal EraFile mEraFile;
 		protected string mSourceFile; // filename of the source file which the util stems from (.era, .xml)
+		public System.IO.TextWriter ProgressOutput { get; set; }
 		public System.IO.TextWriter VerboseOutput { get; set; }
 		public System.IO.TextWriter DebugOutput { get; set; }
 
@@ -38,13 +39,17 @@ namespace KSoft.Phoenix.Resource
 		protected EraFileUtil()
 		{
 			if (System.Diagnostics.Debugger.IsAttached)
+				ProgressOutput = Console.Out;
+			if (System.Diagnostics.Debugger.IsAttached)
 				VerboseOutput = Console.Out;
 		}
 
 		#region IDisposable Members
 		public virtual void Dispose()
 		{
+			ProgressOutput = null;
 			VerboseOutput = null;
+			DebugOutput = null;
 			Util.DisposeAndNull(ref mEraFile);
 		}
 		#endregion

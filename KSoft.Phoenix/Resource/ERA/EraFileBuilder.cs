@@ -37,8 +37,8 @@ namespace KSoft.Phoenix.Resource
 		{
 			bool result = true;
 
-			if (VerboseOutput != null)
-				VerboseOutput.WriteLine("Trying to read source listing {0}...", mSourceFile);
+			if (ProgressOutput != null)
+				ProgressOutput.WriteLine("Trying to read source listing {0}...", mSourceFile);
 
 			if (!File.Exists(mSourceFile))
 				result = false;
@@ -55,8 +55,8 @@ namespace KSoft.Phoenix.Resource
 
 			if (result == false)
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tFailed!");
+				if (ProgressOutput != null)
+					ProgressOutput.WriteLine("\tFailed!");
 			}
 
 			return result;
@@ -109,8 +109,8 @@ namespace KSoft.Phoenix.Resource
 
 			if (BuilderOptions.Test(EraFileBuilderOptions.AlwaysUseXmlOverXmb))
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("Finding XML files to use over XMB references...");
+				if (ProgressOutput != null)
+					ProgressOutput.WriteLine("Finding XML files to use over XMB references...");
 
 				mEraFile.TryToReferenceXmlOverXmbFies(workPath, VerboseOutput);
 			}
@@ -118,11 +118,11 @@ namespace KSoft.Phoenix.Resource
 			const FA k_mode = FA.Write;
 			const int k_initial_buffer_size = 24 * IntegerMath.kMega; // 24MB
 
-			if (VerboseOutput != null)
-				VerboseOutput.WriteLine("Building {0} to {1}...", eraName, outputPath);
+			if (ProgressOutput != null)
+				ProgressOutput.WriteLine("Building {0} to {1}...", eraName, outputPath);
 
-			if (VerboseOutput != null)
-				VerboseOutput.WriteLine("\tAllocating memory...");
+			if (ProgressOutput != null)
+				ProgressOutput.WriteLine("\tAllocating memory...");
 			bool result = true;
 			using (var ms = new MemoryStream(k_initial_buffer_size))
 			using (var era_memory = new IO.EndianStream(ms, Shell.EndianFormat.Big, this, permissions: k_mode))
@@ -138,14 +138,14 @@ namespace KSoft.Phoenix.Resource
 				ms.Seek(preamble_size, SeekOrigin.Begin);
 
 				// now we can start embedding the files
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tPacking files...");
+				if (ProgressOutput != null)
+					ProgressOutput.WriteLine("\tPacking files...");
 				result &= mEraFile.Build(era_memory, workPath);
 
 				if (result)
 				{
-					if (VerboseOutput != null)
-						VerboseOutput.WriteLine("\tFinializing...");
+					if (ProgressOutput != null)
+						ProgressOutput.WriteLine("\tFinializing...");
 
 					// seek back to the start of the ERA and write out the finalized header and file chunk descriptors
 					ms.Seek(0, SeekOrigin.Begin);
@@ -159,8 +159,8 @@ namespace KSoft.Phoenix.Resource
 					// finally, bake the ERA memory stream into a file
 					if (BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
 					{
-						if (VerboseOutput != null)
-							VerboseOutput.WriteLine("\tEncrypting...");
+						if (ProgressOutput != null)
+							ProgressOutput.WriteLine("\tEncrypting...");
 
 						var era_bytes = ms.GetBuffer();
 						EncryptFileBytes(era_bytes, (int)ms.Length);

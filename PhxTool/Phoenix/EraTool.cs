@@ -362,15 +362,16 @@ namespace KSoft.Tool.Phoenix
 			{
 				builder.Options = options;
 				builder.BuilderOptions = builderOptions;
+				builder.ProgressOutput = Console.Out;
 				builder.VerboseOutput = Console.Out;
 				builder.DebugOutput = debug_output;
 
 				if (builder.Read())
 				{
 					if (builder.Build(path, listingName, outputPath))
-						builder.VerboseOutput.WriteLine("Success!");
+						builder.ProgressOutput.WriteLine("Success!");
 					else
-						builder.VerboseOutput.WriteLine("Failed!");
+						builder.ProgressOutput.WriteLine("Failed!");
 				}
 			}
 

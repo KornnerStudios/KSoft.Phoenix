@@ -72,8 +72,8 @@ namespace KSoft.Phoenix.Resource
 
 		bool ReadEraFromFile()
 		{
-			if (VerboseOutput != null)
-				VerboseOutput.WriteLine("Opening and reading ERA file {0}...",
+			if (ProgressOutput != null)
+				ProgressOutput.WriteLine("Opening and reading ERA file {0}...",
 					mSourceFile);
 
 			if (ExpanderOptions.Test(EraFileExpanderOptions.DontLoadEntireEraIntoMemory))
@@ -83,8 +83,8 @@ namespace KSoft.Phoenix.Resource
 				byte[] era_bytes = System.IO.File.ReadAllBytes(mSourceFile);
 				if (ExpanderOptions.Test(EraFileExpanderOptions.Decrypt))
 				{
-					if (VerboseOutput != null)
-						VerboseOutput.WriteLine("Decrypting...");
+					if (ProgressOutput != null)
+						ProgressOutput.WriteLine("Decrypting...");
 
 					DecryptFileBytes(era_bytes);
 				}
@@ -149,8 +149,8 @@ namespace KSoft.Phoenix.Resource
 
 			bool result = true;
 
-			if (VerboseOutput != null)
-				VerboseOutput.WriteLine("Outputting listing...");
+			if (ProgressOutput != null)
+				ProgressOutput.WriteLine("Outputting listing...");
 
 			try { SaveListing(workPath, listingName); }
 			catch (Exception ex)
@@ -162,8 +162,8 @@ namespace KSoft.Phoenix.Resource
 
 			if (result && !ExpanderOptions.Test(EraFileExpanderOptions.OnlyDumpListing))
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("Expanding archive to {0}...", workPath);
+				if (ProgressOutput != null)
+					ProgressOutput.WriteLine("Expanding archive to {0}...", workPath);
 
 				try { mEraFile.ExpandTo(mEraStream, workPath); }
 				catch (Exception ex)
@@ -173,8 +173,8 @@ namespace KSoft.Phoenix.Resource
 					result = false;
 				}
 
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("Done");
+				if (ProgressOutput != null)
+					ProgressOutput.WriteLine("Done");
 			}
 
 			mEraStream.Close();

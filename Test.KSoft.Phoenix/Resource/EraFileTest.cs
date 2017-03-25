@@ -69,6 +69,7 @@ namespace KSoft.Phoenix.Resource.Test
 			{
 				expander.Options = kEraUtilTestOptions;
 				expander.ExpanderOptions = kEraExpanderTestOptions;
+				expander.ProgressOutput = Console.Out;
 				expander.VerboseOutput = Console.Out;
 
 				result = expander.Read();
@@ -90,6 +91,7 @@ namespace KSoft.Phoenix.Resource.Test
 			{
 				builder.Options = kEraUtilTestOptions;
 				builder.BuilderOptions = kEraBuilderTestOptions;
+				builder.ProgressOutput = Console.Out;
 				builder.VerboseOutput = Console.Out;
 
 				result = builder.Read();
@@ -125,6 +127,7 @@ namespace KSoft.Phoenix.Resource.Test
 				expander.ExpanderOptions = kEraExpanderTestOptions
 					//.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
 					.Set(EraFileExpanderOptions.Decrypt);
+				expander.ProgressOutput = Console.Out;
 				expander.VerboseOutput = Console.Out;
 
 				result = expander.Read();
@@ -140,6 +143,7 @@ namespace KSoft.Phoenix.Resource.Test
 				builder.Options = kEraUtilTestOptions;
 				builder.BuilderOptions = kEraBuilderTestOptions
 					.Set(EraFileBuilderOptions.Encrypt);
+				builder.ProgressOutput = Console.Out;
 				builder.VerboseOutput = Console.Out;
 
 				result = builder.Read();
@@ -156,6 +160,7 @@ namespace KSoft.Phoenix.Resource.Test
 				expander.ExpanderOptions = kEraExpanderTestOptions
 					.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
 					.Set(EraFileExpanderOptions.Decrypt);
+				expander.ProgressOutput = Console.Out;
 				expander.VerboseOutput = Console.Out;
 
 				result = expander.Read();
