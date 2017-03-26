@@ -61,6 +61,42 @@ namespace KSoft.Phoenix.HaloWars
 
 			return removed;
 		}
+
+		static bool RemoveFloatText(IO.XmlElementStream s, XmlElement element, string elementName)
+		{
+			bool removed = false;
+			if (element == null)
+				return removed;
+
+			string value = element.InnerText;
+
+			if (!removed)
+			{
+				int index = value.IndexOf('.');
+				if (index >= 0)
+				{
+					removed = true;
+					element.InnerText = value.Substring(0, index);
+				}
+			}
+
+			if (!removed)
+			{
+				if (value.Length > 0 && value[value.Length-1] == 'f')
+				{
+					removed = true;
+					element.InnerText = value.Substring(0, value.Length - 1);
+				}
+			}
+
+			if (removed)
+			{
+				FixXmlTraceFixEvent(s, element, "Removed floating point data from integer field {0}. {1} -> {2}",
+					elementName, value, element.InnerText);
+			}
+
+			return removed;
+		}
 		#endregion
 
 		protected override void FixWeaponTypes()
@@ -132,6 +168,24 @@ namespace KSoft.Phoenix.HaloWars
 			}
 			#endregion
 		}
+		static void FixGameDataAmbientLife(IO.XmlElementStream s)
+		{
+			XmlElement element;
+			string elementName;
+			// data provides float, engine expects DWORD
+
+			element = XPathSelectElementByName(s, Phx.BGameData.kXmlFileInfo.RootName,
+				elementName="ALMaxWanderFrequency");
+			RemoveFloatText(s, element, elementName);
+
+			element = XPathSelectElementByName(s, Phx.BGameData.kXmlFileInfo.RootName,
+				elementName="ALPredatorCheckFrequency");
+			RemoveFloatText(s, element, elementName);
+
+			element = XPathSelectElementByName(s, Phx.BGameData.kXmlFileInfo.RootName,
+				elementName="ALPreyCheckFrequency");
+			RemoveFloatText(s, element, elementName);
+		}
 		protected override void FixGameDataXml(IO.XmlElementStream s)
 		{
 			string xpath = null;
@@ -154,7 +208,9 @@ namespace KSoft.Phoenix.HaloWars
 			#endregion
 
 			FixGameDataXmlInfectionMap(Database.Engine.Build, s);
+			FixGameDataAmbientLife(s);
 		}
+
 		static void FixGameDataResources(Phx.BGameData gd)
 		{
 			// Don't add the types if we're not removing undefined data
@@ -170,8 +226,6 @@ namespace KSoft.Phoenix.HaloWars
 		protected override void FixGameData()
 		{
 			//FixGameDataResources(Database.GameData);
-
-			// #TODO fix ALPreyCheckFrequency. data provides float, engine expects DWORD
 		}
 		#endregion
 

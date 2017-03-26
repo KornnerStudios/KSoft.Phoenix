@@ -15,6 +15,15 @@ namespace KSoft.Phoenix.XML
 			return s.Document.SelectSingleNode(xpath);
 		}
 
+		protected static XmlElement XPathSelectElementByName(KSoft.IO.XmlElementStream s, string rootName
+			, string dataName)
+		{
+			string xpath = string.Format("/{0}/{1}",
+				rootName, dataName);
+			var element = s.Document.SelectSingleNode(xpath);
+			return element as XmlElement;
+		}
+
 		protected virtual void FixGameDataXml(KSoft.IO.XmlElementStream s)
 		{ }
 		protected virtual void FixGameData()
