@@ -16,21 +16,30 @@ namespace KSoft.Phoenix.Phx
 			FileName = "WeaponTypes.xml",
 			RootName = kBListXmlParams.RootName
 		};
-
-		//string DeathAnimation
 		#endregion
 
-		public Collections.BTypeValues<BDamageModifier> DamageModifiers { get; private set; }
+		#region DeathAnimation
+		string mDeathAnimation;
+		public string DeathAnimation
+		{
+			get { return mDeathAnimation; }
+			set { mDeathAnimation = value; }
+		}
+		#endregion
+
+		public Collections.BTypeValues<BWeaponModifier> Modifiers { get; private set; }
 
 		public BWeaponType()
 		{
-			DamageModifiers = new Collections.BTypeValues<BDamageModifier>(BDamageModifier.kBListParams);
+			Modifiers = new Collections.BTypeValues<BWeaponModifier>(BWeaponModifier.kBListParams);
 		}
 
 		#region BListObjectBase Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			XML.XmlUtil.Serialize(s, DamageModifiers, BDamageModifier.kBListXmlParams);
+			s.StreamElementOpt("DeathAnimation", ref mDeathAnimation, Predicates.IsNotNullOrEmpty);
+
+			XML.XmlUtil.Serialize(s, Modifiers, BWeaponModifier.kBListXmlParams);
 		}
 		#endregion
 	};

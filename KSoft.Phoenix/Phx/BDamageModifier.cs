@@ -3,54 +3,95 @@ using System.Collections.Generic;
 
 namespace KSoft.Phoenix.Phx
 {
-	public struct BDamageModifier
+	public sealed class BWeaponModifier
 		: IO.ITagElementStringNameStreamable
-		, IComparable<BDamageModifier>
-		, IEqualityComparer<BDamageModifier>
+		, IComparable<BWeaponModifier>
+		, IEqualityComparer<BWeaponModifier>
 	{
 		#region Xml constants
-		public static readonly Collections.BTypeValuesParams<BDamageModifier> kBListParams = new
-			Collections.BTypeValuesParams<BDamageModifier>(db => db.DamageTypes);
-		public static readonly XML.BTypeValuesXmlParams<BDamageModifier> kBListXmlParams = new
-			XML.BTypeValuesXmlParams<BDamageModifier>("DamageModifier", "type");
+		public static readonly Collections.BTypeValuesParams<BWeaponModifier> kBListParams = new
+			Collections.BTypeValuesParams<BWeaponModifier>(db => db.DamageTypes);
+		public static readonly XML.BTypeValuesXmlParams<BWeaponModifier> kBListXmlParams = new
+			XML.BTypeValuesXmlParams<BWeaponModifier>("DamageModifier", "type");
 		#endregion
 
-		float mRating;
-		public float Rating { get { return mRating; } }
-		float mValue;
-		public float Value { get { return mValue; } }
+		#region Rating
+		float mRating = 1.0f;
+		public float Rating
+		{
+			get { return mRating; }
+			set { mRating = value; }
+		}
+		#endregion
+
+		#region DamagePercentage
+		float mDamagePercentage = 1.0f;
+		public float DamagePercentage
+		{
+			get { return mDamagePercentage; }
+		}
+		#endregion
+
+		#region ReflectDamageFactor
+		float mReflectDamageFactor;
+		public float ReflectDamageFactor
+		{
+			get { return mReflectDamageFactor; }
+			set { mReflectDamageFactor = value; }
+		}
+		#endregion
+
+		#region Bowlable
+		bool mBowlable;
+		public bool Bowlable
+		{
+			get { return mBowlable; }
+			set { mBowlable = value; }
+		}
+		#endregion
+
+		#region Rammable
+		bool mRammable;
+		public bool Rammable
+		{
+			get { return mRammable; }
+			set { mRammable = value; }
+		}
+		#endregion
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttribute("rating", ref mRating);
-			//float reflectDamageFactor
-			//bool bowlable, rammable
-			s.StreamCursor(ref mValue);
+			s.StreamAttributeOpt("rating", ref mRating, PhxPredicates.IsNotOne);
+			s.StreamCursor(ref mDamagePercentage);
+			s.StreamAttributeOpt("reflectDamageFactor", ref mReflectDamageFactor, Predicates.IsNotZero);
+			s.StreamAttributeOpt("bowlable", ref mBowlable, Predicates.IsTrue);
+			s.StreamAttributeOpt("rammable", ref mRammable, Predicates.IsTrue);
 		}
 		#endregion
 
 		#region IComparable<BDamageModifier> Members
-		public int CompareTo(BDamageModifier other)
+		public int CompareTo(BWeaponModifier other)
 		{
-			if (this.Rating == other.Rating)
-				return this.Rating.CompareTo(other.Rating);
-			else
-				return this.Value.CompareTo(other.Value);
+			if (Rating != other.Rating)
+				return Rating.CompareTo(other.Rating);
+
+			return DamagePercentage.CompareTo(other.DamagePercentage);
 		}
 		#endregion
 
 		#region IEqualityComparer<BDamageModifier> Members
-		public bool Equals(BDamageModifier x, BDamageModifier y)
+		public bool Equals(BWeaponModifier x, BWeaponModifier y)
 		{
-			return x.Rating == y.Rating && x.Value == y.Value;
+			return x.Rating == y.Rating
+				&& x.DamagePercentage == y.DamagePercentage;
 		}
 
-		public int GetHashCode(BDamageModifier obj)
+		public int GetHashCode(BWeaponModifier obj)
 		{
-			return obj.Rating.GetHashCode() ^ obj.Value.GetHashCode();
+			return obj.Rating.GetHashCode() ^ obj.DamagePercentage.GetHashCode();
 		}
 		#endregion
 	};
