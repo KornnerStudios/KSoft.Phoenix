@@ -128,6 +128,7 @@ namespace PhxGui
 		{
 			mFlags.Set(MiscFlags.DontTranslateXmbFiles);
 			mFlags.Set(MiscFlags.DontRemoveXmlOrXmbFiles);
+			mFlags.Set(MiscFlags.UseVerboseOutput);
 
 			ClearStatus();
 			ClearProcessFilesHelpText();

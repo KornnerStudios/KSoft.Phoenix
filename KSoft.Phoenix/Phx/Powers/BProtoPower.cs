@@ -589,4 +589,267 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 	};
+
+	public static class BProtoPowerTypesData
+	{
+		public static Dictionary<string, ProtoPowerDataType> kHelper = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"HudUpSound", ProtoPowerDataType.Sound},
+			{"HudAbortSound", ProtoPowerDataType.Sound},
+			{"HudFireSound", ProtoPowerDataType.Sound},
+
+			{"HudLastFireSound", ProtoPowerDataType.Sound},
+			{"HudStartEnvSound", ProtoPowerDataType.Sound},
+			{"HudStopEnvSound", ProtoPowerDataType.Sound},
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kCarpetBombing = new Dictionary<string,ProtoPowerDataType>
+		{
+			{"Projectile", ProtoPowerDataType.ProtoObject},
+			{"Impact", ProtoPowerDataType.ProtoObject},
+			{"Explosion", ProtoPowerDataType.ProtoObject},
+			{"Bomber", ProtoPowerDataType.ProtoObject},
+			{"InitialDelay", ProtoPowerDataType.Float},
+			{"FuseTime", ProtoPowerDataType.Float},
+			{"MaxBombs", ProtoPowerDataType.Int},
+			{"MaxBombOffset", ProtoPowerDataType.Float},
+			{"BombSpacing", ProtoPowerDataType.Float},
+			{"LengthMultiplier", ProtoPowerDataType.Float},
+			{"WedgeLengthMultiplier", ProtoPowerDataType.Float},
+			{"WedgeMinOffset", ProtoPowerDataType.Float},
+			{"NudgeMultiplier", ProtoPowerDataType.Float},
+			{"BomberFlyinDistance", ProtoPowerDataType.Float},
+			{"BomberFlyinHeight", ProtoPowerDataType.Float},
+			{"BomberBombHeight", ProtoPowerDataType.Float},
+			{"BomberSpeed", ProtoPowerDataType.Float},
+			{"RequiresLOS", ProtoPowerDataType.Bool},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kCleansing = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"Beam", ProtoPowerDataType.ProtoObject},
+			{"Projectile", ProtoPowerDataType.ProtoObject},
+			{"TickLength", ProtoPowerDataType.Float},
+			{"SuppliesPerTick", ProtoPowerDataType.Float},
+			{"MinBeamDistance", ProtoPowerDataType.Float},
+			{"MaxBeamDistance", ProtoPowerDataType.Float},
+			{"CommandInterval", ProtoPowerDataType.Float},
+			{"MaxBeamSpeed", ProtoPowerDataType.Float},
+			{"RequiresLOS", ProtoPowerDataType.Bool},
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kCryo = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"CryoObject", ProtoPowerDataType.ProtoObject},
+			{"CryoRadius", ProtoPowerDataType.Float},
+			{"MinCryoFalloff", ProtoPowerDataType.Float},
+			{"FilterType", ProtoPowerDataType.ObjectType},
+			{"TickDuration", ProtoPowerDataType.Float},
+			{"NumTicks", ProtoPowerDataType.Int},
+			{"CryoAmountPerTick", ProtoPowerDataType.Float},
+			{"EffectStartTime", ProtoPowerDataType.Float},
+			{"MaxKillHp", ProtoPowerDataType.Float},
+			{"FreezingThawTime", ProtoPowerDataType.Float},
+			{"FrozenThawTime", ProtoPowerDataType.Float},
+
+			{"Bomber", ProtoPowerDataType.ProtoObject},
+			{"BomberBombTime", ProtoPowerDataType.Float},
+			{"BomberFlyinDistance", ProtoPowerDataType.Float},
+			{"BomberFlyinHeight", ProtoPowerDataType.Float},
+			{"BomberBombHeight", ProtoPowerDataType.Float},
+			{"BomberSpeed", ProtoPowerDataType.Float},
+			{"BomberFlyOutTime", ProtoPowerDataType.Float},
+
+			{"AirImpactObject", ProtoPowerDataType.ProtoObject},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kDisruption = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"DisruptionObject", ProtoPowerDataType.ProtoObject},
+			{"PulseObject", ProtoPowerDataType.ProtoObject},
+			{"StrikeObject", ProtoPowerDataType.ProtoObject},
+			{"DisruptionRadius", ProtoPowerDataType.Float},
+			{"DisruptionTimeSec", ProtoPowerDataType.Float},
+			{"DisruptionStartTime", ProtoPowerDataType.Float},
+			{"PulseSpacing", ProtoPowerDataType.Float},
+			{"PulseSound", ProtoPowerDataType.Sound},
+
+			{"Bomber", ProtoPowerDataType.ProtoObject},
+			{"BomberBombTime", ProtoPowerDataType.Float},
+			{"BomberFlyinDistance", ProtoPowerDataType.Float},
+			{"BomberFlyinHeight", ProtoPowerDataType.Float},
+			{"BomberBombHeight", ProtoPowerDataType.Float},
+			{"BomberSpeed", ProtoPowerDataType.Float},
+			{"BomberFlyOutTime", ProtoPowerDataType.Float},
+
+			{"RequiresLOS", ProtoPowerDataType.Bool},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kOdst = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"Projectile", ProtoPowerDataType.ProtoObject},
+			{"SquadSpawnDelay", ProtoPowerDataType.Float},
+
+			{"RequiresLOS", ProtoPowerDataType.Bool},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kOrbital = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"TargetBeam", ProtoPowerDataType.ProtoObject},
+			{"Projectile", ProtoPowerDataType.ProtoObject},
+			{"Effect", ProtoPowerDataType.ProtoObject},
+			{"RockSmall", ProtoPowerDataType.ProtoObject},
+			{"RockMedium", ProtoPowerDataType.ProtoObject},
+			{"RockLarge", ProtoPowerDataType.ProtoObject},
+			{"NumShots", ProtoPowerDataType.Int},
+			{"TargetingDelay", ProtoPowerDataType.Float},
+			{"AutoShotDelay", ProtoPowerDataType.Float},
+			{"AutoShotInnerRadius", ProtoPowerDataType.Float},
+			{"AutoShotOuterRadius", ProtoPowerDataType.Float},
+			{"XOffset", ProtoPowerDataType.Float},
+			{"YOffset", ProtoPowerDataType.Float},
+			{"ZOffset", ProtoPowerDataType.Float},
+			{"FiredSound", ProtoPowerDataType.Sound},
+
+			{"CommandInterval", ProtoPowerDataType.Float},
+			{"ShotInterval", ProtoPowerDataType.Float},
+			{"RequiresLOS", ProtoPowerDataType.Bool},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kRage = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"TickLength", ProtoPowerDataType.Float},
+			{"SuppliesPerTick", ProtoPowerDataType.Float},
+			{"SuppliesPerTickAttacking", ProtoPowerDataType.Float},
+			{"SuppliesPerJump", ProtoPowerDataType.Float},
+			{"DamageMultiplier", ProtoPowerDataType.Float},
+			{"DamageTakenMultiplier", ProtoPowerDataType.Float},
+			{"SpeedMultiplier", ProtoPowerDataType.Float},
+			{"NudgeMultiplier", ProtoPowerDataType.Float},
+			{"ScanRadius", ProtoPowerDataType.Float},
+			{"TeleportTime", ProtoPowerDataType.Float},
+			{"TeleportLateralDistance", ProtoPowerDataType.Float},
+			{"TeleportJumpDistance", ProtoPowerDataType.Float},
+			{"TimeBetweenRetarget", ProtoPowerDataType.Float},
+			{"MotionBlurAmount", ProtoPowerDataType.Float},
+			{"MotionBlurDistance", ProtoPowerDataType.Float},
+			{"MotionBlurTime", ProtoPowerDataType.Float},
+			{"DistanceVsAngleWeight", ProtoPowerDataType.Float},
+			{"Projectile", ProtoPowerDataType.ProtoObject},
+			{"HandAttachObject", ProtoPowerDataType.ProtoObject},
+			{"TeleportAttachObject", ProtoPowerDataType.ProtoObject},
+			{"AuraAttachFxSmall", ProtoPowerDataType.ProtoObject},
+			{"AuraAttachFxMedium", ProtoPowerDataType.ProtoObject},
+			{"AuraAttachFxLarge", ProtoPowerDataType.ProtoObject},
+			{"HealAttachFx", ProtoPowerDataType.ProtoObject},
+			{"AuraFilterType", ProtoPowerDataType.ObjectType},
+
+			{"HealPerKillCombatValue", ProtoPowerDataType.Float},
+			{"AuraRadius", ProtoPowerDataType.Float},
+			{"AuraDamageBonus", ProtoPowerDataType.Float},
+			{"AttackSound", ProtoPowerDataType.Sound},
+
+			{"CommandInterval", ProtoPowerDataType.Float},
+			{"HintTime", ProtoPowerDataType.Float},
+			{"MovementProjectionMultiplier", ProtoPowerDataType.Float},
+			{"CameraZoom", ProtoPowerDataType.Float},
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kRepair = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"RepairObject", ProtoPowerDataType.ProtoObject},
+			{"RepairAttachment", ProtoPowerDataType.ProtoObject},
+			{"NeverStops", ProtoPowerDataType.Bool},
+			{"RepairRadius", ProtoPowerDataType.Float},
+			{"FilterType", ProtoPowerDataType.ObjectType},
+			{"TickDuration", ProtoPowerDataType.Float},
+			{"NumTicks", ProtoPowerDataType.Int},
+			{"RepairCombatValuePerTick", ProtoPowerDataType.Float},
+			{"SpreadAmongSquads", ProtoPowerDataType.Bool},
+			{"AllowReinforce", ProtoPowerDataType.Bool},
+			{"CooldownTimeIfDamaged", ProtoPowerDataType.Float},
+			{"HealAny", ProtoPowerDataType.Bool},
+
+			{"IgnorePlacement", ProtoPowerDataType.Bool},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kTransport = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"Base", ProtoPowerDataType.Texture},
+			{"Mover", ProtoPowerDataType.Texture},
+
+			{"MaxGroundVehicles", ProtoPowerDataType.Int},
+			{"MaxInfantryUnits", ProtoPowerDataType.Int},
+
+			{"MinTransportDistance", ProtoPowerDataType.Float},
+
+			{"RequiresLOS", ProtoPowerDataType.Bool},
+
+			//kHelper
+		};
+
+		public static Dictionary<string, ProtoPowerDataType> kWave = new Dictionary<string, ProtoPowerDataType>
+		{
+			{"TickLength", ProtoPowerDataType.Float},
+			{"SuppliesPerTick", ProtoPowerDataType.Float},
+			{"MaxBallSpeedStagnant", ProtoPowerDataType.Float},
+			{"MaxBallSpeedPulling", ProtoPowerDataType.Float},
+			{"ExplodeTime", ProtoPowerDataType.Float},
+			{"PullingRange", ProtoPowerDataType.Float},
+			{"ExplosionForceOnDebris", ProtoPowerDataType.Float},
+			{"HealthToCapture", ProtoPowerDataType.Float},
+			{"NudgeStrength", ProtoPowerDataType.Float},
+			{"InitialLateralPullStrength", ProtoPowerDataType.Float},
+			{"CapturedRadialSpacing", ProtoPowerDataType.Float},
+			{"CapturedSpringStrength", ProtoPowerDataType.Float},
+			{"CapturedSpringDampening", ProtoPowerDataType.Float},
+			{"CapturedSpringRestLength", ProtoPowerDataType.Float},
+			{"CapturedMinLateralSpeed", ProtoPowerDataType.Float},
+			{"RipAttachmentChancePulling", ProtoPowerDataType.Float},
+			{"DebrisAngularDamping", ProtoPowerDataType.Float},
+			{"MaxExplosionDamageBankPerCaptured", ProtoPowerDataType.Float},
+			{"CommandInterval", ProtoPowerDataType.Float},
+			{"MinBallDistance", ProtoPowerDataType.Float},
+			{"MaxBallDistance", ProtoPowerDataType.Float},
+			{"PickupObjectRate", ProtoPowerDataType.Float},
+			{"MaxCapturedObjects", ProtoPowerDataType.Int},
+			{"LightningPerTick", ProtoPowerDataType.Int},
+			{"NudgeChancePulling", ProtoPowerDataType.Int},
+			{"ThrowPartChancePulling", ProtoPowerDataType.Int},
+			{"LightningChancePulling", ProtoPowerDataType.Int},
+			{"BallObject", ProtoPowerDataType.ProtoObject},
+			{"LightningProjectile", ProtoPowerDataType.ProtoObject},
+			{"ExplodeProjectile", ProtoPowerDataType.ProtoObject},
+			{"DebrisProjectile", ProtoPowerDataType.ProtoObject},
+			{"PickupAttachment", ProtoPowerDataType.ProtoObject},
+			{"ThrowUnitsOnExplosion", ProtoPowerDataType.Bool},
+			{"ExplodeSound", ProtoPowerDataType.Sound},
+			{"MinDamageBankPercentToThrow", ProtoPowerDataType.Float},
+			{"LightningBeamVisual", ProtoPowerDataType.ProtoObject},
+
+			{"MinBallHeight", ProtoPowerDataType.Float},
+			{"MaxBallHeight", ProtoPowerDataType.Float},
+			{"CameraDistance", ProtoPowerDataType.Float},
+			{"CameraHeight", ProtoPowerDataType.Float},
+			{"CameraHoverPointDistance", ProtoPowerDataType.Float},
+			{"CameraMaxBallAngle", ProtoPowerDataType.Float},
+			{"PickupShakeDuration", ProtoPowerDataType.Float},
+			{"PickupRumbleShakeStrength", ProtoPowerDataType.Float},
+			{"PickupCameraShakeStrength", ProtoPowerDataType.Float},
+
+			{"HintTime", ProtoPowerDataType.Float},
+		};
+	};
 }
