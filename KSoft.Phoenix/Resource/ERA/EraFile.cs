@@ -7,7 +7,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource
 {
-	/*public*/ sealed class EraFile
+	public sealed class EraFile
 		: IO.IEndianStreamSerializable
 		, System.IDisposable
 	{

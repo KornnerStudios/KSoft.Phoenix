@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		IsResourceTag,
 	};
 
-	/*public*/ class EcfChunk
+	public class EcfChunk
 		: IO.IEndianStreamSerializable
 	{
 		public const int kMaxCount = 32768;

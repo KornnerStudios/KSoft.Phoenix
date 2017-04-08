@@ -58,9 +58,6 @@ namespace PhxGui
 		#endregion
 
 		#region Flags
-		static readonly PropertyChangedEventArgs kFlagsChanged =
-			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.Flags);
-
 		private static KSoft.WPF.BitVectorUserInterfaceData gFlagsUserInterfaceSource;
 		public static KSoft.WPF.BitVectorUserInterfaceData FlagsUserInterfaceSource { get {
 			if (gFlagsUserInterfaceSource == null)
@@ -69,11 +66,11 @@ namespace PhxGui
 		} }
 
 		KSoft.Collections.BitVector32 mFlags;
-		public KSoft.Collections.BitVector32 Flags {
+		public KSoft.Collections.BitVector32 Flags
+		{
 			get { return mFlags; }
-			set { mFlags = value;
-				NotifyPropertyChanged(kFlagsChanged);
-		} }
+			set { this.SetFieldVal(PropertyChanged, ref mFlags, value); }
+		}
 		#endregion
 
 		#region StatusText

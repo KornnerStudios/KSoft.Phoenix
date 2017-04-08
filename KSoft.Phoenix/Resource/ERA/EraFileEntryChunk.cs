@@ -4,7 +4,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource
 {
-	/*public*/ sealed class EraFileEntryChunk
+	public sealed class EraFileEntryChunk
 		: ECF.EcfChunk
 	{
 		#region SizeOf
