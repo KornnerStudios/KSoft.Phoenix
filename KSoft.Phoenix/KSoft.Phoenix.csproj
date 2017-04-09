@@ -60,6 +60,7 @@
     <Compile Include="Games\HaloWars\Enums\BChatSpeaker.cs" />
     <Compile Include="Games\HaloWars\Enums\BFlashableUIItem.cs" />
     <Compile Include="Games\HaloWars\Enums\BHUDItem.cs" />
+    <Compile Include="Games\HaloWars\GameVersionType.cs" />
     <Compile Include="Games\HaloWars\Objects\CodeProtoObject.cs" />
     <Compile Include="Games\HaloWars\PhxEngineHW.cs" />
     <Compile Include="Games\HaloWars\Scenario\BScenarioTeam.cs" />
