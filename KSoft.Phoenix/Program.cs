@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KSoft.Phoenix
 {
-    public static class Program
-    {
+	public static class Program
+	{
 		public static void Initialize()
 		{
 		}
@@ -15,5 +11,7 @@ namespace KSoft.Phoenix
 		public static void Dispose()
 		{
 		}
-    };
+
+		public static Type DebugTraceClass { get { return typeof(Debug.Trace); } }
+	};
 }
