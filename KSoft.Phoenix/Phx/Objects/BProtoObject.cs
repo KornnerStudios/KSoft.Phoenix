@@ -48,6 +48,10 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Objects_Update.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.ProtoData,
+			kXmlFileInfo,
+			kXmlFileInfoUpdate);
 
 		static readonly Collections.CodeEnum<BProtoObjectFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoObjectFlags>();
 		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);

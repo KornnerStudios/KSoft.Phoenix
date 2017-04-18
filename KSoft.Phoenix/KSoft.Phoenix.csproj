@@ -55,6 +55,7 @@
     <Compile Include="Engine\GameDirectory.cs" />
     <Compile Include="Engine\PhxEngine.cs" />
     <Compile Include="Engine\PhxEngineBuild.cs" />
+    <Compile Include="Engine\XmlFileInfo.cs" />
     <Compile Include="Games\HaloWars\Database\BDatabase.cs" />
     <Compile Include="Games\HaloWars\Enums\BAnimType.cs" />
     <Compile Include="Games\HaloWars\Enums\BChatSpeaker.cs" />

@@ -46,6 +46,10 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Squads_Update.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.ProtoData,
+			kXmlFileInfo,
+			kXmlFileInfoUpdate);
 
 		static readonly Collections.CodeEnum<BProtoSquadFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoSquadFlags>();
 		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);

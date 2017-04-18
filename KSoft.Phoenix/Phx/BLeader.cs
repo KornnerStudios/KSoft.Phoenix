@@ -22,6 +22,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Leaders.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.ProtoData,
+			kXmlFileInfo);
 
 		static readonly XML.BTypeValuesXmlParams<float> kRepairCostTypeValuesXmlParams = new
 			XML.BTypeValuesXmlParams<float>("RepairCost", "Type");

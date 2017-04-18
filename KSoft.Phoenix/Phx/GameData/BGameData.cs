@@ -16,6 +16,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "GameData.xml",
 			RootName = kXmlRoot
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.GameData,
+			kXmlFileInfo);
 
 		public static readonly Collections.BTypeValuesParams<float> kRatesBListTypeValuesParams = new
 			Collections.BTypeValuesParams<float>(db => db.GameData.Rates) { kTypeGetInvalid = PhxUtil.kGetInvalidSingle };

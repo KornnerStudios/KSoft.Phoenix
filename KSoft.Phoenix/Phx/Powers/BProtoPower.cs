@@ -17,6 +17,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Powers.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.ProtoData,
+			kXmlFileInfo);
 
 		static readonly Collections.CodeEnum<BPowerFlags> kFlagsProtoEnum = new Collections.CodeEnum<BPowerFlags>();
 		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);

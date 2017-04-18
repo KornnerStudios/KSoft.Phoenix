@@ -16,6 +16,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "ImpactEffects.xml",
 			RootName = "ImpactEffects"//kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.Lists,
+			kXmlFileInfo);
 		#endregion
 
 		#region Limit

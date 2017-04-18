@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-
+﻿
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class TerrainTileType
@@ -19,6 +18,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "TerrainTileTypes.xml",
 			RootName = "TerrainTileTypes"//kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.Lists,
+			kXmlFileInfo);
 		#endregion
 
 		#region EditorColor

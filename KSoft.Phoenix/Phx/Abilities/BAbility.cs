@@ -21,6 +21,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Abilities.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.GameData,
+			kXmlFileInfo);
 		#endregion
 
 		#region Type

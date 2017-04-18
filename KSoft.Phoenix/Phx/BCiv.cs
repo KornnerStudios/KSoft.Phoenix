@@ -16,6 +16,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "Civs.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.ProtoData,
+			kXmlFileInfo);
 		#endregion
 
 		#region IsExcludedFromAlpha

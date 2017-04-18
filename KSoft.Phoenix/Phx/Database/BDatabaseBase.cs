@@ -22,6 +22,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "ObjectTypes.xml",
 			RootName = kObjectTypesXmlParams.RootName
 		};
+		internal static readonly Engine.ProtoDataXmlFileInfo kObjectTypesProtoFileInfo = new Phoenix.Engine.ProtoDataXmlFileInfo(
+			Phoenix.Engine.XmlFilePriority.Lists,
+			kObjectTypesXmlFileInfo);
 		#endregion
 
 		public Engine.PhxEngine Engine { get; private set; }

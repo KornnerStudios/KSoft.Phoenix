@@ -17,6 +17,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "UserClasses.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.Lists,
+			kXmlFileInfo);
 		#endregion
 
 		int mDbId = TypeExtensions.kNone;

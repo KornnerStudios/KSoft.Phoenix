@@ -16,6 +16,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "HPBars.xml",
 			RootName = kXmlRoot
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.GameData,
+			kXmlFileInfo);
 		#endregion
 
 		public Collections.BListAutoId<BProtoHPBar> HPBars { get; private set; }

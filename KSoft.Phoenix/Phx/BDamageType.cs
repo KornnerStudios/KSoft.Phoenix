@@ -39,6 +39,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "DamageTypes.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.Lists,
+			kXmlFileInfo);
 		#endregion
 
 		bool mAttackRating;

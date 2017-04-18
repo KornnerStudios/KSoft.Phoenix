@@ -16,6 +16,9 @@ namespace KSoft.Phoenix.Phx
 			FileName = "WeaponTypes.xml",
 			RootName = kBListXmlParams.RootName
 		};
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+			Engine.XmlFilePriority.Lists,
+			kXmlFileInfo);
 		#endregion
 
 		#region DeathAnimation

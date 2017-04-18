@@ -31,6 +31,7 @@ namespace KSoft.Phoenix.XML
 		public delegate void StreamXmlCallback(IO.XmlElementStream s);
 		public sealed class StreamXmlContextData
 		{
+			public Engine.ProtoDataXmlFileInfo ProtoFileInfo;
 			public StreamXmlPriority Priority;
 			public Engine.XmlFileInfo FileInfo;
 			public Engine.XmlFileInfo FileInfoWithUpdates;
@@ -38,10 +39,14 @@ namespace KSoft.Phoenix.XML
 			public Action<IO.XmlElementStream> Stream;
 			public Action<IO.XmlElementStream> StreamUpdates;
 
-			public StreamXmlContextData(StreamXmlPriority priority, Engine.XmlFileInfo fileInfo, Engine.XmlFileInfo fileInfoWithUpdates = null)
+			public StreamXmlContextData(Engine.ProtoDataXmlFileInfo protoFileInfo)
 			{
-				Priority = priority;
-				FileInfo = fileInfo;
+				ProtoFileInfo = protoFileInfo;
+
+				// #TODO remove:
+				Priority = (StreamXmlPriority)ProtoFileInfo.Priority;
+				FileInfo = ProtoFileInfo.FileInfo;
+				FileInfoWithUpdates = ProtoFileInfo.FileInfoWithUpdates;
 			}
 		};
 		private List<StreamXmlContextData> mStreamXmlContexts;
@@ -55,79 +60,79 @@ namespace KSoft.Phoenix.XML
 			mStreamXmlContexts = new List<StreamXmlContextData>()
 			{
 				#region Lists
-				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BDatabaseBase.kObjectTypesXmlFileInfo)
+				new StreamXmlContextData(Phx.BDatabaseBase.kObjectTypesProtoFileInfo)
 				{
 					Preload=StreamXmlObjectTypes,
 				},
-				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BDamageType.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BDamageType.kProtoFileInfo)
 				{
 					Preload=PreloadDamageTypes,
 					Stream=StreamXmlDamageTypes,
 				},
-				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BProtoImpactEffect.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BProtoImpactEffect.kProtoFileInfo)
 				{
 					Preload=StreamXmlImpactEffects,
 				},
-				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.TerrainTileType.kXmlFileInfo)
+				new StreamXmlContextData(Phx.TerrainTileType.kProtoFileInfo)
 				{
 					Preload=StreamXmlTerrainTileTypes,
 				},
-				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BWeaponType.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BWeaponType.kProtoFileInfo)
 				{
 					Preload=StreamXmlWeaponTypes,
 				},
-				new StreamXmlContextData(StreamXmlPriority.Lists, Phx.BUserClass.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BUserClass.kProtoFileInfo)
 				{
 					Preload=StreamXmlUserClasses,
 				},
 				#endregion
 
 				#region GameData
-				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.HPBarData.kXmlFileInfo)
+				new StreamXmlContextData(Phx.HPBarData.kProtoFileInfo)
 				{
 					Stream=StreamXmlHPBars,
 				},
-				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.BGameData.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BGameData.kProtoFileInfo)
 				{
 					Stream=StreamXmlGameData,
 				},
-				new StreamXmlContextData(StreamXmlPriority.GameData, Phx.BAbility.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BAbility.kProtoFileInfo)
 				{
 					Stream=StreamXmlAbilities,
 				},
 				#endregion
 
 				#region ProtoData
-				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoObject.kXmlFileInfo, Phx.BProtoObject.kXmlFileInfoUpdate)
+				new StreamXmlContextData(Phx.BProtoObject.kProtoFileInfo)
 				{
 					Preload=PreloadObjects,
 					Stream=StreamXmlObjects,
 					StreamUpdates=StreamXmlObjectsUpdate,
 				},
-				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoSquad.kXmlFileInfo, Phx.BProtoSquad.kXmlFileInfoUpdate)
+				new StreamXmlContextData(Phx.BProtoSquad.kProtoFileInfo)
 				{
 					Preload=PreloadSquads,
 					Stream=StreamXmlSquads,
 					StreamUpdates=StreamXmlSquadsUpdate,
 				},
-				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoPower.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BProtoPower.kProtoFileInfo)
 				{
 					Preload=PreloadPowers,
 					Stream=StreamXmlPowers,
 				},
-				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BProtoTech.kXmlFileInfo, Phx.BProtoTech.kXmlFileInfoUpdate)
+				new StreamXmlContextData(Phx.BProtoTech.kProtoFileInfo)
 				{
 					Preload=PreloadTechs,
 					Stream=StreamXmlTechs,
 					StreamUpdates=StreamXmlTechsUpdate,
 				},
 
-				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BCiv.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BCiv.kProtoFileInfo)
 				{
 					//Preload=PreloadCivs,
 					Stream=StreamXmlCivs,
 				},
-				new StreamXmlContextData(StreamXmlPriority.ProtoData, Phx.BLeader.kXmlFileInfo)
+				new StreamXmlContextData(Phx.BLeader.kProtoFileInfo)
 				{
 					//Preload=PreloadLeaders,
 					Stream=StreamXmlLeaders,
@@ -158,6 +163,7 @@ namespace KSoft.Phoenix.XML
 
 						switch (s)
 						{
+							#region Preload
 							case StreamXmlStage.Preload:
 								if (ctxt.Preload == null)
 									break;
@@ -170,6 +176,8 @@ namespace KSoft.Phoenix.XML
 									tasks.Add(task);
 								}
 								break;
+							#endregion
+							#region Stream
 							case StreamXmlStage.Stream:
 								if (ctxt.Stream == null)
 									break;
@@ -182,6 +190,8 @@ namespace KSoft.Phoenix.XML
 									tasks.Add(task);
 								}
 								break;
+							#endregion
+							#region StreamUpdates
 							case StreamXmlStage.StreamUpdates:
 								if (ctxt.FileInfoWithUpdates == null)
 									break;
@@ -196,6 +206,7 @@ namespace KSoft.Phoenix.XML
 									tasks.Add(task);
 								}
 								break;
+							#endregion
 						}
 
 						if (synchronous)
