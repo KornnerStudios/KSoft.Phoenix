@@ -10,16 +10,6 @@ namespace KSoft.Phoenix.XML
 
 	partial class BDatabaseXmlSerializerBase
 	{
-		public enum StreamXmlPriority
-		{
-			None,
-
-			Lists,
-			GameData,
-			ProtoData,
-
-			kNumberOf
-		};
 		public enum StreamXmlStage
 		{
 			Preload,
@@ -32,9 +22,8 @@ namespace KSoft.Phoenix.XML
 		public sealed class StreamXmlContextData
 		{
 			public Engine.ProtoDataXmlFileInfo ProtoFileInfo;
-			public StreamXmlPriority Priority;
-			public Engine.XmlFileInfo FileInfo;
-			public Engine.XmlFileInfo FileInfoWithUpdates;
+			public Engine.XmlFileInfo FileInfo { get { return ProtoFileInfo.FileInfo; } }
+			public Engine.XmlFileInfo FileInfoWithUpdates { get { return ProtoFileInfo.FileInfoWithUpdates; } }
 			public Action<IO.XmlElementStream> Preload;
 			public Action<IO.XmlElementStream> Stream;
 			public Action<IO.XmlElementStream> StreamUpdates;
@@ -42,11 +31,6 @@ namespace KSoft.Phoenix.XML
 			public StreamXmlContextData(Engine.ProtoDataXmlFileInfo protoFileInfo)
 			{
 				ProtoFileInfo = protoFileInfo;
-
-				// #TODO remove:
-				Priority = (StreamXmlPriority)ProtoFileInfo.Priority;
-				FileInfo = ProtoFileInfo.FileInfo;
-				FileInfoWithUpdates = ProtoFileInfo.FileInfoWithUpdates;
 			}
 		};
 		private List<StreamXmlContextData> mStreamXmlContexts;
@@ -142,95 +126,138 @@ namespace KSoft.Phoenix.XML
 		}
 		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous)
 		{
-			SetupStreamXmlContexts();
+			ProcessStreamXmlContexts(ref r, mode, synchronous
+				, StreamXmlStage.Preload, StreamXmlStage.kNumberOf
+				, Engine.XmlFilePriority.Lists, Engine.XmlFilePriority.kNumberOf);
+		}
 
-			for (var s = StreamXmlStage.Preload; s < StreamXmlStage.kNumberOf; s++)
+		private struct ProcessStreamXmlContextStageArgs
+		{
+			public FA Mode;
+			public StreamXmlStage Stage;
+			public Engine.XmlFilePriority FirstPriority;
+			public Engine.XmlFilePriority LastPriorityPlusOne;
+
+			public List<Task<bool>> Tasks;
+			public List<Exception> TaskExceptions;
+
+			public bool Synchronous { get { return Tasks == null; } }
+
+			public ProcessStreamXmlContextStageArgs(FA mode, bool synchronous, StreamXmlStage stage
+				, Engine.XmlFilePriority firstPriority
+				, Engine.XmlFilePriority lastPriorityPlusOne)
 			{
-				List<Task<bool>> tasks = null;
-				List<Exception> taskExceptions = null;
+				Mode = mode;
+				Stage = stage;
+				FirstPriority = firstPriority;
+				LastPriorityPlusOne = lastPriorityPlusOne;
+
+				Tasks = null;
+				TaskExceptions = null;
 				if (!synchronous)
 				{
-					tasks = new List<Task<bool>>();
-					taskExceptions = new List<Exception>();
+					Tasks = new List<Task<bool>>();
+					TaskExceptions = new List<Exception>();
+				}
+			}
+		};
+
+		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous
+			, StreamXmlStage firstStage// = StreamXmlStage.Preload
+			, StreamXmlStage lastStagePlusOne// = StreamXmlStage.kNumberOf
+			, Engine.XmlFilePriority firstPriority// = Engine.XmlFilePriority.Lists
+			, Engine.XmlFilePriority lastPriorityPlusOne// = Engine.XmlFilePriority.kNumberOf
+			)
+		{
+			SetupStreamXmlContexts();
+
+			for (var s = firstStage; s < lastStagePlusOne; s++)
+			{
+				var args = new ProcessStreamXmlContextStageArgs(mode, synchronous, s, firstPriority, lastPriorityPlusOne);
+				ProcessStreamXmlContextStage(ref r, args);
+			}
+		}
+
+		private void ProcessStreamXmlContextStage(ref bool r, ProcessStreamXmlContextStageArgs args)
+		{
+			var mode = args.Mode;
+
+			for (var p = args.FirstPriority; p < args.LastPriorityPlusOne; p++)
+			{
+				foreach (var ctxt in mStreamXmlContexts)
+				{
+					if (ctxt.ProtoFileInfo.Priority != p)
+						continue;
+
+					switch (args.Stage)
+					{
+						#region Preload
+						case StreamXmlStage.Preload:
+							if (ctxt.Preload == null)
+								break;
+
+							if (args.Synchronous)
+								r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Preload);
+							else
+							{
+								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
+								args.Tasks.Add(task);
+							}
+							break;
+						#endregion
+						#region Stream
+						case StreamXmlStage.Stream:
+							if (ctxt.Stream == null)
+								break;
+
+							if (args.Synchronous)
+								r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Stream);
+							else
+							{
+								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
+								args.Tasks.Add(task);
+							}
+							break;
+						#endregion
+						#region StreamUpdates
+						case StreamXmlStage.StreamUpdates:
+							if (ctxt.FileInfoWithUpdates == null)
+								break;
+							if (ctxt.StreamUpdates == null)
+								break;
+
+							if (args.Synchronous)
+								r &= TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates);
+							else
+							{
+								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
+								args.Tasks.Add(task);
+							}
+							break;
+						#endregion
+					}
+
+					if (args.Synchronous)
+					{
+						if (!r)
+							throw new InvalidOperationException(string.Format(
+								"Failed to process {0} during stage {1}",
+								ctxt.FileInfo.FileName, s));
+					}
 				}
 
-				for (var p = StreamXmlPriority.Lists; p < StreamXmlPriority.kNumberOf; p++)
+				if (args.Tasks != null)
 				{
-					foreach (var ctxt in mStreamXmlContexts)
+					if (!UpdateResultWithTaskResults(ref r, args.Tasks.ToArray(), args.TaskExceptions))
 					{
-						if (ctxt.Priority != p)
-							continue;
-
-						switch (s)
-						{
-							#region Preload
-							case StreamXmlStage.Preload:
-								if (ctxt.Preload == null)
-									break;
-
-								if (synchronous)
-									r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Preload);
-								else
-								{
-									var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
-									tasks.Add(task);
-								}
-								break;
-							#endregion
-							#region Stream
-							case StreamXmlStage.Stream:
-								if (ctxt.Stream == null)
-									break;
-
-								if (synchronous)
-									r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Stream);
-								else
-								{
-									var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
-									tasks.Add(task);
-								}
-								break;
-							#endregion
-							#region StreamUpdates
-							case StreamXmlStage.StreamUpdates:
-								if (ctxt.FileInfoWithUpdates == null)
-									break;
-								if (ctxt.StreamUpdates == null)
-									break;
-
-								if (synchronous)
-									r &= TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates);
-								else
-								{
-									var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
-									tasks.Add(task);
-								}
-								break;
-							#endregion
-						}
-
-						if (synchronous)
-						{
-							if (!r)
-								throw new InvalidOperationException(string.Format(
-									"Failed to process {0} during stage {1}",
-									ctxt.FileInfo.FileName, s));
-						}
+						throw new InvalidOperationException(string.Format(
+							"Failed to process one or more files for priority={0}",
+							p),
+							new AggregateException(args.TaskExceptions));
 					}
 
-					if (tasks != null)
-					{
-						if (!UpdateResultWithTaskResults(ref r, tasks.ToArray(), taskExceptions))
-						{
-							throw new InvalidOperationException(string.Format(
-								"Failed to process one or more files for priority={0}",
-								p),
-								new AggregateException(taskExceptions));
-						}
-
-						tasks.Clear();
-						taskExceptions.Clear();
-					}
+					args.Tasks.Clear();
+					args.TaskExceptions.Clear();
 				}
 			}
 		}
@@ -250,6 +277,7 @@ namespace KSoft.Phoenix.XML
 
 			return r;
 		}
+
 		void StreamTacticsSync(ref bool r, FA mode)
 		{
 			var xfi = StreamTacticsGetFileInfo(mode);
