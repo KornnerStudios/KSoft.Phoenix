@@ -689,21 +689,6 @@ namespace KSoft.Phoenix.HaloWars
 			string xpath;
 			XmlNodeList elements;
 
-#if false
-			xpath = "Weapon[WeaponType='plasma']";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["WeaponType"].FirstChild;
-					fc.Value = "Plasma";
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-				return;
-			}
-#endif
-
 			// see: fx_proj_beam_01
 			xpath = "Weapon[WeaponType='ForunnerBeam']";
 			elements = s.Cursor.SelectNodes(xpath);
@@ -717,22 +702,6 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
-
-#if false
-			// see: pow_proj_cleansing_01, pow_proj_wave_explode_01, pow_proj_wave_lightning_01,
-			// cov_inf_brutechief_01
-			xpath = "Weapon[WeaponType='leaderPower']";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["WeaponType"].FirstChild;
-					fc.Value = "LeaderPower";
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-			}
-#endif
 
 			// see: pow_gp_orbitalbombardment
 			xpath = "Weapon/DamageRatingOverride[@type='TurretBuilding']";
@@ -753,55 +722,6 @@ namespace KSoft.Phoenix.HaloWars
 				FixTacticsTraceFixEvent(name, xpath);
 				return;
 			}
-
-#if false
-			// see: unsc_air_vulture_01
-			xpath = "Weapon[AirBurstSpan='25.0f']";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["AirBurstSpan"].FirstChild;
-					fc.Value = fc.Value.Substring(0, fc.Value.Length-1);
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-				return;
-			}
-#endif
-
-#if false
-			// see: cov_inf_brute_01
-			xpath = "Weapon[contains(Name, 'IncoverBrutegun')]";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["Name"].FirstChild;
-					fc.Value = fc.Value.Replace("IncoverBrutegun", "InCoverBrutegun");
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-				return;
-			}
-#endif
-
-#if false
-			// see: cov_inf_brutechief_01
-			xpath = "Weapon[Name='stunHammer']"
-				+ " | Weapon[Name='stunPullHammer']";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["Name"].FirstChild;
-					fc.Value = fc.Value.Replace("stun", "Stun");
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-				return;
-			}
-#endif
 		}
 		static void FixTacticsXmlBadActionWeaponNames(IO.XmlElementStream s, string name)
 		{
@@ -833,63 +753,12 @@ namespace KSoft.Phoenix.HaloWars
 					return;
 				}
 			}
-
-#if false
-			// see: unsc_inf_cyclops_01
-			xpath = "Action[Weapon='Buildingjackhammer']";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["Weapon"].FirstChild;
-					fc.Value = "BuildingJackhammer";
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-				return;
-			}
-#endif
-
-#if false
-			// see: unsc_veh_elephant_02
-			xpath = "Action[Weapon='lightCannon']";
-			elements = s.Cursor.SelectNodes(xpath);
-			if (elements.Count > 0)
-			{
-				foreach (XmlElement e in elements)
-				{
-					var fc = e["Weapon"].FirstChild;
-					fc.Value = "LightCannon";
-				}
-				FixTacticsTraceFixEvent(name, xpath);
-				return;
-			}
-#endif
 		}
 		static void FixTacticsXmlBadActions(IO.XmlElementStream s, string name)
 		{
 			FixTacticsXmlBadActionWeaponNames(s, name);
 			string xpath;
 			XmlNodeList elements;
-
-#if false
-			// see: fx_proj_fldbomb_01
-			if (!ToLowerName(Phx.DatabaseObjectKind.Squad))
-			{
-				xpath = "Action[ProtoObject='fld_inf_InfectionForm_02']";
-				elements = s.Cursor.SelectNodes(xpath);
-				if (elements.Count > 0)
-				{
-					foreach (XmlElement e in elements)
-					{
-						var fc = e["ProtoObject"].FirstChild;
-						fc.Value = "fld_inf_infectionForm_02";
-					}
-					FixTacticsTraceFixEvent(name, xpath);
-					return;
-				}
-			}
-#endif
 
 			// see: cov_inf_elitecommando_01
 			xpath = "Action[Name='GatherSupplies']";
