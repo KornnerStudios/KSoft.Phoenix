@@ -160,6 +160,28 @@ namespace KSoft.Phoenix.XML
 					TaskExceptions = new List<Exception>();
 				}
 			}
+
+			public bool UpdateResultWithTaskResults(ref bool r)
+			{
+				foreach (var task in Tasks)
+				{
+					if (task.IsFaulted)
+					{
+						r = false;
+						if (TaskExceptions != null)
+							TaskExceptions.Add(task.Exception);
+					}
+					r &= task.Result;
+				}
+
+				return r;
+			}
+
+			public void ClearTaskData()
+			{
+				Tasks.Clear();
+				TaskExceptions.Clear();
+			}
 		};
 
 		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous
@@ -242,13 +264,13 @@ namespace KSoft.Phoenix.XML
 						if (!r)
 							throw new InvalidOperationException(string.Format(
 								"Failed to process {0} during stage {1}",
-								ctxt.FileInfo.FileName, s));
+								ctxt.FileInfo.FileName, args.Stage));
 					}
 				}
 
 				if (args.Tasks != null)
 				{
-					if (!UpdateResultWithTaskResults(ref r, args.Tasks.ToArray(), args.TaskExceptions))
+					if (!args.UpdateResultWithTaskResults(ref r))
 					{
 						throw new InvalidOperationException(string.Format(
 							"Failed to process one or more files for priority={0}",
@@ -256,8 +278,7 @@ namespace KSoft.Phoenix.XML
 							new AggregateException(args.TaskExceptions));
 					}
 
-					args.Tasks.Clear();
-					args.TaskExceptions.Clear();
+					args.ClearTaskData();
 				}
 			}
 		}
