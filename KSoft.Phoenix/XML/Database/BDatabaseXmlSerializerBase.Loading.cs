@@ -124,7 +124,7 @@ namespace KSoft.Phoenix.XML
 				#endregion
 			};
 		}
-		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous)
+		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous = false)
 		{
 			ProcessStreamXmlContexts(ref r, mode, synchronous
 				, StreamXmlStage.Preload, StreamXmlStage.kNumberOf
@@ -299,17 +299,6 @@ namespace KSoft.Phoenix.XML
 			return r;
 		}
 
-		void StreamTacticsSync(ref bool r, FA mode)
-		{
-			var xfi = StreamTacticsGetFileInfo(mode);
-
-			var keys_copy = new List<string>(mTacticsMap.Keys);
-			foreach (var name in keys_copy)
-			{
-				xfi.FileName = name;
-				r &= TryStreamData(xfi, mode, StreamTactic, xfi.FileName, Phx.BTacticData.kFileExt);
-			}
-		}
 		void StreamTacticsAsync(ref bool r, FA mode)
 		{
 			var keys_copy = new List<string>(mTacticsMap.Keys);
@@ -325,43 +314,34 @@ namespace KSoft.Phoenix.XML
 			}
 			UpdateResultWithTaskResults(ref r, tasks);
 		}
-		void StreamTactics(FA mode, bool synchronous)
+		void StreamTactics(FA mode)
 		{
 			if (GameEngine.Build == PhxEngineBuild.Alpha)
 			{
 				Debug.Trace.XML.TraceInformation("BDatabaseXmlSerializer: Alpha build detected, skipping Tactics streaming");
 				return;
 			}
-			bool r = true;
 
-			if(!synchronous)
-				StreamTacticsAsync(ref r, mode);
-			else
-				StreamTacticsSync(ref r, mode);
+			bool r = true;
+			StreamTacticsAsync(ref r, mode);
 		}
 
-		void StreamData(FA mode, bool synchronous)
+		void StreamData(FA mode)
 		{
 			bool r = true;
-			ProcessStreamXmlContexts(ref r, mode, synchronous: false);
+			ProcessStreamXmlContexts(ref r, mode);
 		}
 
-		protected virtual void LoadCore()
-		{
-		}
-		protected virtual void LoadUpdates(bool synchronous)
-		{
-		}
-
-		void LoadImpl(bool synchronous)
+		void LoadImpl(bool autoLoadTactics)
 		{
 			const FA k_mode = FA.Read;
 
 			PreStreamXml(k_mode);
 
-			StreamData(k_mode, synchronous);
-			LoadCore();
-			StreamTactics(k_mode, synchronous);
+			StreamData(k_mode);
+
+			if (autoLoadTactics)
+				StreamTactics(k_mode);
 
 			PostStreamXml(k_mode);
 		}
@@ -369,10 +349,8 @@ namespace KSoft.Phoenix.XML
 		{
 			AutoIdSerializersInitialize();
 
-			bool synchronous = (flags & BDatabaseXmlSerializerLoadFlags.UseSynchronousLoading) != 0;
-			LoadImpl(synchronous);
-			if ((flags & BDatabaseXmlSerializerLoadFlags.LoadUpdates) != 0)
-				LoadUpdates(synchronous);
+			bool auto_load_tactics = (flags & BDatabaseXmlSerializerLoadFlags.DoNotAutoLoadTactics) == 0;
+			LoadImpl(auto_load_tactics);
 
 			AutoIdSerializersDispose();
 		}

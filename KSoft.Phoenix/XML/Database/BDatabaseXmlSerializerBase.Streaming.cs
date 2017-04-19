@@ -9,15 +9,14 @@ namespace KSoft.Phoenix.XML
 		{
 			if (mode == FA.Write)
 			{
-				foreach (var kvp in Database.ObjectTacticsMap)
-					mObjectIdToTacticsMap.Add(kvp.Key, kvp.Value.Name);
+				SetupObjectToTacticsMapForWriting();
 			}
 		}
 		protected virtual void PostStreamXml(FA mode)
 		{
 			if (mode == FA.Read)
 			{
-				Database.BuildObjectTacticsMap(mObjectIdToTacticsMap, mTacticsMap);
+				SetupObjectToTacticsMapAfterReading();
 			}
 		}
 
@@ -111,11 +110,29 @@ namespace KSoft.Phoenix.XML
 		{
 			XmlUtil.SerializePreload(s, mObjectsSerializer, ForceNoRootElementStreaming);
 		}
+		void SetupObjectToTacticsMapAfterReading()
+		{
+			if (Database.ObjectTacticsMap.IsNotNullOrEmpty())
+				return;
+
+			Database.BuildObjectTacticsMap(mObjectIdToTacticsMap, mTacticsMap);
+		}
+		void SetupObjectToTacticsMapForWriting()
+		{
+			if (mObjectIdToTacticsMap.IsNotNullOrEmpty())
+				return;
+
+			foreach (var kvp in Database.ObjectTacticsMap)
+				mObjectIdToTacticsMap.Add(kvp.Key, kvp.Value.Name);
+		}
 		/// <remarks>For streaming directly from objects.xml</remarks>
 		void StreamXmlObjects(IO.XmlElementStream s)
 		{
 			if (s.IsReading)
+			{
 				FixObjectsXml(s);
+			}
+
 			XmlUtil.Serialize(s, mObjectsSerializer, ForceNoRootElementStreaming);
 		}
 
@@ -201,8 +218,6 @@ namespace KSoft.Phoenix.XML
 
 			PreStreamXml(s.StreamMode);
 
-			db.GameData.Serialize(s);
-			db.HPBars.Serialize(s);
 			// #NOTE place new DatabaseObjectKind code here
 			XmlUtil.Serialize(s, db.DamageTypes, Phx.BDamageType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.WeaponTypes, Phx.BWeaponType.kBListXmlParams);
@@ -210,6 +225,8 @@ namespace KSoft.Phoenix.XML
 			XmlUtil.Serialize(s, db.TerrainTileTypes, Phx.TerrainTileType.kBListXmlParams);
 			XmlUtil.Serialize(s, db.UserClasses, Phx.BUserClass.kBListXmlParams);
 			XmlUtil.Serialize(s, db.ObjectTypes, Phx.BDatabaseBase.kObjectTypesXmlParams);
+			db.HPBars.Serialize(s);
+			db.GameData.Serialize(s);
 			XmlUtil.Serialize(s, db.Abilities, Phx.BAbility.kBListXmlParams);
 			XmlUtil.Serialize(s, db.Objects, Phx.BProtoObject.kBListXmlParams);
 			XmlUtil.Serialize(s, db.Squads, Phx.BProtoSquad.kBListXmlParams);

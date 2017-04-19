@@ -42,7 +42,7 @@ namespace KSoft.Phoenix.Engine
 
 		public virtual void Load()
 		{
-			Database.Load();
+			Database.LoadAsync();
 		}
 	};
 }

@@ -319,19 +319,14 @@ namespace KSoft.Phoenix.Phx
 
 		protected abstract XML.BDatabaseXmlSerializerBase NewXmlSerializer();
 
-		public void Load()
-		{
-			using (var xs = NewXmlSerializer())
-			{
-				var flags = XML.BDatabaseXmlSerializerLoadFlags.LoadUpdates | XML.BDatabaseXmlSerializerLoadFlags.UseSynchronousLoading;
-				xs.Load(flags);
-			}
-		}
 		public void LoadAsync()
 		{
 			using (var xs = NewXmlSerializer())
 			{
-				var flags = XML.BDatabaseXmlSerializerLoadFlags.LoadUpdates;
+				var flags = 0
+					// this is not compatible with the old Serina-style app database
+					| XML.BDatabaseXmlSerializerLoadFlags.DoNotAutoLoadTactics;
+				flags = 0; // but actually do load them
 				xs.Load(flags);
 			}
 		}
