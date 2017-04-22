@@ -59,15 +59,28 @@ namespace KSoft.Phoenix.XML
 
 			if (mode == FA.Read)
 			{
-				if (result) using (var s = new IO.XmlElementStream(file.FullName, mode))
+				try
 				{
-					SetupStream(s, mode, this);
-					streamProc(s, ctxt);
+					if (!result)
+						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
+
+					if (result) using (var s = new IO.XmlElementStream(file.FullName, mode))
+					{
+						SetupStream(s, mode, this);
+						streamProc(s, ctxt);
+
+						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Loaded);
+					}
+				} catch (Exception)
+				{
+					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Failed);
+					throw;
 				}
 			}
 			else if (mode == FA.Write)
 			{
-				result = result && xfi.Writable;
+				if (Engine.XmlFileInfo.RespectWritableFlag)
+					result = result && xfi.Writable;
 
 				if (result) using (var s = IO.XmlElementStream.CreateForWrite(xfi.RootName))
 				{
@@ -92,15 +105,28 @@ namespace KSoft.Phoenix.XML
 
 			if (mode == FA.Read)
 			{
-				if (result) using (var s = new KSoft.IO.XmlElementStream(file.FullName, mode))
+				if (!result)
+					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
+
+				try
 				{
-					SetupStream(s, mode, this);
-					streamProc(s);
+					if (result) using (var s = new KSoft.IO.XmlElementStream(file.FullName, mode))
+					{
+						SetupStream(s, mode, this);
+						streamProc(s);
+
+						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Loaded);
+					}
+				} catch (Exception)
+				{
+					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Failed);
+					throw;
 				}
 			}
 			else if (mode == FA.Write)
 			{
-				result = result && xfi.Writable;
+				if (Engine.XmlFileInfo.RespectWritableFlag)
+					result = result && xfi.Writable;
 
 				if (result) using (var s = KSoft.IO.XmlElementStream.CreateForWrite(xfi.RootName))
 				{

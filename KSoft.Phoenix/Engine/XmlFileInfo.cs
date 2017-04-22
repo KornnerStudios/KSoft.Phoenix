@@ -18,6 +18,8 @@ namespace KSoft.Phoenix.Engine
 	public enum XmlFileLoadState
 	{
 		NotLoaded,
+		FileDoesNotExist,
+		Failed,
 		Preloading,
 		Preloaded,
 		Loading,
@@ -30,13 +32,14 @@ namespace KSoft.Phoenix.Engine
 		: IComparable<XmlFileInfo>
 		, IEquatable<XmlFileInfo>
 	{
+		public static bool RespectWritableFlag { get { return true; } }
+
 		public ContentStorage Location { get; set; }
 		public GameDirectory Directory { get; set; }
 		public string FileName { get; set; }
 		public string RootName { get; set; }
 
 		public bool Writable { get; set; }
-		public bool NonRequiredFile { get; set; }
 
 		public int CompareTo(XmlFileInfo other)
 		{
@@ -56,7 +59,6 @@ namespace KSoft.Phoenix.Engine
 				&& FileName == other.FileName
 				//&& RootName == other.RootName
 				//&& Writable == other.Writable
-				//&& NonRequiredFile == other.NonRequiredFile
 				;
 		}
 
@@ -76,8 +78,15 @@ namespace KSoft.Phoenix.Engine
 				return hash;
 			}
 		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}.{1}.{2}",
+				Location, Directory, FileName);
+		}
 	};
 
+	[System.Diagnostics.DebuggerDisplay("{"+ nameof(ProtoDataXmlFileInfo.DebuggerDisplay)  +"}")]
 	public sealed class ProtoDataXmlFileInfo
 	{
 		public XmlFilePriority Priority;
@@ -92,5 +101,10 @@ namespace KSoft.Phoenix.Engine
 			FileInfo = fileInfo;
 			FileInfoWithUpdates = fileInfoWithUpdates;
 		}
+
+		public string DebuggerDisplay { get {
+			return string.Format("{0} {1}",
+				Priority, FileInfo);
+		} }
 	};
 }

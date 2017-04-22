@@ -311,6 +311,10 @@ namespace KSoft.Phoenix.XML
 					Contract.Assert(tactic.SourceXmlFile != null, tactic.Name);
 				}
 
+				var engine = this.GameEngine;
+				if (mode == FA.Read)
+					engine.UpdateFileLoadStatus(tactic.SourceXmlFile, Engine.XmlFileLoadState.Loading);
+
 				var arg = tactic;
 				var task = Task<bool>.Factory.StartNew((state) =>
 				{

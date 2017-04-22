@@ -218,6 +218,7 @@ namespace KSoft.Phoenix.XML
 			XmlUtil.Serialize(s, db.UserClasses, Phx.BUserClass.kBListXmlParams);
 			XmlUtil.Serialize(s, db.ObjectTypes, Phx.BDatabaseBase.kObjectTypesXmlParams);
 			db.HPBars.Serialize(s);
+			// #NOTE since we don't preload, the Infection squad map won't properly resolve squads
 			db.GameData.Serialize(s);
 			XmlUtil.Serialize(s, db.Abilities, Phx.BAbility.kBListXmlParams);
 			XmlUtil.Serialize(s, db.Objects, Phx.BProtoObject.kBListXmlParams);
