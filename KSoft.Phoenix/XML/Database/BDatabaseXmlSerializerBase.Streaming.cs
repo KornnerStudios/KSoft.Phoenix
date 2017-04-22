@@ -7,21 +7,14 @@ namespace KSoft.Phoenix.XML
 	{
 		protected virtual void PreStreamXml(FA mode)
 		{
-			if (mode == FA.Write)
+			if (mode == FA.Read)
 			{
-				SetupObjectToTacticsMapForWriting();
+				PreloadTactics();
 			}
 		}
 		protected virtual void PostStreamXml(FA mode)
 		{
-			if (mode == FA.Read)
-			{
-				SetupObjectToTacticsMapAfterReading();
-			}
 		}
-
-		Dictionary<int, string> mObjectIdToTacticsMap;
-		Dictionary<string, Phx.BTacticData> mTacticsMap;
 
 		static Engine.XmlFileInfo StreamTacticsGetFileInfo(FA mode, string filename = null)
 		{
@@ -36,15 +29,29 @@ namespace KSoft.Phoenix.XML
 				Writable = mode == FA.Write,
 			};
 		}
-		void StreamTactic(IO.XmlElementStream s, string name)
+
+		void PreloadTactics()
 		{
-			var td = new Phx.BTacticData(name);
+			if (Database.Tactics.Count > 0)
+				return;
 
+			foreach (string tactic_filename in GameEngine.Directories.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
+				"*" + Phx.BTacticData.kFileExt))
+			{
+				string tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_filename);
+
+				var td = new Phx.BTacticData();
+				td.SourceFileName = tactic_filename;
+
+				Database.Tactics.DynamicAdd(td, tactic_name);
+			}
+		}
+
+		void StreamTactic(IO.XmlElementStream s, Phx.BTacticData tactic)
+		{
 			if (s.IsReading)
-				FixTacticsXml(s, name);
-			td.Serialize(s);
-
-			mTacticsMap[name] = td;
+				FixTacticsXml(s, tactic.Name);
+			tactic.Serialize(s);
 		}
 
 		public bool ForceNoRootElementStreaming = true;
@@ -109,21 +116,6 @@ namespace KSoft.Phoenix.XML
 		void PreloadObjects(IO.XmlElementStream s)
 		{
 			XmlUtil.SerializePreload(s, mObjectsSerializer, ForceNoRootElementStreaming);
-		}
-		void SetupObjectToTacticsMapAfterReading()
-		{
-			if (Database.ObjectTacticsMap.IsNotNullOrEmpty())
-				return;
-
-			Database.BuildObjectTacticsMap(mObjectIdToTacticsMap, mTacticsMap);
-		}
-		void SetupObjectToTacticsMapForWriting()
-		{
-			if (mObjectIdToTacticsMap.IsNotNullOrEmpty())
-				return;
-
-			foreach (var kvp in Database.ObjectTacticsMap)
-				mObjectIdToTacticsMap.Add(kvp.Key, kvp.Value.Name);
 		}
 		/// <remarks>For streaming directly from objects.xml</remarks>
 		void StreamXmlObjects(IO.XmlElementStream s)

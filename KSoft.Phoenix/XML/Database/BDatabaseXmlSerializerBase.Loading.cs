@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Contracts = System.Diagnostics.Contracts;
+using Contract = System.Diagnostics.Contracts.Contract;
 
 using FA = System.IO.FileAccess;
 
@@ -163,16 +165,7 @@ namespace KSoft.Phoenix.XML
 
 			public bool UpdateResultWithTaskResults(ref bool r)
 			{
-				foreach (var task in Tasks)
-				{
-					if (task.IsFaulted)
-					{
-						r = false;
-						if (TaskExceptions != null)
-							TaskExceptions.Add(task.Exception);
-					}
-					r &= task.Result;
-				}
+				BDatabaseXmlSerializerBase.UpdateResultWithTaskResults(ref r, Tasks, TaskExceptions);
 
 				return r;
 			}
@@ -283,7 +276,7 @@ namespace KSoft.Phoenix.XML
 			}
 		}
 
-		static bool UpdateResultWithTaskResults(ref bool r, Task<bool>[] tasks, List<Exception> exceptions = null)
+		static bool UpdateResultWithTaskResults(ref bool r, List<Task<bool>> tasks, List<Exception> exceptions = null)
 		{
 			foreach (var task in tasks)
 			{
@@ -301,16 +294,30 @@ namespace KSoft.Phoenix.XML
 
 		void StreamTacticsAsync(ref bool r, FA mode)
 		{
-			var keys_copy = new List<string>(mTacticsMap.Keys);
-			var tasks = new Task<bool>[keys_copy.Count];
-			int task_index = 0;
+			var tactics = Database.Tactics;
+			var tasks = new List<Task<bool>>(tactics.Count);
 
-			foreach (var name in keys_copy)
+			foreach (var tactic in tactics)
 			{
-				var xfi = StreamTacticsGetFileInfo(mode, name);
-				tasks[task_index++] = Task<bool>.Factory.StartNew((state) =>
-					TryStreamData(xfi, mode, StreamTactic, (state as Engine.XmlFileInfo).FileName, Phx.BTacticData.kFileExt),
-					xfi);
+				if (mode == FA.Read)
+				{
+					if (tactic.SourceXmlFile != null)
+						continue;
+
+					tactic.SourceXmlFile = StreamTacticsGetFileInfo(mode, tactic.Name);
+				}
+				else if (mode == FA.Write)
+				{
+					Contract.Assert(tactic.SourceXmlFile != null, tactic.Name);
+				}
+
+				var arg = tactic;
+				var task = Task<bool>.Factory.StartNew((state) =>
+				{
+					var _tactic = state as Phx.BTacticData;
+					return TryStreamData(_tactic.SourceXmlFile, mode, StreamTactic, _tactic, Phx.BTacticData.kFileExt);
+				}, arg);
+				tasks.Add(task);
 			}
 			UpdateResultWithTaskResults(ref r, tasks);
 		}

@@ -33,57 +33,54 @@ namespace KSoft.Phoenix.Phx
 		public abstract Collections.IProtoEnum GameProtoObjectTypes { get; }
 		public abstract Collections.IProtoEnum GameScenarioWorlds { get; }
 
-		Dictionary<int, string> mStringTable;
+		Dictionary<int, string> mStringTable = new Dictionary<int, string>();
 		/// <summary>StringID values indexed by their official locID</summary>
 		/// <remarks>Only populated with strings from a StringTable which Phx-based objects reference, to cut down on memory usage</remarks>
 		public IReadOnlyDictionary<int, string> StringTable { get { return mStringTable; } }
 
 		public BGameData GameData { get; private set; }
+			 = new BGameData();
 		public HPBarData HPBars { get; private set; }
+			 = new HPBarData();
 		// #NOTE place new DatabaseObjectKind code here
-		public Collections.BListAutoId<BDamageType> DamageTypes { get; private set; }
-		public Collections.BListAutoId<BProtoImpactEffect> ImpactEffects { get; private set; }
-		public Collections.BListAutoId<BWeaponType> WeaponTypes { get; private set; }
-		public Collections.BListAutoId<BUserClass> UserClasses { get; private set; }
+		public Collections.BListAutoId<		BDamageType> DamageTypes { get; private set; }
+			= new Collections.BListAutoId<	BDamageType>();
+		public Collections.BListAutoId<		BProtoImpactEffect> ImpactEffects { get; private set; }
+			= new Collections.BListAutoId<	BProtoImpactEffect>();
+		public Collections.BListAutoId<		BWeaponType> WeaponTypes { get; private set; }
+			= new Collections.BListAutoId<	BWeaponType>();
+		public Collections.BListAutoId<		BUserClass> UserClasses { get; private set; }
+			= new Collections.BListAutoId<	BUserClass>();
 		public Collections.BTypeNamesWithCode ObjectTypes { get; private set; }
-		public Collections.BListAutoId<BAbility> Abilities { get; private set; }
-		public Collections.BListAutoId<BProtoObject> Objects { get; private set; }
-		public Collections.BListAutoId<BProtoSquad> Squads { get; private set; }
-		public Collections.BListAutoId<BProtoPower> Powers { get; private set; }
-		public Collections.BListAutoId<BProtoTech> Techs { get; private set; }
-		public Collections.BListAutoId<TerrainTileType> TerrainTileTypes { get; private set; }
-		public Collections.BListAutoId<BCiv> Civs { get; private set; }
-		public Collections.BListAutoId<BLeader> Leaders { get; private set; }
+		public Collections.BListAutoId<		BAbility> Abilities { get; private set; }
+			 = new Collections.BListAutoId<	BAbility>();
+		public Collections.BListAutoId<		BProtoObject> Objects { get; private set; }
+			= new Collections.BListAutoId<	BProtoObject>(BProtoObject.kBListParams);
+		public Collections.BListAutoId<		BProtoSquad> Squads { get; private set; }
+			= new Collections.BListAutoId<	BProtoSquad>(BProtoSquad.kBListParams);
+		public Collections.BListAutoId<		BProtoPower> Powers { get; private set; }
+			= new Collections.BListAutoId<	BProtoPower>();
+		public Collections.BListAutoId<		BTacticData> Tactics { get; private set; }
+			= new Collections.BListAutoId<	BTacticData>();
+		public Collections.BListAutoId<		BProtoTech> Techs { get; private set; }
+			= new Collections.BListAutoId<	BProtoTech>(BProtoTech.kBListParams);
+		public Collections.BListAutoId<		TerrainTileType> TerrainTileTypes { get; private set; }
+			= new Collections.BListAutoId<	TerrainTileType>();
+		public Collections.BListAutoId<		BCiv> Civs { get; private set; }
+			= new Collections.BListAutoId<	BCiv>();
+		public Collections.BListAutoId<		BLeader> Leaders { get; private set; }
+			= new Collections.BListAutoId<	BLeader>();
 
-		public Collections.BListArray<BProtoMergedSquads> MergedSquads { get; private set; }
+		public Collections.BListArray<		BProtoMergedSquads> MergedSquads { get; private set; }
+			= new Collections.BListArray<	BProtoMergedSquads>();
 		public BProtoShieldBubbleTypes ShieldBubbleTypes { get; private set; }
-
-		public Dictionary<int, BTacticData> ObjectTacticsMap { get; private set; }
+			= new BProtoShieldBubbleTypes();
 
 		protected BDatabaseBase(Engine.PhxEngine engine, Collections.IProtoEnum gameObjectTypes)
 		{
 			Engine = engine;
 
-			mStringTable = new Dictionary<int, string>();
-
-			GameData = new BGameData();
-			HPBars = new HPBarData();
-			DamageTypes = new Collections.BListAutoId<BDamageType>();
-			ImpactEffects = new Collections.BListAutoId<BProtoImpactEffect>();
-			WeaponTypes = new Collections.BListAutoId<BWeaponType>();
-			UserClasses = new Collections.BListAutoId<BUserClass>();
 			ObjectTypes = new Collections.BTypeNamesWithCode(gameObjectTypes);
-			Abilities = new Collections.BListAutoId<BAbility>();
-			Objects = new Collections.BListAutoId<BProtoObject>(BProtoObject.kBListParams);
-			Squads = new Collections.BListAutoId<BProtoSquad>(BProtoSquad.kBListParams);
-			Powers = new Collections.BListAutoId<BProtoPower>();
-			Techs = new Collections.BListAutoId<BProtoTech>(BProtoTech.kBListParams);
-			TerrainTileTypes = new Collections.BListAutoId<TerrainTileType>();
-			Civs = new Collections.BListAutoId<BCiv>();
-			Leaders = new Collections.BListAutoId<BLeader>();
-
-			MergedSquads = new Collections.BListArray<BProtoMergedSquads>();
-			ShieldBubbleTypes = new BProtoShieldBubbleTypes();
 
 			InitializeDatabaseInterfaces();
 		}
@@ -118,6 +115,7 @@ namespace KSoft.Phoenix.Phx
 			Abilities.SetupDatabaseInterface();
 			Objects.SetupDatabaseInterface();
 			Squads.SetupDatabaseInterface();
+			Tactics.SetupDatabaseInterface();
 			Techs.SetupDatabaseInterface();
 			TerrainTileTypes.SetupDatabaseInterface();
 			Powers.SetupDatabaseInterface();
@@ -191,6 +189,7 @@ namespace KSoft.Phoenix.Phx
 			case DatabaseObjectKind.ObjectType:	return ObjectTypes;
 			case DatabaseObjectKind.Power:		return Powers;
 			case DatabaseObjectKind.Squad:		return Squads;
+			case DatabaseObjectKind.Tactic:		return Tactics;
 			case DatabaseObjectKind.Tech:		return Techs;
 			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes;
 			case DatabaseObjectKind.Unit:		return null; // #TODO?
@@ -232,6 +231,7 @@ namespace KSoft.Phoenix.Phx
 			case DatabaseObjectKind.ObjectType:	return ObjectTypes.TryGetIdWithUndefined(name);
 			case DatabaseObjectKind.Power:		return Powers.TryGetIdWithUndefined(name);
 			case DatabaseObjectKind.Squad:		return Squads.TryGetIdWithUndefined(name);
+			case DatabaseObjectKind.Tactic:		return Tactics.TryGetIdWithUndefined(name);
 			case DatabaseObjectKind.Tech:		return Techs.TryGetIdWithUndefined(name);
 			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes.TryGetIdWithUndefined(name);
 			// TODO: Should just use the Objects DBI AFAICT
@@ -271,6 +271,7 @@ namespace KSoft.Phoenix.Phx
 			case DatabaseObjectKind.ObjectType:	return ObjectTypes.TryGetNameWithUndefined(id);
 			case DatabaseObjectKind.Power:		return Powers.TryGetNameWithUndefined(id);
 			case DatabaseObjectKind.Squad:		return Squads.TryGetNameWithUndefined(id);
+			case DatabaseObjectKind.Tactic:		return Tactics.TryGetNameWithUndefined(id);
 			case DatabaseObjectKind.Tech:		return Techs.TryGetNameWithUndefined(id);
 			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes.TryGetNameWithUndefined(id);
 			// TODO: Should just use the Objects DBI AFAICT
@@ -282,14 +283,6 @@ namespace KSoft.Phoenix.Phx
 			}
 		}
 		#endregion
-
-		internal void BuildObjectTacticsMap(Dictionary<int, string> idToTacticMap, Dictionary<string, BTacticData> tacticNameToTactic)
-		{
-			ObjectTacticsMap = new Dictionary<int, BTacticData>(idToTacticMap.Count);
-
-			foreach (var kv in idToTacticMap)
-				ObjectTacticsMap.Add(kv.Key, tacticNameToTactic[kv.Value]);
-		}
 
 		XML.BTriggerScriptSerializer mTriggerSerializer;
 		internal void InitializeTriggerScriptSerializer()

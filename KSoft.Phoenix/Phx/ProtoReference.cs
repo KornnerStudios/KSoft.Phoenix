@@ -193,6 +193,11 @@ namespace KSoft.Phoenix.Phx.Meta
 		public BProtoSquadReferenceAttribute() : base(typeof(BProtoSquad), DatabaseObjectKind.Squad) { }
 	};
 
+	public sealed class BTacticDataReferenceAttribute : ProtoReferenceAttribute
+	{
+		public BTacticDataReferenceAttribute() : base(typeof(BTacticData), DatabaseObjectKind.Tactic) { }
+	};
+
 	public sealed class BProtoTechReferenceAttribute : ProtoReferenceAttribute
 	{
 		public BProtoTechReferenceAttribute() : base(typeof(BProtoTech), DatabaseObjectKind.Tech) { }

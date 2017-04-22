@@ -5,7 +5,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BTacticData
-		: IO.ITagElementStringNameStreamable
+		: Collections.BListAutoIdObject
 	{
 		public const string kFileExt = ".tactics";
 
@@ -13,24 +13,19 @@ namespace KSoft.Phoenix.Phx
 		public const string kXmlRoot = "TacticData";
 		#endregion
 
-		public string Name { get; private set; }
+		public string SourceFileName { get; set; }
+		public Engine.XmlFileInfo SourceXmlFile { get; set; }
 
-		public Collections.BListAutoId<BWeapon> Weapons { get; private set; }
-		public Collections.BListAutoId<BProtoAction> Actions { get; private set; }
+		public Collections.BListAutoId<		BWeapon> Weapons { get; private set; }
+			= new Collections.BListAutoId<	BWeapon>();
+		public Collections.BListAutoId<		BProtoAction> Actions { get; private set; }
+			= new Collections.BListAutoId<	BProtoAction>();
 
 		public BTactic Tactic { get; private set; }
+			= new BTactic();
 
-		public BTacticData(string name)
+		public BTacticData()
 		{
-			Contract.Requires(!string.IsNullOrEmpty(name));
-
-			Name = name;
-
-			Weapons = new Collections.BListAutoId<BWeapon>();
-			Actions = new Collections.BListAutoId<BProtoAction>();
-
-			Tactic = new BTactic();
-
 			InitializeDatabaseInterfaces();
 		}
 
@@ -66,7 +61,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		#region ITagElementStreamable<string> Members
+		#region BListAutoIdObject Members
 		internal bool StreamID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string xmlName, ref int dbid,
 			TacticDataObjectKind kind,
 			bool isOptional = true, IO.TagElementNodeType xmlSource = XML.XmlUtil.kSourceElement)
@@ -122,9 +117,7 @@ namespace KSoft.Phoenix.Phx
 			td.StreamID(s, XML.XmlUtil.kNoXmlName, ref protoActionId, TacticDataObjectKind.Action, false, XML.XmlUtil.kSourceCursor);
 		}
 
-		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
-			where TDoc : class
-			where TCursor : class
+		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			using (s.EnterUserDataBookmark(this))
 			{

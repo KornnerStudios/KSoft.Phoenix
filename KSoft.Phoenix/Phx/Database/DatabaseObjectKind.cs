@@ -16,6 +16,7 @@ namespace KSoft.Phoenix.Phx
 		ObjectType,
 		Power,
 		Squad,
+		Tactic,
 		Tech,
 		TerrainTileType,
 		/// <summary>Object or ObjectType</summary>

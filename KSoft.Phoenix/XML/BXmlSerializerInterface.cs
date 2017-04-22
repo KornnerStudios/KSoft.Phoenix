@@ -180,7 +180,7 @@ namespace KSoft.Phoenix.XML
 		}
 
 		[System.Diagnostics.Conditional("TRACE")]
-		static void TraceUndefinedHandle<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string name,
+		protected static void TraceUndefinedHandle<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string name,
 			string xmlName,
 			int id, string kind)
 			where TDoc : class
@@ -412,6 +412,54 @@ namespace KSoft.Phoenix.XML
 					using (s.EnterCursorBookmark(xmlName))
 						StreamDBID(s, xmlName, ref dbidCopy, kind, isOptional, xmlSource);
 				}
+			}
+
+			return was_streamed;
+		}
+
+		public bool StreamTactic<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s
+			, string xmlName
+			, ref int dbid
+			, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
+			where TDoc : class
+			where TCursor : class
+		{
+			const Phx.DatabaseObjectKind kDbKind = Phx.DatabaseObjectKind.Tactic;
+
+			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+
+			string id_name = null;
+			bool was_streamed = true;
+			bool to_lower = false;
+
+			if (s.IsReading)
+			{
+				was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+
+				if (was_streamed)
+				{
+					id_name = System.IO.Path.GetFileNameWithoutExtension(id_name);
+
+					dbid = Database.GetId(kDbKind, id_name);
+					Contract.Assert(dbid.IsNotNone(), id_name);
+
+					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
+						TraceUndefinedHandle(s, id_name, xmlName, dbid, kDbKind.ToString());
+				}
+			}
+			else if (s.IsWriting)
+			{
+				if (dbid.IsNone())
+				{
+					was_streamed = false;
+					return was_streamed;
+				}
+
+				id_name = Database.GetName(kDbKind, dbid);
+				Contract.Assert(!string.IsNullOrEmpty(id_name));
+
+				id_name += Phx.BTacticData.kFileExt;
+				s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
 			}
 
 			return was_streamed;

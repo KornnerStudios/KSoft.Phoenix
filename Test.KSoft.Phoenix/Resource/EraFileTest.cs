@@ -121,7 +121,8 @@ namespace KSoft.Phoenix.Resource.Test
 			bool result = false;
 
 			#region Expand
-			if(false)using (var expander = new EraFileExpander(k_input_era))
+			var expand = false;
+			if (expand) using (var expander = new EraFileExpander(k_input_era))
 			{
 				expander.Options = kEraUtilTestOptions;
 				expander.ExpanderOptions = kEraExpanderTestOptions

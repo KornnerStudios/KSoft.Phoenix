@@ -168,7 +168,7 @@ namespace KSoft.Phoenix.Engine
 
 			string dir = GetAbsoluteDirectory(loc, gameDir);
 
-			return Directory.GetFiles(dir, searchPattern);
+			return Directory.EnumerateFiles(dir, searchPattern);
 		}
 	};
 }

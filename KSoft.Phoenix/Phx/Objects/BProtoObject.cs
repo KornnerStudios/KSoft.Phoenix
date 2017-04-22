@@ -83,10 +83,14 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BListArray<BHardpoint> Hardpoints { get; private set; }
+		public Collections.BListArray<		BHardpoint> Hardpoints { get; private set; }
+			= new Collections.BListArray<	BHardpoint>();
 		public List<string> SingleBoneIKs { get; private set; }
-		public Collections.BListArray<BGroundIKNode> GroundIKs { get; private set; }
-		public Collections.BListArray<BSweetSpotIKNode> SweetSpotIKs { get; private set; }
+			= new List<string>();
+		public Collections.BListArray<		BGroundIKNode> GroundIKs { get; private set; }
+			= new Collections.BListArray<	BGroundIKNode>();
+		public Collections.BListArray<		BSweetSpotIKNode> SweetSpotIKs { get; private set; }
+			= new Collections.BListArray<	BSweetSpotIKNode>();
 
 		#region ObstructionRadius
 		BVector mObstructionRadius;
@@ -432,8 +436,10 @@ namespace KSoft.Phoenix.Phx
 		public bool HasCostEscalation { get { return CostEscalation > 0.0f; } }
 		#endregion
 		[Meta.BProtoObjectReference]
-		public List<BProtoObjectID> CostEscalationObjects { get; private set; }
-		public Collections.BListArray<BProtoObjectCaptureCost> CaptureCosts { get; private set; }
+		public List<	BProtoObjectID> CostEscalationObjects { get; private set; }
+			 = new List<BProtoObjectID>();
+		public Collections.BListArray<		BProtoObjectCaptureCost> CaptureCosts { get; private set; }
+			= new Collections.BListArray<	BProtoObjectCaptureCost>();
 		#region Bounty
 		float mBounty;
 		/// <summary>Vet XP contribution value</summary>
@@ -503,7 +509,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		/// <remarks>Engine actually uses a fixed array that maps a BSquadMode to an AnimType</remarks>
-		public Collections.BListArray<BProtoObjectSquadModeAnim> SquadModeAnims { get; private set; }
+		public Collections.BListArray<		BProtoObjectSquadModeAnim> SquadModeAnims { get; private set; }
+			= new Collections.BListArray<	BProtoObjectSquadModeAnim>();
 		#region RallyPoint
 		BRallyPointType mRallyPoint = BRallyPointType.Invalid;
 		public BRallyPointType RallyPoint
@@ -627,8 +634,11 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 		[Meta.TriggerScriptReference]
 		public List<string> AbilityTriggerScripts { get; private set; }
-		public Collections.BListExplicitIndex<BProtoObjectVeterancy> Veterancy { get; private set; }
+			= new List<string>();
+		public Collections.BListExplicitIndex<		BProtoObjectVeterancy> Veterancy { get; private set; }
+			= new Collections.BListExplicitIndex<	BProtoObjectVeterancy>(BProtoObjectVeterancy.kBListExplicitIndexParams);
 		public Collections.BTypeValuesSingle AddResource { get; private set; }
+			= new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
 		#region ExistSoundBoneName
 		string mExistSoundBoneName;
 		public string ExistSoundBoneName
@@ -695,9 +705,13 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		public Collections.BBitSet Flags { get; private set; }
+			= new Collections.BBitSet(kFlagsParams);
 		public Collections.BBitSet ObjectTypes { get; private set; }
-		public Collections.BListArray<BProtoObjectDamageType> DamageTypes { get; private set; }
-		public Collections.BListArray<BProtoObjectSound> Sounds { get; private set; }
+			 = new Collections.BBitSet(kObjectTypesParams);
+		public Collections.BListArray<		BProtoObjectDamageType> DamageTypes { get; private set; }
+			= new Collections.BListArray<	BProtoObjectDamageType>();
+		public Collections.BListArray<		BProtoObjectSound> Sounds { get; private set; }
+			= new Collections.BListArray<	BProtoObjectSound>();
 		public BTerrainImpactDecalHandle ImpactDecal { get; set; }
 		#region ExtendedSoundBank
 		string mExtendedSoundBank;
@@ -745,8 +759,10 @@ namespace KSoft.Phoenix.Phx
 		} }
 		bool HasMinimapColorData { get { return MinimapColor != cDefaultMinimapColor; } }
 		#endregion
-		public Collections.BListArray<BProtoObjectCommand> Commands { get; private set; }
-		public Collections.BListArray<BProtoObjectTrainLimit> TrainLimits { get; private set; }
+		public Collections.BListArray<		BProtoObjectCommand> Commands { get; private set; }
+			= new Collections.BListArray<	BProtoObjectCommand>();
+		public Collections.BListArray<		BProtoObjectTrainLimit> TrainLimits { get; private set; }
+			= new Collections.BListArray<	BProtoObjectTrainLimit>();
 		#region GatherLink
 
 		int mGatherLinkObjectType = TypeExtensions.kNone;
@@ -786,10 +802,21 @@ namespace KSoft.Phoenix.Phx
 				|| GatherLinkSelf;
 		} }
 		#endregion
-		public Collections.BListArray<BProtoObjectChildObject> ChildObjects { get; private set; }
+		public Collections.BListArray<		BProtoObjectChildObject> ChildObjects { get; private set; }
+			= new Collections.BListArray<	BProtoObjectChildObject>();
 		public Collections.BTypeValuesSingle Populations { get; private set; }
+			= new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
 		public Collections.BTypeValuesSingle PopulationsCapAddition { get; private set; }
-		internal bool mHasTactics;
+			= new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
+		#region Tactics
+		int mTactics = TypeExtensions.kNone;
+		[Meta.BTacticDataReference]
+		public int Tactics
+		{
+			get { return mTactics; }
+			set { mTactics = value; }
+		}
+		#endregion
 		#region FlightLevel
 		const float cDefaultFlightLevel = 10.0f;
 
@@ -839,7 +866,8 @@ namespace KSoft.Phoenix.Phx
 				|| PhxPredicates.IsNotZero(HPBarOffset);
 		} }
 		#endregion
-		public Collections.BListArray<BHitZone> HitZones { get; private set; }
+		public Collections.BListArray<		BHitZone> HitZones { get; private set; }
+			= new Collections.BListArray<	BHitZone>();
 		#region BeamHead
 		int mBeamHead = TypeExtensions.kNone;
 		[Meta.ObjectTypeReference]
@@ -962,7 +990,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		[Meta.ObjectTypeReference]
-		public List<int> Contains { get; private set; }
+		public List<	BProtoObjectID> Contains { get; private set; }
+			= new List<	BProtoObjectID>();
 		#region GarrisonSquadMode
 		BSquadMode mGarrisonSquadMode = BSquadMode.Invalid;
 		public BSquadMode GarrisonSquadMode
@@ -1149,36 +1178,6 @@ namespace KSoft.Phoenix.Phx
 			textData.HasEnemyRolloverTextID = true;
 			textData.HasPrereqTextID = true;
 			textData.HasRoleTextID = true;
-
-			Hardpoints = new Collections.BListArray<BHardpoint>();
-			SingleBoneIKs = new List<string>();
-			GroundIKs = new Collections.BListArray<BGroundIKNode>();
-			SweetSpotIKs = new Collections.BListArray<BSweetSpotIKNode>();
-
-			CostEscalationObjects = new List<BProtoObjectID>();
-			CaptureCosts = new Collections.BListArray<BProtoObjectCaptureCost>();
-
-			SquadModeAnims = new Collections.BListArray<BProtoObjectSquadModeAnim>();
-
-			AbilityTriggerScripts = new List<string>();
-			Veterancy = new Collections.BListExplicitIndex<BProtoObjectVeterancy>(BProtoObjectVeterancy.kBListExplicitIndexParams);
-			AddResource = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
-
-			Flags = new Collections.BBitSet(kFlagsParams);
-			ObjectTypes = new Collections.BBitSet(kObjectTypesParams);
-			DamageTypes = new Collections.BListArray<BProtoObjectDamageType>();
-			Sounds = new Collections.BListArray<BProtoObjectSound>();
-
-			Commands = new Collections.BListArray<BProtoObjectCommand>();
-			TrainLimits = new Collections.BListArray<BProtoObjectTrainLimit>();
-
-			ChildObjects = new Collections.BListArray<BProtoObjectChildObject>();
-			Populations = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
-			PopulationsCapAddition = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
-
-			HitZones = new Collections.BListArray<BHitZone>();
-
-			Contains = new List<BProtoObjectID>();
 		}
 
 		#region ITagElementStreamable<string> Members
@@ -1388,7 +1387,7 @@ namespace KSoft.Phoenix.Phx
 			XML.XmlUtil.Serialize(s, ChildObjects, BProtoObjectChildObject.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle);
 			XML.XmlUtil.Serialize(s, PopulationsCapAddition, BPopulation.kBListXmlParamsSingle_CapAddition);
-			((XML.BDatabaseXmlSerializerBase)xs).StreamXmlTactic(s, "Tactics", this, ref mHasTactics);
+			xs.StreamTactic(s, "Tactics", ref mTactics);
 			s.StreamElementOpt("FlightLevel", ref mFlightLevel, f => f != cDefaultFlightLevel);
 			s.StreamElementOpt("ExitFromDirection", ref mExitFromDirection, Predicates.IsNotZero);
 			#region HPBar
