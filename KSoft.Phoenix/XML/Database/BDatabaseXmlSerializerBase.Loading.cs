@@ -46,6 +46,10 @@ namespace KSoft.Phoenix.XML
 			mStreamXmlContexts = new List<StreamXmlContextData>()
 			{
 				#region Lists
+				new StreamXmlContextData(Phx.LocStringTable.kProtoFileInfoEnglish)
+				{
+					Preload=PreloadStringTable,
+				},
 				new StreamXmlContextData(Phx.BDatabaseBase.kObjectTypesProtoFileInfo)
 				{
 					Preload=StreamXmlObjectTypes,

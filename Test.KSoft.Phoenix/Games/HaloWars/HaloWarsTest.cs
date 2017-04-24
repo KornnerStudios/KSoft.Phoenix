@@ -39,6 +39,11 @@ namespace KSoft.Phoenix.Engine.Test
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
 			hw.Load();
+
+			Console.WriteLine("English StringTable range stats:");
+			var stats = hw.Database.EnglishStringTable.RangeStats;
+			foreach (var stat in stats)
+				Console.WriteLine(stat.Value);
 		}
 
 		[TestMethod]

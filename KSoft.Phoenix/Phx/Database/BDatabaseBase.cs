@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
@@ -33,15 +32,29 @@ namespace KSoft.Phoenix.Phx
 		public abstract Collections.IProtoEnum GameProtoObjectTypes { get; }
 		public abstract Collections.IProtoEnum GameScenarioWorlds { get; }
 
-		Dictionary<int, string> mStringTable = new Dictionary<int, string>();
-		/// <summary>StringID values indexed by their official locID</summary>
-		/// <remarks>Only populated with strings from a StringTable which Phx-based objects reference, to cut down on memory usage</remarks>
-		public IReadOnlyDictionary<int, string> StringTable { get { return mStringTable; } }
+		#region StringTable stuff
+		public LocStringTable EnglishStringTable { get; private set; }
+			= new LocStringTable();
+
+		/// <summary>Maps a ID to a bit representing if any data references it somewhere. Only updated on data load</summary>
+		public Collections.BitSet ReferencedStringIds { get; private set; }
+			= new Collections.BitSet(ushort.MaxValue, fixedLength: false);
+
+		internal void AddStringIDReference(int id)
+		{
+			if (ReferencedStringIds.Length < id)
+				ReferencedStringIds.Length += 16;
+
+			ReferencedStringIds[id] = true;
+		}
+		#endregion
 
 		public BGameData GameData { get; private set; }
 			 = new BGameData();
 		public HPBarData HPBars { get; private set; }
 			 = new HPBarData();
+
+		#region DatabaseObjectKind lists
 		// #NOTE place new DatabaseObjectKind code here
 		public Collections.BListAutoId<		BDamageType> DamageTypes { get; private set; }
 			= new Collections.BListAutoId<	BDamageType>();
@@ -70,6 +83,7 @@ namespace KSoft.Phoenix.Phx
 			= new Collections.BListAutoId<	BCiv>();
 		public Collections.BListAutoId<		BLeader> Leaders { get; private set; }
 			= new Collections.BListAutoId<	BLeader>();
+		#endregion
 
 		public Collections.BListArray<		BProtoMergedSquads> MergedSquads { get; private set; }
 			= new Collections.BListArray<	BProtoMergedSquads>();
@@ -89,17 +103,6 @@ namespace KSoft.Phoenix.Phx
 		public virtual void Dispose()
 		{
 			Util.DisposeAndNull(ref mTriggerSerializer);
-		}
-		#endregion
-
-		#region StringTable Util
-		internal void AddStringIDReference(int index)
-		{
-			mStringTable[index] = kInvalidString;
-		}
-		void SetStringIDValue(int index, string value)
-		{
-			mStringTable[index] = value;
 		}
 		#endregion
 

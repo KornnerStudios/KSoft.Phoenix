@@ -4,7 +4,15 @@ namespace KSoft.Phoenix.Engine
 	public enum GameDirectory
 	{
 		Art,
+			ParticleEffect,
+			SkyBox,
 			Terrain,
+			FlashUI,
+				Minimap,
+				Loadmap,
+			ClipArt,
+			Roads,
+			Foliage,
 
 		Data,
 			AbilityScripts,

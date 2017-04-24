@@ -23,14 +23,15 @@ namespace KSoft.Phoenix.Phx
 	};
 
 	public sealed class LocString
-		: IO.ITagElementStringNameStreamable
+		: ObjectModel.BasicViewModel
+		, IO.ITagElementStringNameStreamable
 	{
 		#region ID
-		int mID;
+		int mID = TypeExtensions.kNone;
 		public int ID
 		{
 			get { return mID; }
-			set { mID = value; }
+			private set { this.SetFieldVal(ref mID, value); }
 		}
 		#endregion
 
@@ -40,7 +41,7 @@ namespace KSoft.Phoenix.Phx
 		public LocStringCategory Category
 		{
 			get { return mCategory; }
-			set { mCategory = value; }
+			set { this.SetFieldEnum(ref mCategory, value); }
 		}
 		#endregion
 
@@ -49,7 +50,7 @@ namespace KSoft.Phoenix.Phx
 		public string Scenario
 		{
 			get { return mScenario; }
-			set { mScenario = value; }
+			set { this.SetFieldObj(ref mScenario, value); }
 		}
 		#endregion
 
@@ -58,7 +59,7 @@ namespace KSoft.Phoenix.Phx
 		public bool IsSubtitle
 		{
 			get { return mIsSubtitle; }
-			set { mIsSubtitle = value; }
+			set { this.SetFieldVal(ref mIsSubtitle, value); }
 		}
 		#endregion
 
@@ -67,7 +68,7 @@ namespace KSoft.Phoenix.Phx
 		public bool IsUpdate
 		{
 			get { return mIsUpdate; }
-			set { mIsUpdate = value; }
+			set { this.SetFieldVal(ref mIsUpdate, value); }
 		}
 		#endregion
 
@@ -76,16 +77,18 @@ namespace KSoft.Phoenix.Phx
 		public int MouseKeyboardID
 		{
 			get { return mMouseKeyboardID; }
-			set { mMouseKeyboardID = value; }
+			set { this.SetFieldVal(ref mMouseKeyboardID, value); }
 		}
 		#endregion
 
 		#region OriginalID
+		// this is a string because there are cases with "and" in them. eg:
+		// "25045 and 23441"
 		string mOriginalID;
 		public string OriginalID
 		{
 			get { return mOriginalID; }
-			set { mOriginalID = value; }
+			set { this.SetFieldObj(ref mOriginalID, value); }
 		}
 		#endregion
 
@@ -94,9 +97,18 @@ namespace KSoft.Phoenix.Phx
 		public string Text
 		{
 			get { return mText; }
-			set { mText = value; }
+			set { this.SetFieldObj(ref mText, value); }
 		}
 		#endregion
+
+		public LocString()
+		{
+		}
+
+		public LocString(int id)
+		{
+			mID = id;
+		}
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -110,8 +122,15 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("Update", ref mIsUpdate, Predicates.IsTrue);
 			s.StreamAttributeOpt("_mouseKeyboard", ref mMouseKeyboardID, Predicates.IsNotNone);
 			s.StreamAttributeOpt("originally", ref mOriginalID, Predicates.IsNotNullOrEmpty);
-			s.StreamCursor(ref mText);
+			if (s.IsReading || mText.IsNotNullOrEmpty())
+				s.StreamCursor(ref mText);
 		}
 		#endregion
+
+		public override string ToString()
+		{
+			return string.Format("({0}) '{1}'",
+				ID, Text ?? "");
+		}
 	};
 }

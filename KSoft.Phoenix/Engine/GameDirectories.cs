@@ -9,19 +9,31 @@ namespace KSoft.Phoenix.Engine
 	public class GameDirectories
 	{
 		#region Art
-		protected const string kArtPath = @"art\";
+		const string kArtPath = @"art\";
+
+		const string kParticleEffectPath = @"effects\";
+		const string kSkyBoxPath = @"environment\sky\";
+		const string kTerrainTexturesPath = @"terrain\";
+		const string kFlashUIPath = @"ui\flash\";
+		const string kMinimapPath = @"ui\flash\minimaps\";
+		const string kLoadmapPath = @"ui\flash\pregame\textures\";
+		const string kClipArtPath = @"clipart\";
+		const string kRoadsPath = @"roads\";
+		const string kFoliagePath = @"foliage\";
 		#endregion
 		#region Data
-		protected const string kDataPath = @"data\";
-		protected const string kAbilitiesPath = @"abilities\";
-		protected const string kAIPath = @"ai\";
-		protected const string kPowersPath = @"powers\";
-		protected const string kTacticsPath = @"tactics\";
-		protected const string kTriggerScriptsPath = @"triggerscripts\";
+		const string kDataPath = @"data\";
+
+		const string kAbilitiesPath = @"abilities\";
+		const string kAIPath = @"ai\";
+		const string kPowersPath = @"powers\";
+		const string kTacticsPath = @"tactics\";
+		const string kTriggerScriptsPath = @"triggerscripts\";
 		#endregion
-		protected const string kScenariosPath = @"Scenario\";
-		protected const string kSoundPath = @"Sound\";
-		protected const string kTalkingHeadsPath = @"video\talkingheads\";
+		const string kPhysicsPath = @"physics\";
+		const string kScenariosPath = @"scenario\";
+		const string kSoundPath = @"sound\";
+		const string kTalkingHeadsPath = @"video\talkingheads\";
 
 		/*public*/ string RootDirectory { get; /*private*/ set; }
 		/*public*/ string UpdateDirectory { get; /*private*/ set; }
@@ -38,32 +50,54 @@ namespace KSoft.Phoenix.Engine
 			if (!UpdateDirectoryIsValid)
 				Debug.Trace.Engine.TraceInformation("GameDirectories: No matching update directory for '{0}'", updateRoot);
 
-			Art = kArtPath;//Path.Combine(RootDirectory, kArtPath);
+			ArtPath = kArtPath;//Path.Combine(RootDirectory, kArtPath);
+			ParticleEffectPath = Path.Combine(ArtPath, kParticleEffectPath);
+			SkyBoxPath = Path.Combine(ArtPath, kSkyBoxPath);
+			TerrainTexturesPath = Path.Combine(ArtPath, kTerrainTexturesPath);
+			FlashUIPath = Path.Combine(ArtPath, kFlashUIPath);
+			MinimapPath = Path.Combine(ArtPath, kMinimapPath);
+			LoadmapPath = Path.Combine(ArtPath, kLoadmapPath);
+			ClipArtPath = Path.Combine(ArtPath, kClipArtPath);
+			RoadsPath = Path.Combine(ArtPath, kRoadsPath);
+			FoliagePath = Path.Combine(ArtPath, kFoliagePath);
 
-			Data = kDataPath;//Path.Combine(RootDirectory, kDataPath);
-			Abilities = Path.Combine(Data, kAbilitiesPath);
-			AI = Path.Combine(Data, kAIPath);
-			Powers = Path.Combine(Data, kPowersPath);
-			Tactics = Path.Combine(Data, kTacticsPath);
-			TriggerScripts = Path.Combine(Data, kTriggerScriptsPath);
+			DataPath = kDataPath;//Path.Combine(RootDirectory, kDataPath);
+			AbilityScriptsPath = Path.Combine(DataPath, kAbilitiesPath);
+			AIDataPath = Path.Combine(DataPath, kAIPath);
+			PowerScriptsPath = Path.Combine(DataPath, kPowersPath);
+			TacticsPath = Path.Combine(DataPath, kTacticsPath);
+			TriggerScriptsPath = Path.Combine(DataPath, kTriggerScriptsPath);
 
-			Scenario = kScenariosPath;
-			Sound = kSoundPath;
+			PhysicsPath = kPhysicsPath;
+			ScenarioPath = kScenariosPath;
+			SoundPath = kSoundPath;
 		}
 
 		#region Art
-		public virtual string Art { get; protected set; }
+		public string ArtPath { get; protected set; }
+
+		public string ParticleEffectPath { get; protected set; }
+		public string SkyBoxPath { get; protected set; }
+		public string TerrainTexturesPath { get; protected set; }
+		public string FlashUIPath { get; protected set; }
+		public string MinimapPath { get; protected set; }
+		public string LoadmapPath { get; protected set; }
+		public string ClipArtPath { get; protected set; }
+		public string RoadsPath { get; protected set; }
+		public string FoliagePath { get; protected set; }
 		#endregion
 		#region Data
-		public virtual string Data { get; protected set; }
-		public virtual string Abilities { get; protected set; }
-		public virtual string AI { get; protected set; }
-		public virtual string Powers { get; protected set; }
-		public virtual string Tactics { get; protected set; }
-		public virtual string TriggerScripts { get; protected set; }
+		public string DataPath { get; protected set; }
+
+		public string AbilityScriptsPath { get; protected set; }
+		public string AIDataPath { get; protected set; }
+		public string PowerScriptsPath { get; protected set; }
+		public string TacticsPath { get; protected set; }
+		public string TriggerScriptsPath { get; protected set; }
 		#endregion
-		public virtual string Scenario { get; protected set; }
-		public virtual string Sound { get; protected set; }
+		public string PhysicsPath { get; protected set; }
+		public string ScenarioPath { get; protected set; }
+		public string SoundPath { get; protected set; }
 
 		public string GetContentLocation(ContentStorage location)
 		{
@@ -81,18 +115,21 @@ namespace KSoft.Phoenix.Engine
 			switch (dir)
 			{
 			#region Art
-			case GameDirectory.Art: return Art;
+			case GameDirectory.Art: return ArtPath;
+
 			#endregion
 			#region Data
-			case GameDirectory.Data: return Data;
-			case GameDirectory.AbilityScripts: return Abilities;
-			case GameDirectory.AIData: return AI;
-			case GameDirectory.PowerScripts: return Powers;
-			case GameDirectory.Tactics: return Tactics;
-			case GameDirectory.TriggerScripts: return TriggerScripts;
+			case GameDirectory.Data: return DataPath;
+
+			case GameDirectory.AbilityScripts: return AbilityScriptsPath;
+			case GameDirectory.AIData: return AIDataPath;
+			case GameDirectory.PowerScripts: return PowerScriptsPath;
+			case GameDirectory.Tactics: return TacticsPath;
+			case GameDirectory.TriggerScripts: return TriggerScriptsPath;
 			#endregion
-			case GameDirectory.Scenario: return Scenario;
-			case GameDirectory.Sound: return Sound;
+			case GameDirectory.Physics: return PhysicsPath;
+			case GameDirectory.Scenario: return ScenarioPath;
+			case GameDirectory.Sound: return SoundPath;
 
 			default: throw new NotImplementedException();
 			}

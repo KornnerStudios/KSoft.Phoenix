@@ -76,6 +76,7 @@
     <Compile Include="Phx\Collectibles\CollectiblesEnum.cs" />
     <Compile Include="Phx\Database\DatabaseObjectUserInterfaceTextData.cs" />
     <Compile Include="Phx\Database\LocString.cs" />
+    <Compile Include="Phx\Database\LocStringTable.cs" />
     <Compile Include="Phx\HPBar\BProtoBobbleHead.cs" />
     <Compile Include="Phx\HPBar\BProtoBuildingStrength.cs" />
     <Compile Include="Phx\HPBar\BProtoHPBar.cs" />

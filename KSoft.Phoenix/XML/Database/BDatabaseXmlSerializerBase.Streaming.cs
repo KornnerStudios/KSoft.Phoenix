@@ -70,6 +70,11 @@ namespace KSoft.Phoenix.XML
 			Database.HPBars.StreamHPBarData(s);
 		}
 
+		void PreloadStringTable(IO.XmlElementStream s)
+		{
+			Database.EnglishStringTable.Serialize(s);
+		}
+
 		// #NOTE place new DatabaseObjectKind code here
 
 		void PreloadDamageTypes(IO.XmlElementStream s)
@@ -230,6 +235,11 @@ namespace KSoft.Phoenix.XML
 
 			XML.XmlUtil.Serialize(s, db.MergedSquads, Phx.BProtoMergedSquads.kBListXmlParams);
 			db.ShieldBubbleTypes.Serialize(s);
+
+			using (s.EnterCursorBookmark(Phx.LocStringTable.kBListXmlParams.RootName))
+			{
+				db.EnglishStringTable.Serialize(s);
+			}
 
 			PostStreamXml(s.StreamMode);
 		}
