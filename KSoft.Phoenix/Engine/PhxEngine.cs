@@ -66,11 +66,11 @@ namespace KSoft.Phoenix.Engine
 			bool success = true;
 			PhxUtil.UpdateResultWithTaskResults(ref success, tasks, task_exceptions);
 
-			if (!success && task_exceptions.IsNotNullOrEmpty())
+			if (!success)
 			{
 				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
 					"Failed to load engine data",
-					new AggregateException(task_exceptions));
+					task_exceptions.ToAggregateExceptionOrNull());
 			}
 
 			return success;

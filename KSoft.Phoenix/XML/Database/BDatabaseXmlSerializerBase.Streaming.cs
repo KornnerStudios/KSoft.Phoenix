@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using FA = System.IO.FileAccess;
+﻿using FA = System.IO.FileAccess;
 
 namespace KSoft.Phoenix.XML
 {

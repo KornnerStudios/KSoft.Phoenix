@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -7,6 +8,7 @@ namespace KSoft.Phoenix
 	/// <summary>Extension methods for types in this assembly</summary>
 	public static partial class TypeExtensionsPhx
 	{
+		#region PascalString32
 		static readonly Memory.Strings.StringStorage Pascal32Storage =
 					new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
 		static readonly Text.StringStorageEncoding Pascal32Encoding = new Text.StringStorageEncoding(Pascal32Storage);
@@ -18,7 +20,9 @@ namespace KSoft.Phoenix
 
 			return s;
 		}
+		#endregion
 
+		#region PascalWideString32
 		static readonly Memory.Strings.StringStorage PascalUnicode32Storage =
 					new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
 		static readonly Text.StringStorageEncoding PascalUnicode32Encoding = new Text.StringStorageEncoding(PascalUnicode32Storage);
@@ -30,6 +34,7 @@ namespace KSoft.Phoenix
 
 			return s;
 		}
+		#endregion
 
 		public static IO.EndianStream StreamNotNull<T>(this IO.EndianStream s, ref T obj)
 			where T : class, IO.IEndianStreamSerializable, new()
@@ -90,6 +95,14 @@ namespace KSoft.Phoenix
 				Contract.Assert(s.Owner == null || !(s.Owner is XML.BXmlSerializerInterface));
 
 			s.Owner = xsi;
+		}
+
+		public static AggregateException ToAggregateExceptionOrNull(this List<Exception> list)
+		{
+			if (list.IsNullOrEmpty())
+				return null;
+
+			return new AggregateException(list);
 		}
 	};
 }

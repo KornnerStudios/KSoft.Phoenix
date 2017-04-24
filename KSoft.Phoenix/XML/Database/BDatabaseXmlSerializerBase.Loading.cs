@@ -130,9 +130,9 @@ namespace KSoft.Phoenix.XML
 				#endregion
 			};
 		}
-		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous = false)
+		private void ProcessStreamXmlContexts(ref bool r, FA mode)
 		{
-			ProcessStreamXmlContexts(ref r, mode, synchronous
+			ProcessStreamXmlContexts(ref r, mode
 				, StreamXmlStage.Preload, StreamXmlStage.kNumberOf
 				, Engine.XmlFilePriority.Lists, Engine.XmlFilePriority.kNumberOf);
 		}
@@ -147,9 +147,7 @@ namespace KSoft.Phoenix.XML
 			public List<Task<bool>> Tasks;
 			public List<Exception> TaskExceptions;
 
-			public bool Synchronous { get { return Tasks == null; } }
-
-			public ProcessStreamXmlContextStageArgs(FA mode, bool synchronous, StreamXmlStage stage
+			public ProcessStreamXmlContextStageArgs(FA mode, StreamXmlStage stage
 				, Engine.XmlFilePriority firstPriority
 				, Engine.XmlFilePriority lastPriorityPlusOne)
 			{
@@ -160,23 +158,13 @@ namespace KSoft.Phoenix.XML
 
 				Tasks = null;
 				TaskExceptions = null;
-				if (!synchronous)
-				{
-					Tasks = new List<Task<bool>>();
-					TaskExceptions = new List<Exception>();
-				}
+				Tasks = new List<Task<bool>>();
+				TaskExceptions = new List<Exception>();
 			}
 
 			public bool UpdateResultWithTaskResults(ref bool r)
 			{
 				PhxUtil.UpdateResultWithTaskResults(ref r, Tasks, TaskExceptions);
-
-				if (!r && !Synchronous && TaskExceptions.IsNotNullOrEmpty())
-				{
-					Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
-						"Failed to " + Mode + " Database",
-						new AggregateException(TaskExceptions));
-				}
 
 				return r;
 			}
@@ -188,7 +176,7 @@ namespace KSoft.Phoenix.XML
 			}
 		};
 
-		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous
+		private void ProcessStreamXmlContexts(ref bool r, FA mode
 			, StreamXmlStage firstStage// = StreamXmlStage.Preload
 			, StreamXmlStage lastStagePlusOne// = StreamXmlStage.kNumberOf
 			, Engine.XmlFilePriority firstPriority = Engine.XmlFilePriority.Lists
@@ -199,7 +187,7 @@ namespace KSoft.Phoenix.XML
 
 			for (var s = firstStage; s < lastStagePlusOne; s++)
 			{
-				var args = new ProcessStreamXmlContextStageArgs(mode, synchronous, s, firstPriority, lastPriorityPlusOne);
+				var args = new ProcessStreamXmlContextStageArgs(mode, s, firstPriority, lastPriorityPlusOne);
 				ProcessStreamXmlContextStage(ref r, args);
 			}
 		}
@@ -219,71 +207,48 @@ namespace KSoft.Phoenix.XML
 					{
 						#region Preload
 						case StreamXmlStage.Preload:
+						{
 							if (ctxt.Preload == null)
 								break;
 
-							if (args.Synchronous)
-								r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Preload);
-							else
-							{
-								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
-								args.Tasks.Add(task);
-							}
-							break;
+							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
+							args.Tasks.Add(task);
+						} break;
 						#endregion
 						#region Stream
 						case StreamXmlStage.Stream:
+						{
 							if (ctxt.Stream == null)
 								break;
 
-							if (args.Synchronous)
-								r &= TryStreamData(ctxt.FileInfo, mode, ctxt.Stream);
-							else
-							{
 								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
 								args.Tasks.Add(task);
-							}
-							break;
+						} break;
 						#endregion
 						#region StreamUpdates
 						case StreamXmlStage.StreamUpdates:
+						{
 							if (ctxt.FileInfoWithUpdates == null)
 								break;
 							if (ctxt.StreamUpdates == null)
 								break;
 
-							if (args.Synchronous)
-								r &= TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates);
-							else
-							{
-								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
-								args.Tasks.Add(task);
-							}
-							break;
+							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
+							args.Tasks.Add(task);
+						} break;
 						#endregion
 					}
-
-					if (args.Synchronous)
-					{
-						if (!r)
-							throw new InvalidOperationException(string.Format(
-								"Failed to process {0} during stage {1}",
-								ctxt.FileInfo.FileName, args.Stage));
-					}
 				}
 
-				if (args.Tasks != null)
+				if (!args.UpdateResultWithTaskResults(ref r))
 				{
-					if (!args.UpdateResultWithTaskResults(ref r))
-					{
-						throw new InvalidOperationException(string.Format(
-							"Failed to process one or more files for priority={0}",
-							p),
-							new AggregateException(args.TaskExceptions));
-					}
-
-					args.ClearTaskData();
+					throw new InvalidOperationException(string.Format(
+						"Failed to process one or more files for priority={0}",
+						p),
+						args.TaskExceptions.ToAggregateExceptionOrNull());
 				}
+
+				args.ClearTaskData();
 			}
 		}
 
@@ -321,11 +286,11 @@ namespace KSoft.Phoenix.XML
 			}
 			PhxUtil.UpdateResultWithTaskResults(ref r, tasks, task_exceptions);
 
-			if (!r && task_exceptions.IsNotNullOrEmpty())
+			if (!r)
 			{
 				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
 					"Failed to " + mode + " tactics",
-					new AggregateException(task_exceptions));
+					task_exceptions.ToAggregateExceptionOrNull());
 			}
 		}
 		bool StreamTactics(FA mode)
@@ -371,7 +336,7 @@ namespace KSoft.Phoenix.XML
 			PreStreamXml(k_mode);
 
 			bool r = true;
-			ProcessStreamXmlContexts(ref r, k_mode, false
+			ProcessStreamXmlContexts(ref r, k_mode
 				, StreamXmlStage.Preload
 				, StreamXmlStage.Stream);
 
@@ -406,7 +371,7 @@ namespace KSoft.Phoenix.XML
 			PreStreamXml(k_mode);
 
 			bool r = true;
-			ProcessStreamXmlContexts(ref r, k_mode, false
+			ProcessStreamXmlContexts(ref r, k_mode
 				, StreamXmlStage.Stream
 				, StreamXmlStage.kNumberOf);
 
