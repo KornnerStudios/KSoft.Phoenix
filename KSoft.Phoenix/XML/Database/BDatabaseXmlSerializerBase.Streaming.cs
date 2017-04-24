@@ -5,31 +5,21 @@ namespace KSoft.Phoenix.XML
 {
 	partial class BDatabaseXmlSerializerBase
 	{
+		public bool ForceNoRootElementStreaming = true;
+
 		protected virtual void PreStreamXml(FA mode)
 		{
 			if (mode == FA.Read)
 			{
-				PreloadTactics();
+				if (mIsPreloading)
+					PreloadTactics();
 			}
 		}
 		protected virtual void PostStreamXml(FA mode)
 		{
 		}
 
-		static Engine.XmlFileInfo StreamTacticsGetFileInfo(FA mode, string filename = null)
-		{
-			return new Engine.XmlFileInfo()
-			{
-				Location = Engine.ContentStorage.UpdateOrGame,
-				Directory = Engine.GameDirectory.Tactics,
-
-				RootName = Phx.BTacticData.kXmlRoot,
-				FileName = filename,
-
-				Writable = mode == FA.Write,
-			};
-		}
-
+		#region Tactics
 		void PreloadTactics()
 		{
 			if (Database.Tactics.Count > 0)
@@ -49,12 +39,11 @@ namespace KSoft.Phoenix.XML
 
 		void StreamTactic(IO.XmlElementStream s, Phx.BTacticData tactic)
 		{
-			if (s.IsReading)
+			if (s.IsReading && IsNotPreloading)
 				FixTacticsXml(s, tactic.Name);
 			tactic.Serialize(s);
 		}
-
-		public bool ForceNoRootElementStreaming = true;
+		#endregion
 
 		/// <remarks>For streaming directly from gamedata.xml</remarks>
 		void StreamXmlGameData(IO.XmlElementStream s)
@@ -75,6 +64,7 @@ namespace KSoft.Phoenix.XML
 			Database.EnglishStringTable.Serialize(s);
 		}
 
+		#region DatabaseObjectKind stuff
 		// #NOTE place new DatabaseObjectKind code here
 
 		void PreloadDamageTypes(IO.XmlElementStream s)
@@ -100,7 +90,8 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlWeaponTypes(IO.XmlElementStream s)
 		{
 			XmlUtil.Serialize(s, Database.WeaponTypes, Phx.BWeaponType.kBListXmlParams, ForceNoRootElementStreaming);
-			if (s.IsReading) FixWeaponTypes();
+			if (s.IsReading)
+				FixWeaponTypes();
 		}
 		/// <remarks>For streaming directly from UserClasses.xml</remarks>
 		void StreamXmlUserClasses(IO.XmlElementStream s)
@@ -205,6 +196,7 @@ namespace KSoft.Phoenix.XML
 				FixTechsXml(s);
 			XmlUtil.SerializeUpdate(s, mTechsSerializer, ForceNoRootElementStreaming);
 		}
+		#endregion
 		#endregion
 
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

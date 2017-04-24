@@ -357,7 +357,6 @@
     <Compile Include="XML\Database\BDatabaseXmlSerializerBase.Loading.cs" />
     <Compile Include="XML\Database\BDatabaseXmlSerializerBase.Streaming.cs" />
     <Compile Include="XML\Database\BDatabaseXmlSerializerBase.XmlFixes.cs" />
-    <Compile Include="XML\Database\BDatabaseXmlSerializerLoadFlags.cs" />
     <Compile Include="XML\TriggerSystem\TriggerDatabaseBuilderSerializer.cs" />
     <Compile Include="XML\XmlUtil.cs" />
   </ItemGroup>

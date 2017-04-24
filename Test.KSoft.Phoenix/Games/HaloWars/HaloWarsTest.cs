@@ -27,18 +27,29 @@ namespace KSoft.Phoenix.Engine.Test
 			//+ @"phx_tu6\"
 			;
 
+		private void Load(PhxEngine engine)
+		{
+			bool success;
+
+			success = engine.Preload();
+			Assert.IsTrue(success, "Failed to preload");
+
+			success = engine.Load();
+			Assert.IsTrue(success, "Failed to load");
+		}
+
 		[TestMethod]
 		public void HaloWars_LoadAlphaTest()
 		{
 			var hw = PhxEngine.CreateForHaloWarsAlpha(kGameRootAlpha);
-			hw.Load();
+			Load(hw);
 		}
 
 		[TestMethod]
 		public void HaloWars_LoadTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
-			hw.Load();
+			Load(hw);
 
 			Console.WriteLine("English StringTable range stats:");
 			var stats = hw.Database.EnglishStringTable.RangeStats;
@@ -50,7 +61,7 @@ namespace KSoft.Phoenix.Engine.Test
 		public void HaloWars_AppSaveTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
-			hw.Load();
+			Load(hw);
 
 			using (var s = IO.XmlElementStream.CreateForWrite("Serina", hw))
 			{
@@ -86,7 +97,10 @@ namespace KSoft.Phoenix.Engine.Test
 		public void HaloWars_DumpSortedObjectDbIdsTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
-			hw.Load();
+			bool success;
+
+			success = hw.Load();
+			Assert.IsTrue(success, "Failed to preload");
 
 			var objs = new List<Phx.BProtoObject>(hw.Database.Objects);
 			objs.Sort((x, y) => x.DbId - y.DbId);

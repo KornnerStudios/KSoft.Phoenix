@@ -169,7 +169,14 @@ namespace KSoft.Phoenix.XML
 
 			public bool UpdateResultWithTaskResults(ref bool r)
 			{
-				BDatabaseXmlSerializerBase.UpdateResultWithTaskResults(ref r, Tasks, TaskExceptions);
+				PhxUtil.UpdateResultWithTaskResults(ref r, Tasks, TaskExceptions);
+
+				if (!r && !Synchronous && TaskExceptions.IsNotNullOrEmpty())
+				{
+					Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+						"Failed to " + Mode + " Database",
+						new AggregateException(TaskExceptions));
+				}
 
 				return r;
 			}
@@ -184,8 +191,8 @@ namespace KSoft.Phoenix.XML
 		private void ProcessStreamXmlContexts(ref bool r, FA mode, bool synchronous
 			, StreamXmlStage firstStage// = StreamXmlStage.Preload
 			, StreamXmlStage lastStagePlusOne// = StreamXmlStage.kNumberOf
-			, Engine.XmlFilePriority firstPriority// = Engine.XmlFilePriority.Lists
-			, Engine.XmlFilePriority lastPriorityPlusOne// = Engine.XmlFilePriority.kNumberOf
+			, Engine.XmlFilePriority firstPriority = Engine.XmlFilePriority.Lists
+			, Engine.XmlFilePriority lastPriorityPlusOne = Engine.XmlFilePriority.kNumberOf
 			)
 		{
 			SetupStreamXmlContexts();
@@ -280,26 +287,11 @@ namespace KSoft.Phoenix.XML
 			}
 		}
 
-		static bool UpdateResultWithTaskResults(ref bool r, List<Task<bool>> tasks, List<Exception> exceptions = null)
-		{
-			foreach (var task in tasks)
-			{
-				if (task.IsFaulted)
-				{
-					r = false;
-					if (exceptions != null)
-						exceptions.Add(task.Exception);
-				}
-				r &= task.Result;
-			}
-
-			return r;
-		}
-
 		void StreamTacticsAsync(ref bool r, FA mode)
 		{
 			var tactics = Database.Tactics;
 			var tasks = new List<Task<bool>>(tactics.Count);
+			var task_exceptions = new List<Exception>(tactics.Count);
 
 			foreach (var tactic in tactics)
 			{
@@ -308,7 +300,7 @@ namespace KSoft.Phoenix.XML
 					if (tactic.SourceXmlFile != null)
 						continue;
 
-					tactic.SourceXmlFile = StreamTacticsGetFileInfo(mode, tactic.Name);
+					tactic.SourceXmlFile = Phx.BTacticData.CreateFileInfo(mode, tactic.Name);
 				}
 				else if (mode == FA.Write)
 				{
@@ -327,18 +319,26 @@ namespace KSoft.Phoenix.XML
 				}, arg);
 				tasks.Add(task);
 			}
-			UpdateResultWithTaskResults(ref r, tasks);
+			PhxUtil.UpdateResultWithTaskResults(ref r, tasks, task_exceptions);
+
+			if (!r && task_exceptions.IsNotNullOrEmpty())
+			{
+				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+					"Failed to " + mode + " tactics",
+					new AggregateException(task_exceptions));
+			}
 		}
-		void StreamTactics(FA mode)
+		bool StreamTactics(FA mode)
 		{
 			if (GameEngine.Build == PhxEngineBuild.Alpha)
 			{
 				Debug.Trace.XML.TraceInformation("BDatabaseXmlSerializer: Alpha build detected, skipping Tactics streaming");
-				return;
+				return false;
 			}
 
 			bool r = true;
 			StreamTacticsAsync(ref r, mode);
+			return r;
 		}
 
 		void StreamData(FA mode)
@@ -347,27 +347,104 @@ namespace KSoft.Phoenix.XML
 			ProcessStreamXmlContexts(ref r, mode);
 		}
 
-		void LoadImpl(bool autoLoadTactics)
+		private bool mIsPreloading;
+		protected bool IsNotPreloading { get { return !mIsPreloading; } }
+		public bool Preload()
 		{
+			if (Database.LoadState == Phx.DatabaseLoadState.Failed)
+			{
+				Debug.Trace.Phoenix.TraceInformation("Not preloading Database because an earlier load stage failed");
+				return false;
+			}
+			if (Database.LoadState >= Phx.DatabaseLoadState.Preloading)
+			{
+				Debug.Trace.Phoenix.TraceInformation("Skipping preloading of Database because it already is at a later stage");
+				return true;
+			}
+
+			const FA k_mode = FA.Read;
+
+			mIsPreloading = true;
+			Database.LoadState = Phx.DatabaseLoadState.Preloading;
+
+			AutoIdSerializersInitialize();
+			PreStreamXml(k_mode);
+
+			bool r = true;
+			ProcessStreamXmlContexts(ref r, k_mode, false
+				, StreamXmlStage.Preload
+				, StreamXmlStage.Stream);
+
+			PostStreamXml(k_mode);
+			AutoIdSerializersDispose();
+
+			mIsPreloading = false;
+			Database.LoadState = r
+				? Phx.DatabaseLoadState.Preloaded
+				: Phx.DatabaseLoadState.Failed;
+
+			return r;
+		}
+
+		public bool Load()
+		{
+			if (Database.LoadState == Phx.DatabaseLoadState.Failed)
+			{
+				Debug.Trace.Phoenix.TraceInformation("Not loading Database because an earlier load stage failed");
+				return false;
+			}
+			if (Database.LoadState >= Phx.DatabaseLoadState.Loading)
+			{
+				Debug.Trace.Phoenix.TraceInformation("Skipping loading of Database because it already is at a later stage");
+				return true;
+			}
+
+			const FA k_mode = FA.Read;
+
+			Database.LoadState = Phx.DatabaseLoadState.Loading;
+			AutoIdSerializersInitialize();
+			PreStreamXml(k_mode);
+
+			bool r = true;
+			ProcessStreamXmlContexts(ref r, k_mode, false
+				, StreamXmlStage.Stream
+				, StreamXmlStage.kNumberOf);
+
+			PostStreamXml(k_mode);
+			AutoIdSerializersDispose();
+
+			Database.LoadState = r
+				? Phx.DatabaseLoadState.Loaded
+				: Phx.DatabaseLoadState.Failed;
+
+			return r;
+		}
+
+		public bool LoadAllTactics()
+		{
+			if (Database.LoadState == Phx.DatabaseLoadState.Failed)
+			{
+				Debug.Trace.Phoenix.TraceInformation("Not loading Tactics because an earlier load stage failed");
+				return false;
+			}
+			if (Database.LoadState != Phx.DatabaseLoadState.Preloaded)
+			{
+				Debug.Trace.Phoenix.TraceInformation("Not loading Tactics because an earlier the database is not at least preloaded");
+				return true;
+			}
+
 			const FA k_mode = FA.Read;
 
 			PreStreamXml(k_mode);
 
-			StreamData(k_mode);
-
-			if (autoLoadTactics)
-				StreamTactics(k_mode);
+			bool r = StreamTactics(k_mode);
 
 			PostStreamXml(k_mode);
-		}
-		public virtual void Load(BDatabaseXmlSerializerLoadFlags flags = 0)
-		{
-			AutoIdSerializersInitialize();
 
-			bool auto_load_tactics = (flags & BDatabaseXmlSerializerLoadFlags.DoNotAutoLoadTactics) == 0;
-			LoadImpl(auto_load_tactics);
+			if (!r)
+				Database.LoadState = Phx.DatabaseLoadState.Failed;
 
-			AutoIdSerializersDispose();
+			return r;
 		}
 	};
 }

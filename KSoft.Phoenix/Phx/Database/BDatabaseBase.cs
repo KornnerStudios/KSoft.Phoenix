@@ -7,8 +7,21 @@ using FA = System.IO.FileAccess;
 
 namespace KSoft.Phoenix.Phx
 {
+	public enum DatabaseLoadState
+	{
+		NotLoaded,
+		Failed,
+		Preloading,
+		Preloaded,
+		Loading,
+		Loaded,
+
+		kNumberOf
+	};
+
 	public abstract partial class BDatabaseBase
-		: IDisposable
+		: ObjectModel.BasicViewModel
+		, IDisposable
 		, IO.ITagElementStringNameStreamable
 	{
 		public const string kInvalidString = "BORK BORK BORK";
@@ -24,6 +37,25 @@ namespace KSoft.Phoenix.Phx
 		internal static readonly Engine.ProtoDataXmlFileInfo kObjectTypesProtoFileInfo = new Phoenix.Engine.ProtoDataXmlFileInfo(
 			Phoenix.Engine.XmlFilePriority.Lists,
 			kObjectTypesXmlFileInfo);
+		#endregion
+
+		#region LoadState
+		DatabaseLoadState mLoadState = DatabaseLoadState.NotLoaded;
+		public DatabaseLoadState LoadState
+		{
+			get
+			{
+				lock (mLoadStateLockee)
+					return mLoadState;
+			}
+			set
+			{
+				lock (mLoadStateLockee)
+					this.SetFieldEnum(ref mLoadState, value);
+			}
+		}
+
+		object mLoadStateLockee = new object();
 		#endregion
 
 		public Engine.PhxEngine Engine { get; private set; }
@@ -315,15 +347,27 @@ namespace KSoft.Phoenix.Phx
 
 		protected abstract XML.BDatabaseXmlSerializerBase NewXmlSerializer();
 
-		public void LoadAsync()
+		public bool Preload()
 		{
 			using (var xs = NewXmlSerializer())
 			{
-				var flags = 0
-					// this is not compatible with the old Serina-style app database
-					| XML.BDatabaseXmlSerializerLoadFlags.DoNotAutoLoadTactics;
-				flags = 0; // but actually do load them
-				xs.Load(flags);
+				return xs.Preload();
+			}
+		}
+
+		public bool Load()
+		{
+			using (var xs = NewXmlSerializer())
+			{
+				return xs.Load();
+			}
+		}
+
+		public bool LoadAllTactics()
+		{
+			using (var xs = NewXmlSerializer())
+			{
+				return xs.LoadAllTactics();
 			}
 		}
 

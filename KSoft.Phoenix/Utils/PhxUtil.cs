@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -380,5 +381,21 @@ namespace KSoft.Phoenix
 			return new DummyComparerAlwaysNonZero<T>();
 		}
 		#endregion
+
+		public static bool UpdateResultWithTaskResults(ref bool r, List<Task<bool>> tasks, List<Exception> exceptions = null)
+		{
+			foreach (var task in tasks)
+			{
+				if (task.IsFaulted)
+				{
+					r = false;
+					if (exceptions != null)
+						exceptions.Add(task.Exception);
+				}
+				r &= task.Result;
+			}
+
+			return r;
+		}
 	};
 }

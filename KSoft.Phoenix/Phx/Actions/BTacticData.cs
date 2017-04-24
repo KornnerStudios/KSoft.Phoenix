@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
+﻿using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Phx
@@ -11,6 +10,20 @@ namespace KSoft.Phoenix.Phx
 
 		#region Xml constants
 		public const string kXmlRoot = "TacticData";
+
+		public static Engine.XmlFileInfo CreateFileInfo(System.IO.FileAccess mode, string filename)
+		{
+			return new Engine.XmlFileInfo()
+			{
+				Location = Engine.ContentStorage.UpdateOrGame,
+				Directory = Engine.GameDirectory.Tactics,
+
+				RootName = kXmlRoot,
+				FileName = filename,
+
+				Writable = mode == System.IO.FileAccess.Write,
+			};
+		}
 		#endregion
 
 		public string SourceFileName { get; set; }

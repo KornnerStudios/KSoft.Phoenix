@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -40,9 +41,39 @@ namespace KSoft.Phoenix.Engine
 			return state;
 		}
 
-		public virtual void Load()
+		public virtual bool Preload()
 		{
-			Database.LoadAsync();
+			return Database.Preload();
+		}
+
+		public virtual bool Load()
+		{
+			var load_task = Task<bool>.Factory.StartNew((state) =>
+			{
+				var db = (Phx.BDatabaseBase)state;
+				return db.Load();
+			}, Database);
+
+			var load_tactics_task = Task<bool>.Factory.StartNew((state) =>
+			{
+				var db = (Phx.BDatabaseBase)state;
+				return db.LoadAllTactics();
+			}, Database);
+
+			var tasks = new List<Task<bool>>();
+			var task_exceptions = new List<Exception>();
+
+			bool success = true;
+			PhxUtil.UpdateResultWithTaskResults(ref success, tasks, task_exceptions);
+
+			if (!success && task_exceptions.IsNotNullOrEmpty())
+			{
+				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+					"Failed to load engine data",
+					new AggregateException(task_exceptions));
+			}
+
+			return success;
 		}
 	};
 }
