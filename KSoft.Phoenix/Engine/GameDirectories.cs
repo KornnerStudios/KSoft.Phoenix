@@ -205,6 +205,9 @@ namespace KSoft.Phoenix.Engine
 
 			string dir = GetAbsoluteDirectory(loc, gameDir);
 
+			if (!Directory.Exists(dir))
+				throw new DirectoryNotFoundException(dir);
+
 			return Directory.EnumerateFiles(dir, searchPattern);
 		}
 	};

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using KSoft;
 using KSoft.Collections;
 
@@ -42,21 +44,8 @@ namespace PhxGui
 	};
 
 	internal partial class MainWindowViewModel
-		: INotifyPropertyChanged
+		: KSoft.ObjectModel.BasicViewModel
 	{
-		#region INotifyPropertyChanged
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected void NotifyPropertyChanged(PropertyChangedEventArgs args)
-		{
-			PropertyChanged.SafeNotify(this, args);
-		}
-		protected void NotifyPropertiesChanged(PropertyChangedEventArgs[] argsList, int startIndex = 0)
-		{
-			PropertyChanged.SafeNotify(this, argsList, startIndex);
-		}
-		#endregion
-
 		#region Flags
 		private static KSoft.WPF.BitVectorUserInterfaceData gFlagsUserInterfaceSource;
 		public static KSoft.WPF.BitVectorUserInterfaceData FlagsUserInterfaceSource { get {
@@ -69,57 +58,47 @@ namespace PhxGui
 		public KSoft.Collections.BitVector32 Flags
 		{
 			get { return mFlags; }
-			set { this.SetFieldVal(PropertyChanged, ref mFlags, value); }
+			set { this.SetFieldVal(ref mFlags, value); }
 		}
 		#endregion
 
 		#region StatusText
-		static readonly PropertyChangedEventArgs kStatusTextChanged =
-			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.StatusText);
-
 		string mStatusText;
-		public string StatusText {
+		public string StatusText
+		{
 			get { return mStatusText; }
-			set { mStatusText = value;
-				NotifyPropertyChanged(kStatusTextChanged);
-		} }
+			set { this.SetFieldObj(ref mStatusText, value); }
+		}
 		#endregion
 
 		#region ProcessFilesHelpText
-		static readonly PropertyChangedEventArgs kProcessFilesHelpTextChanged =
-			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.ProcessFilesHelpText);
-
 		string mProcessFilesHelpText;
-		public string ProcessFilesHelpText {
+		public string ProcessFilesHelpText
+		{
 			get { return mProcessFilesHelpText; }
-			set { mProcessFilesHelpText = value;
-				NotifyPropertyChanged(kProcessFilesHelpTextChanged);
-		} }
+			set { this.SetFieldObj(ref mProcessFilesHelpText, value); }
+		}
 		#endregion
 
 		#region MessagesText
-		static readonly PropertyChangedEventArgs kMessagesTextChanged =
-			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.MessagesText);
-
 		string mMessagesText;
-		public string MessagesText {
+		public string MessagesText
+		{
 			get { return mMessagesText; }
-			set { mMessagesText = value;
-				NotifyPropertyChanged(kMessagesTextChanged);
-		} }
+			set { this.SetFieldObj(ref mMessagesText, value); }
+		}
 		#endregion
 
 		#region IsProcessing
-		static readonly PropertyChangedEventArgs kIsProcessingChanged =
-			KSoft.ObjectModel.Util.CreatePropertyChangedEventArgs((MainWindowViewModel x) => x.IsProcessing);
-
 		bool mIsProcessing;
-		public bool IsProcessing {
+		public bool IsProcessing
+		{
 			get { return mIsProcessing; }
-			set { mIsProcessing = value;
-				NotifyPropertyChanged(kIsProcessingChanged);
-		} }
+			set { this.SetFieldVal(ref mIsProcessing, value); }
+		}
 		#endregion
+
+		public ICommand DataLoadTest { get; private set; }
 
 		public MainWindowViewModel()
 		{
@@ -130,7 +109,72 @@ namespace PhxGui
 			ClearStatus();
 			ClearProcessFilesHelpText();
 			ClearMessages();
+
+			DataLoadTest = new KSoft.WPF.RelayCommand(
+				CanExecuteDataLoadTest,
+				ExecuteDataLoadTest);
 		}
+
+		#region DataLoadTest
+		static bool CanExecuteDataLoadTest(object unused)
+		{
+			var settings = Properties.Settings.Default;
+
+			return System.IO.Directory.Exists(settings.EraExpandOutputPath);
+		}
+
+		private void ExecuteDataLoadTest(object unused)
+		{
+			ClearMessages();
+			IsProcessing = true;
+
+			var task = Task.Run((Func<bool>)RunDataLoadTest);
+
+			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			task.ContinueWith(t =>
+			{
+				if (t.IsFaulted || !t.Result)
+				{
+					bool verbose = Flags.Test(MiscFlags.UseVerboseOutput);
+
+					AggregateException ae = t.IsFaulted ? t.Exception : null;
+					string error = "";
+					if (ae != null)
+					{
+						var e = ae.GetOnlyExceptionOrAll();
+						error = verbose
+							? e.ToVerboseString()
+							: e.ToBasicString();
+					}
+					MessagesText += string.Format("Test data load finished with errors: {0}{1}",
+						Environment.NewLine,
+						error);
+				}
+				else
+				{
+					MessagesText = "Test data load success!";
+				}
+
+				FinishProcessing();
+			}, scheduler);
+		}
+
+		static bool RunDataLoadTest()
+		{
+			var settings = Properties.Settings.Default;
+			var path = settings.EraExpandOutputPath;
+			var targets_360 = settings.GameVersion == GameVersionType.Xbox360;
+
+			var engine = KSoft.Phoenix.Engine.PhxEngine.CreateForHaloWars(path, path, targets_360);
+			if (!engine.Preload())
+				return false;
+
+			if (!engine.Load())
+				return false;
+
+			return true;
+		}
+		#endregion
 
 		private void ClearStatus()
 		{

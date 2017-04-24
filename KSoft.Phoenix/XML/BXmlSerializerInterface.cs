@@ -62,7 +62,11 @@ namespace KSoft.Phoenix.XML
 				try
 				{
 					if (!result)
+					{
 						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
+						throw new System.IO.FileNotFoundException("File does not exist: " + file.FullName,
+							file.FullName);
+					}
 
 					if (result) using (var s = new IO.XmlElementStream(file.FullName, mode))
 					{
@@ -106,7 +110,11 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				if (!result)
+				{
 					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
+					throw new System.IO.FileNotFoundException("File does not exist: " + file.FullName,
+						file.FullName);
+				}
 
 				try
 				{

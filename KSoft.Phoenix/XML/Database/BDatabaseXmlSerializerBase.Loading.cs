@@ -242,10 +242,12 @@ namespace KSoft.Phoenix.XML
 
 				if (!args.UpdateResultWithTaskResults(ref r))
 				{
+					var inner = args.TaskExceptions.ToAggregateExceptionOrNull();
+
 					throw new InvalidOperationException(string.Format(
 						"Failed to process one or more files for priority={0}",
 						p),
-						args.TaskExceptions.ToAggregateExceptionOrNull());
+						inner);
 				}
 
 				args.ClearTaskData();

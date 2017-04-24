@@ -392,7 +392,8 @@ namespace KSoft.Phoenix
 					if (exceptions != null)
 						exceptions.Add(task.Exception);
 				}
-				r &= task.Result;
+				else
+					r &= task.Result;
 			}
 
 			return r;

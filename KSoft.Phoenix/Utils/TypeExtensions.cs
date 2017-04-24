@@ -97,10 +97,20 @@ namespace KSoft.Phoenix
 			s.Owner = xsi;
 		}
 
-		public static AggregateException ToAggregateExceptionOrNull(this List<Exception> list)
+		public static Exception ToAggregateExceptionOrNull(this List<Exception> list)
 		{
 			if (list.IsNullOrEmpty())
 				return null;
+
+			if (list.Count == 1)
+			{
+				var e = list[0];
+				var ae = e as AggregateException;
+				if (ae != null)
+					return ae.GetOnlyExceptionOrAll();
+
+				return e;
+			}
 
 			return new AggregateException(list);
 		}
