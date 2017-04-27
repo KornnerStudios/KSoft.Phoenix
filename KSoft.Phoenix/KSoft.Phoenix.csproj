@@ -321,6 +321,7 @@
     <Compile Include="Utils\SingleFixedPoint.cs" />
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Utils\UndefinedReferenceHandle.cs" />
+    <Compile Include="Utils\WinExePatcherProcessHeaderData.cs" />
     <Compile Include="Xmb\XmbFile.cs" />
     <Compile Include="Xmb\XmbFile.Element.cs" />
     <Compile Include="Xmb\XmbFileBuilder.cs" />

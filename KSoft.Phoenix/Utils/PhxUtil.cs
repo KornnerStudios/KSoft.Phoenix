@@ -398,5 +398,39 @@ namespace KSoft.Phoenix
 
 			return r;
 		}
+
+		public static bool FindBytePattern(List<int> results, byte[] input, ref int inOutOffset, params short[] pattern)
+		{
+			int end = input.Length - pattern.Length;
+			int end_offset = inOutOffset;
+
+			bool found_pattern = false;
+			for (int start = inOutOffset; start < end && !found_pattern; start++, end_offset++)
+			{
+				var first_byte = pattern[0];
+				if (first_byte != input[start])
+					continue;
+
+				for (int offset = 1; offset < pattern.Length; offset++)
+				{
+					int index = start + offset;
+					var next_byte = pattern[offset];
+					if (next_byte < 0)
+						continue;
+					else if (next_byte != input[index])
+						break;
+					else if (offset == pattern.Length-1)
+					{
+						results.Add(start);
+						end_offset += pattern.Length;
+						found_pattern = true;
+						break;
+					}
+				}
+			}
+
+			inOutOffset = end_offset;
+			return found_pattern;
+		}
 	};
 }
