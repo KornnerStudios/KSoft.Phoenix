@@ -34,6 +34,22 @@ namespace KSoft.Phoenix.XML
 
 				Database.Tactics.DynamicAdd(td, tactic_name);
 			}
+
+			foreach (string tactic_filename in GameEngine.Directories.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
+				"*" + Phx.BTacticData.kFileExt + Xmb.XmbFile.kFileExt))
+			{
+				// get rid of .xmb, then .tactics
+				string tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_filename);
+				tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_name);
+				if (Database.Tactics.TryGetId(tactic_name).IsNotNone())
+					continue;
+
+				var td = new Phx.BTacticData();
+				td.SourceFileName = tactic_filename;
+				td.SourceXmlFileIsXmb = true;
+
+				Database.Tactics.DynamicAdd(td, tactic_name);
+			}
 		}
 
 		void StreamTactic(IO.XmlElementStream s, Phx.BTacticData tactic)

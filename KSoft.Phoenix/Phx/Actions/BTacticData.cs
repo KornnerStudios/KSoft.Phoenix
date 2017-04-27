@@ -28,6 +28,7 @@ namespace KSoft.Phoenix.Phx
 
 		public string SourceFileName { get; set; }
 		public Engine.XmlFileInfo SourceXmlFile { get; set; }
+		public bool SourceXmlFileIsXmb { get; set; }
 
 		public Collections.BListAutoId<		BWeapon> Weapons { get; private set; }
 			= new Collections.BListAutoId<	BWeapon>();

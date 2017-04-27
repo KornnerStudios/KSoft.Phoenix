@@ -346,10 +346,11 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		protected abstract XML.BDatabaseXmlSerializerBase NewXmlSerializer();
+		private XML.BDatabaseXmlSerializerBase mXmlSerializer;
 
 		public bool Preload()
 		{
-			using (var xs = NewXmlSerializer())
+			var xs = mXmlSerializer = NewXmlSerializer();//using (var xs = NewXmlSerializer())
 			{
 				return xs.Preload();
 			}
@@ -357,7 +358,9 @@ namespace KSoft.Phoenix.Phx
 
 		public bool Load()
 		{
-			using (var xs = NewXmlSerializer())
+			Contract.Assert(mXmlSerializer != null);
+
+			var xs = mXmlSerializer;//using (var xs = NewXmlSerializer())
 			{
 				return xs.Load();
 			}
@@ -365,7 +368,9 @@ namespace KSoft.Phoenix.Phx
 
 		public bool LoadAllTactics()
 		{
-			using (var xs = NewXmlSerializer())
+			Contract.Assert(mXmlSerializer != null);
+
+			var xs = mXmlSerializer;//using (var xs = NewXmlSerializer())
 			{
 				return xs.LoadAllTactics();
 			}

@@ -386,6 +386,14 @@ namespace KSoft.Phoenix
 		{
 			foreach (var task in tasks)
 			{
+				try
+				{
+					task.Wait();
+				} catch (Exception ex)
+				{
+					ex.UnusedExceptionVar();
+				}
+
 				if (task.IsFaulted)
 				{
 					r = false;
@@ -393,7 +401,9 @@ namespace KSoft.Phoenix
 						exceptions.Add(task.Exception);
 				}
 				else
+				{
 					r &= task.Result;
+				}
 			}
 
 			return r;

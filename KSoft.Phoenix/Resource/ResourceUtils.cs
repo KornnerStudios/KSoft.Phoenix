@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -67,12 +66,12 @@ namespace KSoft.Phoenix.Resource
 		{
 			string ext = Path.GetExtension(filename);
 
-			return ext == ".xmb";
+			return ext == Xmb.XmbFile.kFileExt;
 		}
 
 		public static void RemoveXmbExtension(ref string filename)
 		{
-			filename = filename.Replace(".xmb", "");
+			filename = filename.Replace(Xmb.XmbFile.kFileExt, "");
 
 			//if (System.IO.Path.GetExtension(filename) != ".xml")
 			//	filename += ".xml";

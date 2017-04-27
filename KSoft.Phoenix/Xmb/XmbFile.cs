@@ -15,6 +15,7 @@ namespace KSoft.Phoenix.Xmb
 		: IO.IEndianStreamable
 		, IDisposable
 	{
+		public const string kFileExt = ".xmb";
 		const uint kSignature = 0x71439800;
 
 		List<Element> mElements;

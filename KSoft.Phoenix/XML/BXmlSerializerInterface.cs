@@ -54,35 +54,41 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(xfi != null);
 			Contract.Requires(streamProc != null);
 
-			System.IO.FileInfo file;
-			bool result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out file, ext);
+			bool result = false;
 
 			if (mode == FA.Read)
 			{
+				result = true;
+				System.IO.FileInfo file;
+				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out file, ext);
+
+				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
+				{
+					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
+					throw new System.IO.FileNotFoundException("Neither XML or XMB exists: " + file.FullName);
+				}
+
 				try
 				{
-					if (!result)
-					{
-						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
-						throw new System.IO.FileNotFoundException("File does not exist: " + file.FullName,
-							file.FullName);
-					}
-
-					if (result) using (var s = new IO.XmlElementStream(file.FullName, mode))
+					if (result) using (var s = GameEngine.OpenXmlOrXmbForRead(xml_or_xmb, file.FullName))
 					{
 						SetupStream(s, mode, this);
 						streamProc(s, ctxt);
 
 						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Loaded);
 					}
-				} catch (Exception)
+				} catch (Exception ex)
 				{
+					ex.UnusedExceptionVar();
 					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Failed);
 					throw;
 				}
 			}
 			else if (mode == FA.Write)
 			{
+				System.IO.FileInfo file;
+				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out file, ext);
+
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 					result = result && xfi.Writable;
 
@@ -104,39 +110,45 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(xfi != null);
 			Contract.Requires(streamProc != null);
 
-			System.IO.FileInfo file;
-			bool result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out file, ext);
+			bool result = false;
 
 			if (mode == FA.Read)
 			{
-				if (!result)
+				result = true;
+				System.IO.FileInfo file;
+				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out file, ext);
+
+				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
 					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.FileDoesNotExist);
-					throw new System.IO.FileNotFoundException("File does not exist: " + file.FullName,
-						file.FullName);
+					throw new System.IO.FileNotFoundException("Neither XML or XMB exists: " + file.FullName);
 				}
 
 				try
 				{
-					if (result) using (var s = new KSoft.IO.XmlElementStream(file.FullName, mode))
+					if (result) using (var s = GameEngine.OpenXmlOrXmbForRead(xml_or_xmb, file.FullName))
 					{
 						SetupStream(s, mode, this);
 						streamProc(s);
 
 						GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Loaded);
 					}
-				} catch (Exception)
+				} catch (Exception ex)
 				{
+					ex.UnusedExceptionVar();
 					GameEngine.UpdateFileLoadStatus(xfi, Engine.XmlFileLoadState.Failed);
 					throw;
 				}
 			}
 			else if (mode == FA.Write)
 			{
+				System.IO.FileInfo file;
+				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out file, ext);
+
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 					result = result && xfi.Writable;
 
-				if (result) using (var s = KSoft.IO.XmlElementStream.CreateForWrite(xfi.RootName))
+				if (result) using (var s = IO.XmlElementStream.CreateForWrite(xfi.RootName))
 				{
 					SetupStream(s, mode, this);
 					streamProc(s);
@@ -145,25 +157,6 @@ namespace KSoft.Phoenix.XML
 			}
 
 			return result;
-		}
-		public void ReadDataFilesAsync<TContext>(
-			Engine.ContentStorage loc, Engine.GameDirectory gameDir, string searchPattern,
-			Action<IO.XmlElementStream, TContext> streamProc, TContext ctxt,
-			out ParallelLoopResult result)
-		{
-			Contract.Requires(!string.IsNullOrEmpty(searchPattern));
-			Contract.Requires(streamProc != null);
-
-			result = Parallel.ForEach(GameEngine.Directories.GetFiles(loc, gameDir, searchPattern), (filename) =>
-			{
-				const FA k_mode = FA.Read;
-
-				using (var s = new KSoft.IO.XmlElementStream(filename, k_mode))
-				{
-					SetupStream(s, k_mode, this);
-					streamProc(s, ctxt);
-				}
-			});
 		}
 		public void ReadDataFilesAsync(
 			Engine.ContentStorage loc, Engine.GameDirectory gameDir, string searchPattern,
@@ -176,7 +169,7 @@ namespace KSoft.Phoenix.XML
 			{
 				const FA k_mode = FA.Read;
 
-				using (var s = new KSoft.IO.XmlElementStream(filename, k_mode))
+				using (var s = new IO.XmlElementStream(filename, k_mode))
 				{
 					SetupStream(s, k_mode, this);
 					streamProc(s);

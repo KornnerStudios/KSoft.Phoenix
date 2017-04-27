@@ -343,7 +343,7 @@ namespace KSoft.Phoenix.XML
 				, StreamXmlStage.Stream);
 
 			PostStreamXml(k_mode);
-			AutoIdSerializersDispose();
+			//AutoIdSerializersDispose();
 
 			mIsPreloading = false;
 			Database.LoadState = r
@@ -378,7 +378,7 @@ namespace KSoft.Phoenix.XML
 				, StreamXmlStage.kNumberOf);
 
 			PostStreamXml(k_mode);
-			AutoIdSerializersDispose();
+			//AutoIdSerializersDispose();
 
 			Database.LoadState = r
 				? Phx.DatabaseLoadState.Loaded
@@ -394,7 +394,7 @@ namespace KSoft.Phoenix.XML
 				Debug.Trace.Phoenix.TraceInformation("Not loading Tactics because an earlier load stage failed");
 				return false;
 			}
-			if (Database.LoadState != Phx.DatabaseLoadState.Preloaded)
+			if (Database.LoadState < Phx.DatabaseLoadState.Preloaded)
 			{
 				Debug.Trace.Phoenix.TraceInformation("Not loading Tactics because an earlier the database is not at least preloaded");
 				return true;

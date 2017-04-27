@@ -58,6 +58,14 @@ namespace KSoft.Collections
 			PreAdd(item, itemName, id);
 			if (mDBI != null)
 			{
+				if (mDBI.ContainsKey(itemName))
+				{
+					throw new ArgumentException(string.Format(
+						"There is already a {0} named {1}",
+						typeof(T).Name, itemName
+						), nameof(itemName));
+				}
+
 				mDBI.Add(item.Data, item);
 
 				if (Params != null && Params.ToLowerDataNames)

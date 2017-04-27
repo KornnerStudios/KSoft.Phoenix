@@ -6,6 +6,15 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Engine
 {
+	public enum GetXmlOrXmbFileResult
+	{
+		FileNotFound,
+		Xml,
+		Xmb,
+
+		kNumberOf
+	};
+
 	public class GameDirectories
 	{
 		#region Art
@@ -196,6 +205,29 @@ namespace KSoft.Phoenix.Engine
 			return loc == ContentStorage.UpdateOrGame
 				? TryGetFileFromUpdateOrGame(gameDir, filename, out file, ext)
 				: TryGetFileImpl(loc, gameDir, filename, out file, ext);
+		}
+		public GetXmlOrXmbFileResult TryGetXmlOrXmbFile(ContentStorage loc, GameDirectory gameDir, string filename, out FileInfo file,
+			string ext = null)
+		{
+			Contract.Requires(!string.IsNullOrEmpty(filename));
+			file = null;
+
+			if (TryGetFile(loc, gameDir, filename, out file, ext))
+				return GetXmlOrXmbFileResult.Xml;
+
+			if (ext.IsNotNullOrEmpty())
+				filename += ext;
+
+			filename += Xmb.XmbFile.kFileExt;
+
+			// purposely don't pass ext through in the XMB round
+			bool xmb_found = loc == ContentStorage.UpdateOrGame
+				? TryGetFileFromUpdateOrGame(gameDir, filename, out file, ext: null)
+				: TryGetFileImpl(loc, gameDir, filename, out file, ext: null);
+			if (xmb_found)
+				return GetXmlOrXmbFileResult.Xmb;
+
+			return GetXmlOrXmbFileResult.FileNotFound;
 		}
 
 		public IEnumerable<string> GetFiles(ContentStorage loc, GameDirectory gameDir, string searchPattern)

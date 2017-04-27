@@ -117,8 +117,8 @@ namespace PhxGui
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 					new Action(() =>
 					{
-						ViewModel.MessagesText += string.Format("EXCEPTION {0}{1}",
-							inputFile, Environment.NewLine);
+						ViewModel.MessagesText += string.Format("EXCEPTION {0}{1}{2}",
+							inputFile, Environment.NewLine, e);
 					}));
 			}
 
@@ -207,7 +207,7 @@ namespace PhxGui
 				if (t.IsFaulted)
 				{
 					MessagesText += string.Format("XMB->XML failure {0}{1}",
-						Environment.NewLine, t.Exception);
+						Environment.NewLine, t.Exception.GetOnlyExceptionOrAll());
 				}
 
 				FinishProcessing();
@@ -231,7 +231,7 @@ namespace PhxGui
 				if (t.IsFaulted)
 				{
 					MessagesText += string.Format("XMB->XML failure {0}{1}",
-						Environment.NewLine, t.Exception);
+						Environment.NewLine, t.Exception.GetOnlyExceptionOrAll());
 				}
 
 				FinishProcessing();
