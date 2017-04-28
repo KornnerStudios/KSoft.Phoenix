@@ -146,7 +146,8 @@ namespace PhxGui
 							? e.ToVerboseString()
 							: e.ToBasicString();
 					}
-					MessagesText += string.Format("Test data load finished with errors: {0}{1}",
+					MessagesText += string.Format("Test data load finished with errors: {0}{1}{2}",
+						"See PhxGui.log for any additional details",
 						Environment.NewLine,
 						error);
 				}

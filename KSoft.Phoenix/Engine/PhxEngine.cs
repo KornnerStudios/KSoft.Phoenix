@@ -73,7 +73,7 @@ namespace KSoft.Phoenix.Engine
 			{
 				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
 					"Failed to load engine data",
-					task_exceptions.ToAggregateExceptionOrNull());
+					task_exceptions.ToAggregateExceptionOrNull().GetOnlyExceptionOrAllWhenAggregate());
 			}
 
 			return success;

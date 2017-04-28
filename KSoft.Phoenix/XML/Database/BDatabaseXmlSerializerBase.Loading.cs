@@ -242,7 +242,7 @@ namespace KSoft.Phoenix.XML
 
 				if (!args.UpdateResultWithTaskResults(ref r))
 				{
-					var inner = args.TaskExceptions.ToAggregateExceptionOrNull();
+					var inner = args.TaskExceptions.ToAggregateExceptionOrNull().GetOnlyExceptionOrAllWhenAggregate();
 
 					throw new InvalidOperationException(string.Format(
 						"Failed to process one or more files for priority={0}",
@@ -292,7 +292,7 @@ namespace KSoft.Phoenix.XML
 			{
 				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
 					"Failed to " + mode + " tactics",
-					task_exceptions.ToAggregateExceptionOrNull());
+					task_exceptions.ToAggregateExceptionOrNull().GetOnlyExceptionOrAllWhenAggregate());
 			}
 		}
 		bool StreamTactics(FA mode)
