@@ -100,9 +100,9 @@ namespace KSoft.Phoenix.Resource
 				era_filename += EraFileBuilder.kExtensionEncrypted;
 			}
 
-			if (System.IO.File.Exists(era_filename))
+			if (File.Exists(era_filename))
 			{
-				var attrs = System.IO.File.GetAttributes(era_filename);
+				var attrs = File.GetAttributes(era_filename);
 				if (attrs.HasFlag(FileAttributes.ReadOnly))
 					throw new IOException("ERA file is readonly, can't build: " + era_filename);
 			}

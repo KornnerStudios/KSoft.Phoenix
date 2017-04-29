@@ -187,7 +187,7 @@ namespace KSoft.Phoenix.Resource
 					continue;
 
 				string xmb_name = file.FileName;
-				xmb_name += ".xmb";
+				xmb_name += Xmb.XmbFile.kFileExt;
 				EraFileEntryChunk xmb_file;
 				if (!mFileNameToChunk.TryGetValue(xmb_name, out xmb_file))
 					continue;
@@ -229,9 +229,10 @@ namespace KSoft.Phoenix.Resource
 						xml_name);
 
 				// right now, all we should need to do to update things is remove the XMB mapping and replace it with the XML we found
-				mFileNameToChunk.Remove(file.FileName);
+				bool removed = mFileNameToChunk.Remove(file.FileName);
 				file.FileName = xml_name;
-				mFileNameToChunk.Add(xml_name, file);
+				if (removed)
+					mFileNameToChunk.Add(xml_name, file);
 			}
 		}
 
