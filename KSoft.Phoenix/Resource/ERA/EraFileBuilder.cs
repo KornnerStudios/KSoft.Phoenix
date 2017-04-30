@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
@@ -100,6 +99,8 @@ namespace KSoft.Phoenix.Resource
 				era_filename += EraFileBuilder.kExtensionEncrypted;
 			}
 
+			mEraFile.FileName = era_filename;
+
 			if (File.Exists(era_filename))
 			{
 				var attrs = File.GetAttributes(era_filename);
@@ -187,8 +188,10 @@ namespace KSoft.Phoenix.Resource
 
 			bool result = true;
 
-			try { BuildInternal(workPath, eraName, outputPath); }
-			catch (Exception ex)
+			try
+			{
+				result = BuildInternal(workPath, eraName, outputPath);
+			} catch (Exception ex)
 			{
 				if (VerboseOutput != null)
 					VerboseOutput.WriteLine("\tEncountered an error while building the archive: {0}", ex);

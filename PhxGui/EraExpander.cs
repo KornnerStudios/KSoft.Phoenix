@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using KSoft;
 using KSoft.Collections;
 
 namespace PhxGui
@@ -94,12 +95,18 @@ namespace PhxGui
 
 					if (t.IsFaulted || t.Result != ExpandEraFileResult.Success)
 					{
+						bool verbose = ViewModel.Flags.Test(MiscFlags.UseVerboseOutput);
+
 						string error_type;
 						string error_hint;
 						if (t.IsFaulted)
 						{
 							error_type = "EXCEPTION";
-							error_hint = t.Exception.ToString();
+
+							var e = t.Exception.GetOnlyExceptionOrAll();
+							error_hint = verbose
+								? e.ToVerboseString()
+								: e.ToBasicString();
 						}
 						else
 						{

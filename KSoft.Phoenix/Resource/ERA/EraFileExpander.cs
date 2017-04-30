@@ -63,6 +63,7 @@ namespace KSoft.Phoenix.Resource
 				mEraStream.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
 
 				mEraFile = new EraFile();
+				mEraFile.FileName = mSourceFile;
 				mEraFile.Serialize(mEraStream);
 				mEraFile.ReadPostprocess(mEraStream);
 			}

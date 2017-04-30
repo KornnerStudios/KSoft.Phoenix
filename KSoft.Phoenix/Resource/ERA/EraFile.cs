@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Resource
 {
 	public sealed class EraFile
 		: IO.IEndianStreamSerializable
-		, System.IDisposable
+		, IDisposable
 	{
 		public const string kExtensionEncrypted = ".era";
 		public const string kExtensionDecrypted = ".bin";
@@ -18,6 +18,8 @@ namespace KSoft.Phoenix.Resource
 		const string kFileNamesTableName = "_file_names.bin";
 		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig = new Memory.Strings.
 			StringMemoryPoolSettings(Memory.Strings.StringStorage.CStringAscii, false);
+
+		public string FileName { get; set; }
 
 		private EraFileHeader mHeader = new EraFileHeader();
 		private List<EraFileEntryChunk> mFiles = new List<EraFileEntryChunk>();
@@ -647,9 +649,17 @@ namespace KSoft.Phoenix.Resource
 				}
 
 				success &= TryPack(blockStream, workPath, file);
+
+				if (!success &&
+					builder != null && builder.VerboseOutput != null)
+				{
+					builder.VerboseOutput.WriteLine("Couldn't pack file into {0}: {1}",
+						FileName, file.FileName);
+				}
 			}
 
-			if (builder != null && builder.ProgressOutput != null)
+			if (builder != null && builder.ProgressOutput != null &&
+				success)
 			{
 				builder.ProgressOutput.Write("\r\t\t{0} \r", new string(' ', 16));
 			}
@@ -707,10 +717,14 @@ namespace KSoft.Phoenix.Resource
 		{
 			string file_data;
 			if (!mLocalFiles.TryGetValue(file.FileName, out file_data))
+			{
+				Debug.Trace.Resource.TraceInformation("Couldn't pack local-file into {0}, local-file does not exist: {1}",
+					FileName, file.FileName);
 				return false;
+			}
 
 			byte[] file_bytes = System.Text.Encoding.ASCII.GetBytes(file_data);
-			using (var ms = new System.IO.MemoryStream(file_bytes, false))
+			using (var ms = new MemoryStream(file_bytes, false))
 			{
 				PackFileData(blockStream, ms, file);
 			}
@@ -721,22 +735,33 @@ namespace KSoft.Phoenix.Resource
 		private bool TryPackFileFromDisk(IO.EndianStream blockStream, string workPath,
 			EraFileEntryChunk file)
 		{
-			string path = System.IO.Path.Combine(workPath, file.FileName);
-			if (!System.IO.File.Exists(path))
+			string path = Path.Combine(workPath, file.FileName);
+			if (!File.Exists(path))
 			{
+				Debug.Trace.Resource.TraceInformation("Couldn't pack file into {0}, file does not exist: {1}",
+					FileName, file.FileName);
 				return false;
 			}
 
-			var creation_time = System.IO.File.GetCreationTimeUtc(path);
-			var write_time = System.IO.File.GetLastWriteTimeUtc(path);
-			file.FileDateTime = write_time > creation_time
-				? write_time
-				: creation_time;
-
-			byte[] file_bytes = System.IO.File.ReadAllBytes(path);
-			using (var ms = new System.IO.MemoryStream(file_bytes, false))
+			try
 			{
-				PackFileData(blockStream, ms, file);
+				var creation_time = File.GetCreationTimeUtc(path);
+				var write_time = File.GetLastWriteTimeUtc(path);
+				file.FileDateTime = write_time > creation_time
+					? write_time
+					: creation_time;
+
+				byte[] file_bytes = File.ReadAllBytes(path);
+				using (var ms = new MemoryStream(file_bytes, false))
+				{
+					PackFileData(blockStream, ms, file);
+				}
+			} catch (Exception ex)
+			{
+				Debug.Trace.Resource.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+					string.Format("Couldn't pack file into {0}, encountered exception dealing with {1}", FileName, file.FileName),
+					ex);
+				return false;
 			}
 
 			return true;

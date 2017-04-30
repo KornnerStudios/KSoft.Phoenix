@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using KSoft;
 using KSoft.Collections;
 
 namespace PhxGui
@@ -48,12 +49,18 @@ namespace PhxGui
 
 				if (t.IsFaulted || t.Result != BuildEraFileResult.Success)
 				{
+					bool verbose = Flags.Test(MiscFlags.UseVerboseOutput);
+
 					string error_type;
 					string error_hint;
 					if (t.IsFaulted)
 					{
 						error_type = "EXCEPTION";
-						error_hint = t.Exception.ToString();
+
+						var e = t.Exception.GetOnlyExceptionOrAll();
+						error_hint = verbose
+							? e.ToVerboseString()
+							: e.ToBasicString();
 					}
 					else
 					{
@@ -67,7 +74,7 @@ namespace PhxGui
 								error_hint = "Failed reading or initializing .ERADEF data";
 								break;
 							case BuildEraFileResult.BuildFailed:
-								error_hint = "Failed building archive (invalid files?)";
+								error_hint = "Failed building archive (invalid files?). See PhxGui.log for possible details";
 								break;
 							default:
 								error_hint = "UNKNOWN";
