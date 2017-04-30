@@ -225,8 +225,8 @@ namespace KSoft.Phoenix.XML
 			}
 
 			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
-				"Generated UndefinedHandle in '{0} @ {1}' for '{2}.{3}' ({4}). {5}={6}",
-				s.StreamName, Text.TextLineInfo.ToString(line_info, true),
+				"{0} ({1}): Generated UndefinedHandle for '{2}.{3}' ({4}). {5}={6}",
+				s.StreamName, Text.TextLineInfo.ToString(line_info, verboseString: true),
 				cursor_name, xmlName ?? "InnerText",
 				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString());
 		}

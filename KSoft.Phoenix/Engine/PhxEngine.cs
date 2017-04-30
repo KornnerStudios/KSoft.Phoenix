@@ -48,32 +48,32 @@ namespace KSoft.Phoenix.Engine
 
 		public virtual bool Load()
 		{
-			var load_task = Task<bool>.Factory.StartNew((state) =>
+			Exception exception = null;
+			bool success = false;
+
+			try
 			{
-				var db = (Phx.BDatabaseBase)state;
-				return db.Load();
-			}, Database);
+				do
+				{
+					if (!Database.Load())
+						break;
 
-			var load_tactics_task = Task<bool>.Factory.StartNew((state) =>
+					if (!Database.LoadAllTactics())
+						break;
+
+					success = true;
+
+				} while (false);
+			} catch (Exception ex)
 			{
-				var db = (Phx.BDatabaseBase)state;
-				return db.LoadAllTactics();
-			}, Database);
-
-			var tasks = new List<Task<bool>>();
-			var task_exceptions = new List<Exception>();
-
-			tasks.Add(load_task);
-			tasks.Add(load_tactics_task);
-
-			bool success = true;
-			PhxUtil.UpdateResultWithTaskResults(ref success, tasks, task_exceptions);
+				exception = ex;
+			}
 
 			if (!success)
 			{
 				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
 					"Failed to load engine data",
-					task_exceptions.ToAggregateExceptionOrNull().GetOnlyExceptionOrAllWhenAggregate());
+					exception);
 			}
 
 			return success;

@@ -398,7 +398,7 @@ namespace KSoft.Phoenix
 				{
 					r = false;
 					if (exceptions != null)
-						exceptions.Add(task.Exception);
+						exceptions.Add(task.Exception.GetOnlyExceptionOrAll());
 				}
 				else
 				{

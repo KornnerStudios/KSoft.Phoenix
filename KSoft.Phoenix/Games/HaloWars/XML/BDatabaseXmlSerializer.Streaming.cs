@@ -699,7 +699,7 @@ namespace KSoft.Phoenix.HaloWars
 					var fc = e["WeaponType"].FirstChild;
 					fc.Value = "Beam";
 				}
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 
@@ -708,7 +708,7 @@ namespace KSoft.Phoenix.HaloWars
 			elements = s.Cursor.SelectNodes(xpath);
 			if (RemoveAllElements(elements))
 			{
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 
@@ -719,7 +719,7 @@ namespace KSoft.Phoenix.HaloWars
 			elements = s.Cursor.SelectNodes(xpath);
 			if (RemoveAllElements(elements))
 			{
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 		}
@@ -738,7 +738,7 @@ namespace KSoft.Phoenix.HaloWars
 					var fc = e["Weapon"].FirstChild;
 					fc.Value = fc.Value.Substring(1);
 				}
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 
@@ -749,7 +749,7 @@ namespace KSoft.Phoenix.HaloWars
 				elements = s.Cursor.SelectNodes(xpath);
 				if (RemoveAllElements(elements))
 				{
-					FixTacticsTraceFixEvent(name, xpath);
+					FixTacticsTraceFixEvent(s, name, xpath);
 					return;
 				}
 			}
@@ -766,7 +766,7 @@ namespace KSoft.Phoenix.HaloWars
 			// I'm going to assume the first Action supersedes all proceeding Actions with the same name
 			if (RemoveAllButTheFirstElement(elements))
 			{
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 
@@ -778,7 +778,7 @@ namespace KSoft.Phoenix.HaloWars
 			{
 				// #TODO: Should this be added? It appears in the 2nd instance
 				// <Anim>Build</Anim>
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 
@@ -794,7 +794,7 @@ namespace KSoft.Phoenix.HaloWars
 			elements = s.Cursor.SelectNodes(xpath);
 			if (RemoveAllElements(elements))
 			{
-				FixTacticsTraceFixEvent(name, xpath);
+				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
 			}
 		}

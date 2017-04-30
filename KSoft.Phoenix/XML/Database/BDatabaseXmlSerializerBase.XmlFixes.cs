@@ -41,11 +41,12 @@ namespace KSoft.Phoenix.XML
 		protected virtual void FixPowersXml(KSoft.IO.XmlElementStream s)
 		{ }
 
-		protected static void FixTacticsTraceFixEvent(string tacticName, string xpath)
+		protected static void FixTacticsTraceFixEvent(IO.XmlElementStream s, string tacticName, string xpath)
 		{
 			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
-				"Fixing Tactic '{0}' with XPath={1}", tacticName, xpath);
+				"{0}: Fixing Tactic with XPath={1}", s.StreamName, xpath);
 		}
+
 		protected virtual void FixTacticsXml(KSoft.IO.XmlElementStream s, string name)
 		{ }
 
