@@ -10,7 +10,7 @@
     PreviewDragOver="OnPreviewDragOver" PreviewDragEnter="OnPreviewDragEnter" PreviewDragLeave="OnPreviewDragLeave" >
     <Window.Resources>
         <KSoftWpfConverters:TrueOrFalseString x:Key="DataLoadTestTrueOrFalseString"
-            TrueString="Tries to load the core game data in the ERA Expand Path, outputting errors to messages"
+            TrueString="Tries to load the core game data in the ERA Expand Path, outputting errors to messages and PhxGui.log"
             FalseString="Set ERA Expand Path to a valid directory to use"
             />
         <KSoftWpfConverters:BooleanToTrueOrFalseStringConverter x:Key="BoolToTrueOrFalseStringConverter" />
@@ -75,7 +75,7 @@
                 DataContext="{x:Static props:Settings.Default}" Text="{Binding EraBuildOutputPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Content="Expand Path" />
-            <Button Grid.Row="3" Grid.Column="1" Content="Test load data"
+            <Button Grid.Row="3" Grid.Column="1" Content="Validate Game Data"
                 ToolTipService.ShowOnDisabled="True"
                 ToolTip="{Binding Path=IsEnabled, RelativeSource={RelativeSource Mode=Self}, Converter={StaticResource BoolToTrueOrFalseStringConverter}, ConverterParameter={StaticResource DataLoadTestTrueOrFalseString}}"
                 Command="{Binding DataLoadTest}"
