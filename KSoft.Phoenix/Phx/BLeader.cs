@@ -60,6 +60,55 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region LeaderPickerOrder
+		sbyte mLeaderPickerOrder = TypeExtensions.kNone;
+		/// <summary>
+		/// Leaders with this attribute set to zero or greater (and without the test attribute set) will be sorted by this value and shown in the leader picker.
+		/// </summary>
+		public sbyte LeaderPickerOrder
+		{
+			get { return mLeaderPickerOrder; }
+			set { mLeaderPickerOrder = value; }
+		}
+		#endregion
+
+		#region StatsID
+		sbyte mStatsID = TypeExtensions.kNone;
+		/// <summary>
+		/// This identifies leaders for stats/leaderboard purposes, which allows you to reorder the leaders in the XML file without messing up stats/leaderboards.
+		/// </summary>
+		public sbyte StatsID
+		{
+			get { return mStatsID; }
+			set { mStatsID = value; }
+		}
+		#endregion
+
+		#region DefaultPlayerSlotFlags
+		byte mDefaultPlayerSlotFlags;
+		/// <summary>
+		/// Bit flags defining how leaders are assigned to player slots.
+		/// Bits 0-5 indicate that the leader is the default leader for the associated slot when AI is assigned to that slot.
+		/// Bit 6 is unused.
+		/// Bit 7 indicates that the leader is the default leader to assign to a human player when they join a lobby.
+		/// If multiple leaders have a particular bit set, the first matching leader will be used.
+		/// </summary>
+		public byte DefaultPlayerSlotFlags
+		{
+			get { return mDefaultPlayerSlotFlags; }
+			set { mDefaultPlayerSlotFlags = value; }
+		}
+		#endregion
+
+		#region IsRandom
+		bool mIsRandom;
+		public bool IsRandom
+		{
+			get { return mIsRandom; }
+			set { mIsRandom = value; }
+		}
+		#endregion
+
 		#region TechID
 		int mTechID = TypeExtensions.kNone;
 		[Meta.BProtoTechReference]
@@ -77,6 +126,20 @@ namespace KSoft.Phoenix.Phx
 		{
 			get { return mCivID; }
 			set { mCivID = value; }
+		}
+		#endregion
+
+		#region FlashCivID
+		sbyte mFlashCivID = TypeExtensions.kNone;
+		/// <summary>
+		/// The civilization as specified in the Flash scene. 0 is UNSC, 1 is Covenant, and 2 is Random.
+		/// If you figure out how to modify the Flash scene to add other values to the leader picker, this may be useful to you.
+		/// </summary>
+		[Meta.BCivReference]
+		public sbyte FlashCivID
+		{
+			get { return mFlashCivID; }
+			set { mFlashCivID = value; }
 		}
 		#endregion
 
@@ -199,9 +262,16 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("Test", ref mTest, Predicates.IsTrue);
 			s.StreamAttributeOpt("Alpha", ref mAlpha, Predicates.IsNotNone);
 
+			s.StreamAttributeOpt("Random", ref mIsRandom, Predicates.IsTrue);
+			s.StreamAttributeOpt("StatsID", ref mStatsID, Predicates.IsNotNone);
+			s.StreamAttributeOpt("LeaderPickerOrder", ref mLeaderPickerOrder, Predicates.IsNotNone);
+			s.StreamAttributeOpt("DefaultPlayerSlotFlags", ref mDefaultPlayerSlotFlags, Predicates.IsNotZero,
+				NumeralBase.Hex);
+
 			xs.StreamDBID(s, "Tech", ref mTechID, DatabaseObjectKind.Tech);
 			xs.StreamDBID(s, "Civ", ref mCivID, DatabaseObjectKind.Civ);
 			xs.StreamDBID(s, "Power", ref mPowerID, DatabaseObjectKind.Power);
+			s.StreamElementOpt("FlashCivID", ref mFlashCivID, Predicates.IsNotNone);
 			s.StreamStringOpt("FlashImg", ref mFlashImg, toLower: false, type: XML.XmlUtil.kSourceElement);
 			// TODO: HW360's FlashPortrait elements have an ending " character (sans a starting quote). Be careful!
 			s.StreamStringOpt("FlashPortrait", ref mFlashPortrait, toLower: false, type: XML.XmlUtil.kSourceElement);
