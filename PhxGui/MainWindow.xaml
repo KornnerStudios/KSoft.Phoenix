@@ -52,6 +52,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -84,8 +86,20 @@
             <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Content="Flags" />
             <KSoftWpfControls:BitVectorControl Grid.Row="4" Grid.Column="1" BitsUserInterfaceSource="{x:Static local:MainWindowViewModel.FlagsUserInterfaceSource}" BitVector="{Binding Flags}" />
 
-            <Label Grid.Row="5" Grid.Column="0" VerticalAlignment="Top" Content="Messages" />
-            <ScrollViewer Grid.Row="5" Grid.Column="1">
+            <Label Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Content="Steam Edition" />
+            <Button Grid.Row="5" Grid.Column="1" Content="Edit ModManifest.txt for Steam"
+                Tag="{StaticResource ResourceKey=SteamManifest}"
+                Click="OnEditModManifest"
+                />
+
+            <Label Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Content="WinStore Edition" />
+            <Button Grid.Row="6" Grid.Column="1" Content="Edit ModManifest.txt for WindowsStore"
+                Tag="{StaticResource ResourceKey=WindowsStoreManifest}"
+                Click="OnEditModManifest"
+                />
+
+            <Label Grid.Row="7" Grid.Column="0" VerticalAlignment="Top" Content="Messages" />
+            <ScrollViewer Grid.Row="7" Grid.Column="1">
                 <TextBlock x:Name="mMessagesBlock" TextWrapping="Wrap"
                     ToolTip="Errors and other diagnostics will appear here. Right click text to copy it to your clipboard."
                     Text="{Binding MessagesText}"

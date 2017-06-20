@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PhxGui
@@ -75,6 +76,16 @@ namespace PhxGui
 
 			if (!string.IsNullOrWhiteSpace(mViewModel.MessagesText))
 				Clipboard.SetText(mViewModel.MessagesText);
+		}
+
+		private void OnEditModManifest(object sender, RoutedEventArgs e)
+		{
+			var button = (Button)sender;
+
+			var editor = new ModManifestView();
+			editor.Owner = this;
+			editor.DataContext = button.Tag;
+			editor.ShowDialog();
 		}
 	};
 }

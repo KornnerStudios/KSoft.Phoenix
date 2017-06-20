@@ -1,8 +1,21 @@
-﻿<Application x:Class="PhxGui.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="MainWindow.xaml">
+﻿<Application
+    x:Class="PhxGui.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:HaloWarsAlias="clr-namespace:KSoft.Phoenix.HaloWars;assembly=KSoft.Phoenix"
+    StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <HaloWarsAlias:ModManifestFile
+                x:Key="SteamManifest"
+                x:Name="SteamManifest"
+                Sku="Steam"
+                />
+            <HaloWarsAlias:ModManifestFile
+                x:Key="WindowsStoreManifest"
+                x:Name="WindowsStoreManifest"
+                Sku="WindowsStore"
+                />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

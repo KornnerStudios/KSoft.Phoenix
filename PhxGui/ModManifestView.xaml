@@ -1,0 +1,103 @@
+﻿<Window
+    x:Class="PhxGui.ModManifestView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:PhxGui"
+    mc:Ignorable="d"
+    Title="{Binding DisplayTitle}"
+    Width="350"
+    Height="350"
+    WindowStartupLocation="CenterOwner"
+    WindowStyle="SingleBorderWindow"
+    ShowInTaskbar="False"
+    Loaded="OnWindowLoaded"
+    >
+    <Window.Resources>
+        <Style TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <!--With CanUserAddRows set to false, this really isn't needed anymore-->
+                <DataTrigger Binding="{Binding}" Value="{x:Static CollectionView.NewItemPlaceholder}">
+                    <Setter Property="Background" Value="Yellow"/>
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <DataGrid Name="DirectoriesDataGrid"
+            Grid.Row="0" Grid.Column="0"
+            ItemsSource="{Binding Directories}"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            MouseDoubleClick="OnDirectoriesDataGridDoubleClick"
+            >
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding IsDisabled}"
+                    Header="Disabled?"
+                    ToolTipService.ToolTip="Disabling the directory causes the files within it to not be used"
+                    />
+                <DataGridTextColumn Binding="{Binding Directory}"
+                    Header="Directory"
+                    ToolTipService.ToolTip="Path that contains Halo Wars files (via 'art', 'data', etc subfolders)"
+                    />
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="↑" Click="OnMoveRowUpClicked"
+                        ToolTip="Move selected directory up higher (searched first)"
+                        />
+                    <MenuItem Header="↓" Click="OnMoveRowDownClicked"
+                        ToolTip="Move selected directory down lower (searched later)"
+                        />
+                    <MenuItem Header="Delete" Click="OnDeleteRowClicked"
+                        ToolTip="Delete the selected directory"
+                        />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <Button Content="↑"
+                Click="OnMoveRowUpClicked"
+                ToolTip="Move selected directory up higher (searched first)"
+                />
+            <Button Content="↓"
+                Click="OnMoveRowDownClicked"
+                ToolTip="Move selected directory down lower (searched later)"
+                />
+            <Button Content="Add"
+                Click="OnAddRowClicked"
+                ToolTip="Add a new directory to the list"
+                />
+            <Button Content="Save"
+                Click="OnFileSaveClicked"
+                ToolTip="Save the current ModManifest.txt"
+                />
+            <Button Content="Reload"
+                Click="OnFileReloadClicked"
+                ToolTip="Reload the current ModManifest.txt"
+                />
+            <Button Content="Delete"
+                Click="OnDeleteRowClicked"
+                ToolTip="Delete the selected directory"
+                />
+            <Button Content="Open Mod Folder"
+                Click="OnOpenModDirectoryClicked"
+                ToolTip="Open the selected directory in Windows Explorer"
+                />
+            <Button Content="Open ModManifest Folder"
+                Click="OnOpenModManifestDirectoryClicked"
+                ToolTip="Open the directory that contains the ModManifest.txt in Windows Explorer"
+                />
+        </StackPanel>
+    </Grid>
+</Window>

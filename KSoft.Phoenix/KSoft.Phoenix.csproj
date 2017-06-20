@@ -62,6 +62,7 @@
     <Compile Include="Games\HaloWars\Enums\BFlashableUIItem.cs" />
     <Compile Include="Games\HaloWars\Enums\BHUDItem.cs" />
     <Compile Include="Games\HaloWars\GameVersionType.cs" />
+    <Compile Include="Games\HaloWars\ModManifestFile.cs" />
     <Compile Include="Games\HaloWars\Objects\CodeProtoObject.cs" />
     <Compile Include="Games\HaloWars\PhxEngineHW.cs" />
     <Compile Include="Games\HaloWars\Scenario\BScenarioTeam.cs" />

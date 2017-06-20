@@ -34,7 +34,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Debug\Trace.cs" />
     <Compile Include="ExePatcher.cs" />
+    <Compile Include="ModManifestView.xaml.cs">
+      <DependentUpon>ModManifestView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XmlConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -51,6 +55,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ModManifestView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainWindowViewModel.cs" />
