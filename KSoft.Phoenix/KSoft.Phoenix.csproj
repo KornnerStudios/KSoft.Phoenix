@@ -102,6 +102,9 @@
     <Compile Include="Phx\Objects\ProtoSquad\BProtoSquadSound.cs" />
     <Compile Include="Phx\Objects\ProtoSquad\ProtoSquadEnums.cs" />
     <Compile Include="Phx\Powers\PowersEnums.cs" />
+    <Compile Include="Phx\ProtoData\ProtoDataObjectDatabase.cs" />
+    <Compile Include="Phx\ProtoData\ProtoDataObjectSource.cs" />
+    <Compile Include="Phx\ProtoData\ProtoDataObjectSourceKind.cs" />
     <Compile Include="Phx\ProtoReference.cs" />
     <Compile Include="Phx\Scenario\BScenario.cs" />
     <Compile Include="Phx\Scenario\BScenarioPlayer.cs" />

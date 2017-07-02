@@ -4,9 +4,13 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Phx
 {
+	[ProtoDataTypeObjectSourceKind(ProtoDataObjectSourceKind.HPData)]
 	public sealed class HPBarData
 		: IO.ITagElementStringNameStreamable
+		, IProtoDataObjectDatabaseProvider
 	{
+		public ProtoDataObjectDatabase ObjectDatabase { get; private set; }
+
 		#region Xml constants
 		const string kXmlRoot = "HPBarDefinition";
 
@@ -30,6 +34,8 @@ namespace KSoft.Phoenix.Phx
 
 		public HPBarData()
 		{
+			ObjectDatabase = new ProtoDataObjectDatabase(this, typeof(HPBarDataObjectKind));
+
 			HPBars = new Collections.BListAutoId<BProtoHPBar>();
 			ColorStages = new Collections.BListAutoId<BProtoHPBarColorStages>();
 			VeterancyBars = new Collections.BListAutoId<BProtoVeterancyBar>();
@@ -94,14 +100,6 @@ namespace KSoft.Phoenix.Phx
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
 		}
-
-		internal string GetName(HPBarDataObjectKind kind, int id)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
-
-			var dbi = GetMembersInterface(kind);
-			return dbi.TryGetNameWithUndefined(id);
-		}
 		#endregion
 
 		#region ITagElementStreamable<string> Members
@@ -124,6 +122,22 @@ namespace KSoft.Phoenix.Phx
 		{
 			using (s.EnterCursorBookmark(kXmlRoot))
 				StreamHPBarData(s);
+		}
+		#endregion
+
+		#region IProtoDataObjectDatabaseProvider members
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return kXmlFileInfo; } }
+
+		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
+		{
+			var kind = (HPBarDataObjectKind)objectKind;
+			return GetNamesInterface(kind);
+		}
+
+		Collections.IHasUndefinedProtoMemberInterface IProtoDataObjectDatabaseProvider.GetMembersInterface(int objectKind)
+		{
+			var kind = (HPBarDataObjectKind)objectKind;
+			return GetMembersInterface(kind);
 		}
 		#endregion
 	};

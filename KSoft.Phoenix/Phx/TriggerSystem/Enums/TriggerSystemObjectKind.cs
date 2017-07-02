@@ -3,7 +3,8 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum TriggerSystemObjectKind
 	{
-		Invalid = TypeExtensions.kNone,
+		None = PhxUtil.kObjectKindNone,
+
 		ProtoCondition,
 		ProtoEffect,
 		Template, // is this needed?

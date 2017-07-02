@@ -157,7 +157,7 @@ namespace KSoft.Phoenix.Engine
 
 			string root = GetContentLocation(loc);
 			string dir = GetDirectory(gameDir);
-			string file_path = Path.Combine(root, dir, filename);
+			string file_path = Path.Combine(root, dir, filename.ToLowerInvariant());
 			if (!string.IsNullOrEmpty(ext))
 				file_path += ext;
 
@@ -174,7 +174,7 @@ namespace KSoft.Phoenix.Engine
 			//////////////////////////////////////////////////////////////////////////
 			// Try to get the file from the TU storage first
 			string dir = GetDirectory(gameDir);
-			string file_path = Path.Combine(dir, filename);
+			string file_path = Path.Combine(dir, filename.ToLowerInvariant());
 			if (!string.IsNullOrEmpty(ext))
 				file_path += ext;
 

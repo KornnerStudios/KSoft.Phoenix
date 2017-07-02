@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-
-using BProtoSquadID = System.Int32;
-
+﻿
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BProtoShieldBubbleTypes

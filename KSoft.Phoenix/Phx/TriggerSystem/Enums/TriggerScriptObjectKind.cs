@@ -3,7 +3,8 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum TriggerScriptObjectKind
 	{
-		Invalid = TypeExtensions.kNone,
+		None = PhxUtil.kObjectKindNone,
+
 		Group,
 		Var,
 		Trigger,

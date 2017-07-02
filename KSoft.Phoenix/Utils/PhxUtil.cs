@@ -10,6 +10,8 @@ namespace KSoft.Phoenix
 {
 	static partial class PhxUtil
 	{
+		public const int kObjectKindNone = 0;
+
 		public const float kInvalidSingle = (float)TypeExtensions.kNone;
 		public const float kInvalidSingleNaN = float.NaN;
 

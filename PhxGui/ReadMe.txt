@@ -41,6 +41,7 @@ This is a CLI style app that resembles the original "KSoft.Tool" app from the 36
 
 * PhxGui: Added UI for editing ModManifest.txt files
 * Fixed Leader.xml support to support recent leader changes in the game to support more than 9 leader options and data drive more configuration values
+* Fixed EXE patching to better support recent game updates
 
 ### 2017.04.30
 

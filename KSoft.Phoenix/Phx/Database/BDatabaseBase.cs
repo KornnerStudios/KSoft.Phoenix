@@ -19,12 +19,16 @@ namespace KSoft.Phoenix.Phx
 		kNumberOf
 	};
 
+	[ProtoDataTypeObjectSourceKind(ProtoDataObjectSourceKind.Database)]
 	public abstract partial class BDatabaseBase
 		: ObjectModel.BasicViewModel
 		, IDisposable
 		, IO.ITagElementStringNameStreamable
+		, IProtoDataObjectDatabaseProvider
 	{
 		public const string kInvalidString = "BORK BORK BORK";
+
+		public ProtoDataObjectDatabase ObjectDatabase { get; private set; }
 
 		#region Xml constants
 		internal static readonly XML.BListXmlParams kObjectTypesXmlParams = new XML.BListXmlParams("ObjectType");
@@ -75,7 +79,10 @@ namespace KSoft.Phoenix.Phx
 		internal void AddStringIDReference(int id)
 		{
 			if (ReferencedStringIds.Length < id)
-				ReferencedStringIds.Length += 16;
+			{
+				int bump = id - ReferencedStringIds.Length;
+				ReferencedStringIds.Length += bump + 16;
+			}
 
 			ReferencedStringIds[id] = true;
 		}
@@ -125,6 +132,8 @@ namespace KSoft.Phoenix.Phx
 		protected BDatabaseBase(Engine.PhxEngine engine, Collections.IProtoEnum gameObjectTypes)
 		{
 			Engine = engine;
+
+			ObjectDatabase = new ProtoDataObjectDatabase(this, typeof(DatabaseObjectKind));
 
 			ObjectTypes = new Collections.BTypeNamesWithCode(gameObjectTypes);
 
@@ -281,13 +290,15 @@ namespace KSoft.Phoenix.Phx
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
 
-			return GameData.GetName(kind, id);
+			IProtoDataObjectDatabaseProvider provider = GameData;
+			return provider.GetName((int)kind, id);
 		}
 		public string GetName(HPBarDataObjectKind kind, int id)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
 
-			return HPBars.GetName(kind, id);
+			IProtoDataObjectDatabaseProvider provider = HPBars;
+			return provider.GetName((int)kind, id);
 		}
 		public string GetName(DatabaseObjectKind kind, int id)
 		{
@@ -316,6 +327,22 @@ namespace KSoft.Phoenix.Phx
 
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
+		}
+		#endregion
+
+		#region IProtoDataObjectDatabaseProvider members
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return null; } }
+
+		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
+		{
+			var kind = (DatabaseObjectKind)objectKind;
+			return GetNamesInterface(kind);
+		}
+
+		Collections.IHasUndefinedProtoMemberInterface IProtoDataObjectDatabaseProvider.GetMembersInterface(int objectKind)
+		{
+			var kind = (DatabaseObjectKind)objectKind;
+			return GetNamesInterface/*GetMembersInterface*/(kind);
 		}
 		#endregion
 

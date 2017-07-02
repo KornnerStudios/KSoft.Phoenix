@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 namespace KSoft.Collections
 {
 	public interface IListAutoIdObject
 		: IO.ITagElementStringNameStreamable
+		, System.ComponentModel.INotifyPropertyChanged
 	{
 		/// <summary>Generated AutoID for this object. Used internally, not a concept in the actual Phoenix engine</summary>
 		int AutoId { get; set; }

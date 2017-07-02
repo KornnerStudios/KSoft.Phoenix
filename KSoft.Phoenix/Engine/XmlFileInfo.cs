@@ -86,6 +86,19 @@ namespace KSoft.Phoenix.Engine
 		}
 	};
 
+	public class XmlFileLoadStateChangedArgs
+		: EventArgs
+	{
+		public XmlFileInfo XmlFile { get; private set; }
+		public XmlFileLoadState NewState { get; private set; }
+
+		public XmlFileLoadStateChangedArgs(XmlFileInfo xmlFile, XmlFileLoadState newState)
+		{
+			XmlFile = xmlFile;
+			NewState = newState;
+		}
+	};
+
 	[System.Diagnostics.DebuggerDisplay("{"+ nameof(ProtoDataXmlFileInfo.DebuggerDisplay)  +"}")]
 	public sealed class ProtoDataXmlFileInfo
 	{

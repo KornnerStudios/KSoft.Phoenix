@@ -25,7 +25,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		protected TriggerSystemProtoObject(BTriggerSystem root, TriggerScriptObjectWithArgs instance)
 		{
-			mName = instance.Name;
+			Name = instance.Name;
 
 			mDbId = instance.DbId;
 			mVersion = instance.Version;
@@ -44,8 +44,10 @@ namespace KSoft.Phoenix.Phx
 		{
 			foreach (var arg in obj.Args)
 			{
-				if (arg.IsInvalid) continue;
-				if (arg.GetVarType(ts) == BTriggerVarType.UserClassType) return true;
+				if (arg.IsInvalid)
+					continue;
+				if (arg.GetVarType(ts) == BTriggerVarType.UserClassType)
+					return true;
 			}
 			return false;
 		}
@@ -77,7 +79,7 @@ namespace KSoft.Phoenix.Phx
 
 				diff += sig - obj_sig;
 			}
-			
+
 			return diff;
 		}
 	};

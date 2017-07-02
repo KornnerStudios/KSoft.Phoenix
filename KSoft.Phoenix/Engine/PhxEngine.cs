@@ -21,12 +21,21 @@ namespace KSoft.Phoenix.Engine
 		internal Dictionary<XmlFileInfo, XmlFileLoadState> XmlFileLoadStatus { get; private set; }
 			= new Dictionary<XmlFileInfo, XmlFileLoadState>();
 
+		public event EventHandler<XmlFileLoadStateChangedArgs> XmlFileLoadStateChanged;
+
 		internal void UpdateFileLoadStatus(XmlFileInfo file, XmlFileLoadState state)
 		{
 			Contract.Requires(file != null);
 
 			lock (XmlFileLoadStatus)
 				XmlFileLoadStatus[file] = state;
+
+			var handler = XmlFileLoadStateChanged;
+			if (handler != null)
+			{
+				var args = new XmlFileLoadStateChangedArgs(file, state);
+				handler(this, args);
+			}
 		}
 
 		public XmlFileLoadState GetFileLoadStatus(XmlFileInfo file)
@@ -41,11 +50,27 @@ namespace KSoft.Phoenix.Engine
 			return state;
 		}
 
+		public bool HasAlreadyPreloaded { get; private set; }
 		public virtual bool Preload()
 		{
-			return Database.Preload();
+			if (HasAlreadyPreloaded)
+			{
+				Debug.Trace.Engine.TraceDataSansId(System.Diagnostics.TraceEventType.Error,
+					"Failed to load preload data: " + "preload has already be performed");
+				return false;
+			}
+
+			bool success = Database.Preload();
+
+			if (success)
+			{
+				HasAlreadyPreloaded = true;
+			}
+
+			return success;
 		}
 
+		public bool HasAlreadyLoaded { get; private set; }
 		public virtual bool Load()
 		{
 			Exception exception = null;
@@ -55,11 +80,23 @@ namespace KSoft.Phoenix.Engine
 			{
 				do
 				{
-					if (!Database.Load())
+					if (HasAlreadyLoaded)
+					{
+						exception = new Exception("Load has already been performed");
 						break;
+					}
+
+					if (!Database.Load())
+					{
+						exception = new Exception("Database.Load failed");
+						break;
+					}
 
 					if (!Database.LoadAllTactics())
+					{
+						exception = new Exception("Database.LoadAllTactics failed");
 						break;
+					}
 
 					success = true;
 
@@ -71,9 +108,13 @@ namespace KSoft.Phoenix.Engine
 
 			if (!success)
 			{
-				Debug.Trace.XML.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
+				Debug.Trace.Engine.TraceDataSansId(System.Diagnostics.TraceEventType.Error,
 					"Failed to load engine data",
 					exception);
+			}
+			else
+			{
+				HasAlreadyLoaded = true;
 			}
 
 			return success;
@@ -126,5 +167,151 @@ namespace KSoft.Phoenix.Engine
 				return xml;
 			}
 		}
+
+		public ObjectDatabaseForFileResult GetObjectDatabase(XmlFileInfo file)
+		{
+			if (file == null)
+				return ObjectDatabaseForFileResult.Null;
+
+			var status = GetFileLoadStatus(file);
+			if (status < XmlFileLoadState.Preloaded)
+			{
+				throw new InvalidOperationException(string.Format(
+					"GetObjectDatabase called on {0} when its load status was {1}",
+					file, status));
+			}
+
+			var kvp = GetObjectDatabaseForFile(file);
+
+			if (kvp.Key == null)
+			{
+				throw new InvalidOperationException(string.Format(
+					"GetObjectDatabase called on {0} which didn't resolve to a DB"));
+			}
+
+			return new ObjectDatabaseForFileResult(file, kvp.Key, kvp.Value);
+		}
+
+		protected virtual KeyValuePair<Phx.ProtoDataObjectDatabase, int> GetObjectDatabaseForFile(XmlFileInfo file)
+		{
+			Phx.ProtoDataObjectDatabase db = null;
+			int specificObjectKind = TypeExtensions.kNone;
+
+			if (file == Phx.BGameData.kXmlFileInfo)
+			{
+				db = Database.GameData.ObjectDatabase;
+				specificObjectKind = PhxUtil.kObjectKindNone;
+			}
+			else if (file == Phx.HPBarData.kXmlFileInfo)
+			{
+				db = Database.HPBars.ObjectDatabase;
+				specificObjectKind = PhxUtil.kObjectKindNone;
+			}
+			else if (file == Phx.BAbility.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Ability;
+			}
+			else if (file == Phx.BCiv.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Civ;
+			}
+			else if (file == Phx.BDamageType.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.DamageType;
+			}
+			else if (file == Phx.BProtoImpactEffect.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.ImpactEffect;
+			}
+			else if (file == Phx.BLeader.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Leader;
+			}
+			else if (
+				file == Phx.BProtoObject.kXmlFileInfo ||
+				file == Phx.BProtoObject.kXmlFileInfoUpdate)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Object;
+			}
+			else if (file == Phx.BDatabaseBase.kObjectTypesXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.ObjectType;
+			}
+			else if (file == Phx.BProtoPower.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Power;
+			}
+			else if (
+				file == Phx.BProtoSquad.kXmlFileInfo ||
+				file == Phx.BProtoSquad.kXmlFileInfoUpdate)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Squad;
+			}
+			else if (file.Directory == GameDirectory.Tactics)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Tactic;
+			}
+			else if (
+				file == Phx.BProtoTech.kXmlFileInfo ||
+				file == Phx.BProtoTech.kXmlFileInfoUpdate)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.Tech;
+			}
+			else if (file == Phx.TerrainTileType.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.TerrainTileType;
+			}
+			else if (file == Phx.BUserClass.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.UserClass;
+			}
+			else if (file == Phx.BWeaponType.kXmlFileInfo)
+			{
+				db = Database.ObjectDatabase;
+				specificObjectKind = (int)Phx.DatabaseObjectKind.WeaponType;
+			}
+			else if (
+				file.Directory == GameDirectory.AbilityScripts ||
+				file.Directory == GameDirectory.PowerScripts ||
+				file.Directory == GameDirectory.TriggerScripts)
+			{
+				throw new NotImplementedException(file.ToString());
+			}
+
+			return new KeyValuePair<Phx.ProtoDataObjectDatabase, int>(db, specificObjectKind);
+		}
+	};
+
+	public struct ObjectDatabaseForFileResult
+	{
+		public XmlFileInfo File { get; private set; }
+		public Phx.ProtoDataObjectDatabase Database { get; private set; }
+		public int SpecificObjectKind { get; private set; }
+
+		public ObjectDatabaseForFileResult(XmlFileInfo file, Phx.ProtoDataObjectDatabase db, int objectKind)
+		{
+			File = file;
+			Database = db;
+			SpecificObjectKind = objectKind;
+		}
+
+		public bool IsNull { get { return Database == null; } }
+
+		public static ObjectDatabaseForFileResult Null { get {
+			return new ObjectDatabaseForFileResult(null, null, TypeExtensions.kNone);
+		} }
 	};
 }

@@ -2,6 +2,7 @@
 
 namespace KSoft.Phoenix.Phx
 {
+	[ProtoDataTypeObjectSourceKind(ProtoDataObjectSourceKind.TriggerScript)]
 	public sealed class BTriggerSystem
 		: IO.ITagElementStringNameStreamable
 	{
@@ -87,7 +88,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			BTriggerVar var;
 			mDbiVars.TryGetValue(var_id, out var);
-			
+
 			return var;
 		}
 		#endregion

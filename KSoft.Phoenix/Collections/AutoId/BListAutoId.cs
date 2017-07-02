@@ -137,6 +137,17 @@ namespace KSoft.Collections
 		public int MemberCount { get { return Count; } }
 		#endregion
 
+		public override object GetObject(int id)
+		{
+			if (id.IsNone())
+				return null;
+
+			if (PhxUtil.IsUndefinedReferenceHandle(id))
+				return Phoenix.TypeExtensionsPhx.GetUndefinedObject(mUndefinedInterface, id);
+
+			return base.GetObject(id);
+		}
+
 		private ProtoEnumWithUndefinedImpl mUndefinedInterface;
 		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface { get { return mUndefinedInterface; } }
 		internal IProtoEnumWithUndefined UndefinedInterface { get { return mUndefinedInterface; } }

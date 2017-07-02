@@ -3,7 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum DatabaseObjectKind
 	{
-		None,
+		None = PhxUtil.kObjectKindNone,
 
 		// #NOTE place new DatabaseObjectKind code here
 

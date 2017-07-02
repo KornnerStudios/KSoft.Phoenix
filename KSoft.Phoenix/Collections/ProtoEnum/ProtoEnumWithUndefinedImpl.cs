@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -11,7 +11,7 @@ namespace KSoft.Collections
 		: IProtoEnumWithUndefined
 	{
 		IProtoEnum mRoot;
-		List<string> mUndefined;
+		ObservableCollection<string> mUndefined;
 
 		public ProtoEnumWithUndefinedImpl(IProtoEnum root)
 		{
@@ -23,7 +23,7 @@ namespace KSoft.Collections
 		void InitializeUndefined()
 		{
 			if (mUndefined == null)
-				mUndefined = new List<string>();
+				mUndefined = new ObservableCollection<string>();
 		}
 
 		public void Clear()
@@ -96,7 +96,7 @@ namespace KSoft.Collections
 				: 0;
 		} }
 
-		public IEnumerable<string> UndefinedMembers { get { return mUndefined; } }
+		public ObservableCollection<string> UndefinedMembers { get { return mUndefined; } }
 		#endregion
 	};
 }

@@ -1,15 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 namespace KSoft.Collections
 {
 	public abstract class BListAutoIdObject
-		: IListAutoIdObject
+		: ObjectModel.BasicViewModel
+		, IListAutoIdObject
 	{
-		protected string mName;
-		public string Name { get { return mName; } }
+		private string mName;
+		public string Name
+		{
+			get { return mName; }
+			protected set
+			{
+				if (this.SetFieldObj(ref mName, value))
+				{
+					OnPropertyChanged(nameof(IListAutoIdObject.Data));
+				}
+			}
+		}
 
 		protected BListAutoIdObject()
 		{
@@ -17,12 +24,17 @@ namespace KSoft.Collections
 		}
 
 		#region IListAutoIdObject Members
-		public int AutoId { get; set; }
+		private int mAutoId;
+		public int AutoId
+		{
+			get { return mAutoId; }
+			set { this.SetFieldVal(ref mAutoId, value); }
+		}
 
 		string IListAutoIdObject.Data
 		{
 			get { return mName; }
-			set { mName = value; }
+			set { Name = value; }
 		}
 
 		public abstract void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

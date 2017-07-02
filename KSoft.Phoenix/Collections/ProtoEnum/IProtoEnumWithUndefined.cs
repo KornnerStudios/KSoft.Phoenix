@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -20,7 +20,7 @@ namespace KSoft.Collections
 		[Contracts.Pure]
 		int MemberUndefinedCount { get; }
 
-		IEnumerable<string> UndefinedMembers { get; }
+		ObservableCollection<string> UndefinedMembers { get; }
 	};
 	[Contracts.ContractClassFor(typeof(IProtoEnumWithUndefined))]
 	abstract class IProtoEnumWithUndefinedContract
@@ -46,10 +46,12 @@ namespace KSoft.Collections
 
 			throw new NotImplementedException();
 		} }
-		IEnumerable<string> IProtoEnumWithUndefined.UndefinedMembers { get {
-			Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
+		ObservableCollection<string> IProtoEnumWithUndefined.UndefinedMembers { get {
+#if false
+				Contract.Ensures(Contract.Result<ObservableCollection<string>>() != null);
+#endif
 
-			throw new NotImplementedException();
+				throw new NotImplementedException();
 		} }
 		#endregion
 	};
@@ -77,6 +79,15 @@ namespace KSoft.Phoenix
 				return null;
 
 			return dbi.UndefinedInterface.GetMemberNameOrUndefined(id);
+		}
+
+		public static UndefinedObjectResult GetUndefinedObject(this Collections.IProtoEnumWithUndefined protoEnum, int memberId)
+		{
+			Contract.Requires(protoEnum != null);
+
+			string name = protoEnum.GetMemberNameOrUndefined(memberId);
+
+			return new UndefinedObjectResult(memberId, name);
 		}
 	};
 }

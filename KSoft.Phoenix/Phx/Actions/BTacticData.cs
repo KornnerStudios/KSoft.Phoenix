@@ -1,10 +1,13 @@
-﻿using Contracts = System.Diagnostics.Contracts;
+﻿using System;
+using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Phx
 {
+	[ProtoDataTypeObjectSourceKind(ProtoDataObjectSourceKind.TacticData)]
 	public sealed class BTacticData
 		: Collections.BListAutoIdObject
+		, IProtoDataObjectDatabaseProvider
 	{
 		public const string kFileExt = ".tactics";
 
@@ -51,24 +54,29 @@ namespace KSoft.Phoenix.Phx
 			Actions.SetupDatabaseInterface();
 		}
 
-		public int GetId(TacticDataObjectKind kind, string name)
+		internal Collections.IBTypeNames GetNamesInterface(TacticDataObjectKind kind)
 		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != TacticDataObjectKind.None);
+
 			switch (kind)
 			{
-			case TacticDataObjectKind.Weapon:		return Weapons.TryGetIdWithUndefined(name);
-			//case TacticDataObjectKind.TacticState:	return TacticStates.TryGetIdWithUndefined(name);
-			case TacticDataObjectKind.Action:		return Actions.TryGetIdWithUndefined(name);
+			case TacticDataObjectKind.Weapon:		return Weapons;
+			//case TacticDataObjectKind.TacticState:	return TacticStates;
+			case TacticDataObjectKind.Action:		return Actions;
 
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
 		}
-		public string GetName(TacticDataObjectKind kind, int id)
+
+		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(TacticDataObjectKind kind)
 		{
+			Contract.Requires<ArgumentOutOfRangeException>(kind != TacticDataObjectKind.None);
+
 			switch (kind)
 			{
-			case TacticDataObjectKind.Weapon:		return Weapons.TryGetNameWithUndefined(id);
-			//case TacticDataObjectKind.TacticState:	return TacticStates.TryGetNameWithUndefined(id);
-			case TacticDataObjectKind.Action:		return Actions.TryGetNameWithUndefined(id);
+			case TacticDataObjectKind.Weapon:		return Weapons;
+			//case TacticDataObjectKind.TacticState:	return TacticStates;
+			case TacticDataObjectKind.Action:		return Actions;
 
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
@@ -83,6 +91,7 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			Contract.Requires(kind != TacticDataObjectKind.None);
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -97,7 +106,8 @@ namespace KSoft.Phoenix.Phx
 
 				if (was_streamed)
 				{
-					dbid = GetId(kind, id_name);
+					IProtoDataObjectDatabaseProvider provider = this;
+					dbid = provider.GetId((int)kind, id_name);
 					Contract.Assert(dbid.IsNotNone());
 				}
 				else
@@ -105,7 +115,8 @@ namespace KSoft.Phoenix.Phx
 			}
 			else if (s.IsWriting && dbid.IsNotNone())
 			{
-				id_name = GetName(kind, dbid);
+				IProtoDataObjectDatabaseProvider provider = this;
+				id_name = provider.GetName((int)kind, dbid);
 				Contract.Assert(!string.IsNullOrEmpty(id_name));
 
 				if (isOptional)
@@ -140,6 +151,22 @@ namespace KSoft.Phoenix.Phx
 				XML.XmlUtil.Serialize(s, Actions, BProtoAction.kBListXmlParams);
 				Tactic.Serialize(s);
 			}
+		}
+		#endregion
+
+		#region IProtoDataObjectDatabaseProvider members
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return SourceXmlFile; } }
+
+		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
+		{
+			var kind = (TacticDataObjectKind)objectKind;
+			return GetNamesInterface(kind);
+		}
+
+		Collections.IHasUndefinedProtoMemberInterface IProtoDataObjectDatabaseProvider.GetMembersInterface(int objectKind)
+		{
+			var kind = (TacticDataObjectKind)objectKind;
+			return GetMembersInterface(kind);
 		}
 		#endregion
 	};

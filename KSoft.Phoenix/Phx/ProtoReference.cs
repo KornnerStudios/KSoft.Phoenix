@@ -2,7 +2,7 @@
 
 namespace KSoft.Phoenix.Phx.Meta
 {
-	[AttributeUsage(ProtoReferenceAttribute.kValidOn, AllowMultiple=false)]
+	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public abstract class ProtoReferenceAttribute : Attribute
 	{
 		public const AttributeTargets kValidOn = 0

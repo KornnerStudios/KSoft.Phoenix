@@ -3,7 +3,7 @@ namespace KSoft.Phoenix.Phx
 {
 	public enum HPBarDataObjectKind
 	{
-		None,
+		None = PhxUtil.kObjectKindNone,
 
 		HPBar,
 		ColorStages,

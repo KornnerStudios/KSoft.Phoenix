@@ -4,9 +4,13 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Phx
 {
+	[ProtoDataTypeObjectSourceKind(ProtoDataObjectSourceKind.GameData)]
 	public sealed class BGameData
 		: IO.ITagElementStringNameStreamable
+		, IProtoDataObjectDatabaseProvider
 	{
+		public ProtoDataObjectDatabase ObjectDatabase { get; private set; }
+
 		#region Xml constants
 		const string kXmlRoot = "GameData";
 
@@ -999,6 +1003,8 @@ namespace KSoft.Phoenix.Phx
 
 		public BGameData()
 		{
+			ObjectDatabase = new ProtoDataObjectDatabase(this, typeof(GameDataObjectKind));
+
 			Resources = new Collections.BListAutoId<BResource>();
 			Rates = new Collections.BTypeNames();
 			#region DifficultyModifiers
@@ -1051,14 +1057,6 @@ namespace KSoft.Phoenix.Phx
 
 			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
 			}
-		}
-
-		internal string GetName(GameDataObjectKind kind, int id)
-		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
-
-			var dbi = GetMembersInterface(kind);
-			return dbi.TryGetNameWithUndefined(id);
 		}
 		#endregion
 
@@ -1239,6 +1237,22 @@ namespace KSoft.Phoenix.Phx
 		{
 			using (s.EnterCursorBookmark(kXmlRoot))
 				StreamGameData(s);
+		}
+		#endregion
+
+		#region IProtoDataObjectDatabaseProvider members
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return kXmlFileInfo; } }
+
+		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
+		{
+			var kind = (GameDataObjectKind)objectKind;
+			return GetNamesInterface(kind);
+		}
+
+		Collections.IHasUndefinedProtoMemberInterface IProtoDataObjectDatabaseProvider.GetMembersInterface(int objectKind)
+		{
+			var kind = (GameDataObjectKind)objectKind;
+			return GetMembersInterface(kind);
 		}
 		#endregion
 	};

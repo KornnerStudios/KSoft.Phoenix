@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -12,6 +13,9 @@ namespace KSoft.Collections
 		int Count { get; }
 
 		void Clear();
+
+		object GetObject(int id);
+		object UnderlyingObjectsCollection { get; }
 
 		bool IsEmpty { get; }
 
@@ -73,14 +77,19 @@ namespace KSoft.Collections
 		} }
 		#endregion
 
-		protected List<T> mList;
+		protected ObservableCollection<T> mList;
+		protected List<T> RawList { get {
+			var list = ObjectModel.Util.GetUnderlyingItemsAsList(mList);
+			return list;
+		} }
 
 		/// <summary>Parameters that dictate the functionality of this list</summary>
 		public BListParams Params { get; private set; }
 
 		protected BListBase(int capacity = BCollectionParams.kDefaultCapacity)
 		{
-			mList = new List<T>(capacity);
+			mList = new ObservableCollection<T>(/*capacity*/);
+			Capacity = capacity;
 		}
 		protected BListBase(BListParams @params)
 			: this(@params != null ? @params.InitialCapacity : BCollectionParams.kDefaultCapacity)
@@ -93,8 +102,8 @@ namespace KSoft.Collections
 
 		internal int Capacity
 		{
-			get { return mList.Capacity; }
-			set { mList.Capacity = value; }
+			get { return RawList.Capacity; }
+			set { RawList.Capacity = value; }
 		}
 
 		public virtual T this[int index]
@@ -117,7 +126,7 @@ namespace KSoft.Collections
 		#region IEnumerable<T> Members
 		public List<T>.Enumerator GetEnumerator()
 		{
-			return mList.GetEnumerator();
+			return RawList.GetEnumerator();
 		}
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -132,12 +141,19 @@ namespace KSoft.Collections
 		#endregion
 		#endregion
 
+		public virtual object GetObject(int id)
+		{
+			return this[id];
+		}
+
+		object IBList.UnderlyingObjectsCollection { get { return mList; } }
+
 		public bool IsEmpty { get { return Count == 0; } }
 		internal void OptimizeStorage()
 		{
 			//if (Count == 0)
 			//	mList = null;
-			mList.TrimExcess();
+			RawList.TrimExcess();
 		}
 
 		#region IEqualityComparer<BListBase<T>> Members
@@ -162,7 +178,7 @@ namespace KSoft.Collections
 		}
 		public void Sort(int index, int count, IComparer<T> comparer)
 		{
-			mList.Sort(index, count, comparer);
+			RawList.Sort(index, count, comparer);
 		}
 		public void Sort(Comparison<T> comparison)
 		{
