@@ -43,4 +43,16 @@ namespace KSoft.Phoenix
 			return handle.IsNone();
 		}
 	};
+
+	public struct UndefinedObjectResult
+	{
+		public int MemberId { get; private set; }
+		public string MemberName { get; private set; }
+
+		public UndefinedObjectResult(int id, string name)
+		{
+			MemberId = id;
+			MemberName = name;
+		}
+	};
 };

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -76,6 +75,17 @@ namespace KSoft.Collections
 
 		public virtual int MemberCount { get { return Count; } }
 		#endregion
+
+		public override object GetObject(int id)
+		{
+			if (id.IsNone())
+				return null;
+
+			if (PhxUtil.IsUndefinedReferenceHandle(id))
+				return Phoenix.TypeExtensionsPhx.GetUndefinedObject(mUndefinedInterface, id);
+
+			return base.GetObject(id);
+		}
 
 		private ProtoEnumWithUndefinedImpl mUndefinedInterface;
 		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface { get { return mUndefinedInterface; } }
