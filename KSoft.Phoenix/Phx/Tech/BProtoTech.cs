@@ -127,7 +127,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			// This isn't always used, nor unique.
 			// In fact, the engine doesn't even use it beyond reading it!
-			s.StreamElementOpt("DBID", ref mDbId, Predicates.IsNotNone);
+			s.StreamElementOpt("DBID", this, obj => obj.DbId, Predicates.IsNotNone);
 		}
 
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

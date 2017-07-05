@@ -1,4 +1,5 @@
-﻿
+﻿using System.ComponentModel;
+
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BCiv
@@ -157,6 +158,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		// Empty Civs just have a name
+		[Browsable(false)]
 		public bool IsEmpty { get { return mTechID.IsNotNone(); } }
 
 		public BCiv()

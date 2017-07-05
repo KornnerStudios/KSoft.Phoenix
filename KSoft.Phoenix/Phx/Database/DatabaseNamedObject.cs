@@ -1,4 +1,5 @@
-﻿using Contracts = System.Diagnostics.Contracts;
+﻿using System.ComponentModel;
+using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Phx
@@ -12,6 +13,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region UserInterfaceTextData
+		[Browsable(false)]
 		public DatabaseObjectUserInterfaceTextData UserInterfaceTextData { get; private set; }
 
 		protected DatabaseObjectUserInterfaceTextData CreateDatabaseObjectUserInterfaceTextData()

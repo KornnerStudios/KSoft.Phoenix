@@ -1,4 +1,5 @@
-﻿
+﻿using System.ComponentModel;
+
 namespace KSoft.Collections
 {
 	public abstract class BListAutoIdObject
@@ -6,6 +7,7 @@ namespace KSoft.Collections
 		, IListAutoIdObject
 	{
 		private string mName;
+		[Browsable(false)]
 		public string Name
 		{
 			get { return mName; }

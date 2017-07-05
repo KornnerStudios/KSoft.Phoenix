@@ -6,11 +6,11 @@ namespace KSoft.Phoenix.Phx
 		, IDatabaseIdObject
 	{
 		#region DBID
-		protected int mDbId = TypeExtensions.kNone;
+		private int mDbId = TypeExtensions.kNone;
 		public int DbId
 		{
 			get { return mDbId; }
-			set { mDbId = value; }
+			set { this.SetFieldVal(ref mDbId, value); }
 		}
 		#endregion
 
@@ -24,7 +24,7 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttribute("dbid", ref mDbId);
+			s.StreamAttribute("dbid", this, obj => obj.DbId);
 		}
 
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
