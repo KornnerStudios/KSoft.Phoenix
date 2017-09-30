@@ -9,6 +9,7 @@ namespace KSoft.Phoenix.Resource
 		Any,
 		Pc,
 		Xbox,
+		_64bit,
 	};
 
 	public sealed class ResourceTagHeader

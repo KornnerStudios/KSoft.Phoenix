@@ -24,6 +24,7 @@ This tool is a drag-n-drop style desktop app.
 
 ### Known Issues
 - Some errors don't present much details right now. For example, problems reading the .ERADEF while trying to build a new .ERA will just give a basic message saying that the build process failed. This should be addressed in future releases
+- The "Halo Wars Alpha 093106 Feb 21 2009" build requires the "Skip Verification" flag to be checked. It was released using old tools that didn't properly update hashes used in the ERA, and all the ERAs are already decrypted.
 
 ## PhxTool
 
@@ -36,6 +37,10 @@ This is a CLI style app that resembles the original "KSoft.Tool" app from the 36
 - Halo Wars Modding Group Discord for additional testing (https://discord.gg/UjfYKAN)
 
 ## Change Log
+
+### 2017.09.30
+
+* Fixed compatability with the released "Halo Wars Alpha 093106 Feb 21 2009" build. Be sure to check "Skip Verification" to get around checksum errors.
 
 ### 2017.06.20
 

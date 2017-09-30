@@ -23,6 +23,8 @@ namespace PhxGui
 			var args = new BuildEraFileParameters(Flags.Test(MiscFlags.UseVerboseOutput));
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
 				args.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
+			if (Flags.Test(MiscFlags.SkipVerification))
+				args.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.SkipVerification);
 			args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.Encrypt);
 
 			if (Flags.Test(MiscFlags.AlwaysUseXmlOverXmb))

@@ -31,6 +31,8 @@ namespace PhxGui
 			};
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
 				stack.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
+			if (Flags.Test(MiscFlags.SkipVerification))
+				stack.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.SkipVerification);
 			stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt);
 
 			if (Flags.Test(MiscFlags.DontOverwriteExistingFiles))

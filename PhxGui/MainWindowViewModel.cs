@@ -40,6 +40,10 @@ namespace PhxGui
 					Description="When performing operations, include any verbose details")]
 		UseVerboseOutput,
 
+		[Display(	Name="Skip Verification",
+					Description= "During ERA expansion, ignore checksums that appear to be wrong and would halt progress")]
+		SkipVerification,
+
 		kNumberOf,
 	};
 

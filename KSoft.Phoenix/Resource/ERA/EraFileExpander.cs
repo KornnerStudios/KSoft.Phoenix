@@ -106,8 +106,12 @@ namespace KSoft.Phoenix.Resource
 			using (var era_reader = new IO.EndianReader(era_in_ms, Shell.EndianFormat.Big))
 			using (var era_writer = new IO.EndianWriter(era_out_ms, Shell.EndianFormat.Big))
 			{
-				CryptStream(era_reader, era_writer,
-					Security.Cryptography.CryptographyTransformType.Decrypt);
+				// "Halo Wars Alpha 093106 Feb 21 2009" was released pre-decrypted, so try and detect if the file is already decrypted first
+				if (!EraFileHeader.VerifyIsEraAndDecrypted(era_reader))
+				{
+					CryptStream(era_reader, era_writer,
+						Security.Cryptography.CryptographyTransformType.Decrypt);
+				}
 			}
 		}
 
