@@ -49,6 +49,14 @@
     <Compile Include="Collections\Types\BTypeValuesParams.cs" />
     <Compile Include="Collections\Types\BTypeValuesSingle.cs" />
     <Compile Include="Collections\Types\BTypeValuesString.cs" />
+    <Compile Include="DDS\DDS_FLAGS.cs" />
+    <Compile Include="DDS\DirectXTex.cs" />
+    <Compile Include="DDS\DirectXTexBlob.cs" />
+    <Compile Include="DDS\DirectXTexDLL.cs" />
+    <Compile Include="DDS\DirectXTexScratchImage.cs" />
+    <Compile Include="DDS\DXGI_FORMAT.cs" />
+    <Compile Include="DDS\TexMetadata.cs" />
+    <Compile Include="DDS\WIC_FLAGS.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Engine\ContentStorage.cs" />
     <Compile Include="Engine\GameDirectories.cs" />
@@ -399,6 +407,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Phx\Visual\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.dll">
+      <Link>DDS\DirectXTexDLL.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb">
+      <Link>DDS\DirectXTexDLL.pdb</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
