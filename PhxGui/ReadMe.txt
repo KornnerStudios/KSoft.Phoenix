@@ -38,6 +38,11 @@ This is a CLI style app that resembles the original "KSoft.Tool" app from the 36
 
 ## Change Log
 
+### 2017.
+
+* Fixed PhxGui and PhxTool so they run in 64-bit mode instead of always 32-bit
+* Fixed code which would otherwise use the current culture when parsing real numbers or compare strings, instead of using an invariant culture
+
 ### 2017.09.30
 
 * Fixed compatability with the released "Halo Wars Alpha 093106 Feb 21 2009" build. Be sure to check "Skip Verification" to get around checksum errors.

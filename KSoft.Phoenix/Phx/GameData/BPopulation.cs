@@ -47,7 +47,7 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle = new
 			XML.BTypeValuesXmlParams<float>("Pop", "Type");
 		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_LowerCase = new
-			XML.BTypeValuesXmlParams<float>("Pop", "Type".ToLower());
+			XML.BTypeValuesXmlParams<float>("Pop", "Type".ToLowerInvariant());
 		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_CapAddition = new
 			XML.BTypeValuesXmlParams<float>("PopCapAddition", "Type");
 		#endregion

@@ -36,7 +36,7 @@ namespace KSoft.Phoenix
 
 		public static bool StrEqualsIgnoreCase(string str1, string str2)
 		{
-			return string.Compare(str1, str2, true) == 0;
+			return string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase) == 0;
 		}
 
 		public static string ToLowerIfContainsUppercase(this string str)
@@ -194,13 +194,13 @@ namespace KSoft.Phoenix
 			if (!ParseStringList(vectorString, list))
 				return null;
 
-			if (list.Count >= 1 && !float.TryParse(list[0], out vector.X))
+			if (list.Count >= 1 && !Numbers.FloatTryParseInvariant(list[0], out vector.X))
 				return null;
-			if (list.Count >= 2 && !float.TryParse(list[1], out vector.Y))
+			if (list.Count >= 2 && !Numbers.FloatTryParseInvariant(list[1], out vector.Y))
 				return null;
-			if (list.Count >= 3 && !float.TryParse(list[2], out vector.Z))
+			if (list.Count >= 3 && !Numbers.FloatTryParseInvariant(list[2], out vector.Z))
 				return null;
-			if (list.Count >= 4 && !float.TryParse(list[3], out vector.W))
+			if (list.Count >= 4 && !Numbers.FloatTryParseInvariant(list[3], out vector.W))
 				return null;
 
 			return vector;
