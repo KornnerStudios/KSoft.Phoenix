@@ -95,9 +95,9 @@ namespace KSoft.DDS
 			EntryPointsNotFound = false;
 		}
 
-		public static void ThrowIfFailed(uint hresult)
+		public static void ThrowIfFailed(int hresult)
 		{
-			Marshal.ThrowExceptionForHR((int)hresult);
+			Marshal.ThrowExceptionForHR(hresult);
 		}
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
@@ -106,13 +106,13 @@ namespace KSoft.DDS
 		public static extern LibraryMode DirectXTex_GetLibraryMode();
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_GetMetadataFromFile(
+		public static extern int DirectXTex_GetMetadataFromFile(
 			DirectXTexFileType fileType,
 			out TexMetadata metadata,
 			string file,
 			uint flags);
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_GetMetadataFromMemory(
+		public static extern int DirectXTex_GetMetadataFromMemory(
 			DirectXTexFileType fileType,
 			out TexMetadata metadata,
 			IntPtr source,
@@ -121,15 +121,15 @@ namespace KSoft.DDS
 
 		#region DirectX::Blob
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_BlobNew(
+		public static extern int DirectXTex_BlobNew(
 			out DirectXTexBlob outBlob);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_BlobFree(
+		public static extern int DirectXTex_BlobFree(
 			DirectXTexBlob blob);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_BlobGetBuffer(
+		public static extern int DirectXTex_BlobGetBuffer(
 			DirectXTexBlob blob,
 			out IntPtr bufferPointer,
 			out uint bufferSize);
@@ -137,20 +137,20 @@ namespace KSoft.DDS
 
 		#region DirectX::ScratchImage
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageNew(
+		public static extern int DirectXTex_ScratchImageNew(
 			out DirectXTexScratchImage outImage);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageFree(
+		public static extern int DirectXTex_ScratchImageFree(
 			DirectXTexScratchImage image);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageGetMetadata(
+		public static extern int DirectXTex_ScratchImageGetMetadata(
 			DirectXTexScratchImage image,
 			out TexMetadata metadata);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageGetRawBytes(
+		public static extern int DirectXTex_ScratchImageGetRawBytes(
 			DirectXTexScratchImage image,
 			uint arrayIndex,
 			uint mip,
@@ -158,17 +158,17 @@ namespace KSoft.DDS
 			out DirectXTexBlob outBlob);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageGenerateMipMaps(
+		public static extern int DirectXTex_ScratchImageGenerateMipMaps(
 			DirectXTexScratchImage image,
 			out DirectXTexScratchImage outMipChain);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageCreateEmptyMipChain(
+		public static extern int DirectXTex_ScratchImageCreateEmptyMipChain(
 			DirectXTexScratchImage image,
 			out DirectXTexScratchImage outMipChain);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageCreateTexture2D(
+		public static extern int DirectXTex_ScratchImageCreateTexture2D(
 			byte[] pixels,
 			uint width,
 			uint height,
@@ -178,7 +178,7 @@ namespace KSoft.DDS
 			out DirectXTexScratchImage outImage);
 
 		[DllImport(kDllName, CallingConvention=kCallConv, CharSet=kCharSet)]
-		public static extern uint DirectXTex_ScratchImageCreateTexture11(
+		public static extern int DirectXTex_ScratchImageCreateTexture11(
 			DirectXTexScratchImage image,
 			IntPtr d11Device,
 			out IntPtr outTexture);

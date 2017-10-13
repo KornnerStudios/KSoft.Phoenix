@@ -33,7 +33,7 @@ namespace KSoft.DDS
 			try
 			{
 				DirectXTexBlob blob;
-				uint hresult = DirectXTexDLL.DirectXTex_BlobNew(out blob);
+				var hresult = DirectXTexDLL.DirectXTex_BlobNew(out blob);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return blob;
 			}
@@ -53,7 +53,7 @@ namespace KSoft.DDS
 			{
 				IntPtr bufferPointer;
 				uint bufferSize;
-				uint hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this, out bufferPointer, out bufferSize);
+				var hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this, out bufferPointer, out bufferSize);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return bufferPointer;
 			}
@@ -73,7 +73,7 @@ namespace KSoft.DDS
 			{
 				IntPtr bufferPointer;
 				uint bufferSize;
-				uint hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this, out bufferPointer, out bufferSize);
+				var hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this, out bufferPointer, out bufferSize);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return bufferSize;
 			}

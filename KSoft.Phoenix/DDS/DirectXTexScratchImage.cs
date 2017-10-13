@@ -32,7 +32,7 @@ namespace KSoft.DDS
 			try
 			{
 				DirectXTexScratchImage image;
-				uint hresult = DirectXTexDLL.DirectXTex_ScratchImageNew(out image);
+				var hresult = DirectXTexDLL.DirectXTex_ScratchImageNew(out image);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return image;
 			}
@@ -51,7 +51,7 @@ namespace KSoft.DDS
 			try
 			{
 				TexMetadata metadata;
-				uint hresult = DirectXTexDLL.DirectXTex_ScratchImageGetMetadata(this, out metadata);
+				var hresult = DirectXTexDLL.DirectXTex_ScratchImageGetMetadata(this, out metadata);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return metadata;
 			}

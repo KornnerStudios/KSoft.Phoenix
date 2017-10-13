@@ -83,7 +83,7 @@ namespace KSoft.DDS
 
 			try
 			{
-				uint hresult = DirectXTexDLL.DirectXTex_GetMetadataFromFile(
+				var hresult = DirectXTexDLL.DirectXTex_GetMetadataFromFile(
 					fileType, out result, file, flags);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 			}
@@ -116,7 +116,7 @@ namespace KSoft.DDS
 				var buf = bufferHandle.AddrOfPinnedObject();
 				buf += startIndex;
 
-				uint hresult = DirectXTexDLL.DirectXTex_GetMetadataFromMemory(
+				var hresult = DirectXTexDLL.DirectXTex_GetMetadataFromMemory(
 					fileType, out result, buf, (uint)length, flags);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 			}
