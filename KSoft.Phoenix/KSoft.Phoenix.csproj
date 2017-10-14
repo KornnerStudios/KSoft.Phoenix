@@ -59,6 +59,7 @@
     <Compile Include="DDS\WIC_FLAGS.cs" />
     <Compile Include="Debug\Trace.cs" />
     <Compile Include="Engine\ContentStorage.cs" />
+    <Compile Include="Engine\EditorUtilsDLL.cs" />
     <Compile Include="Engine\GameDirectories.cs" />
     <Compile Include="Engine\GameDirectory.cs" />
     <Compile Include="Engine\PhxEngine.cs" />
