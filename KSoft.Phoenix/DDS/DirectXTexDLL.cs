@@ -74,7 +74,7 @@ namespace KSoft.DDS
 				}
 
 				var libMode = DirectXTex_GetLibraryMode();
-				Phoenix.Debug.Trace.Phoenix.TraceData(System.Diagnostics.TraceEventType.Critical, TypeExtensions.kNone,
+				Phoenix.Debug.Trace.Phoenix.TraceData(System.Diagnostics.TraceEventType.Information, TypeExtensions.kNone,
 					"Finished loading DirectXTexDLL",
 					libMode);
 
