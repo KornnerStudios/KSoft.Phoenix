@@ -37,7 +37,7 @@ namespace KSoft.DDS
 		{
 			get
 			{
-				if (!Initialized && !gEntryPointsNotFound)
+				if (!Initialized && !gEntryPointsNotFound && !gIsInitializing)
 					Initialize();
 
 				return gEntryPointsNotFound;
@@ -56,6 +56,7 @@ namespace KSoft.DDS
 				ex);
 		}
 
+		private static bool gIsInitializing;
 		public static void Initialize()
 		{
 			if (Initialized)
@@ -63,6 +64,8 @@ namespace KSoft.DDS
 
 			try
 			{
+				gIsInitializing = true;
+
 				var libPointerSize = DirectXTex_GetPointerSize();
 				if (libPointerSize != IntPtr.Size)
 				{
@@ -83,6 +86,10 @@ namespace KSoft.DDS
 			catch (EntryPointNotFoundException ex)
 			{
 				HandleEntryPointNotFound(ex);
+			}
+			finally
+			{
+				gIsInitializing = false;
 			}
 		}
 
