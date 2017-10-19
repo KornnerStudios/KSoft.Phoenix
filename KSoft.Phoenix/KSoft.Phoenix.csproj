@@ -78,6 +78,10 @@
     <Compile Include="Games\HaloWars\Scenario\BScenarioWorld.cs" />
     <Compile Include="Games\HaloWars\XML\BDatabaseXmlSerializer.cs" />
     <Compile Include="Games\HaloWars\XML\BDatabaseXmlSerializer.Streaming.cs" />
+    <Compile Include="Granny3D\Granny2DLL.cs" />
+    <Compile Include="Granny3D\GrannyEnums.cs" />
+    <Compile Include="Granny3D\GrannyInterop.cs" />
+    <Compile Include="Granny3D\GrannyStructs.cs" />
     <Compile Include="PhxDateTime.cs" />
     <Compile Include="Phx\Abilities\AbilitiesEnums.cs" />
     <Compile Include="Phx\Actions\ActionsEnums.cs" />
