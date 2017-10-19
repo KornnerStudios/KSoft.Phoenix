@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace KSoft.Phoenix
 {
 	[TestClass] // required for AssemblyInitialize & AssemblyCleanup to work
-	static partial class TestLibrary
+	public static partial class TestLibrary
 	{
 		[AssemblyInitialize]
 		public static void AssemblyInitialize(TestContext context)
