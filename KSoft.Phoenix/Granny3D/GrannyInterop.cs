@@ -51,6 +51,23 @@ namespace KSoft.Granny3D
 
 			return Marshal.PtrToStructure<T>(Address + offset);
 		}
+
+		public void CopyStruct(ref T s)
+		{
+			Contract.Requires<NullReferenceException>(IsNotNull);
+
+			Marshal.StructureToPtr(s, Address, fDeleteOld: false);
+		}
+		public void CopyStruct(int toIndex, ref T s)
+		{
+			Contract.Requires<NullReferenceException>(IsNotNull);
+			Contract.Requires(toIndex >= 0);
+
+			int offset = Marshal.SizeOf<T>();
+			offset += toIndex;
+
+			Marshal.StructureToPtr(s, Address + offset, fDeleteOld: false);
+		}
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
@@ -106,6 +123,14 @@ namespace KSoft.Granny3D
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
 
 			return Array.ToStruct(index);
+		}
+
+		public void CopyStruct(int toIndex, ref T s)
+		{
+			Contract.Requires<NullReferenceException>(IsNotNull);
+			Contract.Requires<ArgumentOutOfRangeException>(toIndex >= 0 && toIndex < Count);
+
+			Array.CopyStruct(toIndex, ref s);
 		}
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
