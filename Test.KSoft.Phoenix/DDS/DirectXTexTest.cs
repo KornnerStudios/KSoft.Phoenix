@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace KSoft.DDS.Test
 {
 	[TestClass]
-	public sealed class LocStringTableTest
+	public sealed class DirectXTexTest
 		: Phoenix.BaseTestClass
 	{
 		[TestMethod]
