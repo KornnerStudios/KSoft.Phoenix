@@ -74,7 +74,7 @@ namespace KSoft.Granny3D
 	};
 
 	[Flags]
-	enum granny_track_group_flags
+	public enum granny_track_group_flags
 	{
 		AccumulationExtracted = 1<<0,
 		TrackGroupIsSorted = 1<<1,
