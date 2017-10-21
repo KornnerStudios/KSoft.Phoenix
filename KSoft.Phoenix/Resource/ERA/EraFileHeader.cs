@@ -56,10 +56,7 @@ namespace KSoft.Phoenix.Resource
 				if (header_position != -1 &&
 					!eraFile.Options.Test(EraFileUtilOptions.SkipVerification))
 				{
-					long current_position = s.BaseStream.Position;
-					s.BaseStream.Seek(header_position+ECF.EcfHeader.kAdler32StartOffset, System.IO.SeekOrigin.Begin);
-
-					var actual_adler = Security.Cryptography.Adler32.Compute(s.BaseStream, mHeader.Adler32BufferLength);
+					var actual_adler = mHeader.ComputeAdler32(s.BaseStream, header_position);
 					if (actual_adler != mHeader.Adler32)
 					{
 						throw new System.IO.InvalidDataException(string.Format(
@@ -68,22 +65,13 @@ namespace KSoft.Phoenix.Resource
 							actual_adler.ToString("X8")
 							));
 					}
-
-					s.BaseStream.Seek(current_position, System.IO.SeekOrigin.Begin);
 				}
 			}
 			else if (s.IsWriting)
 			{
 				if (header_position != -1)
 				{
-					long current_position = s.BaseStream.Position;
-					s.BaseStream.Seek(header_position+ECF.EcfHeader.kAdler32StartOffset, System.IO.SeekOrigin.Begin);
-
-					mHeader.Adler32 = Security.Cryptography.Adler32.Compute(s.BaseStream, mHeader.Adler32BufferLength);
-
-					s.BaseStream.Seek(header_position, System.IO.SeekOrigin.Begin);
-					mHeader.Serialize(s);
-					s.BaseStream.Seek(current_position, System.IO.SeekOrigin.Begin);
+					mHeader.ComputeAdler32AndWrite(s, header_position);
 				}
 			}
 		}

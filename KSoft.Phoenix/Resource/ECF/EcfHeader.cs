@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -6,7 +7,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource.ECF
 {
-	/*public*/ struct EcfHeader
+	public struct EcfHeader
 		: IO.IEndianStreamSerializable
 	{
 		public const uint kSignature = 0xDABA7737;
@@ -68,5 +69,38 @@ namespace KSoft.Phoenix.Resource.ECF
 			s.Pad(sizeof(short) + sizeof(int));
 		}
 		#endregion
+
+		public uint ComputeAdler32(Stream stream, long headerPosition)
+		{
+			Contract.Requires(stream != null);
+			Contract.Requires(headerPosition >= 0);
+
+			long current_position = stream.Position;
+
+			long adler_start_position = headerPosition + kAdler32StartOffset;
+			stream.Seek(adler_start_position, SeekOrigin.Begin);
+			var adler = Security.Cryptography.Adler32.Compute(stream, Adler32BufferLength);
+
+			stream.Seek(current_position, SeekOrigin.Begin);
+
+			return adler;
+		}
+
+		public void ComputeAdler32AndWrite(IO.EndianStream s, long headerPosition)
+		{
+			Contract.Requires(s != null);
+			Contract.Requires(headerPosition >= 0);
+
+			long current_position = s.BaseStream.Position;
+
+			long adler_start_position = headerPosition + kAdler32StartOffset;
+			s.BaseStream.Seek(adler_start_position, SeekOrigin.Begin);
+			var adler = Security.Cryptography.Adler32.Compute(s.BaseStream, Adler32BufferLength);
+
+			s.BaseStream.Seek(headerPosition, SeekOrigin.Begin);
+			this.Serialize(s);
+
+			s.BaseStream.Seek(current_position, SeekOrigin.Begin);
+		}
 	};
 }
