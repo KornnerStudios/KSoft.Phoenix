@@ -10,6 +10,8 @@ namespace KSoft.Phoenix
 {
 	static partial class PhxUtil
 	{
+		public static Security.Cryptography.Crc16.Definition kCrc16Definition = new Security.Cryptography.Crc16.Definition(xorOut: ushort.MaxValue);
+
 		public const int kObjectKindNone = 0;
 
 		public const float kInvalidSingle = (float)TypeExtensions.kNone;
@@ -443,6 +445,70 @@ namespace KSoft.Phoenix
 
 			inOutOffset = end_offset;
 			return found_pattern;
+		}
+
+		public static uint SuperFastHash(byte[] buffer, uint initialValue = 0)
+		{
+			Contract.Requires(buffer != null);
+
+			return SuperFastHash(buffer, 0, buffer.Length, initialValue);
+		}
+		public static uint SuperFastHash(byte[] buffer, int startIndex, int length, uint initialValue = 0)
+		{
+			Contract.Requires(buffer != null);
+			Contract.Requires(startIndex >= 0 && length >= 0);
+			Contract.Requires(startIndex+length <= buffer.Length);
+
+			// Based on code by Paul Hsieh
+			// http://www.azillionmonkeys.com/qed/hash.html
+
+			uint hash = initialValue;
+
+			int length_rem = length & (sizeof(uint)-1);
+			int words = length / sizeof(uint);
+			int index = startIndex;
+
+			// Main loop
+			for (; words > 0; words--)
+			{
+				hash += (uint)(BitConverter.ToUInt16(buffer, index));
+				index += sizeof(ushort);
+				hash ^= hash << 16;
+				hash ^= (uint)(BitConverter.ToUInt16(buffer, index) << 11);
+				index += sizeof(ushort);
+				hash += hash >> 11;
+			}
+
+			// Handle end cases
+			switch (length_rem)
+			{
+				case sizeof(ushort)+1:
+					hash += (uint)(BitConverter.ToUInt16(buffer, index));
+					index += sizeof(ushort);
+					hash ^= (uint)(buffer[index] << 18);
+					hash += hash >> 11;
+					break;
+				case sizeof(ushort):
+					hash += (uint)(BitConverter.ToUInt16(buffer, index));
+					index += sizeof(ushort);
+					hash ^= hash << 11;
+					hash += hash >> 17;
+					break;
+				case sizeof(byte):
+					hash += buffer[index++];
+					hash ^= hash << 10;
+					hash += hash >> 1;
+					break;
+			}
+
+			// Force "avalanching" of final 127 bits
+			hash ^= hash << 3;
+			hash += hash >> 5;
+			hash ^= hash << 2;
+			hash += hash >> 15;
+			hash ^= hash << 10;
+
+			return hash;
 		}
 	};
 }
