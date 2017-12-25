@@ -34,14 +34,15 @@ This is a CLI style app that resembles the original "KSoft.Tool" app from the 36
 - Ensemble Studios. RIP.
 - 343i/Creative Assembly for continuing the RTS side of the franchise
 - 343i/Behaviour Interactive for working on Definitive Edition
-- Halo Wars Modding Group Discord for additional testing (https://discord.gg/UjfYKAN)
+- Halo Wars Modding Group Discord for additional testing (https://discord.gg/Qe6Ka2e)
 
 ## Change Log
 
-### 2017.
+### 2017.12.25
 
 * Fixed PhxGui and PhxTool so they run in 64-bit mode instead of always 32-bit
 * Fixed code which would otherwise use the current culture when parsing real numbers or compare strings, instead of using an invariant culture
+* Added DDS utils to the build chain
 
 ### 2017.09.30
 
