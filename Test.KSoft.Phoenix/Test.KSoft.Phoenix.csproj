@@ -41,6 +41,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource\EraFileTest.cs" />
     <Compile Include="Security\Cryptography\PhxHashTest.cs" />
+    <Compile Include="Xmb\BinaryDataTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">

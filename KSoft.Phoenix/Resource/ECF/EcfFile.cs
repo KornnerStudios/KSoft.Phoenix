@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -6,12 +7,12 @@ namespace KSoft.Phoenix.Resource.ECF
 {
 	// http://en.wikipedia.org/wiki/Unix_File_System
 
-	/*public*/ class EcfFile
+	public class EcfFile
 		: IDisposable
 		, IO.IEndianStreamSerializable
 	{
 		EcfHeader mHeader = new EcfHeader();
-		protected EcfChunk[] mChunks;
+		protected List<EcfChunk> mChunks = new List<EcfChunk>();
 
 		public void InitializeChunkInfo(uint dataId, uint dataChunkExtraDataSize = 0)
 		{
@@ -21,7 +22,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		#region IDisposable Members
 		public virtual void Dispose()
 		{
-			Util.ClearAndNull(ref mChunks);
+			mChunks.Clear();
 		}
 		#endregion
 
@@ -30,7 +31,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			if (s.IsWriting)
 			{
-				mHeader.ChunkCount = (short)mChunks.Length;
+				mHeader.ChunkCount = (short)mChunks.Count;
 
 				// TODO: need to build chunk position and size info for writing
 				Contract.Assert(false);
@@ -39,9 +40,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			mHeader.BeginBlock(s);
 			mHeader.Serialize(s);
 
-			if (s.IsReading)
-				mChunks = new EcfChunk[mHeader.ChunkCount];
-			s.StreamArray(mChunks, () => new EcfChunk());
+			s.StreamListElementsWithClear(mChunks, mHeader.ChunkCount, () => new EcfChunk());
 
 			mHeader.EndBlock(s);
 		}

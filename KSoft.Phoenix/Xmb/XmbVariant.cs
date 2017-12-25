@@ -3,27 +3,29 @@ using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 using Interop = System.Runtime.InteropServices;
 
+using BVector = SlimMath.Vector4;
+
 namespace KSoft.Phoenix.Xmb
 {
-	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=XmbVariant.kSizeOf)]
+	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=kSizeOf)]
 	/*public*/ struct XmbVariant
 	{
-		internal const int kSizeOf = 8;
+		const int kSizeOf = 8;
 
 		public static XmbVariant Empty { get { return new XmbVariant() { Type = XmbVariantType.Null }; } }
 
 		#region Properties
-		[System.Runtime.InteropServices.FieldOffset(0)]
+		[Interop.FieldOffset(0)]
 		public XmbVariantType Type;
-		[System.Runtime.InteropServices.FieldOffset(1)]
+		[Interop.FieldOffset(1)]
 		public bool IsIndirect;
 
 		// These are all type dependent so we reuse the memory space
-		[System.Runtime.InteropServices.FieldOffset(2)]
+		[Interop.FieldOffset(2)]
 		public bool IsUnsigned;
-		[System.Runtime.InteropServices.FieldOffset(2)]
+		[Interop.FieldOffset(2)]
 		public bool IsUnicode;
-		[System.Runtime.InteropServices.FieldOffset(2)]
+		[Interop.FieldOffset(2)]
 		public byte VectorLength;
 
 		public bool IsEmpty { get { return Type == XmbVariantType.Null; } }
@@ -34,20 +36,20 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Data
-		[System.Runtime.InteropServices.FieldOffset(4)]
+		[Interop.FieldOffset(4)]
 		public bool Bool;
-		[System.Runtime.InteropServices.FieldOffset(4)]
+		[Interop.FieldOffset(4)]
 		public uint Offset;
-		[System.Runtime.InteropServices.FieldOffset(4)]
+		[Interop.FieldOffset(4)]
 		public uint Int;
-		[System.Runtime.InteropServices.FieldOffset(4)]
+		[Interop.FieldOffset(4)]
 		public float Single;
 
-		[System.Runtime.InteropServices.FieldOffset(4)]
+		[Interop.FieldOffset(4)]
 		public byte Char0;
-		[System.Runtime.InteropServices.FieldOffset(5)]
+		[Interop.FieldOffset(5)]
 		public byte Char1;
-		[System.Runtime.InteropServices.FieldOffset(6)]
+		[Interop.FieldOffset(6)]
 		public byte Char2;
 		#endregion
 
@@ -83,17 +85,8 @@ namespace KSoft.Phoenix.Xmb
 					throw new ArgumentOutOfRangeException("length", length.ToString());
 			}
 
-			var sb = new System.Text.StringBuilder(32);
-			if (length >= 1)
-				sb.Append(x);
-			if (length >= 2)
-				sb.AppendFormat(",{0}", y.ToString());
-			if (length >= 3)
-				sb.AppendFormat(",{0}", z.ToString());
-			if (length >= 4)
-				sb.AppendFormat(",{0}", w.ToString());
-
-			return sb.ToString();
+			var vector = new BVector(x, y, z, w);
+			return vector.ToBVectorString(length);
 		}
 		string StringToString(XmbVariantMemoryPool pool)
 		{
@@ -130,7 +123,7 @@ namespace KSoft.Phoenix.Xmb
 					float f = Single;
 					if (IsIndirect)
 						f = pool.GetSingle(Offset);
-					result = f.ToString();
+					result = f.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier);
 				} break;
 
 				case XmbVariantType.Int: {
@@ -144,7 +137,7 @@ namespace KSoft.Phoenix.Xmb
 
 				case XmbVariantType.Double: {
 					double d = pool.GetDouble(Offset);
-					result = d.ToString();
+					result = d.ToStringInvariant(Numbers.kDoubleRoundTripFormatSpecifier);
 				} break;
 
 				case XmbVariantType.Bool: {

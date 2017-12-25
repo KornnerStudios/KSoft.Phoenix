@@ -1,7 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Resource.ECF
 {
-	/*public*/ sealed class EcfFileDDX
+	public sealed class EcfFileDDX
 		: EcfFile
 	{
 		const uint kSignature = 0x13CF5D01;

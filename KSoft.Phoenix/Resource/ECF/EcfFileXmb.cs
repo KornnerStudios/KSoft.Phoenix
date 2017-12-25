@@ -3,7 +3,7 @@ using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource.ECF
 {
-	/*public*/ sealed class EcfFileXmb
+	public sealed class EcfFileXmb
 		: EcfFile
 	{
 		const uint kSignature = 0xE43ABC00;

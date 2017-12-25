@@ -10,7 +10,16 @@ namespace KSoft.Phoenix
 {
 	static partial class PhxUtil
 	{
-		public static Security.Cryptography.Crc16.Definition kCrc16Definition = new Security.Cryptography.Crc16.Definition(xorOut: ushort.MaxValue);
+		public static Security.Cryptography.Crc16.Definition kCrc16Definition =
+			new Security.Cryptography.Crc16.Definition(
+				initialValue: ushort.MinValue,
+				xorIn: ushort.MaxValue,
+				xorOut: ushort.MaxValue);
+		public static Security.Cryptography.Crc32.Definition kCrc32Definition =
+			new Security.Cryptography.Crc32.Definition(
+				initialValue: uint.MinValue,
+				xorIn: uint.MaxValue,
+				xorOut: uint.MaxValue);
 
 		public const int kObjectKindNone = 0;
 
@@ -105,82 +114,6 @@ namespace KSoft.Phoenix
 			return hash_code;
 		}
 
-		private static string[] Trim(string[] array)
-		{
-			var trimmed = new string[array.Length];
-
-			for (int x = 0; x < array.Length; x++)
-				trimmed[x] = array[x].Trim();
-
-			return trimmed;
-		}
-
-		public static bool ParseStringList(string line, List<string> list,
-			bool sort = false, string valueSeperator = ",")
-		{
-			if (line == null)
-			{
-				return false;
-			}
-			if (list == null)
-			{
-				Contract.Assert(list != null);
-				return false;
-			}
-
-			// LINQ stmt below allows there to be whitespace around the commas
-			string[] values = System.Text.RegularExpressions.Regex.Split(line, valueSeperator);
-			list.Clear();
-
-			ParseStringList(Trim(values), list, sort);
-
-			// handles cases where there's extra valueSeperator values
-			list.RemoveAll(string.IsNullOrEmpty);
-
-			return true;
-		}
-		public static bool ParseStringList(IEnumerable<string> collection, List<string> list,
-			bool sort = false)
-		{
-			if (collection == null)
-			{
-				return false;
-			}
-			if (list == null)
-			{
-				Contract.Assert(list != null);
-				return false;
-			}
-
-			list.AddRange(collection);
-
-			if (sort)
-				list.Sort();
-
-			return true;
-		}
-
-		public static string StringListToString(IEnumerable<string> list,
-			string valueSeperator = ",")
-		{
-			if (list == null)
-			{
-				Contract.Assert(list != null);
-				return null;
-			}
-
-			var sb = new System.Text.StringBuilder();
-			foreach (var str in list)
-			{
-				if (sb.Length > 0)
-					sb.Append(valueSeperator);
-
-				sb.Append(str);
-			}
-
-			return sb.ToString();
-		}
-
 		[ThreadStatic]
 		private static List<string> gParseBVectorStringScratchList;
 		public static BVector? ParseBVectorString(string vectorString)
@@ -193,7 +126,7 @@ namespace KSoft.Phoenix
 				gParseBVectorStringScratchList = new List<string>(4);
 			var list = gParseBVectorStringScratchList;
 
-			if (!ParseStringList(vectorString, list))
+			if (!Util.ParseStringList(vectorString, list))
 				return null;
 
 			if (list.Count >= 1 && !Numbers.FloatTryParseInvariant(list[0], out vector.X))
@@ -230,13 +163,13 @@ namespace KSoft.Phoenix
 
 			var sb = new System.Text.StringBuilder(32);
 			if (length >= 1)
-				sb.Append(vector.X);
+				sb.Append(vector.X.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 			if (length >= 2)
-				sb.AppendFormat(",{0}", vector.Y.ToString());
+				sb.AppendFormat(",{0}", vector.Y.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 			if (length >= 3)
-				sb.AppendFormat(",{0}", vector.Z.ToString());
+				sb.AppendFormat(",{0}", vector.Z.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 			if (length >= 4)
-				sb.AppendFormat(",{0}", vector.W.ToString());
+				sb.AppendFormat(",{0}", vector.W.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 
 			return sb.ToString();
 		}
@@ -447,6 +380,21 @@ namespace KSoft.Phoenix
 			return found_pattern;
 		}
 
+		[ThreadStatic]
+		private static byte[] gSharedBufferForSuperFastHash;
+		public static byte[] GetBufferForSuperFastHash(int bufferSize)
+		{
+			if (gSharedBufferForSuperFastHash == null)
+				gSharedBufferForSuperFastHash = new byte[16];
+			else
+				gSharedBufferForSuperFastHash.FastClear();
+
+			var buffer = gSharedBufferForSuperFastHash;
+			if (bufferSize > buffer.Length)
+				buffer = new byte[bufferSize];
+
+			return buffer;
+		}
 		public static uint SuperFastHash(byte[] buffer, uint initialValue = 0)
 		{
 			Contract.Requires(buffer != null);

@@ -8,6 +8,17 @@ namespace KSoft.Phoenix
 	/// <summary>Extension methods for types in this assembly</summary>
 	public static partial class TypeExtensionsPhx
 	{
+		#region Enum Bit Encoders
+		public static class BitEncoders
+		{
+			// KSoft.Phoenix.Xmb
+			public static readonly EnumBitEncoder32<Xmb.BinaryDataTreeVariantType>
+				BinaryDataTreeVariantType = new EnumBitEncoder32<Xmb.BinaryDataTreeVariantType>();
+			public static readonly EnumBitEncoder32<Xmb.BinaryDataTreeVariantTypeSizeInBytes>
+				BinaryDataTreeVariantTypeSizeInBytes = new EnumBitEncoder32<Xmb.BinaryDataTreeVariantTypeSizeInBytes>();
+		};
+		#endregion
+
 		#region PascalString32
 		static readonly Memory.Strings.StringStorage Pascal32Storage =
 					new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);

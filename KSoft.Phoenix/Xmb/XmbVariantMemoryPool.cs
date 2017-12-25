@@ -12,8 +12,6 @@ namespace KSoft.Phoenix.Xmb
 	sealed partial class XmbVariantMemoryPool
 		: IDisposable
 	{
-		const uint kValueMask = 0x00FFFFFF;
-
 		/// <summary>Default amount of entry memory allocated for use</summary>
 		const int kEntryStartCount = 16;
 
@@ -35,6 +33,8 @@ namespace KSoft.Phoenix.Xmb
 		public XmbVariantMemoryPool(byte[] buffer, Shell.EndianFormat byteOrder = Shell.EndianFormat.Big)
 			: this()
 		{
+			Contract.Requires(buffer != null);
+
 			mPoolSize = (uint)buffer.Length;
 			var ms = new System.IO.MemoryStream(buffer, false);
 			mBuffer = new IO.EndianReader(ms, byteOrder, this);
@@ -169,7 +169,7 @@ namespace KSoft.Phoenix.Xmb
 				mBuffer.Seek32(offset);
 				e.Read(mBuffer);
 
-				// Update how much data is still
+				// Update how much data is still remaining
 				uint bytes_read = (uint)(mBuffer.BaseStream.Position - offset);
 				mBufferedDataRemaining -= bytes_read;
 
@@ -262,7 +262,7 @@ namespace KSoft.Phoenix.Xmb
 
 			if (useInt24)
 			{
-				var int24 = v & 0x00FFFFFF;
+				var int24 = v & XmbVariantSerialization.kValueBitMask;
 				if (int24 != v)
 					return false;
 			}
@@ -302,7 +302,7 @@ namespace KSoft.Phoenix.Xmb
 
 			if (useInt24)
 			{
-				var int24 = v & 0x00FFFFFF;
+				var int24 = v & XmbVariantSerialization.kValueBitMask;
 				if (int24 != v)
 					return false;
 			}

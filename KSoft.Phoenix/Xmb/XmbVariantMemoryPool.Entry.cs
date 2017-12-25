@@ -16,41 +16,41 @@ namespace KSoft.Phoenix.Xmb
 		sealed class PoolEntry
 			: IO.IEndianStreamable
 		{
-			static readonly Text.StringStorageEncoding kAnsiEncoding = 
+			static readonly Text.StringStorageEncoding kAnsiEncoding =
 				Text.StringStorageEncoding.TryAndGetStaticEncoding(Memory.Strings.StringStorage.CStringAscii);
 			static readonly Text.StringStorageEncoding kUnicodeEncoding =
 				Text.StringStorageEncoding.TryAndGetStaticEncoding(Memory.Strings.StringStorage.CStringUnicode);
 
-			[System.Runtime.InteropServices.FieldOffset(0)]
+			[Interop.FieldOffset(0)]
 			public uint Int;
-			[System.Runtime.InteropServices.FieldOffset(0)]
+			[Interop.FieldOffset(0)]
 			public float Single;
-			[System.Runtime.InteropServices.FieldOffset(0)]
+			[Interop.FieldOffset(0)]
 			public double Double;
-			[System.Runtime.InteropServices.FieldOffset(0)]
+			[Interop.FieldOffset(0)]
 			public Vector2f Vector2d;
-			[System.Runtime.InteropServices.FieldOffset(0)]
+			[Interop.FieldOffset(0)]
 			public Vector3f Vector3d;
-			[System.Runtime.InteropServices.FieldOffset(0)]
+			[Interop.FieldOffset(0)]
 			public Vector4f Vector4d = new Vector4f();
 
-			[System.Runtime.InteropServices.FieldOffset(16)]
+			[Interop.FieldOffset(16)]
 			public XmbVariantType Type;
 
 			// These are all type dependent so we reuse the memory space
-			[System.Runtime.InteropServices.FieldOffset(16 + 1)]
+			[Interop.FieldOffset(16 + 1)]
 			public byte VectorLength;
 //			[System.Runtime.InteropServices.FieldOffset(16 + 1)]
 //			public bool IsUnsigned;
-			[System.Runtime.InteropServices.FieldOffset(16 + 1)]
+			[Interop.FieldOffset(16 + 1)]
 			public bool IsUnicode;
 
 			// Amount of padding to prefix this entry with when written
-			[System.Runtime.InteropServices.FieldOffset(16 + 2)]
+			[Interop.FieldOffset(16 + 2)]
 			public byte PrePadSize;
 
 			// String must come last, because we don't know how big a .NET reference really is (we could be compiling for x64!)
-			[System.Runtime.InteropServices.FieldOffset(16 + 4)]
+			[Interop.FieldOffset(16 + 4)]
 			public string String;
 
 			#region Equals
@@ -96,7 +96,7 @@ namespace KSoft.Phoenix.Xmb
 
 			public uint CalculatePadding(uint offset)
 			{
-				const int kAlignmentBit = 2;
+				const int kAlignmentBit = IntegerMath.kInt32AlignmentBit;
 				PrePadSize = 0;
 
 				if (Type != XmbVariantType.String)
@@ -106,18 +106,6 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			#region IEndianStreamable Members
-			void ReadString(IO.EndianReader s)
-			{
-				String = s.ReadString(IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
-
-				if (IsUnicode)
-				{
-					var unicode = System.Text.Encoding.Unicode;
-					byte[] bytes_unicode = unicode.GetBytes(String);
-
-					var ascii = System.Text.Encoding.ASCII;
-				}
-			}
 			public void Read(IO.EndianReader s)
 			{
 				switch (Type)

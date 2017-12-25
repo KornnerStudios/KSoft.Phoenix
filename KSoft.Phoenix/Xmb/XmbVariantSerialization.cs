@@ -7,8 +7,8 @@ namespace KSoft.Phoenix.Xmb
 	static class XmbVariantSerialization
 	{
 		const int kInfoBitIndex = 24;
-		const uint kInfoBitMask = 0xFF000000;
-		const uint kValueBitMask = 0x00FFFFFF;
+		public const uint kInfoBitMask = 0xFF000000;
+		public const uint kValueBitMask = 0x00FFFFFF;
 
 		#region Type coding
 		public enum RawVariantType : byte

@@ -339,6 +339,13 @@
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Utils\UndefinedReferenceHandle.cs" />
     <Compile Include="Utils\WinExePatcherProcessHeaderData.cs" />
+    <Compile Include="Xmb\BinaryDataTreeHeader.cs" />
+    <Compile Include="Xmb\BinaryDataTreeMemoryPool.cs" />
+    <Compile Include="Xmb\BinaryDataTreeMemoryPool.Entry.cs" />
+    <Compile Include="Xmb\BinaryDataTreeNameValue.cs" />
+    <Compile Include="Xmb\BinaryDataTreeNode.cs" />
+    <Compile Include="Xmb\BinaryDataTreeVariantData.cs" />
+    <Compile Include="Xmb\BinaryDataTreeVariantType.cs" />
     <Compile Include="Xmb\XmbFile.cs" />
     <Compile Include="Xmb\XmbFile.Element.cs" />
     <Compile Include="Xmb\XmbFileBuilder.cs" />
@@ -420,6 +427,14 @@
     </Content>
     <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb">
       <Link>DDS\DirectXTexDLL.pdb</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DDSView.exe">
+      <Link>DDS\DDSView.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\texconv.exe">
+      <Link>DDS\texconv.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
