@@ -25,6 +25,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		private ushort mExtraDataSize;
 
 		public int Adler32BufferLength { get { return HeaderSize - kAdler32StartOffset; } }
+		public uint Id { get { return mID; } }
 		public ushort ExtraDataSize { get { return mExtraDataSize; } }
 
 		public void InitializeChunkInfo(uint dataId, uint dataChunkExtraDataSize = 0)
@@ -43,9 +44,11 @@ namespace KSoft.Phoenix.Resource.ECF
 			s.VirtualAddressTranslationPop();
 		}
 
-		public void UpdateTotalSize(System.IO.Stream s, int startOffset = 0)
+		public void UpdateTotalSize(Stream s, int startOffset = 0)
 		{
-			TotalSize = (int)s.Length - startOffset;
+			Contract.Requires(startOffset >= 0);
+
+			TotalSize = (int)(s.Length - startOffset);
 		}
 
 		#region IEndianStreamSerializable Members
@@ -101,6 +104,25 @@ namespace KSoft.Phoenix.Resource.ECF
 			this.Serialize(s);
 
 			s.BaseStream.Seek(current_position, SeekOrigin.Begin);
+		}
+
+		public static bool VerifyIsEcf(IO.EndianReader s)
+		{
+			const int k_sizeof_signature = sizeof(uint);
+
+			Contract.Requires<InvalidOperationException>(s.BaseStream.CanRead);
+			Contract.Requires<InvalidOperationException>(s.BaseStream.CanSeek);
+
+			var base_stream = s.BaseStream;
+			if ((base_stream.Length - base_stream.Position) < k_sizeof_signature)
+			{
+				return false;
+			}
+
+			uint sig = s.ReadUInt32();
+			base_stream.Seek(-k_sizeof_signature, SeekOrigin.Current);
+
+			return sig == kSignature;
 		}
 	};
 }

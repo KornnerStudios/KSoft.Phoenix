@@ -12,6 +12,9 @@ namespace KSoft.Phoenix.Xmb
 	public sealed class BinaryDataTree
 		: IO.IEndianStreamSerializable
 	{
+		public const string kBinaryFileExtension = ".binary_data_tree";
+		public const string kTextFileExtension = ".binary_data_tree_xml";
+
 		BinaryDataTreeHeader mHeader;
 
 		internal BinaryDataTreeDecompiler Decompiler { get; private set; }

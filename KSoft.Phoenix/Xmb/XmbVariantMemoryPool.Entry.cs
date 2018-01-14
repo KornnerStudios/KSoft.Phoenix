@@ -34,24 +34,24 @@ namespace KSoft.Phoenix.Xmb
 			[Interop.FieldOffset(0)]
 			public Vector4f Vector4d = new Vector4f();
 
+			// we don't know how big a .NET reference really is (we could be compiling for x64!) so always give it 8 bytes
 			[Interop.FieldOffset(16)]
+			public string String;
+
+			[Interop.FieldOffset(24)]
 			public XmbVariantType Type;
 
 			// These are all type dependent so we reuse the memory space
-			[Interop.FieldOffset(16 + 1)]
+			[Interop.FieldOffset(24 + 1)]
 			public byte VectorLength;
-//			[System.Runtime.InteropServices.FieldOffset(16 + 1)]
+//			[System.Runtime.InteropServices.FieldOffset(24 + 1)]
 //			public bool IsUnsigned;
-			[Interop.FieldOffset(16 + 1)]
+			[Interop.FieldOffset(24 + 1)]
 			public bool IsUnicode;
 
 			// Amount of padding to prefix this entry with when written
-			[Interop.FieldOffset(16 + 2)]
+			[Interop.FieldOffset(24 + 2)]
 			public byte PrePadSize;
-
-			// String must come last, because we don't know how big a .NET reference really is (we could be compiling for x64!)
-			[Interop.FieldOffset(16 + 4)]
-			public string String;
 
 			#region Equals
 			public bool Equals(uint v)		{ return Type == XmbVariantType.Int && Int == v; }

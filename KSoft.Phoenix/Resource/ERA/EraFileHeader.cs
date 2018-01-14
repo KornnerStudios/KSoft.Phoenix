@@ -79,21 +79,7 @@ namespace KSoft.Phoenix.Resource
 
 		public static bool VerifyIsEraAndDecrypted(IO.EndianReader s)
 		{
-			const int k_sizeof_signature = sizeof(uint);
-
-			Contract.Requires<InvalidOperationException>(s.BaseStream.CanRead);
-			Contract.Requires<InvalidOperationException>(s.BaseStream.CanSeek);
-
-			var base_stream = s.BaseStream;
-			if ((base_stream.Length - base_stream.Position) < k_sizeof_signature)
-			{
-				return false;
-			}
-
-			uint sig = s.ReadUInt32();
-			base_stream.Seek(-k_sizeof_signature, System.IO.SeekOrigin.Current);
-
-			return sig == ECF.EcfHeader.kSignature;
+			return ECF.EcfHeader.VerifyIsEcf(s);
 		}
 	};
 }

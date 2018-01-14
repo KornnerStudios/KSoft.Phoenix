@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
+using Exprs = System.Linq.Expressions;
 
 namespace KSoft.Phoenix
 {
@@ -124,6 +125,46 @@ namespace KSoft.Phoenix
 			}
 
 			return new AggregateException(list);
+		}
+
+		public static bool StreamCursorBytesOpt<TDoc, TCursor, T>(this IO.TagElementStream<TDoc, TCursor, string> s, T obj, Exprs.Expression<Func<T, byte[]>> propExpr)
+			where TDoc : class
+			where TCursor : class
+		{
+			Contract.Requires(s != null);
+
+			bool executed = false;
+
+			var property = Reflection.Util.PropertyFromExpr(propExpr);
+			if (s.IsReading)
+			{
+				string str_value = null;
+				s.ReadCursor(ref str_value);
+				if (str_value.IsNotNullOrEmpty())
+				{
+					var value = Text.Util.ByteStringToArray(str_value);
+					if (value.IsNotNullOrEmpty())
+					{
+						property.SetValue(obj, value, null);
+						executed = true;
+					}
+				}
+			}
+			else if (s.IsWriting)
+			{
+				var value = (byte[])property.GetValue(obj, null);
+				if (value.IsNotNullOrEmpty())
+				{
+					string str_value = Text.Util.ByteArrayToString(value);
+					if (str_value.IsNotNullOrEmpty())
+					{
+						s.WriteCursor(str_value);
+						executed = true;
+					}
+				}
+			}
+
+			return executed;
 		}
 	};
 }
