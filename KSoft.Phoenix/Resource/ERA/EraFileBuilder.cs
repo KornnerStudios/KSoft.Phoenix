@@ -133,7 +133,7 @@ namespace KSoft.Phoenix.Resource
 				era_memory.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
 
 				// create null bytes for the header and embedded file chunk descriptors
-				// used to just use Seek to do this, but it doesn't update Length.
+				// previously just used Seek to do this, but it doesn't update Length.
 				long preamble_size = mEraFile.CalculateHeaderAndFileChunksSize();
 				ms.SetLength(preamble_size);
 				ms.Seek(preamble_size, SeekOrigin.Begin);

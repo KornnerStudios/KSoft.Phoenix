@@ -73,6 +73,19 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 		#endregion
 
+		public int CalculateChunkEntriesSize(
+			int assumedChunkCount = TypeExtensions.kNone)
+		{
+			if (assumedChunkCount.IsNone())
+				assumedChunkCount = ChunkCount;
+
+			int entries_size = EcfChunk.kSizeOf;
+			entries_size += ExtraDataSize;
+			entries_size *= assumedChunkCount;
+
+			return entries_size;
+		}
+
 		public uint ComputeAdler32(Stream stream, long headerPosition)
 		{
 			Contract.Requires(stream != null);
@@ -99,6 +112,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			long adler_start_position = headerPosition + kAdler32StartOffset;
 			s.BaseStream.Seek(adler_start_position, SeekOrigin.Begin);
 			var adler = Security.Cryptography.Adler32.Compute(s.BaseStream, Adler32BufferLength);
+			Adler32 = adler;
 
 			s.BaseStream.Seek(headerPosition, SeekOrigin.Begin);
 			this.Serialize(s);

@@ -41,8 +41,13 @@ namespace PhxGui
 		UseVerboseOutput,
 
 		[Display(	Name="Skip Verification",
-					Description= "During ERA expansion, ignore checksums that appear to be wrong and would halt progress")]
+					Description= "During ERA or ECF expansion, ignore checksums that appear to be wrong and would halt progress")]
 		SkipVerification,
+
+		// #HACK ECFs
+		[Display(	Name="Assume Drag n Drop Files are ECF",
+					Description= "ALL files that you drag and drop into this app we will try to treat as an ECF-based file")]
+		AssumeDragAndDropFilesAreeEcf,
 
 		kNumberOf,
 	};
@@ -202,10 +207,14 @@ namespace PhxGui
 			Directory,
 			Era,
 			EraDef,
+			Ecf,
+			EcfDef,
 			Exe,
 			Xex,
 			Xml,
 			Xmb,
+			BinaryDataTree,
+			BinaryDataTreeXml,
 
 			kNumberOf
 		};
@@ -214,7 +223,7 @@ namespace PhxGui
 			public BitVector32 AcceptedFileTypes;
 			public int FilesCount;
 		};
-		public static AcceptedFilesResults DetermineAcceptedFiles(string[] files)
+		public static AcceptedFilesResults DetermineAcceptedFiles(string[] files, BitVector32 miscFlags)
 		{
 			var results = new AcceptedFilesResults();
 
@@ -238,6 +247,14 @@ namespace PhxGui
 					continue;
 				}
 
+				// #HACK ECFs
+				// Needs to come before all other file extension checks as it is a forced override
+				if (miscFlags.Test(MiscFlags.AssumeDragAndDropFilesAreeEcf))
+				{
+					results.AcceptedFileTypes.Set(AcceptedFileType.Ecf);
+					continue;
+				}
+
 				switch (ext)
 				{
 					case KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted:
@@ -245,6 +262,9 @@ namespace PhxGui
 						break;
 					case KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension:
 						results.AcceptedFileTypes.Set(AcceptedFileType.EraDef);
+						break;
+					case KSoft.Phoenix.Resource.ECF.EcfFileDefinition.kFileExtension:
+						results.AcceptedFileTypes.Set(AcceptedFileType.EcfDef);
 						break;
 					case ".exe":
 						results.AcceptedFileTypes.Set(AcceptedFileType.Exe);
@@ -254,6 +274,12 @@ namespace PhxGui
 						break;
 					case ".xmb":
 						results.AcceptedFileTypes.Set(AcceptedFileType.Xmb);
+						break;
+					case KSoft.Phoenix.Xmb.BinaryDataTree.kBinaryFileExtension:
+						results.AcceptedFileTypes.Set(AcceptedFileType.BinaryDataTree);
+						break;
+					case KSoft.Phoenix.Xmb.BinaryDataTree.kTextFileExtension:
+						results.AcceptedFileTypes.Set(AcceptedFileType.BinaryDataTreeXml);
 						break;
 
 					default:
@@ -270,7 +296,7 @@ namespace PhxGui
 
 		public bool AcceptsFiles(string[] files)
 		{
-			var results = DetermineAcceptedFiles(files);
+			var results = DetermineAcceptedFiles(files, this.Flags);
 			if (results.FilesCount == 0)
 				return false;
 
@@ -285,7 +311,7 @@ namespace PhxGui
 		}
 		public void ProcessFiles(string[] files)
 		{
-			var results = DetermineAcceptedFiles(files);
+			var results = DetermineAcceptedFiles(files, this.Flags);
 			if (results.FilesCount == 0)
 				return;
 
@@ -313,6 +339,16 @@ namespace PhxGui
 						break;
 					}
 
+					case AcceptedFileType.EcfDef:
+					{
+						if (results.FilesCount == 1)
+						{
+							ProcessFilesHelpText = "Build ECF";
+							return true;
+						}
+						break;
+					}
+
 					case AcceptedFileType.Exe:
 					case AcceptedFileType.Xex:
 					{
@@ -334,6 +370,16 @@ namespace PhxGui
 						break;
 					}
 
+					case AcceptedFileType.Ecf:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "Expand ECF(s)";
+							return true;
+						}
+						break;
+					}
+
 					case AcceptedFileType.Xmb:
 					{
 						if (results.AcceptedFileTypes.Cardinality == 1)
@@ -349,6 +395,25 @@ namespace PhxGui
 						if (results.AcceptedFileTypes.Cardinality == 1)
 						{
 							ProcessFilesHelpText = "XMB->XML (in directories)";
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.BinaryDataTree:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "BinaryDataTree BIN->XML";
+							return true;
+						}
+						break;
+					}
+					case AcceptedFileType.BinaryDataTreeXml:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "BinaryDataTree XML->BIN";
 							return true;
 						}
 						break;
@@ -375,6 +440,16 @@ namespace PhxGui
 						break;
 					}
 
+					case AcceptedFileType.EcfDef:
+					{
+						if (results.FilesCount == 1)
+						{
+							ProcessEcfListing(files[0]);
+							return true;
+						}
+						break;
+					}
+
 					case AcceptedFileType.Exe:
 					case AcceptedFileType.Xex:
 					{
@@ -396,6 +471,16 @@ namespace PhxGui
 						break;
 					}
 
+					case AcceptedFileType.Ecf:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessEcfFiles(files);
+							return true;
+						}
+						break;
+					}
+
 					case AcceptedFileType.Xmb:
 					{
 						if (results.AcceptedFileTypes.Cardinality == 1)
@@ -412,6 +497,26 @@ namespace PhxGui
 						{
 							XmbToXmlInDirectories(files);
 							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.BinaryDataTree:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							BinaryDataTreeBinToXml(files);
+							return true;
+						}
+						break;
+					}
+					case AcceptedFileType.BinaryDataTreeXml:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							// #TODO
+							throw new NotImplementedException(type.ToString());
+							//return true;
 						}
 						break;
 					}

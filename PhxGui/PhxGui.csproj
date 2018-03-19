@@ -34,7 +34,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BinaryDataTreeConverter.cs" />
     <Compile Include="Debug\Trace.cs" />
+    <Compile Include="EcfBuilder.cs" />
+    <Compile Include="EcfExpander.cs" />
     <Compile Include="ExePatcher.cs" />
     <Compile Include="ModManifestView.xaml.cs">
       <DependentUpon>ModManifestView.xaml</DependentUpon>

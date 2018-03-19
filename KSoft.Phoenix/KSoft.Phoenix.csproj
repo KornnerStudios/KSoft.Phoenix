@@ -156,6 +156,11 @@
     <Compile Include="Phx\UI\BRumbleEvent.cs" />
     <Compile Include="Phx\UI\Enums\BRumbleMotor.cs" />
     <Compile Include="Phx\UI\Enums\BRumbleType.cs" />
+    <Compile Include="Resource\ECF\EcfFileBuilder.cs" />
+    <Compile Include="Resource\ECF\EcfFileChunkDefinition.cs" />
+    <Compile Include="Resource\ECF\EcfFileDefinition.cs" />
+    <Compile Include="Resource\ECF\EcfFileExpander.cs" />
+    <Compile Include="Resource\ECF\EcfFileUtil.cs" />
     <Compile Include="Resource\ResourceTag.cs" />
     <Compile Include="Resource\ResourceTagHeader.cs" />
     <Compile Include="Resource\ResourceUtils.cs" />
@@ -339,6 +344,7 @@
     <Compile Include="Utils\TypeExtensions.cs" />
     <Compile Include="Utils\UndefinedReferenceHandle.cs" />
     <Compile Include="Utils\WinExePatcherProcessHeaderData.cs" />
+    <Compile Include="Xmb\BinaryDataTree.cs" />
     <Compile Include="Xmb\BinaryDataTreeHeader.cs" />
     <Compile Include="Xmb\BinaryDataTreeMemoryPool.cs" />
     <Compile Include="Xmb\BinaryDataTreeMemoryPool.Entry.cs" />
