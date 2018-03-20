@@ -74,6 +74,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			if (s.IsReading)
 			{
 				if (header_position != -1 &&
+					ecfFile != null &&
 					!ecfFile.Options.Test(EraFileUtilOptions.SkipVerification))
 				{
 					var actual_adler = mHeader.ComputeAdler32(s.BaseStream, header_position);
