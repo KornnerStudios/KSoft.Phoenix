@@ -180,5 +180,54 @@ namespace KSoft.Phoenix.Resource
 		{
 			ECF.EcfFileXmb.XmbToXml(xmbStream, outputStream, vaSize);
 		}
+
+		public static void ConvertXmbToXml(
+			string xmlFile,
+			string xmbFile,
+			Shell.EndianFormat endianFormat,
+			Shell.ProcessorSize vaSize)
+		{
+			byte[] file_bytes = File.ReadAllBytes(xmbFile);
+
+			using (var xmb_ms = new MemoryStream(file_bytes, false))
+			using (var xmb = new IO.EndianStream(xmb_ms, endianFormat, System.IO.FileAccess.Read))
+			using (var xml_ms = new MemoryStream(IntegerMath.kMega * 1))
+			{
+				xmb.StreamMode = FileAccess.Read;
+
+				ResourceUtils.XmbToXml(xmb, xml_ms, vaSize);
+
+				using (var xml_fs = File.Create(xmlFile))
+					xml_ms.WriteTo(xml_fs);
+			}
+		}
+
+		public static void ConvertBinaryDataTreeToXml(
+			string xmlFile,
+			string xmbFile,
+			bool decompileAttributesWithTypeData = true)
+		{
+			var bdt = new Xmb.BinaryDataTree();
+			bdt.DecompileAttributesWithTypeData = decompileAttributesWithTypeData;
+
+			byte[] bdt_bytes;
+			using (var fs = File.OpenRead(xmbFile))
+			{
+				bdt_bytes = new byte[fs.Length];
+				int bytes_read = fs.Read(bdt_bytes, 0, bdt_bytes.Length);
+				if (bytes_read != bdt_bytes.Length)
+					throw new IOException("Failed to read all BinaryDataTree bytes");
+			}
+
+			using (var bdt_ms = new MemoryStream(bdt_bytes, writable: false))
+			using (var es = new IO.EndianStream(bdt_ms, Shell.EndianFormat.Big, permissions: FileAccess.Read))
+			{
+				es.StreamMode = FileAccess.Read;
+
+				bdt.Serialize(es);
+			}
+
+			bdt.ToXml(xmlFile);
+		}
 	};
 }

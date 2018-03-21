@@ -44,6 +44,7 @@ namespace KSoft.Phoenix.Resource
 			else
 			{
 				mEraFile = new EraFile();
+				mEraFile.BuildModeDefaultTimestamp = EraFile.GetMostRecentTimeStamp(mSourceFile);
 
 				using (var xml = new IO.XmlElementStream(mSourceFile, FA.Read, this))
 				{

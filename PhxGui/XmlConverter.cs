@@ -152,7 +152,7 @@ namespace PhxGui
 						switch (mMode)
 						{
 							case XmlConverterMode.XmbToXml:
-								ConvertXmbToXml(xml_file, xmb_file);
+								KSoft.Phoenix.Resource.ResourceUtils.ConvertXmbToXml(xml_file, xmb_file, mEndianFormat, mVaSize);
 								break;
 
 							case XmlConverterMode.XmlToXmb:
@@ -165,23 +165,6 @@ namespace PhxGui
 						NotifyInputFileException(f, e);
 					}
 				});
-			}
-
-			private void ConvertXmbToXml(string xmlFile, string xmbFile)
-			{
-				byte[] file_bytes = System.IO.File.ReadAllBytes(xmbFile);
-
-				using (var xmb_ms = new System.IO.MemoryStream(file_bytes, false))
-				using (var xmb = new KSoft.IO.EndianStream(xmb_ms, mEndianFormat, System.IO.FileAccess.Read))
-				using (var xml_ms = new System.IO.MemoryStream(IntegerMath.kMega * 1))
-				{
-					xmb.StreamMode = System.IO.FileAccess.Read;
-
-					KSoft.Phoenix.Resource.ResourceUtils.XmbToXml(xmb, xml_ms, mVaSize);
-
-					using (var xml_fs = System.IO.File.Create(xmlFile))
-						xml_ms.WriteTo(xml_fs);
-				}
 			}
 
 			private void ConvertXmlToXmb(string xmlFile, string xmbFile)

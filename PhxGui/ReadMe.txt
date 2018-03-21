@@ -38,13 +38,14 @@ This is a CLI style app that resembles the original "KSoft.Tool" app from the 36
 
 ## Change Log
 
-### 2018.03.19 (Beta!)
+### 2018.03.21
 
 * PhxGui: Added support for expanding ECF files into individual chunk files and a .ecfdef (XML) file describing how to rebuild them again
 * PhxGui: Added support for building ECF files from a .ecfdef (XML) file along with individual chunk files
 * PhxGui: Added support for converting binary_data_tree->binary_data_tree_xml (binary_data_tree is a lot like XMB but is used by UGX files for the materials chunk). Converting from XML->BIN is not yet supported.
 * Fixed XMB->XML conversion bug introduced from recent code refactoring and 64-bit support
 * Fixed a bug where the ECF or ERA file adler checksum was not updated
+* Made ERA build outputs a little more deterministic
 
 ### 2017.12.25
 

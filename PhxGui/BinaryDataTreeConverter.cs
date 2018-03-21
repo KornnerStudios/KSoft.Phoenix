@@ -47,8 +47,6 @@ namespace PhxGui
 			public System.Windows.Threading.Dispatcher Dispatcher;
 			public MainWindowViewModel ViewModel;
 
-			private KSoft.Shell.ProcessorSize mVaSize;
-			private KSoft.Shell.EndianFormat mEndianFormat;
 			private List<string> mInputFiles;
 
 			public BinaryDataTreeConverter(BinaryDataTreeConverterMode mode, MainWindowViewModel viewModel)
@@ -58,10 +56,6 @@ namespace PhxGui
 				Dispatcher = Application.Current.Dispatcher;
 				DontOverwriteExistingFiles = ViewModel.Flags.Test(MiscFlags.DontOverwriteExistingFiles);
 				DontDecompileAttributesWithTypeData = false;
-				mVaSize = Properties.Settings.Default.GameVersion == GameVersionType.Xbox360
-					? KSoft.Shell.ProcessorSize.x32
-					: KSoft.Shell.ProcessorSize.x64;
-				mEndianFormat = KSoft.Shell.EndianFormat.Big;
 			}
 
 			public void SetInputFiles(string[] files)
@@ -99,7 +93,8 @@ namespace PhxGui
 						switch (mMode)
 						{
 							case BinaryDataTreeConverterMode.BinToXml:
-								ConvertBinToXml(xml_file, xmb_file);
+								KSoft.Phoenix.Resource.ResourceUtils.ConvertBinaryDataTreeToXml(xml_file, xmb_file,
+									DontDecompileAttributesWithTypeData == false);
 								break;
 
 							case BinaryDataTreeConverterMode.XmlToBin:
@@ -112,31 +107,6 @@ namespace PhxGui
 						NotifyInputFileException(f, e);
 					}
 				});
-			}
-
-			private void ConvertBinToXml(string xmlFile, string xmbFile)
-			{
-				var bdt = new KSoft.Phoenix.Xmb.BinaryDataTree();
-				bdt.DecompileAttributesWithTypeData = DontDecompileAttributesWithTypeData == false;
-
-				byte[] bdt_bytes;
-				using (var fs = File.OpenRead(xmbFile))
-				{
-					bdt_bytes = new byte[fs.Length];
-					int bytes_read = fs.Read(bdt_bytes, 0, bdt_bytes.Length);
-					if (bytes_read != bdt_bytes.Length)
-						throw new IOException("Failed to read all BDT bytes");
-				}
-
-				using (var bdt_ms = new MemoryStream(bdt_bytes))
-				using (var es = new KSoft.IO.EndianStream(bdt_ms, KSoft.Shell.EndianFormat.Big, permissions: FileAccess.Read))
-				{
-					es.StreamMode = FileAccess.Read;
-
-					bdt.Serialize(es);
-				}
-
-				bdt.ToXml(xmlFile);
 			}
 
 			private void ConvertXmlToBin(string xmlFile, string xmbFile)

@@ -26,6 +26,9 @@ namespace KSoft.Phoenix.Resource
 		private Dictionary<string, string> mLocalFiles = new Dictionary<string, string>();
 		private Dictionary<string, EraFileEntryChunk> mFileNameToChunk = new Dictionary<string, EraFileEntryChunk>();
 
+		public DateTime BuildModeDefaultTimestamp { get; set; }
+			= DateTime.Now;
+
 		public Security.Cryptography.TigerHashBase TigerHasher { get; private set; }
 
 		private int FileChunksFirstIndex { get {
@@ -699,7 +702,7 @@ namespace KSoft.Phoenix.Resource
 
 		private void PackFileNames(IO.EndianStream blockStream, System.IO.MemoryStream source, EraFileEntryChunk file)
 		{
-			file.FileDateTime = System.DateTime.UtcNow;
+			file.FileDateTime = BuildModeDefaultTimestamp;
 			PackFileData(blockStream, source, file);
 		}
 
@@ -745,11 +748,7 @@ namespace KSoft.Phoenix.Resource
 
 			try
 			{
-				var creation_time = File.GetCreationTimeUtc(path);
-				var write_time = File.GetLastWriteTimeUtc(path);
-				file.FileDateTime = write_time > creation_time
-					? write_time
-					: creation_time;
+				file.FileDateTime = GetMostRecentTimeStamp(path);
 
 				byte[] file_bytes = File.ReadAllBytes(path);
 				using (var ms = new MemoryStream(file_bytes, false))
@@ -978,7 +977,7 @@ namespace KSoft.Phoenix.Resource
 			file.CompressionType = ECF.EcfCompressionType.Stored;
 			var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 			file.FileName = "version.txt";
-			file.FileDateTime = System.DateTime.UtcNow;
+			file.FileDateTime = BuildModeDefaultTimestamp;
 			string version = string.Format("{0}\n{1}\n{2}",
 				assembly.FullName,
 				assembly.GetName().Version,
@@ -987,5 +986,14 @@ namespace KSoft.Phoenix.Resource
 			mFiles.Add(file);
 		}
 		#endregion
+
+		internal static DateTime GetMostRecentTimeStamp(string path)
+		{
+			var creation_time = File.GetCreationTimeUtc(path);
+			var write_time = File.GetLastWriteTimeUtc(path);
+			return write_time > creation_time
+				? write_time
+				: creation_time;
+		}
 	};
 }
