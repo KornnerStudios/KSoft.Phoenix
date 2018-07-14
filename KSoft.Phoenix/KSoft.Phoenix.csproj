@@ -161,6 +161,10 @@
     <Compile Include="Resource\ECF\EcfFileDefinition.cs" />
     <Compile Include="Resource\ECF\EcfFileExpander.cs" />
     <Compile Include="Resource\ECF\EcfFileUtil.cs" />
+    <Compile Include="Resource\PKG\CaPackageFile.cs" />
+    <Compile Include="Resource\PKG\CaPackageFileBuilder.cs" />
+    <Compile Include="Resource\PKG\CaPackageFileDefinition.cs" />
+    <Compile Include="Resource\PKG\CaPackageFileExpander.cs" />
     <Compile Include="Resource\ResourceTag.cs" />
     <Compile Include="Resource\ResourceTagHeader.cs" />
     <Compile Include="Resource\ResourceUtils.cs" />
