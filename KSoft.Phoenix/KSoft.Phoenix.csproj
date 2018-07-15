@@ -165,6 +165,7 @@
     <Compile Include="Resource\PKG\CaPackageFileBuilder.cs" />
     <Compile Include="Resource\PKG\CaPackageFileDefinition.cs" />
     <Compile Include="Resource\PKG\CaPackageFileExpander.cs" />
+    <Compile Include="Resource\PKG\CaPackageFileUtil.cs" />
     <Compile Include="Resource\ResourceTag.cs" />
     <Compile Include="Resource\ResourceTagHeader.cs" />
     <Compile Include="Resource\ResourceUtils.cs" />

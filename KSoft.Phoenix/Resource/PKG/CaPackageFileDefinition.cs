@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using Contracts = System.Diagnostics.Contracts;
 using Contract = System.Diagnostics.Contracts.Contract;
 
@@ -11,9 +9,7 @@ namespace KSoft.Phoenix.Resource.PKG
 	{
 		public const string kFileExtension = ".pkgdef";
 
-		public string WorkingDirectory { get; set; }
-
-		/// <summary>This should be the source file's name (without extension) or a user defined name</summary>
+		/// <summary>This should be the source file's name or a user defined name</summary>
 		public string PkgName { get; private set; }
 
 		public List<string> FileNames { get; private set; }
@@ -35,3 +31,4 @@ namespace KSoft.Phoenix.Resource.PKG
 		#endregion
 	};
 }
+
