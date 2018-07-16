@@ -47,7 +47,7 @@ namespace PhxGui
 		// #HACK ECFs
 		[Display(	Name="Assume Drag n Drop Files are ECF",
 					Description= "ALL files that you drag and drop into this app we will try to treat as an ECF-based file")]
-		AssumeDragAndDropFilesAreeEcf,
+		AssumeDragAndDropFilesAreEcf,
 
 		kNumberOf,
 	};
@@ -209,6 +209,8 @@ namespace PhxGui
 			EraDef,
 			Ecf,
 			EcfDef,
+			Pkg,
+			PkgDef,
 			Exe,
 			Xex,
 			Xml,
@@ -249,7 +251,7 @@ namespace PhxGui
 
 				// #HACK ECFs
 				// Needs to come before all other file extension checks as it is a forced override
-				if (miscFlags.Test(MiscFlags.AssumeDragAndDropFilesAreeEcf))
+				if (miscFlags.Test(MiscFlags.AssumeDragAndDropFilesAreEcf))
 				{
 					results.AcceptedFileTypes.Set(AcceptedFileType.Ecf);
 					continue;
@@ -265,6 +267,12 @@ namespace PhxGui
 						break;
 					case KSoft.Phoenix.Resource.ECF.EcfFileDefinition.kFileExtension:
 						results.AcceptedFileTypes.Set(AcceptedFileType.EcfDef);
+						break;
+					case KSoft.Phoenix.Resource.PKG.CaPackageFile.kFileExtension:
+						results.AcceptedFileTypes.Set(AcceptedFileType.Pkg);
+						break;
+					case KSoft.Phoenix.Resource.PKG.CaPackageFileDefinition.kFileExtension:
+						results.AcceptedFileTypes.Set(AcceptedFileType.PkgDef);
 						break;
 					case ".exe":
 						results.AcceptedFileTypes.Set(AcceptedFileType.Exe);
@@ -349,6 +357,16 @@ namespace PhxGui
 						break;
 					}
 
+					case AcceptedFileType.PkgDef:
+					{
+						if (results.FilesCount == 1)
+						{
+							ProcessFilesHelpText = "Build PKG";
+							return true;
+						}
+						break;
+					}
+
 					case AcceptedFileType.Exe:
 					case AcceptedFileType.Xex:
 					{
@@ -375,6 +393,16 @@ namespace PhxGui
 						if (results.AcceptedFileTypes.Cardinality == 1)
 						{
 							ProcessFilesHelpText = "Expand ECF(s)";
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Pkg:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "Expand PKG(s)";
 							return true;
 						}
 						break;
@@ -450,6 +478,17 @@ namespace PhxGui
 						break;
 					}
 
+					case AcceptedFileType.PkgDef:
+					{
+						if (results.FilesCount == 1)
+						{
+							// TODO
+							//ProcessPkgListing(files[0]);
+							return true;
+						}
+						break;
+					}
+
 					case AcceptedFileType.Exe:
 					case AcceptedFileType.Xex:
 					{
@@ -476,6 +515,17 @@ namespace PhxGui
 						if (results.AcceptedFileTypes.Cardinality == 1)
 						{
 							ProcessEcfFiles(files);
+							return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Pkg:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							// TODO
+							//ProcessPkgFiles(files);
 							return true;
 						}
 						break;

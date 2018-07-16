@@ -50,6 +50,8 @@ namespace KSoft.Phoenix.Resource.PKG
 	public class CaPackageFile
 		: IO.IEndianStreamSerializable
 	{
+		public const string kFileExtension = ".pkg";
+
 		[Memory.Strings.StringStorageMarkupAscii]
 		public const string kSignature = "capack";
 		public const ulong kCurrentVersion = (ulong)CaPackageVersion.UsesAlignment;
@@ -64,7 +66,10 @@ namespace KSoft.Phoenix.Resource.PKG
 		public List<CaPackageEntry> FileEntries { get; private set; }
 			= new List<CaPackageEntry>();
 
+		public long Alignment = kDefaultAlignment;
+
 		public bool HasEnoughFileEntries { get { return FileEntries.Count > kMinFileEntryCount; } }
+		public bool UseAlignment { get { return kCurrentVersion >= (ulong)CaPackageVersion.UsesAlignment; } }
 
 		public void Serialize(IO.EndianStream s)
 		{
@@ -77,6 +82,11 @@ namespace KSoft.Phoenix.Resource.PKG
 				KSoft.IO.VersionMismatchException.Assert(s.Reader, kCurrentVersion);
 
 			SerializeAllocationTable(s);
+
+			if (version >= (ulong)CaPackageVersion.UsesAlignment)
+			{
+				s.Stream(ref Alignment);
+			}
 		}
 
 		void SerializeAllocationTable(IO.EndianStream s)
@@ -149,6 +159,9 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		public void SetupHeaderAndEntries(CaPackageFileDefinition definition)
 		{
+			if (definition.Alignment != 0)
+				this.Alignment = definition.Alignment;
+
 			foreach (var file_name in definition.FileNames)
 			{
 				// TODO

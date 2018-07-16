@@ -26,6 +26,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			mSourceFile = listingPath;
 		}
 
+		#region Reading
 		bool ReadInternal()
 		{
 			bool result = true;
@@ -68,6 +69,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			return result;
 		}
+		#endregion
 
 		bool BuildInternal(string workPath, string pkgName, string outputPath)
 		{
@@ -80,19 +82,30 @@ namespace KSoft.Phoenix.Resource.PKG
 					throw new IOException("PKG file is readonly, can't build: " + pkg_filename);
 			}
 
+			{
+				string sanitizedWorkPath = CaPackageFileDefinition.SanitizeWorkingEnvironmentPath(workPath);
+				if (sanitizedWorkPath != workPath && VerboseOutput != null)
+				{
+					VerboseOutput.WriteLine("Sanitized work path:");
+					VerboseOutput.WriteLine("\t{0} =>", workPath);
+					VerboseOutput.WriteLine("\t{0}", sanitizedWorkPath);
+					workPath = sanitizedWorkPath;
+				}
+			}
+
+			if (ProgressOutput != null)
+				ProgressOutput.WriteLine("Apply changes to PKG listing for work environment...");
+			if (PkgDefinition.RedefineForWorkingEnvironment(workPath
+				, BuilderOptions.Test(CaPackageFileBuilderOptions.AlwaysUseXmlOverXmb)
+				, VerboseOutput))
+			{
+
+			}
+
 			mPkgFile = new CaPackageFile();
 			mPkgFile.SetupHeaderAndEntries(PkgDefinition);
 
-			if (BuilderOptions.Test(CaPackageFileBuilderOptions.AlwaysUseXmlOverXmb))
-			{
-				if (ProgressOutput != null)
-					ProgressOutput.WriteLine("Finding XML files to use over XMB references...");
-
-				//mEraFile.TryToReferenceXmlOverXmbFies(workPath, VerboseOutput);
-				// TOOD
-			}
-
-			const int k_initial_buffer_size = 8 * IntegerMath.kMega; // 8MB
+			const int k_initial_buffer_size = 16 * IntegerMath.kMega; // 16MB
 
 			if (ProgressOutput != null)
 				ProgressOutput.WriteLine("Building {0} to {1}...", pkgName, outputPath);
@@ -130,7 +143,7 @@ namespace KSoft.Phoenix.Resource.PKG
 					Contract.Assert(pkg_memory.BaseStream.Position == preamble_size,
 						"Written PKG header size is greater than what we calculated");
 
-					using (var fs = new FileStream(pkg_filename, FileMode.Create, FA.Write))
+					using (var fs = new FileStream(pkg_filename, FileMode.Create, FileAccess.Write))
 						ms.WriteTo(fs);
 				}
 			}
