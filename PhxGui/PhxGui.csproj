@@ -42,6 +42,8 @@
     <Compile Include="ModManifestView.xaml.cs">
       <DependentUpon>ModManifestView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PkgBuilder.cs" />
+    <Compile Include="PkgExpander.cs" />
     <Compile Include="XmlConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

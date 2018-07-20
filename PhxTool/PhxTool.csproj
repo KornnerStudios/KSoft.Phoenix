@@ -23,6 +23,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment.cs" />
+    <Compile Include="Hogan\PkgTool.cs" />
+    <Compile Include="Hogan\ProgramHogan.cs" />
     <Compile Include="Mono.Options.cs" />
     <Compile Include="Phoenix\EraTool.cs" />
     <Compile Include="Phoenix\ProgramPhx.cs" />

@@ -8,5 +8,6 @@ namespace KSoft.Tool
 		Perf,
 
 		Phx,
+		Hogan,
 	};
 }

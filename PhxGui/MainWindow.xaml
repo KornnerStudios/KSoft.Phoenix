@@ -47,14 +47,16 @@
             </Grid.Style>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="1*" />
+                <RowDefinition Height="Auto" /> <!-- Game Version -->
+                <RowDefinition Height="Auto" /> <!-- ERA Expand -->
+                <RowDefinition Height="Auto" /> <!-- ERA Build -->
+                <RowDefinition Height="Auto" /> <!-- Validate Expand -->
+                <RowDefinition Height="Auto" /> <!-- Flags -->
+                <RowDefinition Height="Auto" /> <!-- Steam ModManifest -->
+                <RowDefinition Height="Auto" /> <!-- WinStore ModManifest -->
+                <RowDefinition Height="Auto" /> <!-- Hogan Work -->
+                <RowDefinition Height="Auto" /> <!-- Hogan Build -->
+                <RowDefinition Height="1*" /> <!-- Messages -->
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -98,8 +100,18 @@
                 Click="OnEditModManifest"
                 />
 
-            <Label Grid.Row="7" Grid.Column="0" VerticalAlignment="Top" Content="Messages" />
-            <ScrollViewer Grid.Row="7" Grid.Column="1">
+            <Label Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Content="HW2 Expand Path" />
+            <KSoftWpfControls:SelectableFolderControl Grid.Row="7" Grid.Column="1"
+                ToolTip="Where files inside HaloWars2 .PKGs will be extracted to.\nShould contain the 'data' subfolder"
+                DataContext="{x:Static props:Settings.Default}" Text="{Binding HoganWorkPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Content="HW2 Build Output" />
+            <KSoftWpfControls:SelectableFolderControl Grid.Row="8" Grid.Column="1"
+                ToolTip="Where your UWP dumped HaloWars2 is found, and where to output .PKG files when building from .PKGDEF files.\nShould contain the 'data' subfolder"
+                DataContext="{x:Static props:Settings.Default}" Text="{Binding HoganBuildPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Grid.Row="9" Grid.Column="0" VerticalAlignment="Top" Content="Messages" />
+            <ScrollViewer Grid.Row="9" Grid.Column="1">
                 <TextBlock x:Name="mMessagesBlock" TextWrapping="Wrap"
                     ToolTip="Errors and other diagnostics will appear here. Right click text to copy it to your clipboard."
                     Text="{Binding MessagesText}"
