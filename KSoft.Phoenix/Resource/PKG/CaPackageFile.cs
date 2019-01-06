@@ -25,6 +25,17 @@ namespace KSoft.Phoenix.Resource.PKG
 		public long Offset;
 		public long Size;
 
+		public int CalculateSerializedSize()
+		{
+			int size = 0;
+			size += sizeof(long);
+			size += Name.Length;
+			size += sizeof(long); // Offset
+			size += sizeof(long); // Size
+
+			return size;
+		}
+
 		public void Serialize(IO.EndianStream s)
 		{
 			if (s.IsReading)
@@ -70,6 +81,24 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		public bool HasEnoughFileEntries { get { return FileEntries.Count > kMinFileEntryCount; } }
 		public bool UseAlignment { get { return kCurrentVersion >= (ulong)CaPackageVersion.UsesAlignment; } }
+
+		public int CalculateHeaderAndFileChunksSize(CaPackageVersion version)
+		{
+			int size = 0;
+			size += kHeaderLength;
+
+			foreach (var entry in FileEntries)
+			{
+				size += entry.CalculateSerializedSize();
+			}
+
+			if (version >= CaPackageVersion.UsesAlignment)
+			{
+				size += sizeof(long); // Alignment
+			}
+
+			return size;
+		}
 
 		public void Serialize(IO.EndianStream s)
 		{
@@ -164,7 +193,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			foreach (var file_name in definition.FileNames)
 			{
-				// TODO
+				// #TODO
 			}
 		}
 

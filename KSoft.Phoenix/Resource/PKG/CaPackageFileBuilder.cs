@@ -118,11 +118,11 @@ namespace KSoft.Phoenix.Resource.PKG
 			{
 				pkg_memory.StreamMode = FileAccess.Write;
 
-				// TODO:
+				// #TODO:
 
 				// create null bytes for the header and embedded file chunk descriptors
 				// previously just used Seek to do this, but it doesn't update Length.
-				long preamble_size = mPkgFile.CalculateHeaderAndFileChunksSize();
+				long preamble_size = mPkgFile.CalculateHeaderAndFileChunksSize((CaPackageVersion)CaPackageFile.kCurrentVersion);
 				ms.SetLength(preamble_size);
 				ms.Seek(preamble_size, SeekOrigin.Begin);
 

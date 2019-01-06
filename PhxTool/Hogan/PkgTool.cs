@@ -57,9 +57,9 @@ namespace KSoft.Tool.Hogan
 					v => mOutputPath = v },
 
 				{"nooverwrite", "Don't overwrite existing files (Build and Expand)",
-					v => mExpandFlagOnlyDumpListing = v != null },
+					v => mFlagDontOverwriteExistingFiles = v != null },
 				{"usexmloverxmb", "Prefer XML over XMB where both exist (Build)",
-					v => mExpandFlagOnlyDumpListing = v != null },
+					v => mBuildFlagAlwaysUseXmlOverXmb = v != null },
 				{"onlydumplisting", "Only Dump PKGDEF (Expand)",
 					v => mExpandFlagOnlyDumpListing = v != null },
 			};
@@ -152,10 +152,10 @@ namespace KSoft.Tool.Hogan
 					switch (mMode)
 					{
 						case Mode.Expand:
-							Expand(mPath, mName, mOutputPath, mSwitches);
+							Expand(mPath, mName, mOutputPath, null);
 							break;
 						case Mode.Build:
-							Build(mPath, mName, mOutputPath, mSwitches);
+							Build(mPath, mName, mOutputPath);
 							break;
 
 						default: Program.UnavailableOption(mMode); break;
@@ -286,7 +286,7 @@ namespace KSoft.Tool.Hogan
 				return;
 			}
 
-			StreamWriter debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
+			StreamWriter debug_output = false//options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_expander.txt")
 				: null;
 
@@ -305,60 +305,27 @@ namespace KSoft.Tool.Hogan
 				debug_output.Close();
 		}
 
-		static void BuildParseSwitches(string switches,
-			out Collections.BitVector32 options,
-			out Collections.BitVector32 builderOptions)
-		{
-			options = new Collections.BitVector32();
-			builderOptions = new Collections.BitVector32();
-			bool dump_dbg_info = false, is_32bit = false, encrypt = false;
-
-			if (switches == null)
-				switches = "";
-
-			int index = 0;
-			ParseSwitch(switches, index++, ref dump_dbg_info);
-			ParseSwitch(switches, index++, ref is_32bit);
-			ParseSwitch(switches, index++, ref encrypt);
-
-			if (encrypt)
-			{
-				Console.WriteLine("Era:Builder: Switch enabled - {0}", "ERA will be encrypted before saved to disk");
-				builderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.Encrypt);
-			}
-
-			if (!is_32bit)
-			{
-				Console.WriteLine("Era:Builder: Treating ERA as 64-bit (Definitive Edition)");
-				options.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
-			}
-			else
-			{
-				Console.WriteLine("Era:Builder: Switch enabled - {0}", "Treat ERA as 32-bit (Xbox360)");
-			}
-			if (dump_dbg_info)
-			{
-				Console.WriteLine("Era:Builder: Switch enabled - {0}", "Dump debug info");
-				options.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo);
-			}
-		}
-
-		static void Build(string path, string listingName, string outputPath, string switches)
+		void Build(string path, string listingName, string outputPath)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 				outputPath = path;
 
-			Collections.BitVector32 options, builderOptions;
-			BuildParseSwitches(switches, out options, out builderOptions);
+			var builderOptions = new Collections.BitVector32();
+			{
+				if (mBuildFlagAlwaysUseXmlOverXmb)
+				{
+					Console.WriteLine("PKG:Builder: Switch enabled - {0}", "Use XML over XMB");
+					builderOptions.Set(KSoft.Phoenix.Resource.PKG.CaPackageFileBuilderOptions.AlwaysUseXmlOverXmb);
+				}
+			}
 
-			StreamWriter debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
+			StreamWriter debug_output = false//options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_builder.txt")
 				: null;
 
 			string listing_path = Path.Combine(path, listingName) + KSoft.Phoenix.Resource.EraFileBuilder.kNameExtension;
-			using (var builder = new KSoft.Phoenix.Resource.EraFileBuilder(listing_path))
+			using (var builder = new KSoft.Phoenix.Resource.PKG.CaPackageFileBuilder(listing_path))
 			{
-				builder.Options = options;
 				builder.BuilderOptions = builderOptions;
 				builder.ProgressOutput = Console.Out;
 				builder.VerboseOutput = Console.Out;
@@ -366,9 +333,11 @@ namespace KSoft.Tool.Hogan
 
 				if (builder.Read())
 				{
+#if false // #TODO
 					if (builder.Build(path, listingName, outputPath))
 						builder.ProgressOutput.WriteLine("Success!");
 					else
+#endif
 						builder.ProgressOutput.WriteLine("Failed!");
 				}
 			}
