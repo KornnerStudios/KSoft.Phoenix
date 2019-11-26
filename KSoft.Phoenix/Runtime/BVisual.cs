@@ -1,4 +1,8 @@
-﻿using Contract = System.Diagnostics.Contracts.Contract;
+﻿#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using BVector = SlimMath.Vector4;
 using BMatrix = SlimMath.Matrix;
@@ -16,7 +20,7 @@ namespace KSoft.Phoenix.Runtime
 		public BMatrix Matrix;
 		public uint SubUpdateNumber, GrannySubUpdateNumber;
 		public BMatrix Matrix1, Matrix2;
-		public BVector 
+		public BVector
 			CombinedMinCorner, CombinedMaxCorner,
 			MinCorner, MaxCorner;
 		public BVisualAsset ModelAsset;

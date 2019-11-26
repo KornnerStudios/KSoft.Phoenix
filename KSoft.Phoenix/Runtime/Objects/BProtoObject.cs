@@ -1,4 +1,8 @@
-﻿using Contract = System.Diagnostics.Contracts.Contract;
+﻿#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using BProtoObjectID = System.Int32;
 using BProtoObjectTrainLimit = System.Int32; // idk, 4 bytes
@@ -20,7 +24,7 @@ namespace KSoft.Phoenix.Runtime
 		public BProtoObjectID ProtoID;
 		public BProtoObjectTrainLimit[] TrainLimits;
 		public BHardpoint[] Hardpoints;
-		
+
 		public int ProtoVisualIndex;
 		public float DesiredVelocity, MaxVelocity;
 		public float Hitpoints, Shieldpoints;
@@ -34,8 +38,8 @@ namespace KSoft.Phoenix.Runtime
 		public int DeathSpawnSquad;
 		public byte[] CommandDisabled; // utbitvector; count=4
 		public byte[] CommandSelectable; // utbitvector; count=4
-		public bool AbilityDisabled, 
-			AutoCloak, CloakMove, CloakAttack, 
+		public bool AbilityDisabled,
+			AutoCloak, CloakMove, CloakAttack,
 			UniqueInstance;
 
 		public void CommandDisabledNone()
@@ -81,7 +85,7 @@ namespace KSoft.Phoenix.Runtime
 		public void ToStream(IO.IndentedTextWriter s)
 		{
 			s.WriteLine("{0} {1}{2}{3}{4}", "CommandDisabled",
-				CommandDisabled[0].ToString("X2"), CommandDisabled[1].ToString("X2"), 
+				CommandDisabled[0].ToString("X2"), CommandDisabled[1].ToString("X2"),
 				CommandDisabled[2].ToString("X2"), CommandDisabled[3].ToString("X2"));
 			s.WriteLine("{0} {1}{2}{3}{4}", "CommandSelectable",
 				CommandSelectable[0].ToString("X2"), CommandSelectable[1].ToString("X2"),

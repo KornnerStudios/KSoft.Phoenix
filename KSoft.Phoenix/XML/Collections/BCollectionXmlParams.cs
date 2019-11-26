@@ -1,5 +1,4 @@
 ﻿using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.XML
 {
@@ -45,7 +44,7 @@ namespace KSoft.Phoenix.XML
 
 		#region IO.TagElementStream util
 		protected static void StreamValue<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
-			string valueName, ref string value, 
+			string valueName, ref string value,
 			bool useInnerText, bool useElement, bool internValue, bool toLower)
 			where TDoc : class
 			where TCursor : class
@@ -61,7 +60,7 @@ namespace KSoft.Phoenix.XML
 			}
 		}
 		protected static void StreamValue<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
-			string valueName, ref int value, 
+			string valueName, ref int value,
 			bool useInnerText, bool useElement)
 			where TDoc : class
 			where TCursor : class

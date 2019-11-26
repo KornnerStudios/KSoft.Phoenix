@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using BVector = SlimMath.Vector4;
 using BEntityID = System.Int32;

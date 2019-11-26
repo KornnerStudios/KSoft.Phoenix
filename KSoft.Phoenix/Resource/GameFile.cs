@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource
 {
@@ -119,7 +116,7 @@ namespace KSoft.Phoenix.Resource
 				}
 			}
 		}
-		static void Read(IO.EndianReader s, bool decrypt, IO.IEndianStreamable obj, 
+		static void Read(IO.EndianReader s, bool decrypt, IO.IEndianStreamable obj,
 			long size = 0, ulong userKey = 0, Action<IO.EndianReader> readLeftovers = null)
 		{
 			if (!decrypt)
@@ -142,7 +139,7 @@ namespace KSoft.Phoenix.Resource
 						readLeftovers(decrypted);
 				}
 		}
-		static void Write(IO.EndianWriter s, bool encrypt, IO.IEndianStreamable obj, 
+		static void Write(IO.EndianWriter s, bool encrypt, IO.IEndianStreamable obj,
 			long size = 0, ulong userKey = 0, Action<IO.EndianWriter> writeLeftovers = null)
 		{
 			if (!encrypt)
@@ -215,7 +212,7 @@ namespace KSoft.Phoenix.Resource
 				{
 					Stream(s, EnumFlags.Test(Flags, FileFlags.EncryptContent), cs,
 						userKey: Header.DataCryptKey, streamLeftovers: StreamLeftovers);
-					
+
 					cs.Decompress();
 					Content = cs.UncompressedData;
 				}
@@ -286,7 +283,7 @@ namespace KSoft.Phoenix.Resource
 				{
 					Read(s, EnumFlags.Test(Flags, FileFlags.EncryptContent), cs,
 						userKey: Header.DataCryptKey, readLeftovers: ReadLeftovers);
-					
+
 					cs.Decompress();
 					Content = cs.UncompressedData;
 				}

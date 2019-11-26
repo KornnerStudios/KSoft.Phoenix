@@ -1,4 +1,8 @@
-﻿using Contract = System.Diagnostics.Contracts.Contract;
+﻿#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Phoenix.Runtime
 {

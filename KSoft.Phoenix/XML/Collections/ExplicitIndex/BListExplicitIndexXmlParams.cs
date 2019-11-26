@@ -1,6 +1,4 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
-
+﻿
 namespace KSoft.Phoenix.XML
 {
 	public class BListExplicitIndexXmlParams<T> : BListXmlParams
@@ -29,7 +27,7 @@ namespace KSoft.Phoenix.XML
 			if (s.IsWriting)
 				index += IndexBase;
 
-			BCollectionXmlParams.StreamValue(s, DataName, ref index, 
+			BCollectionXmlParams.StreamValue(s, DataName, ref index,
 				UseInnerTextForData, UseElementForData);
 
 			// Undo any rebasing

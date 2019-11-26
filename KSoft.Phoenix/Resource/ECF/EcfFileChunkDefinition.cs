@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource.ECF
 {

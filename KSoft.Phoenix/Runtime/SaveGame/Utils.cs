@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 using BVector = SlimMath.Vector4;
 using BMatrix = SlimMath.Matrix;
@@ -38,7 +42,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <param name="maxCount"></param>
 		/// <returns></returns>
 		public static IO.EndianStream StreamCollection<T>(IO.EndianStream s, List<T> c,
-			bool isIterated = false) 
+			bool isIterated = false)
 			where T : IO.IEndianStreamSerializable, new()
 		{
 			Contract.Requires(c != null);
@@ -74,7 +78,7 @@ namespace KSoft.Phoenix.Runtime
 		public static IO.EndianStream StreamCollection(IO.EndianStream s, List<int> c)
 		{
 			Contract.Requires(c != null);
-			
+
 			bool reading = s.IsReading;
 
 			int count = c.Count;
@@ -294,7 +298,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <param name="isIterated"><see cref="cSaveMarker.IteratorEndUInt16"/> is written after the array data</param>
 		/// <param name="maxCount"></param>
 		/// <returns></returns>
-		public static IO.EndianStream StreamArray16<T>(IO.EndianStream s, ref T[] array, 
+		public static IO.EndianStream StreamArray16<T>(IO.EndianStream s, ref T[] array,
 			bool isIterated = false, int maxCount = ushort.MaxValue)
 			where T : IO.IEndianStreamSerializable, new()
 		{
@@ -511,8 +515,8 @@ namespace KSoft.Phoenix.Runtime
 		{
 			if (s.StreamCond(matrix, m => !m.IsIdentity))
 			{
-				BVector 
-					forward = matrix.Row1, 
+				BVector
+					forward = matrix.Row1,
 					right = matrix.Row2,
 					up = matrix.Row3,
 					translation = matrix.Row4;

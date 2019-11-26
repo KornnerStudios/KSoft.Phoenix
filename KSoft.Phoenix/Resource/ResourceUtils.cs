@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource
 {
@@ -67,6 +64,11 @@ namespace KSoft.Phoenix.Resource
 			string ext = Path.GetExtension(filename);
 
 			return ext == Xmb.XmbFile.kFileExt;
+		}
+
+		public static string AddXmbExtension(string filename)
+		{
+			return filename + Xmb.XmbFile.kFileExt;
 		}
 
 		public static void RemoveXmbExtension(ref string filename)

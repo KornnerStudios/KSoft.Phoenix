@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 using Vector3 = SlimMath.Vector3;
 
 namespace KSoft.Phoenix.Engine
@@ -248,3 +251,4 @@ namespace KSoft.Phoenix.Engine
 		#endregion
 	};
 }
+

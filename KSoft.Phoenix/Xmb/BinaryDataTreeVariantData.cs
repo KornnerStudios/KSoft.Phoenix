@@ -1,6 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Phoenix.Xmb

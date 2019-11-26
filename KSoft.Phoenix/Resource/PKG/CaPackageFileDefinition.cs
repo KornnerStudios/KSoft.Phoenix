@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
 
 namespace KSoft.Phoenix.Resource.PKG
 {
@@ -100,7 +98,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			if (verboseOutput != null)
 				verboseOutput.WriteLine("\tReplacing XMB ref with {0}",
 					xml_name);
-					
+
 			// #TODO
 
 			return true;

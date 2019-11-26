@@ -1,14 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Phoenix.Resource.PKG
 {
 	public enum CaPackageVersion
 		: ulong
 	{
+		Zero,
 		NoAlignment,
 		UsesAlignment,
 
@@ -107,7 +111,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			//s.StreamVersionEnum(ref Version, CaPackageVersion.kNumberOf);
 			ulong version = kCurrentVersion;
 			s.Stream(ref version);
-			if (version < 0 || version > kCurrentVersion)
+			if (version <= 0 || version > kCurrentVersion)
 				KSoft.IO.VersionMismatchException.Assert(s.Reader, kCurrentVersion);
 
 			SerializeAllocationTable(s);

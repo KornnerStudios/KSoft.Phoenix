@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
-using Contracts = System.Diagnostics.Contracts;
-using Contract = System.Diagnostics.Contracts.Contract;
+﻿using System.Security.Cryptography;
 
 namespace KSoft.Phoenix.Resource
 {
