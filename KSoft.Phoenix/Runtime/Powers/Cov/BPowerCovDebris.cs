@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BCost = System.Single;
 using BCueIndex = System.Int32;
 using BEntityID = System.Int32;

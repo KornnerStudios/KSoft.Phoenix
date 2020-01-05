@@ -6,8 +6,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = SlimMath.Vector4;
-using BMatrix = SlimMath.Matrix;
+using BVector = System.Numerics.Vector4;
+using BMatrix = System.Numerics.Matrix4x4;
 using BCost = System.Single;
 
 namespace KSoft.Phoenix.Runtime
@@ -516,10 +516,10 @@ namespace KSoft.Phoenix.Runtime
 			if (s.StreamCond(matrix, m => !m.IsIdentity))
 			{
 				BVector
-					forward = matrix.Row1,
-					right = matrix.Row2,
-					up = matrix.Row3,
-					translation = matrix.Row4;
+					forward = matrix.GetRow1(),
+					right = matrix.GetRow2(),
+					up = matrix.GetRow3(),
+					translation = matrix.GetRow4();
 
 				s.StreamV(ref forward);
 				s.StreamV(ref right);
@@ -528,10 +528,10 @@ namespace KSoft.Phoenix.Runtime
 
 				if (s.IsReading)
 				{
-					matrix.Row1 = forward;
-					matrix.Row2 = right;
-					matrix.Row3 = up;
-					matrix.Row4 = translation;
+					matrix.SetRow1(forward);
+					matrix.SetRow2(right);
+					matrix.SetRow3(up);
+					matrix.SetRow4(translation);
 				}
 			}
 

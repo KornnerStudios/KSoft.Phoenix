@@ -1,5 +1,5 @@
 ﻿
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BWaveGravityBall = System.UInt64; // idk, 8 bytes
 
 namespace KSoft.Phoenix.Runtime

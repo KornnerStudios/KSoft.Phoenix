@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Vector3 = SlimMath.Vector3;
-using Vector4 = SlimMath.Vector4;
-using granny_matrix_4x4 = SlimMath.Matrix;
+using Vector3 = System.Numerics.Vector3;
+using granny_matrix_4x4 = System.Numerics.Matrix4x4;
 
 namespace KSoft.Granny3D
 {
@@ -122,10 +121,10 @@ namespace KSoft.Granny3D
 
 		[DllImport(kDllName)]
 		public static extern void GrannyUpdateModelMatrix(
-			TPtr<granny_model_instance> ModelInstance,									
-			float SecondsElapsed,			
-			[In] ref granny_matrix_4x4 ModelMatrix4x4,					
-			out granny_matrix_4x4 DestMatrix4x4,													
+			TPtr<granny_model_instance> ModelInstance,
+			float SecondsElapsed,
+			[In] ref granny_matrix_4x4 ModelMatrix4x4,
+			out granny_matrix_4x4 DestMatrix4x4,
 			bool Inverse);
 
 		[DllImport(kDllName)]
@@ -213,7 +212,7 @@ namespace KSoft.Granny3D
 		public static extern TPtr<granny_mesh_deformer> GrannyNewMeshDeformer(
 			TPtr<granny_data_type_definition> InputVertexLayout,
 			TPtr<granny_data_type_definition> OutputVertexLayout,
-			granny_deformation_type DeformationType,									  
+			granny_deformation_type DeformationType,
 			granny_deformer_tail_flags TailFlag);
 		[DllImport(kDllName)]
 		public static extern void GrannyFreeMeshDeformer(TPtr<granny_mesh_deformer> Deformer);

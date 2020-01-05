@@ -1,5 +1,5 @@
 ﻿
-using BVec2 = SlimMath.Vector2;
+using BVec2 = System.Numerics.Vector2;
 
 namespace KSoft.Phoenix.Runtime
 {

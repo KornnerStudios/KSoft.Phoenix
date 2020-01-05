@@ -5,7 +5,7 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
@@ -15,7 +15,7 @@ using BPowerLevel = System.UInt32; // idk, 4 bytes
 
 namespace KSoft.Phoenix.Runtime
 {
-	using BRallyPoint = SlimMath.Vector4; // this is only a guess
+	using BRallyPoint = System.Numerics.Vector4; // this is only a guess
 
 	partial class cSaveMarker
 	{

@@ -1,5 +1,5 @@
 ﻿
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 using BEntityTimePair = System.UInt64;
 using BProtoObjectID = System.Int32;

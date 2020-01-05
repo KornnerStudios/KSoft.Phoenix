@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Vector3 = SlimMath.Vector3;
-using Vector4 = SlimMath.Vector4;
-using granny_matrix_4x4 = SlimMath.Matrix;
+using Vector3 = System.Numerics.Vector3;
+using Vector4 = System.Numerics.Vector4;
+using granny_matrix_4x4 = System.Numerics.Matrix4x4;
 
 namespace KSoft.Granny3D
 {
@@ -36,7 +36,7 @@ namespace KSoft.Granny3D
 		public Vector3 ScaleShear1;
 		public Vector3 ScaleShear2;
 	};
-	
+
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct granny_matrix_3x3
 	{
@@ -44,7 +44,7 @@ namespace KSoft.Granny3D
 		public Vector3 Row1;
 		public Vector3 Row2;
 	};
-	
+
 
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct granny_file_info
@@ -113,7 +113,7 @@ namespace KSoft.Granny3D
 		public TPtr<granny_texture> Texture;
 		public granny_variant ExtendedData;
 	};
-	
+
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct granny_material_map
 	{
@@ -227,7 +227,7 @@ namespace KSoft.Granny3D
 		public granny_transform InitialPlacement;
 		public ArrayPtr<granny_model_mesh_binding> MeshBindings;
 	};
-	
+
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct granny_model_mesh_binding
 	{

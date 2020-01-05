@@ -13,15 +13,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\KSoft.Phoenix.props" />
   <ItemGroup>
-    <Reference Include="SlimMath">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(VitaRootDir)shared\external_libraries\SlimMath.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

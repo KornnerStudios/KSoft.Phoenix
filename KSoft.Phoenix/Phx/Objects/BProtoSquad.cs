@@ -1,6 +1,6 @@
 ﻿//SQUAD_NEEDS_ToLowerDataNames
 
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 
 namespace KSoft.Phoenix.Phx
 {

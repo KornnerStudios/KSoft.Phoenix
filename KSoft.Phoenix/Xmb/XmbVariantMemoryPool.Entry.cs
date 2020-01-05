@@ -1,8 +1,8 @@
 ﻿using Interop = System.Runtime.InteropServices;
 
-using Vector2f = SlimMath.Vector2;
-using Vector3f = SlimMath.Vector3;
-using Vector4f = SlimMath.Vector4;
+using Vector2f = System.Numerics.Vector2;
+using Vector3f = System.Numerics.Vector3;
+using Vector4f = System.Numerics.Vector4;
 
 namespace KSoft.Phoenix.Xmb
 {

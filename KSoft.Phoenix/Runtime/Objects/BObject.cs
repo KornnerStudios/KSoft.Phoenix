@@ -4,7 +4,7 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BBitVector32 = System.UInt32;
 using BPlayerID = System.Int32;
 

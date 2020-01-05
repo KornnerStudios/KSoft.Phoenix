@@ -1,5 +1,5 @@
 ﻿
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BObjectiveID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

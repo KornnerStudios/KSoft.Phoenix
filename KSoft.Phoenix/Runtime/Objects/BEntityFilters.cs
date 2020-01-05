@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;

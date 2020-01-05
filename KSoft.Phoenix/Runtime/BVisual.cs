@@ -4,8 +4,8 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = SlimMath.Vector4;
-using BMatrix = SlimMath.Matrix;
+using BVector = System.Numerics.Vector4;
+using BMatrix = System.Numerics.Matrix4x4;
 
 using BVisualAsset = System.UInt64; // unknown fields
 

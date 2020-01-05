@@ -1,5 +1,5 @@
 ﻿
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 using BEntityRef = System.UInt64; // idk, 8 bytes
 using BPlayerID = System.Int32;

@@ -1,6 +1,6 @@
 ﻿using Contracts = System.Diagnostics.Contracts;
 
-using BVector = SlimMath.Vector4;
+using BVector = System.Numerics.Vector4;
 
 namespace KSoft.Phoenix
 {
