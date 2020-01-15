@@ -394,14 +394,19 @@
     <Compile Include="XML\XmlUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
-      <Project>{18f32228-8351-4f99-992f-78e9d1ce83d9}</Project>
-      <Name>KSoft.IO.TagElementStreams</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">
       <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
       <Name>KSoft</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Compression\KSoft.Compression.csproj">
+      <Project>{0b27603c-ceb1-4a3a-b56f-cbc14b8c06e7}</Project>
+      <Name>KSoft.Compression</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.IO.TagElementStreams\KSoft.IO.TagElementStreams.csproj">
+      <Project>{18f32228-8351-4f99-992f-78e9d1ce83d9}</Project>
+      <Name>KSoft.IO.TagElementStreams</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Security\KSoft.Security.csproj">
@@ -414,11 +419,6 @@
       <Name>KSoft.Wwise</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Compression\KSoft.Compression.csproj">
-      <Project>{0b27603c-ceb1-4a3a-b56f-cbc14b8c06e7}</Project>
-      <Name>KSoft.Compression</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.Math\KSoft.Math.csproj">
       <Project>{423f13fc-da0c-4c82-b75e-60a1bfea7bb6}</Project>
       <Name>KSoft.Math</Name>
@@ -429,19 +429,31 @@
     <Folder Include="Phx\Visual\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.dll">
+    <Content
+        Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.dll"
+        Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.dll')"
+        >
       <Link>DDS\DirectXTexDLL.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb">
+    <Content
+        Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb"
+        Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb')"
+        >
       <Link>DDS\DirectXTexDLL.pdb</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DDSView.exe">
+    <Content
+        Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DDSView.exe"
+        Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DDSView.exe')"
+        >
       <Link>DDS\DDSView.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\texconv.exe">
+    <Content
+        Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\texconv.exe"
+        Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x64\texconv.exe')"
+        >
       <Link>DDS\texconv.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
