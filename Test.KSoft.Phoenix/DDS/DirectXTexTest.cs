@@ -8,6 +8,7 @@ namespace KSoft.DDS.Test
 		: Phoenix.BaseTestClass
 	{
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void DirectXTex_SetupTest()
 		{
 			Assert.IsFalse(DirectXTexDLL.Initialized);
@@ -23,6 +24,7 @@ namespace KSoft.DDS.Test
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void DirectXTex_GetMetadataFromDDSTest()
 		{
 			const string k_filename =

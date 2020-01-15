@@ -86,11 +86,17 @@
   </Choose>
   <!-- NOTE: Need to use x86 versions since unit tests are ran inside VS, and x64 DLLs result in exceptions saying it tried to load a bad image-->
   <ItemGroup>
-    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.dll">
+    <Content
+      Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.dll"
+      Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.dll')"
+      >
       <Link>DDS\DirectXTexDLL.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.pdb">
+    <Content
+      Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.pdb"
+      Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.pdb')"
+      >
       <Link>DDS\DirectXTexDLL.pdb</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
