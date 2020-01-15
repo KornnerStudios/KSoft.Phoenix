@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using FA = System.IO.FileAccess;
 
 namespace KSoft.Phoenix.Resource.Test
 {
@@ -12,7 +8,7 @@ namespace KSoft.Phoenix.Resource.Test
 		: BaseTestClass
 	{
 		const string kEraCryptInputDir = @"C:\KStudio\HaloWars\PC\";
-		const string kEraCryptOutputDir = kTestResultsPath;
+		string kEraCryptOutputDir { get { return TestContext.TestResultsDirectory; } }
 		const string kEraCryptTestFileName = "root";
 
 		static readonly Collections.BitVector32 kEraUtilTestOptions = new Collections.BitVector32()
@@ -27,45 +23,60 @@ namespace KSoft.Phoenix.Resource.Test
 			//EraFileBuilderOptions
 			;
 		const string kEraExpanderFileName = kEraCryptTestFileName;
-		const string kEraExpanderInputFile =
+		string kEraExpanderInputFile { get { return System.IO.Path.Combine(
 			kEraCryptOutputDir
-				+ kEraExpanderFileName
+				, kEraExpanderFileName
 					+ EraFileUtil.kExtensionEncrypted
 					+ EraFileUtil.kExtensionDecrypted
-			;
-		const string kEraExpanderOutputDir = kTestResultsPath + @"assets\";
+			);
+		} }
+		string kEraExpanderOutputDir { get { return System.IO.Path.Combine(TestContext.TestResultsDirectory, @"assets\"); } }
 		const string kEraBuilderOutputDir = kEraCryptInputDir;
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_DecryptTest()
 		{
+			string output_path = System.IO.Path.Combine(kEraCryptOutputDir);
+			Console.WriteLine("Outputing to: {0}", output_path);
+
 			// miniloader.era -> miniloader.bin
 			EraFileUtil.Crypt(
 				kEraCryptInputDir,
 				kEraCryptTestFileName,
-				kEraCryptOutputDir,
+				output_path,
 				Security.Cryptography.CryptographyTransformType.Decrypt,
 				Console.Out);
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_EncryptTest()
 		{
+			string input_path = System.IO.Path.Combine(kEraCryptOutputDir);
+			Console.WriteLine("Reading from: {0}", input_path);
+			string output_path = System.IO.Path.Combine(kEraCryptOutputDir);
+			Console.WriteLine("Outputing to: {0}", output_path);
+
 			// miniloader.bin -> miniloader.era
 			EraFileUtil.Crypt(
-				kEraCryptOutputDir, // DecryptTest outputs here, and that output is what we'll use to test encryption
+				input_path, // DecryptTest outputs here, and that output is what we'll use to test encryption
 				kEraCryptTestFileName,
-				kEraCryptOutputDir,
+				output_path,
 				Security.Cryptography.CryptographyTransformType.Encrypt,
 				Console.Out);
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_ExpandTest()
 		{
 			bool result = false;
 
-			using (var expander = new EraFileExpander(kEraExpanderInputFile))
+			string input_path = kEraExpanderInputFile;
+			Console.WriteLine("Reading from: {0}", input_path);
+
+			using (var expander = new EraFileExpander(input_path))
 			{
 				expander.Options = kEraUtilTestOptions;
 				expander.ExpanderOptions = kEraExpanderTestOptions;
@@ -76,14 +87,15 @@ namespace KSoft.Phoenix.Resource.Test
 				Assert.IsTrue(result, "Read failed");
 
 				result = expander.ExpandTo(kEraExpanderOutputDir, kEraExpanderFileName);
-				Assert.IsTrue(result, "Expansion failed");
+				Assert.IsTrue(result, "Expansion failed: " + kEraExpanderOutputDir);
 			}
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_BuildTest()
 		{
-			const string k_listing_path = kEraExpanderOutputDir + kEraExpanderFileName;
+			string k_listing_path = System.IO.Path.Combine(kEraExpanderOutputDir, kEraExpanderFileName);
 
 			bool result = false;
 
@@ -97,12 +109,14 @@ namespace KSoft.Phoenix.Resource.Test
 				result = builder.Read();
 				Assert.IsTrue(result, "Read listing failed");
 
-				result = builder.Build(kEraExpanderOutputDir, kEraCryptTestFileName + "_rebuilt", kEraBuilderOutputDir);
-				Assert.IsTrue(result, "Build failed");
+				string output_path = kEraBuilderOutputDir;
+				result = builder.Build(kEraExpanderOutputDir, kEraCryptTestFileName + "_rebuilt", output_path);
+				Assert.IsTrue(result, "Build failed: " + output_path);
 			}
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_ExpandAndBuildTest()
 		{
 			const string k_input_era =
@@ -110,7 +124,7 @@ namespace KSoft.Phoenix.Resource.Test
 					+ kEraExpanderFileName
 						+ EraFileUtil.kExtensionEncrypted
 				;
-			const string k_listing_path = kEraExpanderOutputDir + kEraExpanderFileName;
+			string k_listing_path = System.IO.Path.Combine(kEraExpanderOutputDir, kEraExpanderFileName);
 			const string k_rebuilt_name = kEraCryptTestFileName + "_rebuilt";
 			const string k_rebuilt_era =
 				kEraCryptInputDir

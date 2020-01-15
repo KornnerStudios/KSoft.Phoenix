@@ -31,6 +31,7 @@ namespace KSoft.Phoenix.Xmb.Test
 		};
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void BDT_ToXmlTest()
 		{
 			bool any_failed = false;

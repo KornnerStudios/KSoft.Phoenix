@@ -39,6 +39,7 @@ namespace KSoft.Phoenix.Engine.Test
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_LoadAlphaTest()
 		{
 			var hw = PhxEngine.CreateForHaloWarsAlpha(kGameRootAlpha);
@@ -46,6 +47,7 @@ namespace KSoft.Phoenix.Engine.Test
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_LoadTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
@@ -58,6 +60,7 @@ namespace KSoft.Phoenix.Engine.Test
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_AppSaveTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
@@ -74,17 +77,22 @@ namespace KSoft.Phoenix.Engine.Test
 				xw_settings.Indent = true;
 				xw_settings.IndentChars = "\t";
 				xw_settings.NewLineChars = "\n";
-				using (var xw = System.Xml.XmlWriter.Create(kTestResultsPath + "Serina.xml", xw_settings))
+				string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "Serina.xml");
+				Console.WriteLine("Saving to: {0}", output_path);
+				using (var xw = System.Xml.XmlWriter.Create(output_path, xw_settings))
 				{
 					s.Document.Save(xw);
 				}
 			}
 		}
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_AppLoadTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
-			using (var s = new IO.XmlElementStream(kTestResultsPath + "Serina.xml", FA.Read))
+			string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "Serina.xml");
+			Console.WriteLine("Saving to: {0}", output_path);
+			using (var s = new IO.XmlElementStream(output_path, FA.Read))
 			{
 				s.InitializeAtRootElement();
 				s.StreamMode = FA.Read;
@@ -94,6 +102,7 @@ namespace KSoft.Phoenix.Engine.Test
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_DumpSortedObjectDbIdsTest()
 		{
 			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
@@ -120,11 +129,15 @@ namespace KSoft.Phoenix.Engine.Test
 						s.WriteAttributeOptOnTrue("id", obj.UnusedId, Predicates.IsNotNone);
 					}
 				}
-				s.Document.Save(kTestResultsPath + "ObjectDBIDs.xml");
+
+				string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "ObjectDBIDs.xml");
+				Console.WriteLine("Saving to: {0}", output_path);
+				s.Document.Save(output_path);
 			}
 		}
 
 		[TestMethod]
+		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_WwiseTest()
 		{
 			const string k_sound_table_xml = kGameRoot + @"data\soundtable.xml";
