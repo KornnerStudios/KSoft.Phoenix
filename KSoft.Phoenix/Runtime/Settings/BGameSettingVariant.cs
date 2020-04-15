@@ -16,7 +16,8 @@ namespace KSoft.Phoenix.Runtime
 
 		[Interop.FieldOffset(8)] public GameSettingType Type;
 
-		[Interop.FieldOffset(12)] public string String;
+		// #64BIT: +4 to offset 16
+		[Interop.FieldOffset(12+4)] public string String;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

@@ -8,7 +8,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Granny3D
 {
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct CharPtr
 	{
 		public IntPtr Address;
@@ -25,7 +25,7 @@ namespace KSoft.Granny3D
 		}
 	};
 
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct TPtr<T>
 	{
 		public IntPtr Address;
@@ -73,7 +73,7 @@ namespace KSoft.Granny3D
 		}
 	};
 
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct ArrayPtr
 	{
 		public int Count;
@@ -94,7 +94,7 @@ namespace KSoft.Granny3D
 			return Array + offset;
 		}
 	};
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct ArrayCharPtr
 	{
 		public int Count;
@@ -111,7 +111,7 @@ namespace KSoft.Granny3D
 			return Array.ToStruct(index);
 		}
 	};
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct ArrayPtr<T>
 	{
 		public int Count;
@@ -136,7 +136,7 @@ namespace KSoft.Granny3D
 			Array.CopyStruct(toIndex, ref s);
 		}
 	};
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct ArrayOfRefsPtr<T>
 	{
 		public int Count;

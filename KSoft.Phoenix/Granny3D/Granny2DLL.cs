@@ -7,6 +7,8 @@ namespace KSoft.Granny3D
 {
 	public static class Granny2DLL
 	{
+		public const int kAssumedPointerSize = sizeof(ulong);
+
 		const string kDllName = @"Granny3D\Granny2.dll";
 		const CharSet kCharSet = CharSet.Ansi;
 
