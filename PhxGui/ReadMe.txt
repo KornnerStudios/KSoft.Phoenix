@@ -38,6 +38,11 @@ This is a CLI style app that resembles the original "KSoft.Tool" app from the 36
 
 ## Change Log
 
+### 2023.11.25
+
+* 5 Long Years...I forget what all changes may be useful to note in a changelog. Sorry.
+* Rebuilt code with Visual Studio 2022, targeting .NET 4.8. Your-Mileage-May-Vary.
+
 ### 2018.03.21
 
 * PhxGui: Added support for expanding ECF files into individual chunk files and a .ecfdef (XML) file describing how to rebuild them again
