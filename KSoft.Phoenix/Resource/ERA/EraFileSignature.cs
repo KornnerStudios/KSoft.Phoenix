@@ -4,7 +4,7 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
-using SHA1CryptoServiceProvider = System.Security.Cryptography.SHA1CryptoServiceProvider;
+using SHA1 = System.Security.Cryptography.SHA1;
 
 namespace KSoft.Phoenix.Resource
 {
@@ -67,7 +67,7 @@ namespace KSoft.Phoenix.Resource
 			Contract.Requires(chunksOffset >= 0);
 			Contract.Requires(chunksLength > 0);
 
-			using (var sha = new SHA1CryptoServiceProvider())
+			using (var sha = SHA1.Create())
 			{
 				PhxHash.UInt32(sha, kSha1Salt);
 				PhxHash.UInt32(sha, (uint)header.HeaderSize);

@@ -44,7 +44,7 @@ namespace KSoft.Phoenix.Resource
 			Hash = new byte[PhxHash.kSha1SizeOf];
 		}
 
-		public void UpdateHash(SHA1CryptoServiceProvider sha)
+		public void UpdateHash(SHA1 sha)
 		{
 			PhxHash.UInt8(sha, kVersion);
 			PhxHash.UInt64(sha, Id);

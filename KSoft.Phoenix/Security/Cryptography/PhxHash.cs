@@ -27,7 +27,7 @@ namespace KSoft.Security.Cryptography
 			}
 		}
 
-		public static void UInt8(SHA1CryptoServiceProvider sha, uint word, bool isFinal = false)
+		public static void UInt8(SHA1 sha, uint word, bool isFinal = false)
 		{
 			gUInt64Buffer[0] = (byte)(word >> 0);
 
@@ -36,7 +36,7 @@ namespace KSoft.Security.Cryptography
 			else
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(byte), null, 0);
 		}
-		public static void UInt16(SHA1CryptoServiceProvider sha, uint word, bool isFinal = false)
+		public static void UInt16(SHA1 sha, uint word, bool isFinal = false)
 		{
 			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, (ushort)word);
 			if (BitConverter.IsLittleEndian)
@@ -49,7 +49,7 @@ namespace KSoft.Security.Cryptography
 			else
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ushort), null, 0);
 		}
-		public static void UInt32(SHA1CryptoServiceProvider sha, uint word, bool isFinal = false)
+		public static void UInt32(SHA1 sha, uint word, bool isFinal = false)
 		{
 			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, word);
 			if (BitConverter.IsLittleEndian)
@@ -62,7 +62,7 @@ namespace KSoft.Security.Cryptography
 			else
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(uint), null, 0);
 		}
-		public static void UInt64(SHA1CryptoServiceProvider sha, ulong word, bool isFinal = false)
+		public static void UInt64(SHA1 sha, ulong word, bool isFinal = false)
 		{
 			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, word);
 			if (BitConverter.IsLittleEndian)
@@ -76,7 +76,7 @@ namespace KSoft.Security.Cryptography
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ulong), null, 0);
 		}
 
-		public static void Ascii(SHA1CryptoServiceProvider sha, string str, int fixedLength = 0)
+		public static void Ascii(SHA1 sha, string str, int fixedLength = 0)
 		{
 			for (int x = 0; x < str.Length; x++)
 			{
@@ -92,7 +92,7 @@ namespace KSoft.Security.Cryptography
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(byte), null, 0);
 			}
 		}
-		public static void Unicode(SHA1CryptoServiceProvider sha, string str, int fixedLength = 0)
+		public static void Unicode(SHA1 sha, string str, int fixedLength = 0)
 		{
 			for (int x = 0; x < str.Length; x++)
 			{
@@ -107,7 +107,7 @@ namespace KSoft.Security.Cryptography
 			}
 		}
 
-		public static void Stream(SHA1CryptoServiceProvider sha
+		public static void Stream(SHA1 sha
 			, System.IO.Stream inputStream
 			, long inputOffset
 			, long inputLength
@@ -164,7 +164,7 @@ namespace KSoft.Security.Cryptography
 
 			byte[] str_bytes = System.Text.Encoding.ASCII.GetBytes(str);
 
-			using (var sha = new SHA1CryptoServiceProvider())
+			using (var sha = SHA1.Create())
 			{
 				byte[] result1;
 				byte[] result_final;
@@ -206,7 +206,7 @@ namespace KSoft.Security.Cryptography
 				byte[] result_final;
 
 				using (var fs = File.OpenRead(fileName))
-				using (var sha = new SHA1CryptoServiceProvider())
+				using (var sha = SHA1.Create())
 				{
 					result_final = sha.ComputeHash(fs, 0, fs.Length);
 

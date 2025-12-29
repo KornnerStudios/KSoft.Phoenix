@@ -170,7 +170,7 @@ namespace KSoft.Phoenix.Resource
 		public void ReadData(System.IO.Stream s)
 		{
 			UncompressedData = new byte[mHeader.UncompressedSize];
-			s.Read(UncompressedData, 0, UncompressedData.Length);
+			s.ReadExactly(UncompressedData);
 
 			mHeader.UncompressedAdler32 = Adler32.Compute(UncompressedData);
 		}

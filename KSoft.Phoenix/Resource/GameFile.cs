@@ -29,7 +29,7 @@ namespace KSoft.Phoenix.Resource
 		const int kRandomBlockWords = 0xA00;
 
 		FileFlags Flags;
-		internal SHA1CryptoServiceProvider ShaContext { get; set; }
+		internal SHA1 ShaContext { get; set; }
 
 		public MediaHeader Header { get; private set; }
 
@@ -39,7 +39,7 @@ namespace KSoft.Phoenix.Resource
 		public GameFile()
 		{
 			Flags = FileFlags.kAll;
-			ShaContext = new SHA1CryptoServiceProvider();
+			ShaContext = SHA1.Create();
 
 			Header = new MediaHeader();
 		}

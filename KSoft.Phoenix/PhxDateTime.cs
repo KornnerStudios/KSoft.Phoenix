@@ -57,7 +57,7 @@ namespace KSoft.Phoenix
 			Milliseconds = (ushort)(dt.Millisecond);
 		}
 
-		public void UpdateHash(SHA1CryptoServiceProvider sha)
+		public void UpdateHash(SHA1 sha)
 		{
 			PhxHash.UInt16(sha, (uint)Year);
 			PhxHash.UInt16(sha, (uint)Month);

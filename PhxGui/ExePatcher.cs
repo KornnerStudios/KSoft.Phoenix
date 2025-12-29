@@ -150,7 +150,7 @@ namespace PhxGui
 
 			byte[] exe_file_sha1_bytes = null;
 			using (var ms = new MemoryStream(patch_pattern.SourceExeBytes))
-			using (var sha1_provider = new System.Security.Cryptography.SHA1CryptoServiceProvider())
+			using (var sha1_provider = System.Security.Cryptography.SHA1.Create())
 			{
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(ms);
 			}
@@ -204,7 +204,7 @@ namespace PhxGui
 
 			byte[] exe_file_sha1_bytes = null;
 			using (var fs = File.OpenRead(args.ExeFile))
-			using (var sha1_provider = new System.Security.Cryptography.SHA1CryptoServiceProvider())
+			using (var sha1_provider = System.Security.Cryptography.SHA1.Create())
 			{
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(fs);
 			}

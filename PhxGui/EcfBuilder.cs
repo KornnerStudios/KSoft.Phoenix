@@ -108,7 +108,7 @@ namespace PhxGui
 		private class BuildEcfFileParameters
 		{
 			public BitVector32 EcfOptions;
-			public BitVector32 EcfBuilderOptions;
+			public BitVector32 EcfBuilderOptions = default;
 			public StringWriter VerboseOutput;
 
 			public string AssetsPath;

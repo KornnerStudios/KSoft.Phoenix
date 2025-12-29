@@ -36,9 +36,9 @@ namespace KSoft.Tool.Hogan
 		string mPath, mName,
 			mOutputPath;
 
-		string mHoganWorkPath;
-		string mHoganBuildPath;
-		string mPkgPath;
+//		string mHoganWorkPath;
+//		string mHoganBuildPath;
+//		string mPkgPath;
 
 		bool mFlagDontOverwriteExistingFiles;
 		bool mBuildFlagAlwaysUseXmlOverXmb;
