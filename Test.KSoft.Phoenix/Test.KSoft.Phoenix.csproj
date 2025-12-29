@@ -37,17 +37,18 @@
     </ProjectReference>
   </ItemGroup>
   <!-- NOTE: Need to use x86 versions since unit tests are ran inside VS, and x64 DLLs result in exceptions saying it tried to load a bad image-->
+  <!--Except VS2022 is 64-bit! So, we're running with x64-->
   <ItemGroup>
     <Content
-      Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.dll"
-      Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.dll')"
+      Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.dll"
+      Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.dll')"
       >
       <Link>DDS\DirectXTexDLL.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content
-      Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.pdb"
-      Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x86\DirectXTexDLL.pdb')"
+      Include="$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb"
+      Condition="Exists('$(VitaRootDir)shared\external_libraries\DirectXTex\x64\DirectXTexDLL.pdb')"
       >
       <Link>DDS\DirectXTexDLL.pdb</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
