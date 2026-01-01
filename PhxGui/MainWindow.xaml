@@ -102,13 +102,27 @@
 
             <Label Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Content="HW2 Expand Path" />
             <KSoftWpfControls:SelectableFolderControl Grid.Row="7" Grid.Column="1"
-                ToolTip="Where files inside HaloWars2 .PKGs will be extracted to.\nShould contain the 'data' subfolder"
-                DataContext="{x:Static props:Settings.Default}" Text="{Binding HoganWorkPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                DataContext="{x:Static props:Settings.Default}" Text="{Binding HoganWorkPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <KSoftWpfControls:SelectableFolderControl.ToolTip>
+                    <TextBlock>
+                        Where files inside HaloWars2 .PKGs will be extracted to.
+                        <LineBreak />
+                        Should contain the 'data' subfolder
+                    </TextBlock>
+                </KSoftWpfControls:SelectableFolderControl.ToolTip>
+            </KSoftWpfControls:SelectableFolderControl>
 
             <Label Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Content="HW2 Build Output" />
             <KSoftWpfControls:SelectableFolderControl Grid.Row="8" Grid.Column="1"
-                ToolTip="Where your UWP dumped HaloWars2 is found, and where to output .PKG files when building from .PKGDEF files.\nShould contain the 'data' subfolder"
-                DataContext="{x:Static props:Settings.Default}" Text="{Binding HoganBuildPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                DataContext="{x:Static props:Settings.Default}" Text="{Binding HoganBuildPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <KSoftWpfControls:SelectableFolderControl.ToolTip>
+                    <TextBlock>
+                        Where your UWP dumped HaloWars2 is found, and where to output .PKG files when building from .PKGDEF files.
+                        <LineBreak />
+                        Should contain the 'data' subfolder
+                    </TextBlock>
+                </KSoftWpfControls:SelectableFolderControl.ToolTip>
+            </KSoftWpfControls:SelectableFolderControl>
 
             <Label Grid.Row="9" Grid.Column="0" VerticalAlignment="Top" Content="Messages" />
             <ScrollViewer Grid.Row="9" Grid.Column="1">
