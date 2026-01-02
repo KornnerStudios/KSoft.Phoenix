@@ -24,19 +24,25 @@ namespace KSoft.Phoenix.Resource.ECF
 		public TextWriter DebugOutput { get; set; }
 
 		/// <see cref="EcfFileUtilOptions"/>
-		public Collections.BitVector32 Options = new Collections.BitVector32();
+		public Collections.BitVector32 Options = new();
 
 		protected EcfFileUtil()
 		{
 			EcfDefinition = new EcfFileDefinition();
 
 			if (System.Diagnostics.Debugger.IsAttached)
+			{
 				ProgressOutput = Console.Out;
+			}
 			if (System.Diagnostics.Debugger.IsAttached)
+			{
 				VerboseOutput = Console.Out;
+			}
 		}
 
 		#region IDisposable Members
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize",
+			Justification = "Not expecting any derived classes to have Finalizers")]
 		public virtual void Dispose()
 		{
 			ProgressOutput = null;

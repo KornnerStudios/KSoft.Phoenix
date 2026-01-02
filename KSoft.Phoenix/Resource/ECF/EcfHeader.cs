@@ -10,6 +10,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Phoenix.Resource.ECF
 {
+	// BECFHeader
 	public struct EcfHeader
 		: IO.IEndianStreamSerializable
 	{
@@ -27,9 +28,9 @@ namespace KSoft.Phoenix.Resource.ECF
 		private uint mID; // The signature of the data which this header encapsulates
 		private ushort mExtraDataSize;
 
-		public int Adler32BufferLength { get { return HeaderSize - kAdler32StartOffset; } }
-		public uint Id { get { return mID; } }
-		public ushort ExtraDataSize { get { return mExtraDataSize; } }
+		public readonly int Adler32BufferLength => HeaderSize - kAdler32StartOffset;
+		public readonly uint Id => mID;
+		public readonly ushort ExtraDataSize => mExtraDataSize;
 
 		public void InitializeChunkInfo(uint dataId, uint dataChunkExtraDataSize = 0)
 		{
@@ -37,12 +38,12 @@ namespace KSoft.Phoenix.Resource.ECF
 			mExtraDataSize = (ushort)dataChunkExtraDataSize;
 		}
 
-		public void BeginBlock(IO.IKSoftBinaryStream s)
+		public readonly void BeginBlock(IO.IKSoftBinaryStream s)
 		{
 			s.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
 			s.VirtualAddressTranslationPush(s.PositionPtr);
 		}
-		public void EndBlock(IO.IKSoftBinaryStream s)
+		public readonly void EndBlock(IO.IKSoftBinaryStream s)
 		{
 			s.VirtualAddressTranslationPop();
 		}
@@ -66,7 +67,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			if (s.IsReading && mFlags != 0)
 			{
-				// TODO: trace
+				// #TODO: trace
+				// In HW1, nothing ever calls BECFFileBuilder::setFlags, so this should always be 0
 				System.Diagnostics.Debugger.Break();
 			}
 
@@ -76,11 +78,13 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 		#endregion
 
-		public int CalculateChunkEntriesSize(
+		public readonly int CalculateChunkEntriesSize(
 			int assumedChunkCount = TypeExtensions.kNone)
 		{
 			if (assumedChunkCount.IsNone())
+			{
 				assumedChunkCount = ChunkCount;
+			}
 
 			int entries_size = EcfChunk.kSizeOf;
 			entries_size += ExtraDataSize;
@@ -89,7 +93,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			return entries_size;
 		}
 
-		public uint ComputeAdler32(Stream stream, long headerPosition)
+		public readonly uint ComputeAdler32(Stream stream, long headerPosition)
 		{
 			Contract.Requires(stream != null);
 			Contract.Requires(headerPosition >= 0);

@@ -1,6 +1,9 @@
 ﻿
 namespace KSoft.Phoenix.Resource.ECF
 {
+	/// <summary>
+	/// This only matters to the Xbox360 version, PC uses actual dds files, just renamed to ddx
+	/// </summary>
 	public sealed class EcfFileDDX
 		: EcfFile
 	{

@@ -24,7 +24,9 @@ namespace KSoft.Phoenix.Resource.ECF
 		public EcfFileBuilder(string listingPath)
 		{
 			if (Path.GetExtension(listingPath) != EcfFileDefinition.kFileExtension)
+			{
 				listingPath += EcfFileDefinition.kFileExtension;
+			}
 
 			mSourceFile = listingPath;
 		}
@@ -34,11 +36,12 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			bool result = true;
 
-			if (ProgressOutput != null)
-				ProgressOutput.WriteLine("Trying to read source listing {0}...", mSourceFile);
+			ProgressOutput?.WriteLine("Trying to read source listing {0}...", mSourceFile);
 
 			if (!File.Exists(mSourceFile))
+			{
 				result = false;
+			}
 			else
 			{
 				using (var xml = new IO.XmlElementStream(mSourceFile, FA.Read, this))
@@ -49,16 +52,14 @@ namespace KSoft.Phoenix.Resource.ECF
 
 				EcfDefinition.CullChunksPossiblyWithoutFileData((chunkIndex, chunk) =>
 				{
-					if (VerboseOutput != null)
-						VerboseOutput.WriteLine("\t\tCulling chunk #{0} since it has no associated file data",
-							chunkIndex);
+					VerboseOutput?.WriteLine("\t\tCulling chunk #{0} since it has no associated file data",
+						chunkIndex);
 				});
 			}
 
 			if (result == false)
 			{
-				if (ProgressOutput != null)
-					ProgressOutput.WriteLine("\tFailed!");
+				ProgressOutput?.WriteLine("\tFailed!");
 			}
 
 			return result;
@@ -70,8 +71,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			try { result &= ReadInternal(); }
 			catch (Exception ex)
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tEncountered an error while trying to read listing: {0}", ex);
+				VerboseOutput?.WriteLine("\tEncountered an error while trying to read listing: {0}", ex);
 				result = false;
 			}
 
@@ -83,17 +83,19 @@ namespace KSoft.Phoenix.Resource.ECF
 		public bool Build(string workPath, string outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
+			{
 				outputPath = workPath;
+			}
 
-			bool result = true;
+			bool result;
 
 			try
 			{
 				result = BuildInternal(workPath, outputPath);
 			} catch (Exception ex)
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tEncountered an error while building the ECF: {0}", ex);
+				VerboseOutput?.WriteLine("\tEncountered an error while building the ECF: {0}", ex);
+
 				result = false;
 			}
 
@@ -121,7 +123,9 @@ namespace KSoft.Phoenix.Resource.ECF
 			{
 				var attrs = File.GetAttributes(ecf_filename);
 				if (attrs.HasFlag(FileAttributes.ReadOnly))
+				{
 					throw new IOException("ECF file is readonly, can't build: " + ecf_filename);
+				}
 			}
 
 			mEcfFile = new EcfFile();
@@ -130,11 +134,9 @@ namespace KSoft.Phoenix.Resource.ECF
 			const FA k_mode = FA.Write;
 			const int k_initial_buffer_size = 8 * IntegerMath.kMega; // 8MB
 
-			if (ProgressOutput != null)
-				ProgressOutput.WriteLine("Building {0} to {1}...", ecf_name, outputPath);
+			ProgressOutput?.WriteLine("Building {0} to {1}...", ecf_name, outputPath);
 
-			if (ProgressOutput != null)
-				ProgressOutput.WriteLine("\tAllocating memory...");
+			ProgressOutput?.WriteLine("\tAllocating memory...");
 			bool result = true;
 			using (var ms = new MemoryStream(k_initial_buffer_size))
 			using (var ecf_memory = new IO.EndianStream(ms, Shell.EndianFormat.Big, this, permissions: k_mode))
@@ -147,15 +149,13 @@ namespace KSoft.Phoenix.Resource.ECF
 				ms.Seek(preamble_size, SeekOrigin.Begin);
 
 				// now we can start embedding the files
-				if (ProgressOutput != null)
-					ProgressOutput.WriteLine("\tPacking chunks...");
+				ProgressOutput?.WriteLine("\tPacking chunks...");
 
 				result = result && PackChunks(ecf_memory);
 
 				if (result)
 				{
-					if (ProgressOutput != null)
-						ProgressOutput.WriteLine("\tFinializing...");
+					ProgressOutput?.WriteLine("\tFinializing...");
 
 					// seek back to the start of the ECF and write out the finalized header and chunk descriptors
 					ms.Seek(0, SeekOrigin.Begin);
@@ -172,7 +172,9 @@ namespace KSoft.Phoenix.Resource.ECF
 					// finally, bake the ECF memory stream into a file
 
 					using (var fs = new FileStream(ecf_filename, FileMode.Create, FA.Write))
+					{
 						ms.WriteTo(fs);
+					}
 				}
 			}
 
@@ -185,17 +187,20 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			foreach (var chunk in EcfDefinition.Chunks)
 			{
-				if (ProgressOutput != null)
-					ProgressOutput.Write("\r\t\t{0} ", chunk.Id.ToString("X16"));
+				ProgressOutput?.Write("\r\t\t{0} ", chunk.Id.ToString("X16"));
 
 				success = success && BuildChunkToStream(ecfStream, chunk);
 
 				if (!success)
+				{
 					break;
+				}
 			}
 
 			if (success && ProgressOutput != null)
+			{
 				ProgressOutput.Write("\r\t\t{0} \r", new string(' ', 16));
+			}
 
 			return success;
 		}

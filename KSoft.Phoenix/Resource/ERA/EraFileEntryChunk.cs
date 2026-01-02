@@ -35,7 +35,9 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
+#pragma warning disable IDE0019 // Use pattern matching
 			var eraUtil = s.Owner as EraFileUtil;
+#pragma warning restore IDE0019 // Use pattern matching
 			long position = s.BaseStream.Position;
 
 			base.Serialize(s);
@@ -70,7 +72,9 @@ namespace KSoft.Phoenix.Resource
 					base.Adler32.ToString("X8"));
 
 				if (!string.IsNullOrEmpty(FileName))
+				{
 					eraUtil.DebugOutput.Write(FileName);
+				}
 
 				eraUtil.DebugOutput.WriteLine();
 			}
@@ -78,14 +82,15 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		#region Xml Streaming
-		string FileDateTimeString { get {
-			return FileDateTime.ToString("u"); // UniversalSorta­bleDateTimePat­tern
-		} }
+		string FileDateTimeString
+			=> FileDateTime.ToString("u"); // UniversalSorta­bleDateTimePat­tern
 
 		protected override void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{
 			if (includeFileData && mFileTimeBits != 0)
+			{
 				s.WriteAttribute("fileTime", mFileTimeBits.ToString("X16"));
+			}
 
 			// only because it's interesting to have, never read back in
 			s.WriteAttribute("fileDateTime", FileDateTimeString);
@@ -98,19 +103,27 @@ namespace KSoft.Phoenix.Resource
 			{
 				bool remove_xmb_ext = true;
 
+#pragma warning disable IDE0019 // Use pattern matching
 				var expander = s.Owner as EraFileExpander;
+#pragma warning restore IDE0019 // Use pattern matching
 				if (expander != null && expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
+				{
 					remove_xmb_ext = false;
+				}
 
 				if (remove_xmb_ext)
+				{
 					ResourceUtils.RemoveXmbExtension(ref fn);
+				}
 			}
 			s.WriteAttribute("name", fn);
 
 			if (includeFileData)
 			{
 				if (DataUncompressedSize != DataSize)
+				{
 					s.WriteAttribute("fullSize", DataUncompressedSize.ToString("X8"));
+				}
 
 				s.WriteAttribute("compressedDataHash",
 					Text.Util.ByteArrayToString(CompressedDataTiger128));
@@ -135,15 +148,16 @@ namespace KSoft.Phoenix.Resource
 
 			string hashString = null;
 			if (s.ReadAttributeOpt("compressedDataHash", ref hashString))
+			{
 				CompressedDataTiger128 = Text.Util.ByteStringToArray(hashString);
+			}
 		}
 		#endregion
 
 		#region Buffer Util
 		protected override byte[] DecompressFromBuffer(IO.EndianStream blockStream, byte[] buffer)
 		{
-			uint result_adler;
-			return ResourceUtils.Decompress(buffer, DataUncompressedSize, out result_adler);
+			return ResourceUtils.Decompress(buffer, DataUncompressedSize, out uint /*result_adler*/_);
 		}
 
 		public override void BuildBuffer(IO.EndianStream blockStream, System.IO.Stream sourceFile,

@@ -9,8 +9,7 @@ namespace KSoft.Phoenix.Resource
 		public static byte[] Compress(byte[] bytes, out uint resultAdler, int lvl = 5)
 		{
 			byte[] result = new byte[bytes.Length];
-			uint adler32;
-			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out adler32, result);
+			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out uint /*adler32*/_, result);
 
 			resultAdler = Security.Cryptography.Adler32.Compute(result);
 
@@ -30,7 +29,7 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		#region Xml extensions
-		static readonly HashSet<string> kXmlBasedFilesExtensions = new HashSet<string>() {
+		static readonly HashSet<string> kXmlBasedFilesExtensions = new() {
 			".xml",
 
 			".vis",
@@ -86,7 +85,7 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 
 		#region IsDataBasedFile
-		static readonly HashSet<string> kDataBasedFileExtensions = new HashSet<string>() {
+		static readonly HashSet<string> kDataBasedFileExtensions = new() {
 			".cfg",
 			".txt",
 		};
@@ -96,13 +95,19 @@ namespace KSoft.Phoenix.Resource
 			string ext = Path.GetExtension(filename);
 
 			if (ext == ".xmb")
+			{
 				return true;
+			}
 
 			if (kXmlBasedFilesExtensions.Contains(ext))
+			{
 				return true;
+			}
 
 			if (kDataBasedFileExtensions.Contains(ext))
+			{
 				return true;
+			}
 
 			return false;
 		}
@@ -123,38 +128,30 @@ namespace KSoft.Phoenix.Resource
 		public static bool IsScaleformBuffer(IO.EndianReader s, out uint signature)
 		{
 			signature = s.ReadUInt32() & 0x00FFFFFF;
-			switch (signature)
+			return signature switch
 			{
-			case kSwfSignature:
-			case kGfxSignature:
-			case kSwfCompressedSignature:
-			case kGfxCompressedSignature:
-				return true;
-
-			default: return false;
-			}
+				kSwfSignature or kGfxSignature or kSwfCompressedSignature or kGfxCompressedSignature
+				=> true,
+				_ => false,
+			};
 		}
 		public static uint GfxHeaderToSwf(uint signature)
 		{
-			switch (signature)
+			return signature switch
 			{
-			case kGfxSignature:				return kSwfSignature;
-			case kGfxCompressedSignature:	return kSwfCompressedSignature;
-
-			default: throw new KSoft.Debug.UnreachableException(signature.ToString("X8"));
-			}
+				kGfxSignature => kSwfSignature,
+				kGfxCompressedSignature => kSwfCompressedSignature,
+				_ => throw new KSoft.Debug.UnreachableException(signature.ToString("X8")),
+			};
 		}
 		public static bool IsSwfHeader(uint signature)
 		{
-			switch(signature)
+			return signature switch
 			{
-			case kSwfSignature:
-			case kSwfCompressedSignature:
-				return true;
-
-			default:
-				return false;
-			}
+				kSwfSignature or kSwfCompressedSignature
+				=> true,
+				_ => false,
+			};
 		}
 		#endregion
 
@@ -200,7 +197,9 @@ namespace KSoft.Phoenix.Resource
 				ResourceUtils.XmbToXml(xmb, xml_ms, vaSize);
 
 				using (var xml_fs = File.Create(xmlFile))
+				{
 					xml_ms.WriteTo(xml_fs);
+				}
 			}
 		}
 
@@ -209,8 +208,10 @@ namespace KSoft.Phoenix.Resource
 			string xmbFile,
 			bool decompileAttributesWithTypeData = true)
 		{
-			var bdt = new Xmb.BinaryDataTree();
-			bdt.DecompileAttributesWithTypeData = decompileAttributesWithTypeData;
+			var bdt = new Xmb.BinaryDataTree
+			{
+				DecompileAttributesWithTypeData = decompileAttributesWithTypeData
+			};
 
 			byte[] bdt_bytes;
 			using (var fs = File.OpenRead(xmbFile))
@@ -218,7 +219,9 @@ namespace KSoft.Phoenix.Resource
 				bdt_bytes = new byte[fs.Length];
 				int bytes_read = fs.Read(bdt_bytes, 0, bdt_bytes.Length);
 				if (bytes_read != bdt_bytes.Length)
+				{
 					throw new IOException("Failed to read all BinaryDataTree bytes");
+				}
 			}
 
 			using (var bdt_ms = new MemoryStream(bdt_bytes, writable: false))

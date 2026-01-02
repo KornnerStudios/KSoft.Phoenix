@@ -18,6 +18,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		DeflateStream,
 	};
 
+	// eECFChunkResourceFlags
 	enum EcfChunkResourceFlags : ushort
 	{
 		Contiguous,
@@ -26,6 +27,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		IsResourceTag,
 	};
 
+	// BECFChunkHeader
 	public class EcfChunk
 		: IO.IEndianStreamSerializable
 	{
@@ -41,7 +43,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		#region Struct fields
 		public ulong EntryId;
 		public Values.PtrHandle DataOffset = Values.PtrHandle.Null32; // offset within the parent block
-		public int DataSize;
+		public int DataSize; // technically, this is uint32
 		public uint Adler32;
 		public byte Flags;
 		public byte DataAlignmentBit = kDefaultAlignmentBit;
@@ -89,9 +91,8 @@ namespace KSoft.Phoenix.Resource.ECF
 		/// <summary>
 		/// Flag is set but CompressionType is Stored. This will be the case with XMBs.
 		/// </summary>
-		public bool IsDeflateStreamButNoCompression { get {
-			return IsDeflateStream && CompressionType == EcfCompressionType.Stored;
-		} }
+		public bool IsDeflateStreamButNoCompression
+			=> IsDeflateStream && CompressionType == EcfCompressionType.Stored;
 
 		public void SeekTo(IO.IKSoftBinaryStream blockStream)
 		{
@@ -108,7 +109,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		#region Buffer Util
 		public byte[] GetBuffer(IO.EndianStream blockStream)
 		{
-			byte[] result = null;
+			byte[] result;
 
 			var assumed_compression_type = CompressionType;
 
@@ -161,7 +162,9 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			sourceFile.Seek(0, SeekOrigin.Begin);
 			if (hasher != null)
+			{
 				UpdateDecompressedDataTigerHash(sourceFile, hasher);
+			}
 
 			Contract.Assert(blockStream.BaseStream.Position == blockStream.BaseStream.Length);
 
@@ -259,8 +262,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			hasher.ComputeHash(source, 0, (int)source.Length,
 				restorePosition: true);
 
-			ulong tiger64;
-			hasher.TryGetAsTiger64(out tiger64);
+			hasher.TryGetAsTiger64(out ulong tiger64);
 			DecompressedDataTiger64 = tiger64;
 		}
 		#endregion
@@ -286,7 +288,9 @@ namespace KSoft.Phoenix.Resource.ECF
 		public void Write(IO.XmlElementStream s, bool includeFileData)
 		{
 			using (s.EnterCursorBookmark(kXmlElementStreamName))
+			{
 				WriteFields(s, includeFileData);
+			}
 		}
 
 		protected virtual void ReadFields(IO.XmlElementStream s, bool includeFileData)
@@ -309,7 +313,9 @@ namespace KSoft.Phoenix.Resource.ECF
 			//if (Flags != 0)
 			//	s.WriteAttribute("flags", Flags.ToString("X1"));
 			if (DataAlignmentBit != kDefaultAlignmentBit)
+			{
 				s.WriteAttribute("align", DataAlignmentBit.ToString("X1"));
+			}
 			if (includeFileData)
 			{
 				s.WriteAttribute("offset", DataOffset.u32.ToString("X8"));
@@ -321,12 +327,16 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			var compType = EcfCompressionType.Stored;
 			if (s.ReadAttributeEnumOpt("Compression", ref compType))
+			{
 				CompressionType = compType;
+			}
 		}
 		protected void WriteFlags(IO.XmlElementStream s)
 		{
 			if (Flags == 0)
+			{
 				return;
+			}
 
 			s.WriteAttributeEnum("Compression", CompressionType);
 		}
@@ -335,27 +345,45 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			bool flag = false;
 			if (s.ReadAttributeOpt("IsContiguous", ref flag))
+			{
 				IsContiguous = flag;
+			}
 			if (s.ReadAttributeOpt("IsWriteCombined", ref flag))
+			{
 				IsWriteCombined = flag;
+			}
 			if (s.ReadAttributeOpt("IsDeflateStream", ref flag))
+			{
 				IsDeflateStream = flag;
+			}
 			if (s.ReadAttributeOpt("IsResourceTag", ref flag))
+			{
 				IsResourceTag = flag;
+			}
 		}
 		protected void WriteResourceFlags(IO.XmlElementStream s)
 		{
 			if (mResourceFlags == 0)
+			{
 				return;
+			}
 
 			if (IsContiguous)
+			{
 				s.WriteAttribute("IsContiguous", true);
+			}
 			if (IsWriteCombined)
+			{
 				s.WriteAttribute("IsWriteCombined", true);
+			}
 			if (IsDeflateStream)
+			{
 				s.WriteAttribute("IsDeflateStream", true);
+			}
 			if (IsResourceTag)
+			{
 				s.WriteAttribute("IsResourceTag", true);
+			}
 		}
 		#endregion
 	};

@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		public string FilePath { get; private set; }
 		public byte[] FileBytes { get; private set; }
 
-		public bool HasPossibleFileData { get { return FilePath.IsNotNullOrEmpty() || FileBytes.IsNotNullOrEmpty(); } }
+		public bool HasPossibleFileData => FilePath.IsNotNullOrEmpty() || FileBytes.IsNotNullOrEmpty();
 
 		#region ResourceFlags
 		private uint mResourceFlags;
@@ -98,10 +98,14 @@ namespace KSoft.Phoenix.Resource.ECF
 			where TDoc : class
 			where TCursor : class
 		{
+#pragma warning disable IDE0019 // Use pattern matching
 			var ecf_expander = s.Owner as EcfFileExpander;
+#pragma warning restore IDE0019 // Use pattern matching
 
 			if (s.IsReading)
+			{
 				Parent = (EcfFileDefinition)s.UserData;
+			}
 
 			s.StreamAttribute("id", this, obj => Id, NumeralBase.Hex);
 			s.StreamAttributeOpt("align", this, obj => AlignmentBit, b => b != EcfChunk.kDefaultAlignmentBit, NumeralBase.Hex);
@@ -111,13 +115,19 @@ namespace KSoft.Phoenix.Resource.ECF
 				// #NOTE DeflateRaw requires the decompressed size to be known somewhere, and generic ECF files do not store such info
 				// Only available in ERAs
 				if (CompressionType == EcfCompressionType.DeflateRaw)
+				{
 					s.ThrowReadException(new InvalidDataException(CompressionType + " is not supported in this context"));
+				}
 			}
 
 			if (s.IsReading)
+			{
 				ReadResourceFlags(s);
+			}
 			else if (s.IsWriting)
+			{
 				WriteResourceFlags(s);
+			}
 
 			s.StreamAttributeOpt("Path", this, obj => FilePath, Predicates.IsNotNullOrEmpty);
 
@@ -136,7 +146,9 @@ namespace KSoft.Phoenix.Resource.ECF
 				if (!s.StreamCursorBytesOpt(this, obj => FileBytes))
 				{
 					if (FilePath.IsNullOrEmpty())
+					{
 						s.ThrowReadException(new InvalidDataException("Expect Path attribute or file hex bytes"));
+					}
 				}
 			}
 		}
@@ -147,29 +159,47 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			bool flag = false;
 			if (s.ReadAttributeOpt("IsContiguous", ref flag))
+			{
 				IsContiguous = flag;
+			}
 			if (s.ReadAttributeOpt("IsWriteCombined", ref flag))
+			{
 				IsWriteCombined = flag;
+			}
 			if (s.ReadAttributeOpt("IsDeflateStream", ref flag))
+			{
 				IsDeflateStream = flag;
+			}
 			if (s.ReadAttributeOpt("IsResourceTag", ref flag))
+			{
 				IsResourceTag = flag;
+			}
 		}
 		private void WriteResourceFlags<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
 			if (mResourceFlags == 0)
+			{
 				return;
+			}
 
 			if (IsContiguous)
+			{
 				s.WriteAttribute("IsContiguous", true);
+			}
 			if (IsWriteCombined)
+			{
 				s.WriteAttribute("IsWriteCombined", true);
+			}
 			if (IsDeflateStream)
+			{
 				s.WriteAttribute("IsDeflateStream", true);
+			}
 			if (IsResourceTag)
+			{
 				s.WriteAttribute("IsResourceTag", true);
+			}
 		}
 		#endregion
 	};

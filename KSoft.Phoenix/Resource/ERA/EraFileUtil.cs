@@ -38,17 +38,20 @@ namespace KSoft.Phoenix.Resource
 		public System.IO.TextWriter DebugOutput { get; set; }
 
 		/// <see cref="EraFileUtilOptions"/>
-		public Collections.BitVector32 Options = new Collections.BitVector32();
+		public Collections.BitVector32 Options = new();
 
 		protected EraFileUtil()
 		{
 			if (System.Diagnostics.Debugger.IsAttached)
+			{
 				ProgressOutput = Console.Out;
-			if (System.Diagnostics.Debugger.IsAttached)
 				VerboseOutput = Console.Out;
+			}
 		}
 
 		#region IDisposable Members
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize",
+			Justification = "Not expecting any derived classes to have Finalizers")]
 		public virtual void Dispose()
 		{
 			ProgressOutput = null;
@@ -70,28 +73,32 @@ namespace KSoft.Phoenix.Resource
 			TextWriter verboseOutput = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
+			{
 				outputPath = path;
+			}
 
 			string input_file = Path.Combine(path, eraName) + EraFile.kExtensionEncrypted;
 			string output_file = Path.Combine(outputPath, eraName) + EraFile.kExtensionEncrypted;
 
 			// If we're encrypting, the input file will be a .bin, else the output file will be a .bin
-			switch(transformType)
+			switch (transformType)
 			{
-			case CryptographyTransformType.Decrypt:
-				output_file += EraFile.kExtensionDecrypted;
-				break;
+				case CryptographyTransformType.Decrypt:
+					output_file += EraFile.kExtensionDecrypted;
+					break;
 
-			case CryptographyTransformType.Encrypt:
-				input_file += EraFile.kExtensionDecrypted;
-				break;
+				case CryptographyTransformType.Encrypt:
+					input_file += EraFile.kExtensionDecrypted;
+					break;
 
-			default:
-				throw new KSoft.Debug.UnreachableException(transformType.ToString());
+				default:
+					throw new KSoft.Debug.UnreachableException(transformType.ToString());
 			}
 
 			if (!File.Exists(input_file))
+			{
 				throw new FileNotFoundException("ERA file for cryptography operation does not exist", input_file);
+			}
 
 			if (verboseOutput != null)
 			{
@@ -122,13 +129,13 @@ namespace KSoft.Phoenix.Resource
 
 			switch (transformType)
 			{
-			case CryptographyTransformType.Decrypt:
-				tea.Decrypt();
-				break;
+				case CryptographyTransformType.Decrypt:
+					tea.Decrypt();
+					break;
 
-			case CryptographyTransformType.Encrypt:
-				tea.Encrypt();
-				break;
+				case CryptographyTransformType.Encrypt:
+					tea.Encrypt();
+					break;
 			}
 		}
 	};

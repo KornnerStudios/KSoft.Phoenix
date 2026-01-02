@@ -42,7 +42,9 @@ namespace KSoft.Phoenix.Resource.ECF
 				}
 
 				using (var bm = s.EnterCursorBookmarkOpt("Chunks", Chunks, Predicates.HasItems))
+				{
 					s.StreamableElements("C", Chunks, obj => obj.HasPossibleFileData);
+				}
 			}
 
 			// #NOTE leaving this as an exercise for the caller instead, so they can yell when something is culled
@@ -64,7 +66,9 @@ namespace KSoft.Phoenix.Resource.ECF
 				{
 					if (cullCallback != null)
 					{
+#pragma warning disable IDE1005 // Delegate invocation can be simplified.
 						cullCallback(x, chunk);
+#pragma warning restore IDE1005 // Delegate invocation can be simplified.
 					}
 
 					Chunks.RemoveAt(x);

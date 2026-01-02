@@ -10,7 +10,7 @@ namespace KSoft.Phoenix.Resource
 		public static int CalculateHeaderSize() { return kHeaderSize; }
 
 		ECF.EcfHeader mHeader;
-		EraFileSignature mSignature = new EraFileSignature();
+		readonly EraFileSignature mSignature = new();
 
 		public int FileCount { get { return mHeader.ChunkCount; } }
 

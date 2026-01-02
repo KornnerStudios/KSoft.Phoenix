@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
-using System.Collections;
 
 namespace KSoft.Phoenix.Resource.ECF
 {
@@ -16,10 +16,10 @@ namespace KSoft.Phoenix.Resource.ECF
 		, IO.IEndianStreamSerializable
 		, IEnumerable<EcfChunk>
 	{
-		internal EcfHeader mHeader = new EcfHeader();
-		protected List<EcfChunk> mChunks = new List<EcfChunk>();
+		internal EcfHeader mHeader = new();
+		protected List<EcfChunk> mChunks = new();
 
-		public int ChunksCount { get { return mChunks.Count; } }
+		public int ChunksCount => mChunks.Count;
 
 		public EcfFile()
 		{
@@ -39,6 +39,8 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 
 		#region IDisposable Members
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize",
+			Justification = "Not expecting any derived classes to have Finalizers")]
 		public virtual void Dispose()
 		{
 			mChunks.Clear();
@@ -56,14 +58,18 @@ namespace KSoft.Phoenix.Resource.ECF
 		internal void SerializeBegin(IO.EndianStream s
 			, bool isFinalizing = false)
 		{
+#pragma warning disable IDE0019 // Use pattern matching
 			var ecfFile = s.Owner as EcfFileUtil;
+#pragma warning restore IDE0019 // Use pattern matching
 
 			if (s.IsWriting)
 			{
 				mHeader.ChunkCount = (short)mChunks.Count;
 
 				if (isFinalizing)
+				{
 					mHeader.UpdateTotalSize(s.BaseStream);
+				}
 			}
 
 			long header_position = s.BaseStream.CanSeek
@@ -113,14 +119,10 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		#region Chunk accessors
 		public IEnumerator<EcfChunk> GetEnumerator()
-		{
-			return ((IEnumerable<EcfChunk>)mChunks).GetEnumerator();
-		}
+			=> ((IEnumerable<EcfChunk>)mChunks).GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable<EcfChunk>)mChunks).GetEnumerator();
-		}
+			=> ((IEnumerable<EcfChunk>)mChunks).GetEnumerator();
 
 		public EcfChunk GetChunk(int chunkIndex)
 		{
