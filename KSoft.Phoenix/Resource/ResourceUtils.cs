@@ -192,7 +192,7 @@ namespace KSoft.Phoenix.Resource
 			byte[] file_bytes = File.ReadAllBytes(xmbFile);
 
 			using (var xmb_ms = new MemoryStream(file_bytes, false))
-			using (var xmb = new IO.EndianStream(xmb_ms, endianFormat, System.IO.FileAccess.Read))
+			using (var xmb = new IO.EndianStream(xmb_ms, endianFormat, System.IO.FileAccess.Read, name: xmbFile))
 			using (var xml_ms = new MemoryStream(IntegerMath.kMega * 1))
 			{
 				xmb.StreamMode = FileAccess.Read;

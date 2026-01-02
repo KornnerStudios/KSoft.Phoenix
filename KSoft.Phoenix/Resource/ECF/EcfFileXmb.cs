@@ -83,6 +83,14 @@ namespace KSoft.Phoenix.Resource.ECF
 				xmb.Serialize(xmbStream);
 
 				xmbBytes = xmb.FileData;
+
+				// Unsure how these users hit this being null, assuming this was a problem in a previous release
+				// https://github.com/HaloMods/HaloWarsDocs/issues/4
+				// https://github.com/HaloMods/HaloWarsDocs/issues/5
+				if (xmbBytes == null)
+				{
+					throw new System.IO.InvalidDataException($"Failed to find {nameof(FileData)} in {xmbStream.StreamName}");
+				}
 			}
 
 			var context = new Xmb.XmbFileContext()
@@ -91,7 +99,8 @@ namespace KSoft.Phoenix.Resource.ECF
 			};
 
 			using (var ms = new System.IO.MemoryStream(xmbBytes, false))
-			using (var s = new IO.EndianReader(ms, xmbStream.ByteOrder))
+			using (var s = new IO.EndianReader(ms, xmbStream.ByteOrder,
+					name: $"{xmbStream.StreamName}:{nameof(FileData)}"))
 			{
 				s.UserData = context;
 
