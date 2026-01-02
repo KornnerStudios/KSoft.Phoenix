@@ -17,10 +17,15 @@ namespace KSoft.Phoenix.Resource
 		const uint kSignatureMarker = 0xAAC94350;
 		const byte kDefaultSizeBit = 0x13;
 
-		const int kNonSignatureBytesSize = sizeof(uint) + sizeof(byte) + sizeof(uint);
+		const int kNonSignatureBytesSize =
+			sizeof(uint) + // kSignatureMarker
+			sizeof(byte) + // SizeBit, 'tree height'
+				// ...hash tree nodes (SHA1)...
+			sizeof(uint);  // kSignatureMarker
 
 		const uint kSha1Salt = 0xA7F95F9C;
 
+		// needs to be in a range of [2, 32]
 		public byte SizeBit = kDefaultSizeBit;
 		public byte[] SignatureData;
 
@@ -39,7 +44,9 @@ namespace KSoft.Phoenix.Resource
 			s.StreamSignature(kSignature);
 			s.Stream(ref size);
 			if (size < kNonSignatureBytesSize)
+			{
 				throw new System.IO.InvalidDataException(size.ToString("X8"));
+			}
 			s.Pad64();
 
 			s.StreamSignature(kSignatureMarker);
@@ -57,6 +64,10 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
+		/// <summary>
+		/// The signature digest (SHA1) is what is digitally signed when the engine's tools when they build
+		/// an ERA. The private keys are not known, but the exe has the public keys hard coded.
+		/// </summary>
 		internal static byte[] ComputeSignatureDigest(System.IO.Stream chunksStream
 			, long chunksOffset
 			, long chunksLength

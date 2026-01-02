@@ -15,14 +15,19 @@ namespace KSoft.Phoenix.zPatching
 
 		public string SourceExeFileName;
 		public byte[] SourceExeBytes;
-		public List<int> PatternFileOffsets = new List<int>();
+		public List<int> PatternFileOffsets = new();
 
 		public int ModJmpFileOffset;
 		public int ModJmpVa;
 
 		public WinExePatcherProcessHeaderData()
 		{
-			BytePattern = new short[] {
+			// the part of BAsyncECFArchiveLoader::processHeaderData, after it attempts to find
+			// a matching digital signature (see EraFileSignature) against hard coded public keys
+			// r14 = 'this' pointer
+			// ebx = public key index, compared against the number of public keys.
+			//		it will be equal to the number of public keys when no match is found.
+			BytePattern = [
 				/*
 					call    sub
 					nop
@@ -39,7 +44,7 @@ namespace KSoft.Phoenix.zPatching
 				// alignment asm bytes, can't rely on these :(
 				//0x66, 0x66,
 				//0x0F, 0x1F, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00,
-			};
+			];
 			BytePatternNextJmpOffset = BytePattern.Length - sizeof(uint);
 			BytePatternModJmpOffset = BytePattern.Length - sizeof(uint) - sizeof(ushort);
 		}
@@ -86,7 +91,10 @@ namespace KSoft.Phoenix.zPatching
 
 			// jnz short i8
 			if (0x75 != SourceExeBytes[good_jmp_base])
+			{
 				return false;
+			}
+
 			int good_asm_offset_va = SourceExeBytes[good_jmp_base + 1];
 			int good_asm_index = (good_jmp_base + 2);
 			good_asm_index += good_asm_offset_va;

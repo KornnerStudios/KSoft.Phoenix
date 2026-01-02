@@ -50,7 +50,7 @@ namespace PhxGui
 		public sealed class PatchInfo
 		{
 			public string Sha1;
-			public Dictionary<uint, byte[]> Patches = new Dictionary<uint,byte[]>();
+			public Dictionary<uint, byte[]> Patches = new();
 
 			public PatchInfo(string sha1)
 			{
@@ -63,7 +63,7 @@ namespace PhxGui
 				return this;
 			}
 		};
-		private static List<PatchInfo> kPatches = new List<PatchInfo>();
+		private static List<PatchInfo> kPatches = new();
 
 		static ExePatching()
 		{
@@ -210,8 +210,7 @@ namespace PhxGui
 			}
 
 			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes);
-			PatchInfo exe_paches;
-			if (!TryGetPatchInfo(exe_file_sha1, out exe_paches))
+			if (!TryGetPatchInfo(exe_file_sha1, out PatchInfo exe_paches))
 			{
 				return string.Format("ERROR Unrecongized file: {0}" +
 					"SHA1={1}{2}" +
