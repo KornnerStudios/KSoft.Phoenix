@@ -14,18 +14,22 @@ namespace KSoft.Phoenix.Engine
 		public static PhxEngine CreateForHaloWars(string gameRoot, string updateRoot
 			, bool targets360 = false)
 		{
-			var e = new PhxEngine();
-			e.Build = PhxEngineBuild.Release;
-			e.TargetsXbox360 = targets360;
+			var e = new PhxEngine
+			{
+				Build = PhxEngineBuild.Release,
+				TargetsXbox360 = targets360
+			};
 			e.InitializeEngine(new Engine.GameDirectories(gameRoot, updateRoot));
 
 			return e;
 		}
 		public static PhxEngine CreateForHaloWarsAlpha(string gameRoot)
 		{
-			var e = new PhxEngine();
-			e.Build = PhxEngineBuild.Alpha;
-			e.TargetsXbox360 = true;
+			var e = new PhxEngine
+			{
+				Build = PhxEngineBuild.Alpha,
+				TargetsXbox360 = true
+			};
 			e.InitializeEngine(new Engine.GameDirectories(gameRoot));
 
 			return e;

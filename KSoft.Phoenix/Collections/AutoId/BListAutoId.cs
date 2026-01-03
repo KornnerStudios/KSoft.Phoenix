@@ -33,11 +33,9 @@ namespace KSoft.Collections
 		{
 			base.Clear();
 
-			if (mDBI != null)
-				mDBI.Clear();
+			mDBI?.Clear();
 
-			if (mUndefinedInterface != null)
-				mUndefinedInterface.Clear();
+			mUndefinedInterface?.Clear();
 		}
 
 		#region Database interfaces
@@ -49,7 +47,9 @@ namespace KSoft.Collections
 				: Count;
 
 			if (itemName != null)
+			{
 				item.Data = itemName;
+			}
 		}
 		internal int DynamicAdd(T item, string itemName, int id = TypeExtensions.kNone)
 		{
@@ -70,7 +70,9 @@ namespace KSoft.Collections
 				{
 					string lower_name = Phoenix.PhxUtil.ToLowerIfContainsUppercase(item.Data);
 					if (!object.ReferenceEquals(lower_name, item.Data))
+					{
 						mDBI.Add(lower_name, item);
+					}
 				}
 			}
 			base.AddItem(item);
@@ -88,11 +90,14 @@ namespace KSoft.Collections
 		{
 			int id = TypeExtensions.kNone;
 			if (mDBI == null)
+			{
 				return id;
+			}
 
-			T obj;
-			if (mDBI.TryGetValue(name, out obj))
+			if (mDBI.TryGetValue(name, out T obj))
+			{
 				id = obj.AutoId;
+			}
 
 			return id;
 		}
@@ -123,7 +128,9 @@ namespace KSoft.Collections
 			int index = TryGetMemberId(memberName);
 
 			if (index.IsNone())
+			{
 				throw new ArgumentException(kUnregisteredMessage, memberName);
+			}
 
 			return index;
 		}
@@ -132,23 +139,27 @@ namespace KSoft.Collections
 			return this[memberId].Data;
 		}
 
-		public int MemberCount { get { return Count; } }
+		public int MemberCount => Count;
 		#endregion
 
 		public override object GetObject(int id)
 		{
 			if (id.IsNone())
+			{
 				return null;
+			}
 
 			if (PhxUtil.IsUndefinedReferenceHandle(id))
+			{
 				return Phoenix.TypeExtensionsPhx.GetUndefinedObject(mUndefinedInterface, id);
+			}
 
 			return base.GetObject(id);
 		}
 
-		private ProtoEnumWithUndefinedImpl mUndefinedInterface;
-		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface { get { return mUndefinedInterface; } }
-		internal IProtoEnumWithUndefined UndefinedInterface { get { return mUndefinedInterface; } }
+		private readonly ProtoEnumWithUndefinedImpl mUndefinedInterface;
+		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface => mUndefinedInterface;
+		internal IProtoEnumWithUndefined UndefinedInterface => mUndefinedInterface;
 	};
 }
 
@@ -160,10 +171,14 @@ namespace KSoft.Phoenix
 			where T : class, Collections.IListAutoIdObject, new()
 		{
 			if (dbi == null)
+			{
 				return null;
+			}
 
 			if (id >= 0 && id < dbi.Count)
+			{
 				return dbi[id].Data;
+			}
 
 			return null;
 		}

@@ -26,6 +26,8 @@ namespace KSoft.Phoenix.HaloWars
 		public string FilePath
 		{
 			get { return mFilePath; }
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2245:Do not assign a property to itself",
+				Justification = "This is how OnPropertyChanged fires")]
 			set
 			{
 				if (this.SetFieldObj(ref mFilePath, value))
@@ -42,7 +44,9 @@ namespace KSoft.Phoenix.HaloWars
 			get
 			{
 				if (FilePath.IsNullOrEmpty())
+				{
 					return null;
+				}
 
 				string path = FilePath;
 				path = Path.GetDirectoryName(path);
@@ -58,12 +62,14 @@ namespace KSoft.Phoenix.HaloWars
 		}
 
 		public ObservableCollection<ModManifestDirectory> Directories { get; private set; }
-			= new ObservableCollection<ModManifestDirectory>();
+			= new();
 
 		public void ReadFromFile()
 		{
 			if (!File.Exists(FilePath))
+			{
 				return;
+			}
 
 			string[] lines = File.ReadAllLines(FilePath);
 
@@ -86,7 +92,9 @@ namespace KSoft.Phoenix.HaloWars
 		public void WriteToFile()
 		{
 			if (!Directory.Exists(ContainingFolder))
+			{
 				return;
+			}
 
 			using (var sw = new StreamWriter(FilePath))
 			{
@@ -96,7 +104,9 @@ namespace KSoft.Phoenix.HaloWars
 				{
 					line.Clear();
 					if (!dir.WriteToLine(line))
+					{
 						continue;
+					}
 
 					sw.WriteLine(line);
 				}
@@ -123,6 +133,8 @@ namespace KSoft.Phoenix.HaloWars
 		public string Directory
 		{
 			get { return mDirectory; }
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2245:Do not assign a property to itself",
+				Justification = "This is how OnPropertyChanged fires")]
 			set
 			{
 				if (this.SetFieldObj(ref mDirectory, value))
@@ -160,7 +172,9 @@ namespace KSoft.Phoenix.HaloWars
 		public bool ReadFromLine(string line)
 		{
 			if (line.IsNullOrEmpty())
+			{
 				return false;
+			}
 
 			IsDisabled = false;
 
@@ -193,7 +207,9 @@ namespace KSoft.Phoenix.HaloWars
 		public bool WriteToLine(System.Text.StringBuilder line)
 		{
 			if (!IsValid)
+			{
 				return false;
+			}
 
 			if (IsDisabled)
 			{

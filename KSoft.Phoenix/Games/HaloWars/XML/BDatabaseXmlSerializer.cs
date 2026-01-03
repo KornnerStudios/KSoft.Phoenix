@@ -14,9 +14,9 @@ namespace KSoft.Phoenix.HaloWars
 	partial class BDatabaseXmlSerializer
 		: XML.BDatabaseXmlSerializerBase
 	{
-		BDatabase mDatabase;
+		readonly BDatabase mDatabase;
 
-		internal override Phx.BDatabaseBase Database { get { return mDatabase; } }
+		internal override Phx.BDatabaseBase Database => mDatabase;
 
 		public BDatabaseXmlSerializer(BDatabase db)
 		{

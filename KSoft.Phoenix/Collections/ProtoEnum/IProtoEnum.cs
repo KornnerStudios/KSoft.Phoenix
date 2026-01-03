@@ -69,7 +69,9 @@ namespace KSoft.Phoenix
 		public static int TryGetId(this Collections.IProtoEnum dbi, string name)
 		{
 			if (dbi == null)
+			{
 				return TypeExtensions.kNone;
+			}
 
 			return dbi.TryGetMemberId(name);
 		}

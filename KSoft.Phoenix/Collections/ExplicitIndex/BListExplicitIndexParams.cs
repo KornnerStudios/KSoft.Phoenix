@@ -9,7 +9,7 @@ namespace KSoft.Collections
 		public IComparer<T> kComparer = Comparer<T>.Default;
 
 		/// <summary>Get the 'invalid' value for a value</summary>
-		public Func<T> kTypeGetInvalid = () => default(T);
+		public Func<T> kTypeGetInvalid = () => default;
 
 		public BListExplicitIndexParams() { }
 
@@ -17,7 +17,9 @@ namespace KSoft.Collections
 		{
 			Flags.Clear();
 			if (initialCapacity > 0)
+			{
 				base.InitialCapacity = initialCapacity;
+			}
 		}
 	};
 }

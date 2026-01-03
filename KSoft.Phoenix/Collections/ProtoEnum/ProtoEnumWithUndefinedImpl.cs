@@ -12,7 +12,7 @@ namespace KSoft.Collections
 	internal sealed class ProtoEnumWithUndefinedImpl
 		: IProtoEnumWithUndefined
 	{
-		IProtoEnum mRoot;
+		readonly IProtoEnum mRoot;
 		ObservableCollection<string> mUndefined;
 
 		public ProtoEnumWithUndefinedImpl(IProtoEnum root)
@@ -25,23 +25,24 @@ namespace KSoft.Collections
 		void InitializeUndefined()
 		{
 			if (mUndefined == null)
+			{
 				mUndefined = new ObservableCollection<string>();
+			}
 		}
 
 		public void Clear()
 		{
-			if (mUndefined != null)
-				mUndefined.Clear();
+			mUndefined?.Clear();
 		}
 
 		#region IProtoEnum Members
-		public int TryGetMemberId(string memberName)		{ return mRoot.TryGetMemberId(memberName); }
-		public string TryGetMemberName(int memberId)		{ return mRoot.TryGetMemberName(memberId); }
-		public bool IsValidMemberId(int memberId)			{ return mRoot.IsValidMemberId(memberId); }
-		public bool IsValidMemberName(string memberName)	{ return mRoot.IsValidMemberName(memberName); }
-		public int GetMemberId(string memberName)			{ return mRoot.GetMemberId(memberName); }
-		public string GetMemberName(int memberId)			{ return mRoot.GetMemberName(memberId); }
-		public int MemberCount						{ get	{ return mRoot.MemberCount; } }
+		public int TryGetMemberId(string memberName)		=> mRoot.TryGetMemberId(memberName);
+		public string TryGetMemberName(int memberId)		=> mRoot.TryGetMemberName(memberId);
+		public bool IsValidMemberId(int memberId)			=> mRoot.IsValidMemberId(memberId);
+		public bool IsValidMemberName(string memberName)	=> mRoot.IsValidMemberName(memberName);
+		public int GetMemberId(string memberName)			=> mRoot.GetMemberId(memberName);
+		public string GetMemberName(int memberId)			=> mRoot.GetMemberName(memberId);
+		public int MemberCount								=> mRoot.MemberCount;
 		#endregion
 
 		#region IProtoEnumWithUndefined Members
@@ -53,7 +54,9 @@ namespace KSoft.Collections
 			{
 				id = mUndefined.FindIndex(str => PhxUtil.StrEqualsIgnoreCase(str, memberName));
 				if (id.IsNotNone())
+				{
 					id = PhxUtil.GetUndefinedReferenceHandle(id);
+				}
 			}
 
 			return id;
@@ -92,13 +95,11 @@ namespace KSoft.Collections
 			return name;
 		}
 
-		public int MemberUndefinedCount { get {
-			return mUndefined != null
-				? mUndefined.Count
-				: 0;
-		} }
+		public int MemberUndefinedCount => mUndefined != null
+			? mUndefined.Count
+			: 0;
 
-		public ObservableCollection<string> UndefinedMembers { get { return mUndefined; } }
+		public ObservableCollection<string> UndefinedMembers => mUndefined;
 		#endregion
 	};
 }

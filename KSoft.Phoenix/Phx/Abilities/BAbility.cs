@@ -9,19 +9,19 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseNamedObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			RootName = "Abilities",
 			ElementName = "Ability",
 			DataName = DatabaseNamedObject.kXmlAttrNameN,
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Abilities.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.GameData,
 			kXmlFileInfo);
 		#endregion

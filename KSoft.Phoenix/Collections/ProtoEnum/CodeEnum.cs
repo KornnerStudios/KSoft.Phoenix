@@ -47,7 +47,9 @@ namespace KSoft.Collections
 			int index = TryGetMemberId(memberName);
 
 			if (index.IsNone())
+			{
 				throw new ArgumentException(kUnregisteredMessage, memberName);
+			}
 
 			return index;
 		}
@@ -56,7 +58,7 @@ namespace KSoft.Collections
 			return kNames[memberId];
 		}
 
-		public int MemberCount { get { return kNames.Length; } }
+		public int MemberCount => kNames.Length;
 		#endregion
 	};
 }

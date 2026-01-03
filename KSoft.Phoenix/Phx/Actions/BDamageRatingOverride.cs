@@ -8,10 +8,10 @@ namespace KSoft.Phoenix.Phx
 		, IEqualityComparer<BDamageRatingOverride>
 	{
 		#region Xml constants
-		public static readonly Collections.BTypeValuesParams<BDamageRatingOverride> kBListParams = new
-			Collections.BTypeValuesParams<BDamageRatingOverride>(db => db.DamageTypes);
-		public static readonly XML.BTypeValuesXmlParams<BDamageRatingOverride> kBListXmlParams = new
-			XML.BTypeValuesXmlParams<BDamageRatingOverride>("DamageRatingOverride", "type");
+		public static readonly Collections.BTypeValuesParams<BDamageRatingOverride> kBListParams =
+			new(db => db.DamageTypes);
+		public static readonly XML.BTypeValuesXmlParams<BDamageRatingOverride> kBListXmlParams =
+			new("DamageRatingOverride", "type");
 		#endregion
 
 		float mRating = PhxUtil.kInvalidSingle;

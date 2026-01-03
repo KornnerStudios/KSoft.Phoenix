@@ -24,9 +24,11 @@ namespace KSoft.Phoenix
 		{
 			var local_app_data = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
 			if (local_app_data.IsNullOrEmpty())
+			{
 				return null;
+			}
 
-			string sku_subdir = null;
+			string sku_subdir;
 			switch (sku)
 			{
 				case HaloWars.DefinitiveEditionSku.Steam:

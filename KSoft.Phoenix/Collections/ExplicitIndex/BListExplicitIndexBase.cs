@@ -14,7 +14,7 @@ namespace KSoft.Collections
 	public abstract class BListExplicitIndexBase<T>
 		: BListBase<T>
 	{
-		internal BListExplicitIndexParams<T> ExplicitIndexParams { get { return Params as BListExplicitIndexParams<T>; } }
+		internal BListExplicitIndexParams<T> ExplicitIndexParams => Params as BListExplicitIndexParams<T>;
 
 		protected BListExplicitIndexBase(BListExplicitIndexParams<T> @params) : base(@params)
 		{
@@ -35,7 +35,9 @@ namespace KSoft.Collections
 			var eip = ExplicitIndexParams;
 
 			for (int x = Count; x < newCount; x++)
+			{
 				AddItem(eip.kTypeGetInvalid());
+			}
 		}
 
 		public override void Clear()
@@ -56,10 +58,14 @@ namespace KSoft.Collections
 			{
 				// expand the list up-to the requested index
 				for (int x = Count; x <= index; x++)
+				{
 					AddItem(eip.kTypeGetInvalid());
+				}
 			}
 			else
+			{
 				base[index] = eip.kTypeGetInvalid();
+			}
 		}
 	};
 }

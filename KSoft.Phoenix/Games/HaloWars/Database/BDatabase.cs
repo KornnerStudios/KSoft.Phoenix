@@ -4,13 +4,13 @@ namespace KSoft.Phoenix.HaloWars
 	public sealed partial class BDatabase
 		: Phx.BDatabaseBase
 	{
-		static readonly Collections.CodeEnum<BCodeObjectType> kGameObjectTypes = new Collections.CodeEnum<BCodeObjectType>();
-		static readonly Collections.CodeEnum<BCodeProtoObject> kGameProtoObjectTypes = new Collections.CodeEnum<BCodeProtoObject>();
-		static readonly Collections.CodeEnum<BScenarioWorld> kGameScenarioWorlds = new Collections.CodeEnum<BScenarioWorld>();
+		static readonly Collections.CodeEnum<BCodeObjectType> kGameObjectTypes = new();
+		static readonly Collections.CodeEnum<BCodeProtoObject> kGameProtoObjectTypes = new();
+		static readonly Collections.CodeEnum<BScenarioWorld> kGameScenarioWorlds = new();
 
-		public override Collections.IProtoEnum GameObjectTypes { get { return kGameObjectTypes; } }
-		public override Collections.IProtoEnum GameProtoObjectTypes { get { return kGameProtoObjectTypes; } }
-		public override Collections.IProtoEnum GameScenarioWorlds { get { return kGameScenarioWorlds; } }
+		public override Collections.IProtoEnum GameObjectTypes => kGameObjectTypes;
+		public override Collections.IProtoEnum GameProtoObjectTypes => kGameProtoObjectTypes;
+		public override Collections.IProtoEnum GameScenarioWorlds => kGameScenarioWorlds;
 
 		[Phx.Meta.BProtoPowerReference]
 		public int RepairPowerID { get; private set; }

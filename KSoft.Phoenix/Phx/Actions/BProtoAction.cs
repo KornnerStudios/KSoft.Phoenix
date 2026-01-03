@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Phx
 		static readonly Predicate<BSquadMode> kNotInvalidSquadMode = e => e != BSquadMode.Invalid;
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "Action",
 			DataName = "Name",
@@ -94,11 +94,14 @@ namespace KSoft.Phoenix.Phx
 			#endregion
 
 			#region DamageModifiers
-			using (var bm = s.EnterCursorBookmarkOpt("DamageModifiers", this, o => mDamageModifiersDmg != PhxUtil.kInvalidSingle)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("DamageModifiers", this, o => mDamageModifiersDmg != PhxUtil.kInvalidSingle))
 			{
-				s.StreamAttribute("damage", ref mDamageModifiersDmg);
-				s.StreamAttributeOpt("damageTaken", ref mDamageModifiersDmgTaken, PhxPredicates.IsNotInvalid);
-				s.StreamAttributeOpt("byCombatValue", ref mDamageModifiersByCombatValue, Predicates.IsTrue);
+				if (bm.IsNotNull)
+				{
+					s.StreamAttribute("damage", ref mDamageModifiersDmg);
+					s.StreamAttributeOpt("damageTaken", ref mDamageModifiersDmgTaken, PhxPredicates.IsNotInvalid);
+					s.StreamAttributeOpt("byCombatValue", ref mDamageModifiersByCombatValue, Predicates.IsTrue);
+				}
 			}
 			#endregion
 
@@ -112,31 +115,40 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementEnumOpt("PersistentActionType", ref mPersistentActionType, kNotInvalidActionType);
 
 			#region Duration
-			using (var bm = s.EnterCursorBookmarkOpt("Duration", this, o => mDuration != PhxUtil.kInvalidSingle)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("Duration", this, o => mDuration != PhxUtil.kInvalidSingle))
 			{
-				s.StreamCursor(ref mDuration);
-				s.StreamAttributeOpt("DurationSpread", ref mDurationSpread, PhxPredicates.IsNotInvalid);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mDuration);
+					s.StreamAttributeOpt("DurationSpread", ref mDurationSpread, PhxPredicates.IsNotInvalid);
+				}
 			}
 			#endregion
 
 			#region AutoRepair
-			using (var bm = s.EnterCursorBookmarkOpt("AutoRepair", this, o => mAutoRepairIdleTime != PhxUtil.kInvalidSingle)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("AutoRepair", this, o => mAutoRepairIdleTime != PhxUtil.kInvalidSingle))
 			{
-				s.StreamAttribute("AutoRepairIdleTime", ref mAutoRepairIdleTime);
-				s.StreamAttribute("AutoRepairThreshold", ref mAutoRepairThreshold);
-				s.StreamAttribute("AutoRepairSearchDistance", ref mAutoRepairSearchDistance);
+				if (bm.IsNotNull)
+				{
+					s.StreamAttribute("AutoRepairIdleTime", ref mAutoRepairIdleTime);
+					s.StreamAttribute("AutoRepairThreshold", ref mAutoRepairThreshold);
+					s.StreamAttribute("AutoRepairSearchDistance", ref mAutoRepairSearchDistance);
+				}
 			}
 			#endregion
 			xs.StreamDBID(s, "InvalidTarget", ref mInvalidTargetObjectID, DatabaseObjectKind.Object);
 
 			#region ProtoObject
-			using (var bm = s.EnterCursorBookmarkOpt("ProtoObject", this, o => mProtoObjectID.IsNotNone())) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("ProtoObject", this, o => mProtoObjectID.IsNotNone()))
 			{
-				// TODO: This IS optional, right? Only on 'true'?
-				// inner text: if 0, proto object, if not, proto squad
-				s.StreamAttributeOpt("Squad", ref mProtoObjectIsSquad, Predicates.IsTrue);
-				xs.StreamDBID(s, null, ref mSquadTypeID,
-					mProtoObjectIsSquad ? DatabaseObjectKind.Squad : DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
+				if (bm.IsNotNull)
+				{
+					// TODO: This IS optional, right? Only on 'true'?
+					// inner text: if 0, proto object, if not, proto squad
+					s.StreamAttributeOpt("Squad", ref mProtoObjectIsSquad, Predicates.IsTrue);
+					xs.StreamDBID(s, null, ref mSquadTypeID,
+						mProtoObjectIsSquad ? DatabaseObjectKind.Squad : DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
+				}
 			}
 			#endregion
 #if false

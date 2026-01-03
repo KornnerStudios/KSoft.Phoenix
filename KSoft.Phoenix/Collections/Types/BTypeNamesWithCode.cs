@@ -10,7 +10,7 @@ namespace KSoft.Collections
 	public sealed class BTypeNamesWithCode
 		: BTypeNames
 	{
-		IProtoEnum mCodeTypes;
+		readonly IProtoEnum mCodeTypes;
 
 		public BTypeNamesWithCode(IProtoEnum CodeTypes)
 		{
@@ -28,7 +28,9 @@ namespace KSoft.Collections
 			{
 				idx = mCodeTypes.TryGetMemberId(memberName);
 				if (idx.IsNotNone())
+				{
 					idx += Count;
+				}
 			}
 
 			return idx;
@@ -38,7 +40,9 @@ namespace KSoft.Collections
 			string name = base.TryGetMemberName(memberId);
 
 			if (name == null)
+			{
 				return mCodeTypes.TryGetMemberName(memberId);
+			}
 
 			return name;
 		}
@@ -46,15 +50,15 @@ namespace KSoft.Collections
 		public override string GetMemberName(int memberId)
 		{
 			if (memberId < Count)
+			{
 				return base.GetMemberName(memberId);
+			}
 
 			memberId -= Count;
 			return mCodeTypes.GetMemberName(memberId);
 		}
 
-		public override int MemberCount { get {
-			return Count + mCodeTypes.MemberCount;
-		} }
+		public override int MemberCount => Count + mCodeTypes.MemberCount;
 		#endregion
 	};
 }

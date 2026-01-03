@@ -31,8 +31,7 @@ namespace KSoft.Collections
 		{
 			base.Clear();
 
-			if (mUndefinedInterface != null)
-				mUndefinedInterface.Clear();
+			mUndefinedInterface?.Clear();
 		}
 
 		#region IProtoEnum Members
@@ -62,7 +61,9 @@ namespace KSoft.Collections
 			int index = TryGetMemberId(memberName);
 
 			if (index.IsNone())
+			{
 				throw new ArgumentException(kUnregisteredMessage, memberName);
+			}
 
 			return index;
 		}
@@ -77,17 +78,21 @@ namespace KSoft.Collections
 		public override object GetObject(int id)
 		{
 			if (id.IsNone())
+			{
 				return null;
+			}
 
 			if (PhxUtil.IsUndefinedReferenceHandle(id))
+			{
 				return Phoenix.TypeExtensionsPhx.GetUndefinedObject(mUndefinedInterface, id);
+			}
 
 			return base.GetObject(id);
 		}
 
-		private ProtoEnumWithUndefinedImpl mUndefinedInterface;
-		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface { get { return mUndefinedInterface; } }
-		internal IProtoEnumWithUndefined UndefinedInterface { get { return mUndefinedInterface; } }
+		private readonly ProtoEnumWithUndefinedImpl mUndefinedInterface;
+		IProtoEnumWithUndefined IHasUndefinedProtoMemberInterface.UndefinedInterface => mUndefinedInterface;
+		internal IProtoEnumWithUndefined UndefinedInterface => mUndefinedInterface;
 	};
 }
 
@@ -98,10 +103,14 @@ namespace KSoft.Phoenix
 		public static string TryGetName(this Collections.BTypeNames dbi, int id)
 		{
 			if (dbi == null)
+			{
 				return null;
+			}
 
 			if (id >= 0 && id < dbi.Count)
+			{
 				return dbi[id];
+			}
 
 			return null;
 		}

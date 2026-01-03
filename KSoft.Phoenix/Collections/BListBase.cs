@@ -31,14 +31,16 @@ namespace KSoft.Collections
 		private static IEqualityComparer<T> gValueEqualityComparer;
 		protected static IEqualityComparer<T> kValueEqualityComparer { get {
 			if (gValueEqualityComparer == null)
+			{
 				gValueEqualityComparer = EqualityComparer<T>.Default;
+			}
 
 			return gValueEqualityComparer;
 		} }
 		#endregion
 
 		#region kEqualityComparer
-		protected sealed class _EqualityComparer
+		protected sealed class EqualityComparerImpl
 			: IEqualityComparer<BListBase<T>>
 		{
 			#region IEqualityComparer<BListBase<T>> Members
@@ -49,7 +51,9 @@ namespace KSoft.Collections
 				{
 					var comparer = kValueEqualityComparer;
 					for (int i = 0; i < x.Count && equals; i++)
+					{
 						equals &= comparer.Equals(x[i], y[i]);
+					}
 				}
 
 				return equals;
@@ -60,16 +64,20 @@ namespace KSoft.Collections
 				int hash = 0;
 				var comparer = kValueEqualityComparer;
 				foreach (var o in obj)
+				{
 					hash ^= comparer.GetHashCode(o);
+				}
 
 				return hash;
 			}
 			#endregion
 		};
-		private static _EqualityComparer gEqualityComparer;
-		protected static _EqualityComparer kEqualityComparer { get {
+		private static EqualityComparerImpl gEqualityComparer;
+		protected static EqualityComparerImpl kEqualityComparer { get {
 			if (gEqualityComparer == null)
-				gEqualityComparer = new _EqualityComparer();
+			{
+				gEqualityComparer = new EqualityComparerImpl();
+			}
 
 			return gEqualityComparer;
 		} }
@@ -117,8 +125,7 @@ namespace KSoft.Collections
 
 		public virtual void Clear()
 		{
-			if (mList != null)
-				mList.Clear();
+			mList?.Clear();
 		}
 
 		#region IEnumerable<T> Members
@@ -144,9 +151,9 @@ namespace KSoft.Collections
 			return this[id];
 		}
 
-		object IBList.UnderlyingObjectsCollection { get { return mList; } }
+		object IBList.UnderlyingObjectsCollection => mList;
 
-		public bool IsEmpty { get { return Count == 0; } }
+		public bool IsEmpty => Count == 0;
 		internal void OptimizeStorage()
 		{
 			//if (Count == 0)
