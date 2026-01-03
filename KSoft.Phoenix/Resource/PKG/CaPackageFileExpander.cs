@@ -44,8 +44,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			try { result &= ReadPkgFromFile(); }
 			catch (Exception ex)
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tEncountered an error while trying to read the PKG: {0}", ex);
+				VerboseOutput?.WriteLine("\tEncountered an error while trying to read the PKG: {0}", ex);
 				result = false;
 			}
 
@@ -54,12 +53,13 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		bool ReadPkgFromFile()
 		{
-			if (ProgressOutput != null)
-				ProgressOutput.WriteLine("Opening and reading PKG file {0}...",
-					mSourceFile);
+			ProgressOutput?.WriteLine("Opening and reading PKG file {0}...",
+				mSourceFile);
 
 			if (ExpanderOptions.Test(CaPackageFileExpanderOptions.DontLoadEntirePkgIntoMemory))
+			{
 				mPkgBaseStream = File.OpenRead(mSourceFile);
+			}
 			else
 			{
 				byte[] ecf_bytes = File.ReadAllBytes(mSourceFile);
@@ -67,21 +67,22 @@ namespace KSoft.Phoenix.Resource.PKG
 				mPkgBaseStream = new MemoryStream(ecf_bytes, writable: false);
 			}
 
-			mPkgStream = new IO.EndianStream(mPkgBaseStream, Shell.EndianFormat.Little, this, permissions: FileAccess.Read);
-			mPkgStream.StreamMode = FileAccess.Read;
+			mPkgStream = new IO.EndianStream(mPkgBaseStream, Shell.EndianFormat.Little, this, permissions: FileAccess.Read)
+			{
+				StreamMode = FileAccess.Read
+			};
 
 			return ReadPkgFromStream();
 		}
 
 		bool ReadPkgFromStream()
 		{
-			bool result = true;
+			bool result;
 
 			result = CaPackageFile.VerifyIsPkg(mPkgStream.Reader);
 			if (!result)
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tFailed: File is either not even an PKG file, or corrupt");
+				VerboseOutput?.WriteLine("\tFailed: File is either not even an PKG file, or corrupt");
 			}
 			else
 			{
@@ -97,15 +98,18 @@ namespace KSoft.Phoenix.Resource.PKG
 		public bool ExpandTo(string workPath, string listingName)
 		{
 			if (mPkgFile == null)
+			{
 				return false;
+			}
 
 			if (!Directory.Exists(workPath))
+			{
 				Directory.CreateDirectory(workPath);
+			}
 
 			bool result = true;
 
-			if (ProgressOutput != null)
-				ProgressOutput.WriteLine("Outputting listing...");
+			ProgressOutput?.WriteLine("Outputting listing...");
 
 			try
 			{
@@ -114,15 +118,13 @@ namespace KSoft.Phoenix.Resource.PKG
 			}
 			catch (Exception ex)
 			{
-				if (VerboseOutput != null)
-					VerboseOutput.WriteLine("\tEncountered an error while outputting listing: {0}", ex);
+				VerboseOutput?.WriteLine("\tEncountered an error while outputting listing: {0}", ex);
 				result = false;
 			}
 
 			if (result && !ExpanderOptions.Test(CaPackageFileExpanderOptions.OnlyDumpListing))
 			{
-				if (ProgressOutput != null)
-					ProgressOutput.WriteLine("Expanding PKG to {0}...", workPath);
+				ProgressOutput?.WriteLine("Expanding PKG to {0}...", workPath);
 
 				try
 				{
@@ -130,13 +132,11 @@ namespace KSoft.Phoenix.Resource.PKG
 				}
 				catch (Exception ex)
 				{
-					if (VerboseOutput != null)
-						VerboseOutput.WriteLine("\tEncountered an error while expanding PKG: {0}", ex);
+					VerboseOutput?.WriteLine("\tEncountered an error while expanding PKG: {0}", ex);
 					result = false;
 				}
 
-				if (ProgressOutput != null)
-					ProgressOutput.WriteLine("Done");
+				ProgressOutput?.WriteLine("Done");
 			}
 
 			mPkgStream.Close();
@@ -161,6 +161,8 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		void PopulatePkgDefinitionFromPkgFile(string workPath)
 		{
+			KSoft.Util.MarkUnusedVariable(ref workPath);
+
 			foreach (var entry in mPkgFile.FileEntries)
 			{
 				PkgDefinition.FileNames.Add(entry.Name);
@@ -193,8 +195,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			{
 				if (File.Exists(file_path))
 				{
-					if (VerboseOutput != null)
-						VerboseOutput.WriteLine("\tSkipping chunk, output file already exists: {0}", file_path);
+					VerboseOutput?.WriteLine("\tSkipping chunk, output file already exists: {0}", file_path);
 
 					return;
 				}

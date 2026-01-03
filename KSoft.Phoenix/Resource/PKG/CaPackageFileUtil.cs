@@ -18,12 +18,15 @@ namespace KSoft.Phoenix.Resource.PKG
 			PkgDefinition = new CaPackageFileDefinition();
 
 			if (System.Diagnostics.Debugger.IsAttached)
+			{
 				ProgressOutput = Console.Out;
-			if (System.Diagnostics.Debugger.IsAttached)
 				VerboseOutput = Console.Out;
+			}
 		}
 
 		#region IDisposable Members
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize",
+			Justification = "Not expecting any derived classes to have Finalizers")]
 		public virtual void Dispose()
 		{
 			ProgressOutput = null;

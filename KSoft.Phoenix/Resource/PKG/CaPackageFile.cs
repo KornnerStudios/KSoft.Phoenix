@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -29,7 +29,7 @@ namespace KSoft.Phoenix.Resource.PKG
 		public long Offset;
 		public long Size;
 
-		public int CalculateSerializedSize()
+		public readonly int CalculateSerializedSize()
 		{
 			int size = 0;
 			size += sizeof(long);
@@ -47,7 +47,10 @@ namespace KSoft.Phoenix.Resource.PKG
 				long position = s.Reader.BaseStream.Position;
 				long name_length = s.Reader.ReadInt64();
 				if (name_length < 0 || name_length > kMaxNameLength)
-					throw new System.IO.InvalidDataException("Invalid name length {0} at offset {1} in {2}".Format(name_length, position, s.StreamName));
+				{
+					throw new System.IO.InvalidDataException($"Invalid name length {name_length} at offset {position} in {s.StreamName}");
+				}
+
 				Name = s.Reader.ReadString(Memory.Strings.StringStorage.AsciiString, (int)name_length);
 				Offset = s.Reader.ReadInt64();
 				Size = s.Reader.ReadInt64();
@@ -79,12 +82,12 @@ namespace KSoft.Phoenix.Resource.PKG
 			;
 
 		public List<CaPackageEntry> FileEntries { get; private set; }
-			= new List<CaPackageEntry>();
+			= new();
 
 		public long Alignment = kDefaultAlignment;
 
-		public bool HasEnoughFileEntries { get { return FileEntries.Count > kMinFileEntryCount; } }
-		public bool UseAlignment { get { return kCurrentVersion >= (ulong)CaPackageVersion.UsesAlignment; } }
+		public bool HasEnoughFileEntries => FileEntries.Count > kMinFileEntryCount;
+		public bool UseAlignment => kCurrentVersion >= (ulong)CaPackageVersion.UsesAlignment;
 
 		public int CalculateHeaderAndFileChunksSize(CaPackageVersion version)
 		{
@@ -112,7 +115,9 @@ namespace KSoft.Phoenix.Resource.PKG
 			ulong version = kCurrentVersion;
 			s.Stream(ref version);
 			if (version <= 0 || version > kCurrentVersion)
+			{
 				KSoft.IO.VersionMismatchException.Assert(s.Reader, kCurrentVersion);
+			}
 
 			SerializeAllocationTable(s);
 
@@ -193,11 +198,14 @@ namespace KSoft.Phoenix.Resource.PKG
 		public void SetupHeaderAndEntries(CaPackageFileDefinition definition)
 		{
 			if (definition.Alignment != 0)
+			{
 				this.Alignment = definition.Alignment;
+			}
 
 			foreach (var file_name in definition.FileNames)
 			{
 				// #TODO
+				_ = file_name;
 			}
 		}
 

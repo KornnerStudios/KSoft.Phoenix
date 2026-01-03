@@ -3,6 +3,7 @@ namespace KSoft.Phoenix.Resource
 {
 	partial class CompressedStream
 	{
+		// BDeflateStreamHeader
 		struct Header
 			: IO.IEndianStreamSerializable
 		{
@@ -13,9 +14,8 @@ namespace KSoft.Phoenix.Resource
 			public ulong UncompressedSize, CompressedSize;
 			public uint UncompressedAdler32, CompressedAdler32;
 
-			public bool UseBufferedStreaming { get {
-				return StreamMode == (uint)Mode.Buffered;
-			} }
+			public readonly bool UseBufferedStreaming
+				=> StreamMode == (uint)Mode.Buffered;
 
 			public void UpdateHeaderCrc()
 			{
@@ -28,7 +28,9 @@ namespace KSoft.Phoenix.Resource
 			public void Serialize(IO.EndianStream s)
 			{
 				if (s.IsWriting)
+				{
 					UpdateHeaderCrc();
+				}
 
 				s.StreamSignature(kSignature);
 				s.Stream(ref HeaderAdler32);

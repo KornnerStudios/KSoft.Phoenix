@@ -38,7 +38,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		};
 
-		static readonly Header kBufferedHeader = new Header() {
+		static readonly Header kBufferedHeader = new() {
 			HeaderAdler32 = 0x00330004,
 			StreamMode = (uint)Mode.Buffered,
 			UncompressedSize = 0,	CompressedSize = 0,

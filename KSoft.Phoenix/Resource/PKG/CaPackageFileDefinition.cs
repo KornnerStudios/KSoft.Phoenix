@@ -14,7 +14,7 @@ namespace KSoft.Phoenix.Resource.PKG
 		public long Alignment;
 
 		public List<string> FileNames { get; private set; }
-			= new List<string>();
+			= new();
 
 		#region ITagElementStringNameStreamable
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -27,7 +27,9 @@ namespace KSoft.Phoenix.Resource.PKG
 				s.StreamAttributeOpt("alignment", this, obj => Alignment, Predicates.IsNotZero);
 
 				using (var bm = s.EnterCursorBookmarkOpt("Files", FileNames, Predicates.HasItems))
+				{
 					s.StreamElements("File", FileNames);
+				}
 			}
 		}
 		#endregion
@@ -65,9 +67,9 @@ namespace KSoft.Phoenix.Resource.PKG
 
 				if (!File.Exists(filepath))
 				{
-					if (verboseOutput != null)
-						verboseOutput.WriteLine("\tRemoving entry '{0}': Source file does not exist: {1}",
-							filename, filepath);
+					verboseOutput?.WriteLine("\tRemoving entry '{0}': Source file does not exist: {1}",
+						filename, filepath);
+
 					// remove and decrement x, to account for for loop increment
 					FileNames.RemoveAt(x--);
 					continue;
@@ -85,7 +87,9 @@ namespace KSoft.Phoenix.Resource.PKG
 			, TextWriter verboseOutput)
 		{
 			if (!ResourceUtils.IsXmbFile(fileName))
+			{
 				return false;
+			}
 
 			string xml_name = fileName;
 			ResourceUtils.RemoveXmbExtension(ref xml_name);
@@ -93,11 +97,12 @@ namespace KSoft.Phoenix.Resource.PKG
 			// does the XML file exist?
 			string xml_path = Path.Combine(workPath, xml_name);
 			if (!File.Exists(xml_path))
+			{
 				return false;
+			}
 
-			if (verboseOutput != null)
-				verboseOutput.WriteLine("\tReplacing XMB ref with {0}",
-					xml_name);
+			verboseOutput?.WriteLine("\tReplacing XMB ref with {0}",
+				xml_name);
 
 			// #TODO
 

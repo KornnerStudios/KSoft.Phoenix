@@ -41,10 +41,14 @@ namespace KSoft.Phoenix.Resource
 		public void Dispose()
 		{
 			if (UncompressedData != null)
+			{
 				UncompressedData = null;
+			}
 
 			if (CompressedData != null)
+			{
 				CompressedData = null;
+			}
 		}
 		#endregion
 
@@ -52,7 +56,9 @@ namespace KSoft.Phoenix.Resource
 		void StreamCompressedData(IO.EndianStream s)
 		{
 			if (s.IsReading)
+			{
 				CompressedData = new byte[(int)mHeader.CompressedSize];
+			}
 
 			s.Stream(CompressedData);
 			s.StreamSignature(kSignatureEndOfStream);
@@ -109,7 +115,7 @@ namespace KSoft.Phoenix.Resource
 		}
 		void WriteCompressedDataInChunks(IO.EndianStream s)
 		{
-			for (int offset = 0, size = 0, bytes_remaining = CompressedData.Length;
+			for (int offset = 0, size, bytes_remaining = CompressedData.Length;
 				(size = WriteChunk(s.Writer, offset, ref bytes_remaining)) != 0;
 				offset += size)
 			{
@@ -201,9 +207,8 @@ namespace KSoft.Phoenix.Resource
 				Array.Clear(CompressedData, 0, CompressedData.Length);
 			}
 
-			uint adler32;
 			CompressedData = IO.Compression.ZLib.LowLevelCompress(UncompressedData, level,
-				out adler32/*mHeader.CompressedAdler32*/, CompressedData);
+				out uint adler32/*mHeader.CompressedAdler32*/, CompressedData);
 
 			mHeader.CompressedAdler32 = Adler32.Compute(CompressedData);
 			if (mHeader.CompressedAdler32 != adler32)
