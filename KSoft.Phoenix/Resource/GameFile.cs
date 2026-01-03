@@ -7,6 +7,7 @@ namespace KSoft.Phoenix.Resource
 
 	using FileFlagsStreamer = IO.EnumBinaryStreamer<GameFile.FileFlags, ushort>;
 
+	// BGameFile
 	public sealed class GameFile
 		: IDisposable
 		, IO.IEndianStreamSerializable
@@ -82,7 +83,9 @@ namespace KSoft.Phoenix.Resource
 				obj.Serialize(s);
 
 				if (s.IsWriting && streamLeftovers != null)
+				{
 					streamLeftovers(s);
+				}
 			}
 			else
 			{
@@ -102,8 +105,7 @@ namespace KSoft.Phoenix.Resource
 
 					obj.Serialize(crypted);
 
-					if (streamLeftovers != null)
-						streamLeftovers(crypted);
+					streamLeftovers?.Invoke(crypted);
 
 					if (s.IsWriting)
 					{
@@ -120,8 +122,11 @@ namespace KSoft.Phoenix.Resource
 			long size = 0, ulong userKey = 0, Action<IO.EndianReader> readLeftovers = null)
 		{
 			if (!decrypt)
+			{
 				obj.Read(s);
+			}
 			else
+			{
 				using (var ms = new System.IO.MemoryStream())
 				using (var sout = new IO.EndianWriter(ms, Shell.EndianFormat.Big))
 				using (var decrypted = new IO.EndianReader(ms, Shell.EndianFormat.Big))
@@ -135,9 +140,9 @@ namespace KSoft.Phoenix.Resource
 					decrypted.Seek(0);
 					obj.Read(decrypted);
 
-					if (readLeftovers != null)
-						readLeftovers(decrypted);
+					readLeftovers?.Invoke(decrypted);
 				}
+			}
 		}
 		static void Write(IO.EndianWriter s, bool encrypt, IO.IEndianStreamable obj,
 			long size = 0, ulong userKey = 0, Action<IO.EndianWriter> writeLeftovers = null)
@@ -146,18 +151,17 @@ namespace KSoft.Phoenix.Resource
 			{
 				obj.Write(s);
 
-				if (writeLeftovers != null)
-					writeLeftovers(s);
+				writeLeftovers?.Invoke(s);
 			}
 			else
+			{
 				using (var ms = new System.IO.MemoryStream())
 				using (var sin = new IO.EndianWriter(ms, Shell.EndianFormat.Big))
 				using (var encrypted = new IO.EndianReader(ms, Shell.EndianFormat.Big))
 				{
 					obj.Write(sin);
 
-					if (writeLeftovers != null)
-						writeLeftovers(sin);
+					writeLeftovers?.Invoke(sin);
 
 					encrypted.Seek(0);
 
@@ -165,6 +169,7 @@ namespace KSoft.Phoenix.Resource
 					tea.InitializeKey(Security.Cryptography.PhxTEA.kKeyGameFile, userKey);
 					tea.Encrypt(size);
 				}
+			}
 		}
 
 		public void Dispose()
@@ -201,8 +206,8 @@ namespace KSoft.Phoenix.Resource
 		}
 		void StreamLeftovers(IO.EndianStream s)
 		{
-				 if (s.IsReading) ReadLeftovers(s.Reader);
-			else if (s.IsWriting) WriteLeftovers(s.Writer);
+				 if (s.IsReading) { ReadLeftovers(s.Reader); }
+			else if (s.IsWriting) { WriteLeftovers(s.Writer); }
 		}
 		void StreamCompressedContent(IO.EndianStream s)
 		{
@@ -243,6 +248,19 @@ namespace KSoft.Phoenix.Resource
 				//Flags = EnumFlags.Remove(Flags, FileFlags.EncryptHeader | FileFlags.EncryptContent);
 			}
 
+			// actually a union here:
+			// BGameFileVersion
+			//	uint32 mReserved : 13;
+			//	uint32 mEncryptHeader : 1;
+			//	uint32 mEncryptData : 1;
+			//	uint32 mCompressData : 1;
+			//	uint32 mVersion : 16;
+			// This code was based on the Xbox360 layout, originally. Remember, that was PowerPC/BigEndian.
+			// So, the bit packing was MSB first. Hence why FileFlags.CompressContent was first.
+			// #REVIEW Fix this for HWDE (including GenerateHash). Basically:
+			// byte Reserved : 8
+			// byte Reserved : 5
+			// mEncryptHeader, mEncryptData, mCompressData
 			s.Stream(ref Flags, FileFlagsStreamer.Instance);
 			s.StreamVersion(kVersion);
 
@@ -256,8 +274,20 @@ namespace KSoft.Phoenix.Resource
 			else
 			{
 				if (s.IsReading)
+				{
 					Content = new byte[(int)(s.BaseStream.Length - s.BaseStream.Position)];
+				}
 
+				// base layout:
+				//		uint32 unused local checksum (always 0)
+				//		bool multiplayer game
+				//		int32 unused local player id (this is ALWAYS 1, it is no longer used)
+				//		...BSettings
+				//			...BGameSettings
+				//			uint32 unused .scn file crc32 (always 0)
+				//			...BConfigSettings
+				// then any of the derived types:
+				//		BSaveGame, BRecordGame
 				s.Stream(Content);
 			}
 		}

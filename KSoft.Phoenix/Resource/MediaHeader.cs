@@ -4,16 +4,17 @@ namespace KSoft.Phoenix.Resource
 {
 	using PhxHash = Security.Cryptography.PhxHash;
 
+	// BGameFileHeader
 	public sealed class MediaHeader
 		: IO.IEndianStreamSerializable
 	{
-		static readonly Memory.Strings.StringStorage kNameStorage = new Memory.Strings.StringStorage(
+		static readonly Memory.Strings.StringStorage kNameStorage = new(
 			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString,
 			Shell.EndianFormat.Big, 32);
-		static readonly Memory.Strings.StringStorage kDescStorage = new Memory.Strings.StringStorage(
+		static readonly Memory.Strings.StringStorage kDescStorage = new(
 			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString,
 			Shell.EndianFormat.Big, 128);
-		static readonly Memory.Strings.StringStorage kAuthorStorage = new Memory.Strings.StringStorage(
+		static readonly Memory.Strings.StringStorage kAuthorStorage = new(
 			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageType.CString, 16);
 
 		const byte kVersion = 2;
@@ -31,8 +32,9 @@ namespace KSoft.Phoenix.Resource
 		#endregion
 		public ulong AuthorXuid;
 		public float Length;
-		public short SessionId;
-		public int GameType;
+		public ushort SessionId;
+		public int GameType; // EGameSettingsGameType / BGameType
+		// random value used as the third key in the payload's cipher
 		public ulong DataCryptKey;
 		public byte[] DataHash = new byte[PhxHash.kSha1SizeOf];
 		public ulong DataSize;
@@ -54,7 +56,7 @@ namespace KSoft.Phoenix.Resource
 			DateTime.UpdateHash(sha);
 			PhxHash.UInt64(sha, AuthorXuid);
 			PhxHash.UInt32(sha, Bitwise.ByteSwap.SingleToUInt32(Length));
-			PhxHash.UInt16(sha, (uint)SessionId);
+			PhxHash.UInt16(sha, SessionId);
 			PhxHash.UInt32(sha, (uint)GameType);
 			PhxHash.UInt64(sha, DataCryptKey);
 			sha.TransformBlock(DataHash, 0, DataHash.Length, null, 0);

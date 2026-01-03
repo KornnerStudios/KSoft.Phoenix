@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Runtime
 {
 	static partial class cSaveMarker
 	{
-		public const ushort 
+		public const ushort
 			Start = 0x2710, End = 0x2711,
 			Versions = 0x2712,
 			DB = 0x2713,
@@ -32,6 +32,7 @@ namespace KSoft.Phoenix.Runtime
 
 		public BWorld World { get; private set; }
 		public BUIManager UIManager { get; private set; }
+		// PrimaryUser
 		public BUser User { get; private set; }
 
 		public BSaveGame()

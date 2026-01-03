@@ -18,8 +18,9 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			s.Pad8();
-			s.StreamVersion(kVersion);
+			// #TODO the two are not part of this class' serialization, they are from BSaveGame
+			s.Pad8(); // bool multiplayer game
+			s.StreamVersion(kVersion); // unused local player id (ALWAYS 1)
 			BSaveGame.StreamCollection(s, Settings);
 		}
 		#endregion

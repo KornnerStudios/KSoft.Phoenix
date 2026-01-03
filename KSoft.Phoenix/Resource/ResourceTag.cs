@@ -36,7 +36,9 @@ namespace KSoft.Phoenix.Resource
 			try
 			{
 				if (!File.Exists(fileName))
+				{
 					return false;
+				}
 
 				var fileInfo = new FileInfo(fileName);
 				var fileSize = fileInfo.Length;
@@ -61,11 +63,10 @@ namespace KSoft.Phoenix.Resource
 
 		public bool ComputeSourceFileDigest()
 		{
-			bool result = false;
+			bool result;
 			try
 			{
-				long fileLength;
-				result = Security.Cryptography.PhxHash.Sha1HashFile(SourceFileName, SourceDigest, out fileLength);
+				result = Security.Cryptography.PhxHash.Sha1HashFile(SourceFileName, SourceDigest, out long fileLength);
 
 				if (result)
 				{
@@ -91,7 +92,9 @@ namespace KSoft.Phoenix.Resource
 		public void ComputeMetadata()
 		{
 			if (Guid.IsNotEmpty)
+			{
 				return;
+			}
 
 			TimeStamp = System.DateTime.UtcNow;
 			Guid = Values.KGuid.NewGuid();
@@ -110,18 +113,29 @@ namespace KSoft.Phoenix.Resource
 			this.TimeStamp = DateTime.FromFileTimeUtc((long)header.TagTimeStamp);
 			this.Guid = header.TagGuid;
 			if (header.StreamTagMachineName(s, ref streamedString))
+			{
 				this.MachineName = streamedString;
+			}
+
 			if (header.StreamTagUserName(s, ref streamedString))
+			{
 				this.UserName = streamedString;
+			}
 
 			if (header.StreamSourceFileNamee(s, ref streamedString))
+			{
 				this.SourceFileName = streamedString;
+			}
+
 			Array.Copy(header.SourceDigest, this.SourceDigest, header.SourceDigest.Length);
 			this.SourceFileSize = (long)header.SourceFileSize;
 			this.SourceFileTimeStamp = DateTime.FromFileTimeUtc((long)header.SourceFileTimeStamp);
 
 			if (header.StreamCreatorToolCommandLine(s, ref streamedString))
+			{
 				this.CreatorToolCommandLine = streamedString;
+			}
+
 			this.CreatorToolVersion = header.CreatorToolVersion;
 
 			this.PlatformId = header.PlatformId;

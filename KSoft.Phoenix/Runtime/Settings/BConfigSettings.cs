@@ -6,9 +6,9 @@ namespace KSoft.Phoenix.Runtime
 	{
 		const uint kVersion = 0;
 
-		public bool 
-			NoFogMask,			AIDisable,			AIShadow,			NoVismap,					NoRandomPlayerPlacement, 
-			DisableOneBuilding,	BuildingQueue,		UseTestLeaders,		EnableFlight,				NoBirthAnims, 
+		public bool
+			NoFogMask,			AIDisable,			AIShadow,			NoVismap,					NoRandomPlayerPlacement,
+			DisableOneBuilding,	BuildingQueue,		UseTestLeaders,		EnableFlight,				NoBirthAnims,
 			Veterancy,			TrueLOS,			NoDestruction,		CoopSharedResources,		MaxProjectileHeightForDecal,
 			EnableSubbreakage,	EnableThrowPart,	AllowAnimIsDirty,	NoVictoryCondition,			AIAutoDifficulty,
 			Demo,				AsyncWorldUpdate,	EnableHintSystem,	PercentFadeTimeCorpseSink,	CorpseSinkSpeed,
@@ -56,6 +56,7 @@ namespace KSoft.Phoenix.Runtime
 
 		public void Serialize(IO.EndianStream s)
 		{
+			// #TODO this is not a version, this is part of BGameFile serialization, an unused .scn file crc32 (always 0)
 			s.StreamVersion(kVersion);
 
 			s.Stream(ref NoFogMask);			s.Stream(ref AIDisable);			s.Stream(ref AIShadow);			s.Stream(ref NoVismap);					s.Stream(ref NoRandomPlayerPlacement);

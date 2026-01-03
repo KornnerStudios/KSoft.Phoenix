@@ -5,8 +5,8 @@ namespace KSoft.Phoenix.Resource
 		: IO.IEndianStreamSerializable
 		//, IO.IIndentedTextWritable
 	{
-		Runtime.BSettings mSettings = new Runtime.BSettings();
-		Runtime.BSaveGame mSaveGame = new Runtime.BSaveGame();
+		readonly Runtime.BSettings mSettings = new();
+		readonly Runtime.BSaveGame mSaveGame = new();
 
 		long mLeftoversPos;
 		byte[] mLeftovers;
@@ -17,7 +17,9 @@ namespace KSoft.Phoenix.Resource
 			s.TraceAndDebugPosition(ref mLeftoversPos);
 
 			if (s.IsReading)
+			{
 				mLeftovers = new byte[s.BaseStream.Length - s.BaseStream.Position];
+			}
 
 			s.Stream(mLeftovers, 0, mLeftovers.Length);
 		}

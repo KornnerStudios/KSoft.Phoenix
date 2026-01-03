@@ -1,6 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
+	// EGameSettingsGameType
 	public enum BGameType
 	{
 		Skirmish,
