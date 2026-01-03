@@ -13,13 +13,11 @@ namespace KSoft.Phoenix
 {
 	static partial class PhxUtil
 	{
-		public static Security.Cryptography.Crc16.Definition kCrc16Definition =
-			new Security.Cryptography.Crc16.Definition(
+		public static Security.Cryptography.Crc16.Definition kCrc16Definition = new(
 				initialValue: ushort.MinValue,
 				xorIn: ushort.MaxValue,
 				xorOut: ushort.MaxValue);
-		public static Security.Cryptography.Crc32.Definition kCrc32Definition =
-			new Security.Cryptography.Crc32.Definition(
+		public static Security.Cryptography.Crc32.Definition kCrc32Definition = new(
 				initialValue: uint.MinValue,
 				xorIn: uint.MaxValue,
 				xorOut: uint.MaxValue);
@@ -33,17 +31,23 @@ namespace KSoft.Phoenix
 		public const int kInvalidReference = TypeExtensions.kNone - 1;
 
 		private static Func<int> gGetInvalidInt32;
+		// #TODO rename with Func suffix
 		public static Func<int> kGetInvalidInt32 { get {
 			if (gGetInvalidInt32 == null)
+			{
 				gGetInvalidInt32 = () => TypeExtensions.kNone;
+			}
 
 			return gGetInvalidInt32;
 		} }
 
 		private static Func<float> gGetInvalidSingle;
+		// #TODO rename with Func suffix
 		public static Func<float> kGetInvalidSingle { get {
 			if (gGetInvalidSingle == null)
+			{
 				gGetInvalidSingle = () => kInvalidSingle;
+			}
 
 			return gGetInvalidSingle;
 		} }
@@ -56,13 +60,17 @@ namespace KSoft.Phoenix
 		public static string ToLowerIfContainsUppercase(this string str)
 		{
 			if (str == null)
+			{
 				return str;
+			}
 
 			for (int x = 0; x < str.Length; x++)
 			{
 				char c = str[x];
 				if (c >= 'A' && c <= 'Z')
+				{
 					return str.ToLowerInvariant();
+				}
 			}
 
 			return str;
@@ -105,7 +113,9 @@ namespace KSoft.Phoenix
 		public static int CalculateHashCodeForDBIDs(IList<int> dbidList)
 		{
 			if (dbidList == null || dbidList.Count == 0)
+			{
 				return 0;
+			}
 
 			int hash_code = 0;
 			for (int x = 0; x < dbidList.Count; x++)
@@ -123,23 +133,41 @@ namespace KSoft.Phoenix
 		{
 			var vector = new BVector();
 			if (vectorString.IsNullOrEmpty())
+			{
 				return vector;
+			}
 
 			if (gParseBVectorStringScratchList == null)
+			{
 				gParseBVectorStringScratchList = new List<string>(4);
+			}
+
 			var list = gParseBVectorStringScratchList;
 
 			if (!Util.ParseStringList(vectorString, list))
+			{
 				return null;
+			}
 
 			if (list.Count >= 1 && !Numbers.FloatTryParseInvariant(list[0], out vector.X))
+			{
 				return null;
+			}
+
 			if (list.Count >= 2 && !Numbers.FloatTryParseInvariant(list[1], out vector.Y))
+			{
 				return null;
+			}
+
 			if (list.Count >= 3 && !Numbers.FloatTryParseInvariant(list[2], out vector.Z))
+			{
 				return null;
+			}
+
 			if (list.Count >= 4 && !Numbers.FloatTryParseInvariant(list[3], out vector.W))
+			{
 				return null;
+			}
 
 			return vector;
 		}
@@ -148,31 +176,33 @@ namespace KSoft.Phoenix
 		{
 			if (PhxPredicates.IsZero(vector))
 			{
-				switch (length)
+				return length switch
 				{
-					case 1:
-						return "0";
-					case 2:
-						return "0,0";
-					case 3:
-						return "0,0,0";
-					case 4:
-						return "0,0,0,0";
-
-					default:
-						return "";
-				}
+					1 => "0",
+					2 => "0,0",
+					3 => "0,0,0",
+					4 => "0,0,0,0",
+					_ => "",
+				};
 			}
 
 			var sb = new System.Text.StringBuilder(32);
 			if (length >= 1)
+			{
 				sb.Append(vector.X.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+			}
 			if (length >= 2)
+			{
 				sb.AppendFormat(",{0}", vector.Y.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+			}
 			if (length >= 3)
+			{
 				sb.AppendFormat(",{0}", vector.Z.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+			}
 			if (length >= 4)
+			{
 				sb.AppendFormat(",{0}", vector.W.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+			}
 
 			return sb.ToString();
 		}
@@ -180,13 +210,19 @@ namespace KSoft.Phoenix
 		public static int CompareTo(this BVector vector, BVector other)
 		{
 			if (vector.X != other.X)
+			{
 				return vector.X.CompareTo(other.X);
+			}
 
 			if (vector.Y != other.Y)
+			{
 				return vector.Y.CompareTo(other.Y);
+			}
 
 			if (vector.Z != other.Z)
+			{
 				return vector.Z.CompareTo(other.Z);
+			}
 
 			return vector.W.CompareTo(other.W);
 		}
@@ -202,20 +238,28 @@ namespace KSoft.Phoenix
 			Contract.Requires(!tokens.IsNullOrEmpty());
 
 			if (src.IsNullOrEmpty())
+			{
 				return -1;
+			}
 			if (srcIndex >= src.Length)
+			{
 				return -1;
+			}
 
 			if (srcIndex < 0)
+			{
 				srcIndex = 0;
+			}
 
 			// skip any initial tokens
 			int count = 0;
 			for (; count < src.Length; count++, srcIndex++)
 			{
 				char c = src[srcIndex];
-				if (tokens.IndexOf(c) < 0)
+				if (!tokens.Contains(c))
+				{
 					break;
+				}
 			}
 
 			// figure out the distance until the next token
@@ -223,12 +267,16 @@ namespace KSoft.Phoenix
 			for (; count < src.Length && srcIndex+copy_length < src.Length; count++, copy_length++)
 			{
 				char c = src[srcIndex+copy_length];
-				if (tokens.IndexOf(c) >= 0)
+				if (tokens.Contains(c))
+				{
 					break;
+				}
 			}
 
 			if (copy_length == 0)
+			{
 				return -1;
+			}
 
 			distance = copy_length;
 			return srcIndex + copy_length;
@@ -241,34 +289,44 @@ namespace KSoft.Phoenix
 			int next_index = -1;
 			int v_length = -1;
 
-			int v1 = 0;
 			next_index = NextToken(src, kTokenizeTokens, next_index, ref v_length);
 			if (next_index < 0)
+			{
 				return false;
-			if (!Numbers.TryParseRange(src, out v1, startIndex: next_index - v_length, length: v_length))
+			}
+			if (!Numbers.TryParseRange(src, out int v1, startIndex: next_index - v_length, length: v_length))
+			{
 				return false;
+			}
 
-			int v2 = 0;
 			next_index = NextToken(src, kTokenizeTokens, next_index, ref v_length);
 			if (next_index < 0)
+			{
 				return false;
-			if (!Numbers.TryParseRange(src, out v2, startIndex: next_index - v_length, length: v_length))
+			}
+			if (!Numbers.TryParseRange(src, out int v2, startIndex: next_index - v_length, length: v_length))
+			{
 				return false;
+			}
 
-			int v3 = 0;
 			next_index = NextToken(src, kTokenizeTokens, next_index, ref v_length);
 			if (next_index < 0)
+			{
 				return false;
-			if (!Numbers.TryParseRange(src, out v3, startIndex: next_index - v_length, length: v_length))
+			}
+			if (!Numbers.TryParseRange(src, out int v3, startIndex: next_index - v_length, length: v_length))
+			{
 				return false;
+			}
 
-			int v4 = 0;
 			next_index = NextToken(src, kTokenizeTokens, next_index, ref v_length);
 			// if v4 is present, ARGB, else RGB
 			if (next_index >= 0)
 			{
-				if (!Numbers.TryParseRange(src, out v4, startIndex: next_index - v_length, length: v_length))
+				if (!Numbers.TryParseRange(src, out int v4, startIndex: next_index - v_length, length: v_length))
+				{
 					return false;
+				}
 
 				color = System.Drawing.Color.FromArgb(v1, v2, v3, v4);
 			}
@@ -317,9 +375,7 @@ namespace KSoft.Phoenix
 		};
 
 		public static IComparer<T> CreateDummyComparerAlwaysNonZero<T>()
-		{
-			return new DummyComparerAlwaysNonZero<T>();
-		}
+			=> new DummyComparerAlwaysNonZero<T>();
 		#endregion
 
 		public static bool UpdateResultWithTaskResults(ref bool r, List<Task<bool>> tasks, List<Exception> exceptions = null)
@@ -337,8 +393,7 @@ namespace KSoft.Phoenix
 				if (task.IsFaulted)
 				{
 					r = false;
-					if (exceptions != null)
-						exceptions.Add(task.Exception.GetOnlyExceptionOrAll());
+					exceptions?.Add(task.Exception.GetOnlyExceptionOrAll());
 				}
 				else
 				{
@@ -359,16 +414,22 @@ namespace KSoft.Phoenix
 			{
 				var first_byte = pattern[0];
 				if (first_byte != input[start])
+				{
 					continue;
+				}
 
 				for (int offset = 1; offset < pattern.Length; offset++)
 				{
 					int index = start + offset;
 					var next_byte = pattern[offset];
 					if (next_byte < 0)
+					{
 						continue;
+					}
 					else if (next_byte != input[index])
+					{
 						break;
+					}
 					else if (offset == pattern.Length-1)
 					{
 						results.Add(start);
@@ -388,13 +449,19 @@ namespace KSoft.Phoenix
 		public static byte[] GetBufferForSuperFastHash(int bufferSize)
 		{
 			if (gSharedBufferForSuperFastHash == null)
+			{
 				gSharedBufferForSuperFastHash = new byte[16];
+			}
 			else
+			{
 				gSharedBufferForSuperFastHash.FastClear();
+			}
 
 			var buffer = gSharedBufferForSuperFastHash;
 			if (bufferSize > buffer.Length)
+			{
 				buffer = new byte[bufferSize];
+			}
 
 			return buffer;
 		}
@@ -441,7 +508,9 @@ namespace KSoft.Phoenix
 					break;
 				case sizeof(ushort):
 					hash += (uint)(BitConverter.ToUInt16(buffer, index));
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
 					index += sizeof(ushort);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 					hash ^= hash << 11;
 					hash += hash >> 17;
 					break;

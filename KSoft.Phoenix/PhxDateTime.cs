@@ -11,8 +11,8 @@ namespace KSoft.Phoenix
 		: IO.IEndianStreamSerializable
 	{
 		public const int kSizeOf = sizeof(ulong);
-		public static PhxSYSTEMTIME MinValue { get { return new PhxSYSTEMTIME(1601, 1, 1); } }
-		public static PhxSYSTEMTIME MaxValue { get { return new PhxSYSTEMTIME(30827, 12, 31, 23, 59, 59, 999); } }
+		public static PhxSYSTEMTIME MinValue => new(1601, 1, 1);
+		public static PhxSYSTEMTIME MaxValue => new(30827, 12, 31, 23, 59, 59, 999);
 
 		[Interop.FieldOffset(0)] public ulong Bits;
 
@@ -57,7 +57,7 @@ namespace KSoft.Phoenix
 			Milliseconds = (ushort)(dt.Millisecond);
 		}
 
-		public void UpdateHash(SHA1 sha)
+		public readonly void UpdateHash(SHA1 sha)
 		{
 			PhxHash.UInt16(sha, (uint)Year);
 			PhxHash.UInt16(sha, (uint)Month);
@@ -83,20 +83,22 @@ namespace KSoft.Phoenix
 		}
 		#endregion
 
-		public override bool Equals(object obj)
+		public override readonly bool Equals(object obj)
 		{
-			if (obj is PhxSYSTEMTIME)
-				return ((PhxSYSTEMTIME)obj) == this;
+			if (obj is PhxSYSTEMTIME phxSystemTime)
+			{
+				return phxSystemTime == this;
+			}
 
 			return base.Equals(obj);
 		}
 
-		public override int GetHashCode()
+		public override readonly int GetHashCode()
 		{
-			return base.GetHashCode();
+			return Bits.GetHashCode();
 		}
 
-		public static bool operator ==(PhxSYSTEMTIME s1, PhxSYSTEMTIME s2)
+		public static bool operator==(PhxSYSTEMTIME s1, PhxSYSTEMTIME s2)
 		{
 #if false
 			return s1.Year == s2.Year
@@ -111,39 +113,51 @@ namespace KSoft.Phoenix
 #endif
 		}
 
-		public static bool operator !=(PhxSYSTEMTIME s1, PhxSYSTEMTIME s2)
+		public static bool operator!=(PhxSYSTEMTIME s1, PhxSYSTEMTIME s2)
 		{
 			return !(s1 == s2);
 		}
 
-		public System.DateTime ToDateTime()
+		public readonly System.DateTime ToDateTime()
 		{
 			if (Year == 0 || this == MinValue)
+			{
 				return DateTime.MinValue;
+			}
 			if (this == MaxValue)
+			{
 				return DateTime.MaxValue;
+			}
 
 			return new DateTime(Year, Month, Day, Hour, Minute, Second, Milliseconds,
 				DateTimeKind.Unspecified);
 		}
 
-		public System.DateTime ToLocalTime()
+		public readonly System.DateTime ToLocalTime()
 		{
 			if (Year == 0 || this == MinValue)
+			{
 				return DateTime.MinValue;
+			}
 			if (this == MaxValue)
+			{
 				return DateTime.MaxValue;
+			}
 
 			return new DateTime(Year, Month, Day, Hour, Minute, Second, Milliseconds,
 				DateTimeKind.Local);
 		}
 
-		public System.DateTime ToUniversalTime()
+		public readonly System.DateTime ToUniversalTime()
 		{
 			if (Year == 0 || this == MinValue)
+			{
 				return DateTime.MinValue;
+			}
 			if (this == MaxValue)
+			{
 				return DateTime.MaxValue;
+			}
 
 			return new DateTime(Year, Month, Day, Hour, Minute, Second, Milliseconds,
 				DateTimeKind.Utc);

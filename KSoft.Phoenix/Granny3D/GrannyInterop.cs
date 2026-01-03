@@ -13,13 +13,15 @@ namespace KSoft.Granny3D
 	{
 		public IntPtr Address;
 
-		public bool IsNull { get { return Address == IntPtr.Zero; } }
-		public bool IsNotNull { get { return Address != IntPtr.Zero; } }
+		public readonly bool IsNull => Address == IntPtr.Zero;
+		public readonly bool IsNotNull => Address != IntPtr.Zero;
 
-		public override string ToString()
+		public override readonly string ToString()
 		{
 			if (IsNull)
+			{
 				return null;
+			}
 
 			return Marshal.PtrToStringAnsi(Address);
 		}
@@ -30,21 +32,21 @@ namespace KSoft.Granny3D
 	{
 		public IntPtr Address;
 
-		public bool IsNull { get { return Address == IntPtr.Zero; } }
-		public bool IsNotNull { get { return Address != IntPtr.Zero; } }
+		public readonly bool IsNull => Address == IntPtr.Zero;
+		public readonly bool IsNotNull => Address != IntPtr.Zero;
 
 		public TPtr(IntPtr address)
 		{
 			Address = address;
 		}
 
-		public T ToStruct()
+		public readonly T ToStruct()
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 
 			return Marshal.PtrToStructure<T>(Address);
 		}
-		public T ToStruct(int index)
+		public readonly T ToStruct(int index)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires(index >= 0);
@@ -55,13 +57,13 @@ namespace KSoft.Granny3D
 			return Marshal.PtrToStructure<T>(Address + offset);
 		}
 
-		public void CopyStruct(ref T s)
+		public readonly void CopyStruct(ref T s)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 
 			Marshal.StructureToPtr(s, Address, fDeleteOld: false);
 		}
-		public void CopyStruct(int toIndex, ref T s)
+		public readonly void CopyStruct(int toIndex, ref T s)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires(toIndex >= 0);
@@ -79,10 +81,10 @@ namespace KSoft.Granny3D
 		public int Count;
 		public IntPtr Array;
 
-		public bool IsNull { get { return Count == 0 || Array == IntPtr.Zero; } }
-		public bool IsNotNull { get { return Count > 0 && Array != IntPtr.Zero; } }
+		public readonly bool IsNull => Count == 0 || Array == IntPtr.Zero;
+		public readonly bool IsNotNull => Count > 0 && Array != IntPtr.Zero;
 
-		public IntPtr ToStructPtr(int index, int structSize)
+		public readonly IntPtr ToStructPtr(int index, int structSize)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
@@ -100,10 +102,10 @@ namespace KSoft.Granny3D
 		public int Count;
 		public TPtr<CharPtr> Array;
 
-		public bool IsNull { get { return Count == 0 || Array.IsNull; } }
-		public bool IsNotNull { get { return Count > 0 && Array.IsNotNull; } }
+		public readonly bool IsNull => Count == 0 || Array.IsNull;
+		public readonly bool IsNotNull => Count > 0 && Array.IsNotNull;
 
-		public CharPtr ToStruct(int index)
+		public readonly CharPtr ToStruct(int index)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
@@ -117,10 +119,10 @@ namespace KSoft.Granny3D
 		public int Count;
 		public TPtr<T> Array;
 
-		public bool IsNull { get { return Count == 0 || Array.IsNull; } }
-		public bool IsNotNull { get { return Count > 0 && Array.IsNotNull; } }
+		public readonly bool IsNull => Count == 0 || Array.IsNull;
+		public readonly bool IsNotNull => Count > 0 && Array.IsNotNull;
 
-		public T ToStruct(int index)
+		public readonly T ToStruct(int index)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
@@ -128,7 +130,7 @@ namespace KSoft.Granny3D
 			return Array.ToStruct(index);
 		}
 
-		public void CopyStruct(int toIndex, ref T s)
+		public readonly void CopyStruct(int toIndex, ref T s)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires<ArgumentOutOfRangeException>(toIndex >= 0 && toIndex < Count);
@@ -142,10 +144,10 @@ namespace KSoft.Granny3D
 		public int Count;
 		public IntPtr Array; // T**
 
-		public bool IsNull { get { return Count == 0 || Array == IntPtr.Zero; } }
-		public bool IsNotNull { get { return Count > 0 && Array != IntPtr.Zero; } }
+		public readonly bool IsNull => Count == 0 || Array == IntPtr.Zero;
+		public readonly bool IsNotNull => Count > 0 && Array != IntPtr.Zero;
 
-		public TPtr<T> ToStructPtr(int index)
+		public readonly TPtr<T> ToStructPtr(int index)
 		{
 			Contract.Requires<NullReferenceException>(IsNotNull);
 			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);

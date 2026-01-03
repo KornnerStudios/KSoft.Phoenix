@@ -30,7 +30,7 @@ namespace KSoft.Phoenix.Engine
 		: IComparable<XmlFileInfo>
 		, IEquatable<XmlFileInfo>
 	{
-		public static bool RespectWritableFlag { get { return true; } }
+		public static bool RespectWritableFlag => true;
 
 		public ContentStorage Location { get; set; }
 		public GameDirectory Directory { get; set; }
@@ -42,10 +42,14 @@ namespace KSoft.Phoenix.Engine
 		public int CompareTo(XmlFileInfo other)
 		{
 			if (Location != other.Location)
+			{
 				return ((int)Location).CompareTo((int)other.Location);
+			}
 
 			if (Directory != other.Directory)
+			{
 				return ((int)Directory).CompareTo((int)other.Directory);
+			}
 
 			return string.CompareOrdinal(FileName, other.FileName);
 		}
@@ -62,19 +66,12 @@ namespace KSoft.Phoenix.Engine
 
 		public override bool Equals(object obj)
 		{
-			return obj is XmlFileInfo && Equals((XmlFileInfo)obj);
+			return obj is XmlFileInfo info && Equals(info);
 		}
 
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-				int hash = 17;
-				hash *= 23 + Location.GetHashCode();
-				hash *= 23 + Directory.GetHashCode();
-				hash *= 23 + FileName.GetHashCode();
-				return hash;
-			}
+			return HashCode.Combine(Location, Directory, FileName);
 		}
 
 		public override string ToString()
@@ -113,9 +110,8 @@ namespace KSoft.Phoenix.Engine
 			FileInfoWithUpdates = fileInfoWithUpdates;
 		}
 
-		public string DebuggerDisplay { get {
-			return string.Format("{0} {1}",
+		public string DebuggerDisplay
+			=> string.Format("{0} {1}",
 				Priority, FileInfo);
-		} }
 	};
 }

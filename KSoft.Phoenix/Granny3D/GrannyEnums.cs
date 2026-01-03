@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace KSoft.Granny3D
 {
 	public enum granny_member_type

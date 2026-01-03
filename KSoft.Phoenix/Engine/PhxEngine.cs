@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Engine
 		public Phx.TriggerDatabase TriggerDb { get; private set; }
 
 		internal Dictionary<XmlFileInfo, XmlFileLoadState> XmlFileLoadStatus { get; private set; }
-			= new Dictionary<XmlFileInfo, XmlFileLoadState>();
+			= new();
 
 		public event EventHandler<XmlFileLoadStateChangedArgs> XmlFileLoadStateChanged;
 
@@ -30,7 +30,9 @@ namespace KSoft.Phoenix.Engine
 			Contract.Requires(file != null);
 
 			lock (XmlFileLoadStatus)
+			{
 				XmlFileLoadStatus[file] = state;
+			}
 
 			var handler = XmlFileLoadStateChanged;
 			if (handler != null)
@@ -46,8 +48,12 @@ namespace KSoft.Phoenix.Engine
 
 			XmlFileLoadState state;
 			lock (XmlFileLoadStatus)
+			{
 				if (!XmlFileLoadStatus.TryGetValue(file, out state))
+				{
 					return XmlFileLoadState.NotLoaded;
+				}
+			}
 
 			return state;
 		}
@@ -135,16 +141,12 @@ namespace KSoft.Phoenix.Engine
 
 		public IO.XmlElementStream OpenXmlOrXmbForRead(GetXmlOrXmbFileResult xmlOrXmb, string fileName)
 		{
-			switch (xmlOrXmb)
+			return xmlOrXmb switch
 			{
-				case GetXmlOrXmbFileResult.Xml:
-					return new IO.XmlElementStream(fileName, System.IO.FileAccess.Read);
-
-				case GetXmlOrXmbFileResult.Xmb:
-					return OpenXmbForRead(fileName);
-			}
-
-			return null;
+				GetXmlOrXmbFileResult.Xml => new IO.XmlElementStream(fileName, System.IO.FileAccess.Read),
+				GetXmlOrXmbFileResult.Xmb => OpenXmbForRead(fileName),
+				_ => null,
+			};
 		}
 		public IO.XmlElementStream OpenXmbForRead(string xmbFile)
 		{
@@ -173,7 +175,9 @@ namespace KSoft.Phoenix.Engine
 		public ObjectDatabaseForFileResult GetObjectDatabase(XmlFileInfo file)
 		{
 			if (file == null)
+			{
 				return ObjectDatabaseForFileResult.Null;
+			}
 
 			var status = GetFileLoadStatus(file);
 			if (status < XmlFileLoadState.Preloaded)
@@ -188,7 +192,8 @@ namespace KSoft.Phoenix.Engine
 			if (kvp.Key == null)
 			{
 				throw new InvalidOperationException(string.Format(
-					"GetObjectDatabase called on {0} which didn't resolve to a DB"));
+					"GetObjectDatabase called on {0} which didn't resolve to a DB",
+					file));
 			}
 
 			return new ObjectDatabaseForFileResult(file, kvp.Key, kvp.Value);
@@ -310,10 +315,9 @@ namespace KSoft.Phoenix.Engine
 			SpecificObjectKind = objectKind;
 		}
 
-		public bool IsNull { get { return Database == null; } }
+		public readonly bool IsNull => Database == null;
 
-		public static ObjectDatabaseForFileResult Null { get {
-			return new ObjectDatabaseForFileResult(null, null, TypeExtensions.kNone);
-		} }
+		public static ObjectDatabaseForFileResult Null
+			=> new(null, null, TypeExtensions.kNone);
 	};
 }

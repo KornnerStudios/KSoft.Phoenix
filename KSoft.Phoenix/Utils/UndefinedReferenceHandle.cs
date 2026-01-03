@@ -41,7 +41,9 @@ namespace KSoft.Phoenix
 		public static bool IsUndefinedReferenceHandleOrNone(HandleWord handle)
 		{
 			if (IsUndefinedReferenceHandle(handle))
+			{
 				return true;
+			}
 
 			return handle.IsNone();
 		}
@@ -49,8 +51,8 @@ namespace KSoft.Phoenix
 
 	public struct UndefinedObjectResult
 	{
-		public int MemberId { get; private set; }
-		public string MemberName { get; private set; }
+		public int MemberId { readonly get; private set; }
+		public string MemberName { readonly get; private set; }
 
 		public UndefinedObjectResult(int id, string name)
 		{

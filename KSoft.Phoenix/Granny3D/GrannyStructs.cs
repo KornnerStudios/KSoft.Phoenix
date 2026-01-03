@@ -4,6 +4,8 @@ using Vector3 = System.Numerics.Vector3;
 using Vector4 = System.Numerics.Vector4;
 using granny_matrix_4x4 = System.Numerics.Matrix4x4;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace KSoft.Granny3D
 {
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
@@ -16,10 +18,10 @@ namespace KSoft.Granny3D
 		public int Extra0;
 		public int Extra1;
 		public int Extra2;
-		IntPtr Ignored;
+		readonly IntPtr Ignored;
 
 		// #64BIT: Workaround encountered issues trying to define a field which was a TPtr of the same parent type
-		public TPtr<granny_data_type_definition> ReferenceType { get { return new TPtr<granny_data_type_definition>(ReferenceTypeInternal); } }
+		public readonly TPtr<granny_data_type_definition> ReferenceType => new(ReferenceTypeInternal);
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]

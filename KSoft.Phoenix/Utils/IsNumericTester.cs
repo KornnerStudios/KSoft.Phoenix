@@ -40,7 +40,9 @@ namespace KSoft.Phoenix
 			InitializeReturns();
 
 			if (str == null)
+			{
 				return TestFailed(0);
+			}
 
 			bool found_digits = false;
 
@@ -53,7 +55,9 @@ namespace KSoft.Phoenix
 
 				bool c_is_digit = char.IsDigit(c);
 				if (c_is_digit)
+				{
 					found_digits = true;
+				}
 
 				for (bool next_char = true; next_char; )
 				{
@@ -61,39 +65,55 @@ namespace KSoft.Phoenix
 
 					switch (cur_phase)
 					{
-						case Phase.Whitespace: {
+						case Phase.Whitespace:
+						{
 							if (IsIgnoredWhitespace(c))
+							{
 								next_char = true;
+							}
 							else
+							{
 								cur_phase = Phase.Sign;
+							}
 						} break;
 
-						case Phase.Sign: {
+						case Phase.Sign:
+						{
 							if (IsDigitSign(c))
+							{
 								next_char = true;
+							}
 
 							cur_phase = Phase.Digits;
 						} break;
 
-						case Phase.Digits: {
+						case Phase.Digits:
+						{
 							if (c_is_digit)
 							{
 								ReturnIntegralDigits++;
 
 								if (c != '0')
+								{
 									found_first_non_zero_digit = true;
+								}
 
 								if (found_first_non_zero_digit)
+								{
 									ReturnSignificantDigits++;
+								}
 
 								next_char = true;
 							}
 							else
+							{
 								cur_phase = Phase.FractionalSign;
+							}
 						} break;
 
-						case Phase.FractionalSign: {
-							if(c == '.')
+						case Phase.FractionalSign:
+						{
+							if (c == '.')
 							{
 								next_char = true;
 								cur_phase = Phase.FractionalDigits;
@@ -101,7 +121,9 @@ namespace KSoft.Phoenix
 							else if (IsExponentCharacter(c))
 							{
 								if (!AllowExponential)
+								{
 									return TestFailed(cur_pos);
+								}
 
 								next_char = true;
 								cur_phase = Phase.ExponentSign;
@@ -112,23 +134,30 @@ namespace KSoft.Phoenix
 							}
 						} break;
 
-						case Phase.FractionalDigits: {
+						case Phase.FractionalDigits:
+						{
 							if (c_is_digit)
 							{
 								ReturnFractionalDigits++;
 
 								if (c != '0')
+								{
 									found_first_non_zero_digit = true;
+								}
 
 								if (found_first_non_zero_digit)
+								{
 									ReturnSignificantDigits++;
+								}
 
 								next_char = true;
 							}
 							else if (IsExponentCharacter(c))
 							{
 								if (!AllowExponential)
+								{
 									return TestFailed(cur_pos);
+								}
 
 								next_char = true;
 								cur_phase = Phase.ExponentSign;
@@ -144,14 +173,18 @@ namespace KSoft.Phoenix
 							}
 						} break;
 
-						case Phase.ExponentSign: {
+						case Phase.ExponentSign:
+						{
 							if (IsDigitSign(c))
+							{
 								next_char = true;
+							}
 
 							cur_phase = Phase.ExponentDigits;
 						} break;
 
-						case Phase.ExponentDigits: {
+						case Phase.ExponentDigits:
+						{
 							if (c_is_digit)
 							{
 								next_char = true;
@@ -167,11 +200,16 @@ namespace KSoft.Phoenix
 							}
 						} break;
 
-						case Phase.TrailingWhiteSpace: {
+						case Phase.TrailingWhiteSpace:
+						{
 							if (IsIgnoredWhitespace(c))
+							{
 								next_char = true;
+							}
 							else
+							{
 								return TestFailed(cur_pos);
+							}
 						} break;
 					}
 				}

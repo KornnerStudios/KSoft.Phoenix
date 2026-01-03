@@ -17,35 +17,35 @@ namespace KSoft.Phoenix
 		{
 			// KSoft.Phoenix.Xmb
 			public static readonly EnumBitEncoder32<Xmb.BinaryDataTreeVariantType>
-				BinaryDataTreeVariantType = new EnumBitEncoder32<Xmb.BinaryDataTreeVariantType>();
+				BinaryDataTreeVariantType = new();
 			public static readonly EnumBitEncoder32<Xmb.BinaryDataTreeVariantTypeSizeInBytes>
-				BinaryDataTreeVariantTypeSizeInBytes = new EnumBitEncoder32<Xmb.BinaryDataTreeVariantTypeSizeInBytes>();
+				BinaryDataTreeVariantTypeSizeInBytes = new();
 		};
 		#endregion
 
 		#region PascalString32
-		static readonly Memory.Strings.StringStorage Pascal32Storage =
-					new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
-		static readonly Text.StringStorageEncoding Pascal32Encoding = new Text.StringStorageEncoding(Pascal32Storage);
+		static readonly Memory.Strings.StringStorage Pascal32Storage = new(
+			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
+		static readonly Text.StringStorageEncoding Pascal32Encoding = new(Pascal32Storage);
 
 		public static IO.EndianStream StreamPascalString32(this IO.EndianStream s, ref string value)
 		{
-				 if (s.IsReading) value = s.Reader.ReadString(Pascal32Encoding);
-			else if (s.IsWriting) s.Writer.Write(value, Pascal32Encoding);
+				 if (s.IsReading) { value = s.Reader.ReadString(Pascal32Encoding); }
+			else if (s.IsWriting) { s.Writer.Write(value, Pascal32Encoding); }
 
 			return s;
 		}
 		#endregion
 
 		#region PascalWideString32
-		static readonly Memory.Strings.StringStorage PascalUnicode32Storage =
-					new Memory.Strings.StringStorage(Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
-		static readonly Text.StringStorageEncoding PascalUnicode32Encoding = new Text.StringStorageEncoding(PascalUnicode32Storage);
+		static readonly Memory.Strings.StringStorage PascalUnicode32Storage = new(
+			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
+		static readonly Text.StringStorageEncoding PascalUnicode32Encoding = new(PascalUnicode32Storage);
 
 		public static IO.EndianStream StreamPascalWideString32(this IO.EndianStream s, ref string value)
 		{
-				 if (s.IsReading) value = s.Reader.ReadString(PascalUnicode32Encoding);
-			else if (s.IsWriting) s.Writer.Write(value, PascalUnicode32Encoding);
+				 if (s.IsReading) { value = s.Reader.ReadString(PascalUnicode32Encoding); }
+			else if (s.IsWriting) { s.Writer.Write(value, PascalUnicode32Encoding); }
 
 			return s;
 		}
@@ -58,10 +58,14 @@ namespace KSoft.Phoenix
 
 			s.Stream(ref not_null);
 			if (s.IsReading && not_null)
+			{
 				obj = new T();
+			}
 
 			if (not_null)
+			{
 				s.Stream(obj);
+			}
 
 			return s;
 		}
@@ -80,17 +84,11 @@ namespace KSoft.Phoenix
 
 		public static bool HasXmbVariantSupport(this TypeCode c)
 		{
-			switch (c)
+			return c switch
 			{
-			case TypeCode.Object:
-			case TypeCode.DBNull:
-			case TypeCode.Decimal:
-			case TypeCode.String:
-				return false;
-
-			default:
-				return true;
-			}
+				TypeCode.Object or TypeCode.DBNull or TypeCode.Decimal or TypeCode.String => false,
+				_ => true,
+			};
 		}
 
 		public static XML.BXmlSerializerInterface GetSerializerInterface<TDoc, TCursor>(this IO.TagElementStream<TDoc, TCursor, string> s)
@@ -106,8 +104,10 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			if(xsi != null)
-				Contract.Assert(s.Owner == null || !(s.Owner is XML.BXmlSerializerInterface));
+			if (xsi != null)
+			{
+				Contract.Assert(s.Owner == null || s.Owner is not XML.BXmlSerializerInterface);
+			}
 
 			s.Owner = xsi;
 		}
@@ -115,14 +115,17 @@ namespace KSoft.Phoenix
 		public static Exception ToAggregateExceptionOrNull(this List<Exception> list)
 		{
 			if (list.IsNullOrEmpty())
+			{
 				return null;
+			}
 
 			if (list.Count == 1)
 			{
 				var e = list[0];
-				var ae = e as AggregateException;
-				if (ae != null)
+				if (e is AggregateException ae)
+				{
 					return ae.GetOnlyExceptionOrAll();
+				}
 
 				return e;
 			}

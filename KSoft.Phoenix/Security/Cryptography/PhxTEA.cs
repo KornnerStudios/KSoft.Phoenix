@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+#if CONTRACTS_FULL_SHIM
+using Contract = System.Diagnostics.ContractsShim.Contract;
+#else
+using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
+#endif
 
 namespace KSoft.Security.Cryptography
 {
@@ -9,30 +14,36 @@ namespace KSoft.Security.Cryptography
 		#region Keys
 		const int kKeySize = 3;
 
-		public static readonly ulong[] kKeyEra = new ulong[kKeySize] {
+		public static readonly ulong[] kKeyEra = /*kKeySize*/[
 			0xBC3EB6B4D0471DDB,
 			0x8299E6431912BE73,
 			0x4601515D43D26DF5,
-		};
-		public static readonly ulong[] kKeyGameFile = new ulong[kKeySize] {
+		];
+		public static readonly ulong[] kKeyGameFile = /*kKeySize*/[
 			0x194F8D77DF360283,
 			0x1385AC1E2122F575,
 			0xA7392D249DC2C737,
-		};
+		];
 
 		ulong[] mKey;
 
 		public void InitializeKey(ulong[] key, ulong userKey = 0)
 		{
+			Contract.Assert(key != null && key.Length == kKeySize);
+
 			if (userKey == 0)
+			{
 				mKey = key;
+			}
 			else
-				mKey = new ulong[kKeySize] { key[0], key[1], userKey };
+			{
+				mKey = [key[0], key[1], userKey];
+			}
 		}
 		#endregion
 
-		IO.EndianReader mStreamIn;
-		IO.EndianWriter mStreamOut;
+		readonly IO.EndianReader mStreamIn;
+		readonly IO.EndianWriter mStreamOut;
 		ulong[] mBufferIn, mBufferOut;
 
 		void InitializeBuffers()
@@ -51,18 +62,24 @@ namespace KSoft.Security.Cryptography
 		void FillBufferIn()
 		{
 			for (int x = 0; x < mBufferIn.Length; x++)
+			{
 				mStreamIn.Read(out mBufferIn[x]);
+			}
 		}
 		void FillBufferOut()
 		{
 			for (int x = 0; x < mBufferOut.Length; x++)
+			{
 				mStreamOut.Write(mBufferOut[x]);
+			}
 		}
 
 		void ProcessBuffer(long size, ProcessIterationProc proc)
 		{
 			if (size == 0)
+			{
 				size = mStreamIn.BaseStream.Length - mStreamIn.BaseStream.Position;
+			}
 
 			uint interation_count = GetIterationsCount(size);
 
@@ -190,10 +207,11 @@ namespace KSoft.Security.Cryptography
 			out3 = in3; EncryptRounds(ref out3, key0, key1);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0018:Inline variable declaration")]
 		static void DecryptIteration(ulong[] key, ulong[] buffIn, ulong[] buffOut, uint iteration)
 		{
 			const uint index = 0;// iteration * kBlocksPerIteration;
-			ulong	block0 = buffIn[index+0],	block1 = buffIn[index+1],	block2 = buffIn[index+2],	block3 = buffIn[index+3],	
+			ulong	block0 = buffIn[index+0],	block1 = buffIn[index+1],	block2 = buffIn[index+2],	block3 = buffIn[index+3],
 					block4 = buffIn[index+4],	block5 = buffIn[index+5],	block6 = buffIn[index+6],	block7 = buffIn[index+7];
 
 			ulong t1, t2, t3, t4;
@@ -201,19 +219,22 @@ namespace KSoft.Security.Cryptography
 							out t1, out t2, out t3, out t4,		key[0], key[1] );
 
 			ulong t5, t6, t7, t8;
-			DecryptBlock(	block6 ^ block7,	block4 ^ block5 ^ block7, 
+			DecryptBlock(	block6 ^ block7,	block4 ^ block5 ^ block7,
 							block4 ^ block6,	block7 ^ block5,
 							out t5, out t6, out t7, out t8,		key[1], key[2]);
 
 			ulong t9, t10, t11, t12;
-			DecryptBlock(	t4 ^ block7, 
-							(t1 - (block6 ^ block7)) ^ t2 ^ block6 ^ block5, 
+			DecryptBlock(	t4 ^ block7,
+							(t1 - (block6 ^ block7)) ^ t2 ^ block6 ^ block5,
 							t2 ^ block6 ^ block5 ^ (t3 + (block5 ^ block4)),
 							t4 ^ block7 ^ (t3 + (block5 ^ block4)),
 							out t9, out t10, out t11, out t12,	key[1], key[0]);
 
 			ulong iter_mod = iteration + kIterationMod;
-			if (iter_mod == 0) iter_mod++;
+			if (iter_mod == 0)
+			{
+				iter_mod++;
+			}
 
 			ulong q = iter_mod;
 			ulong q0, q1, q2, q3, q4, q5, q6, q7;
@@ -235,14 +256,18 @@ namespace KSoft.Security.Cryptography
 			buffOut[index+0] = q0; buffOut[index+1] = q1; buffOut[index+2] = q2; buffOut[index+3] = q3;
 			buffOut[index+4] = q4; buffOut[index+5] = q5; buffOut[index+6] = q6; buffOut[index+7] = q7;
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0018:Inline variable declaration")]
 		static void EncryptIteration(ulong[] key, ulong[] buffIn, ulong[] buffOut, uint iteration)
 		{
 			const uint index = 0;//iteration * kBlocksPerIteration;
-			ulong	block0 = buffIn[index+0],	block1 = buffIn[index+1],	block2 = buffIn[index+2],	block3 = buffIn[index+3],	
+			ulong	block0 = buffIn[index+0],	block1 = buffIn[index+1],	block2 = buffIn[index+2],	block3 = buffIn[index+3],
 					block4 = buffIn[index+4],	block5 = buffIn[index+5],	block6 = buffIn[index+6],	block7 = buffIn[index+7];
 
 			ulong iter_mod = iteration + kIterationMod;
-			if (iter_mod == 0) iter_mod++;
+			if (iter_mod == 0)
+			{
+				iter_mod++;
+			}
 
 			ulong q = iter_mod;
 			ulong q0, q1, q2, q3, q4, q5, q6, q7;
@@ -252,13 +277,13 @@ namespace KSoft.Security.Cryptography
 			Mod0(ref q, out q4);	Mod1(ref q, out q5);
 			Mod0(ref q, out q6);	Mod1(ref q, out q7);
 
-			ulong	t9 = q0 ^ block0, 
-					t10 = q1 ^ block1, 
-					t11 = q2 ^ block2, 
+			ulong	t9 = q0 ^ block0,
+					t10 = q1 ^ block1,
+					t11 = q2 ^ block2,
 					t12 = q3 ^ block3;
 
 			ulong o1, o2, o3, o4;
-			EncryptBlock(	t9, t10, t11, t12, 
+			EncryptBlock(	t9, t10, t11, t12,
 							out o1, out o2, out o3, out o4, key[1], key[0]);
 
 			ulong o5, o6, o7, o8;

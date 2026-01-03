@@ -16,7 +16,8 @@ namespace KSoft.Security.Cryptography
 		public const int kSha1SizeOf = 20;
 
 		// NOTE: data is written to the buffer in MSB order
-		static byte[] gUInt64Buffer = new byte[sizeof(ulong)];
+		// #TODO make thread safe
+		static readonly byte[] gUInt64Buffer = new byte[sizeof(ulong)];
 
 		static void BufferFillUnicode(char unicode)
 		{
@@ -32,9 +33,13 @@ namespace KSoft.Security.Cryptography
 			gUInt64Buffer[0] = (byte)(word >> 0);
 
 			if (isFinal)
+			{
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(byte));
+			}
 			else
+			{
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(byte), null, 0);
+			}
 		}
 		public static void UInt16(SHA1 sha, uint word, bool isFinal = false)
 		{
@@ -45,9 +50,13 @@ namespace KSoft.Security.Cryptography
 			}
 
 			if (isFinal)
+			{
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(ushort));
+			}
 			else
+			{
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ushort), null, 0);
+			}
 		}
 		public static void UInt32(SHA1 sha, uint word, bool isFinal = false)
 		{
@@ -58,9 +67,13 @@ namespace KSoft.Security.Cryptography
 			}
 
 			if (isFinal)
+			{
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(uint));
+			}
 			else
+			{
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(uint), null, 0);
+			}
 		}
 		public static void UInt64(SHA1 sha, ulong word, bool isFinal = false)
 		{
@@ -71,9 +84,13 @@ namespace KSoft.Security.Cryptography
 			}
 
 			if (isFinal)
+			{
 				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(ulong));
+			}
 			else
+			{
 				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ulong), null, 0);
+			}
 		}
 
 		public static void Ascii(SHA1 sha, string str, int fixedLength = 0)
@@ -176,7 +193,9 @@ namespace KSoft.Security.Cryptography
 				PhxHash.UInt32(sha, 0xCA6884EC, true);
 				result1 = sha.Hash;
 				if (System.Diagnostics.Debugger.IsAttached)
+				{
 					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Result: {1}", str, Text.Util.ByteArrayToString(result1));
+				}
 
 				sha.Initialize();
 				PhxHash.UInt32(sha, 0xCB92EAEB);
@@ -184,7 +203,9 @@ namespace KSoft.Security.Cryptography
 				PhxHash.UInt32(sha, 0x1D919BF8, true);
 				result_final = sha.Hash;
 				if (System.Diagnostics.Debugger.IsAttached)
+				{
 					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Final: {1}", str, Text.Util.ByteArrayToString(result_final));
+				}
 
 				Array.Copy(result_final, result, result_final.Length);
 			}
@@ -201,7 +222,9 @@ namespace KSoft.Security.Cryptography
 			try
 			{
 				if (!File.Exists(fileName))
+				{
 					return false;
+				}
 
 				byte[] result_final;
 
