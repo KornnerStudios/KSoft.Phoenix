@@ -6,18 +6,18 @@ namespace KSoft.Phoenix.Phx
 		, IDatabaseIdObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("UserClass")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("UserClass")
 		{
 			DataName = "Name",
 			Flags = 0
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "UserClasses.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.Lists,
 			kXmlFileInfo);
 		#endregion

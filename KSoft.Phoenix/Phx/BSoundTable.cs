@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		internal static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		internal static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Phoenix.Engine.GameDirectory.Data,
 			FileName = "SoundTable.xml",
@@ -14,8 +14,8 @@ namespace KSoft.Phoenix.Phx
 		};
 		#endregion
 
-		public Dictionary<uint, string> mEventsMap = new Dictionary<uint, string>();
-		public IReadOnlyDictionary<uint, string> EventsMap { get { return mEventsMap; } }
+		public Dictionary<uint, string> mEventsMap = new();
+		public IReadOnlyDictionary<uint, string> EventsMap => mEventsMap;
 
 		#region ITagElementTextStreamable Members
 		void FromStream<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -23,6 +23,7 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			foreach (var element in s.ElementsByName("Sound"))
+			{
 				using (s.EnterCursorBookmark(element))
 				{
 					string name = null; uint event_id = 0;
@@ -31,13 +32,16 @@ namespace KSoft.Phoenix.Phx
 
 					mEventsMap.Add(event_id, name);
 				}
+			}
 		}
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
 			if (s.IsReading)
+			{
 				FromStream(s);
+			}
 		}
 		#endregion
 	};

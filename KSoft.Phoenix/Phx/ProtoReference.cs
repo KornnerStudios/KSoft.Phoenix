@@ -32,7 +32,7 @@ namespace KSoft.Phoenix.Phx.Meta
 	public sealed class UnusedDataAttribute : Attribute
 	{
 		public UnusedDataAttribute() { }
-		public UnusedDataAttribute(string note) { }
+		public UnusedDataAttribute(string /*note*/_) { }
 	};
 
 	/// <summary>Localized string reference</summary>
@@ -327,7 +327,9 @@ namespace KSoft.Phoenix
 		public static string GetExportContractName(this Phx.Meta.IProtoDataReferenceAttribute attr)
 		{
 			if (attr == null)
+			{
 				return null;
+			}
 
 			return string.Format("{0}.{1}",
 				attr.ObjectSourceKind, attr.ProtoKindName);

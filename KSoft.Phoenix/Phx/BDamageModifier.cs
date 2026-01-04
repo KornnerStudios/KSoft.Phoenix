@@ -9,10 +9,8 @@ namespace KSoft.Phoenix.Phx
 		, IEqualityComparer<BWeaponModifier>
 	{
 		#region Xml constants
-		public static readonly Collections.BTypeValuesParams<BWeaponModifier> kBListParams = new
-			Collections.BTypeValuesParams<BWeaponModifier>(db => db.DamageTypes);
-		public static readonly XML.BTypeValuesXmlParams<BWeaponModifier> kBListXmlParams = new
-			XML.BTypeValuesXmlParams<BWeaponModifier>("DamageModifier", "type");
+		public static readonly Collections.BTypeValuesParams<BWeaponModifier> kBListParams = new(db => db.DamageTypes);
+		public static readonly XML.BTypeValuesXmlParams<BWeaponModifier> kBListXmlParams = new("DamageModifier", "type");
 		#endregion
 
 		#region Rating
@@ -76,7 +74,9 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BWeaponModifier other)
 		{
 			if (Rating != other.Rating)
+			{
 				return Rating.CompareTo(other.Rating);
+			}
 
 			return DamagePercentage.CompareTo(other.DamagePercentage);
 		}
@@ -91,7 +91,7 @@ namespace KSoft.Phoenix.Phx
 
 		public int GetHashCode(BWeaponModifier obj)
 		{
-			return obj.Rating.GetHashCode() ^ obj.DamagePercentage.GetHashCode();
+			return HashCode.Combine(obj.Rating, obj.DamagePercentage);
 		}
 		#endregion
 	};

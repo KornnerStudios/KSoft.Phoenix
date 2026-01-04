@@ -11,25 +11,23 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseNamedObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Leader")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Leader")
 		{
 			DataName = "Name",
 			Flags = 0
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Leaders.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.ProtoData,
 			kXmlFileInfo);
 
-		static readonly XML.BTypeValuesXmlParams<float> kRepairCostTypeValuesXmlParams = new
-			XML.BTypeValuesXmlParams<float>("RepairCost", "Type");
-		static readonly XML.BTypeValuesXmlParams<float> kReverseHotDropCostTypeValuesXmlParams = new
-			XML.BTypeValuesXmlParams<float>("ReverseHotDropCost", "Type");
+		static readonly XML.BTypeValuesXmlParams<float> kRepairCostTypeValuesXmlParams = new("RepairCost", "Type");
+		static readonly XML.BTypeValuesXmlParams<float> kReverseHotDropCostTypeValuesXmlParams = new("ReverseHotDropCost", "Type");
 		#endregion
 
 		#region IconName
@@ -174,8 +172,11 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		public Collections.BListArray<BLeaderSupportPower> SupportPowers { get; private set; }
+			= new();
 		public Collections.BListArray<BLeaderStartingSquad> StartingSquads { get; private set; }
+			= new();
 		public Collections.BListArray<BLeaderStartingUnit> StartingUnits { get; private set; }
+			= new();
 
 		#region RallyPointOffset
 		BVector mRallyPointOffset;
@@ -206,6 +207,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		public Collections.BTypeValuesSingle RepairCost { get; private set; }
+			= new(BResource.kBListTypeValuesParams);
 
 		#region RepairTime
 		float mRepairTime;
@@ -217,11 +219,14 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		public Collections.BTypeValuesSingle ReverseHotDropCost { get; private set; }
+			= new(BResource.kBListTypeValuesParams);
 
 		public Collections.BTypeValues<BPopulation> Populations { get; private set; }
+			= new(BPopulation.kBListParams);
 
 		/// <summary>Initial resources and which resources are considered 'active'</summary>
 		public Collections.BTypeValuesSingle Resources { get; private set; }
+			= new(BResource.kBListTypeValuesParams);
 
 		#region UIControlBackground
 		string mUIControlBackground;
@@ -234,21 +239,13 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		// Empty Leaders just have a Civ
-		public bool IsEmpty { get { return mTechID.IsNone(); } }
+		public bool IsEmpty => mTechID.IsNone();
 
 		public BLeader()
 		{
 			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
 			textData.HasNameID = true;
 			textData.HasDescriptionID = true;
-
-			SupportPowers = new Collections.BListArray<BLeaderSupportPower>();
-			StartingSquads = new Collections.BListArray<BLeaderStartingSquad>();
-			StartingUnits = new Collections.BListArray<BLeaderStartingUnit>();
-			RepairCost = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
-			ReverseHotDropCost = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
-			Populations = new Collections.BTypeValues<BPopulation>(BPopulation.kBListParams);
-			Resources = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
 		}
 
 		#region ITagElementStreamable<string> Members
@@ -297,7 +294,7 @@ namespace KSoft.Phoenix.Phx
 		, IEquatable<BLeaderSupportPower>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "SupportPower",
 		};
@@ -324,13 +321,9 @@ namespace KSoft.Phoenix.Phx
 
 		[Meta.BProtoPowerReference]
 		public List<BProtoPowerID> SupportPowerIDs { get; private set; }
+			= new();
 
-		public bool IsEmpty { get { return SupportPowerIDs.Count == 0; } }
-
-		public BLeaderSupportPower()
-		{
-			SupportPowerIDs = new List<BProtoSquadID>();
-		}
+		public bool IsEmpty => SupportPowerIDs.Count == 0;
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -349,13 +342,19 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BLeaderSupportPower other)
 		{
 			if (IconLocation != other.IconLocation)
+			{
 				IconLocation.CompareTo(other.IconLocation);
+			}
 
 			if (TechPrereqID != other.TechPrereqID)
+			{
 				TechPrereqID.CompareTo(other.TechPrereqID);
+			}
 
 			if (SupportPowerIDs.Count != other.SupportPowerIDs.Count)
+			{
 				SupportPowerIDs.Count.CompareTo(other.SupportPowerIDs.Count);
+			}
 
 			int a_hash = PhxUtil.CalculateHashCodeForDBIDs(SupportPowerIDs);
 			int b_hash = PhxUtil.CalculateHashCodeForDBIDs(other.SupportPowerIDs);
@@ -366,10 +365,16 @@ namespace KSoft.Phoenix.Phx
 		#region IEquatable Members
 		public bool Equals(BLeaderSupportPower other)
 		{
-			return IconLocation == other.IconLocation
+			return other != null
+				&& IconLocation == other.IconLocation
 				&& TechPrereqID == other.TechPrereqID
 				&& SupportPowerIDs.EqualsList(other.SupportPowerIDs);
 		}
+		public override bool Equals(object obj)
+			=> Equals(obj as BLeaderSupportPower);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(IconLocation, TechPrereqID, SupportPowerIDs);
 		#endregion
 	};
 
@@ -379,16 +384,16 @@ namespace KSoft.Phoenix.Phx
 		, IEquatable<BLeaderStartingSquad>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "StartingSquad",
 		};
 		#endregion
 
 		#region SquadID
-		int mSquadID = TypeExtensions.kNone;
+		BProtoSquadID mSquadID = TypeExtensions.kNone;
 		[Meta.BProtoSquadReference]
-		public int SquadID
+		public BProtoSquadID SquadID
 		{
 			get { return mSquadID; }
 			set { mSquadID = value; }
@@ -413,7 +418,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public bool IsInvalid { get { return PhxUtil.IsUndefinedReferenceHandleOrNone(SquadID); } }
+		public bool IsInvalid => PhxUtil.IsUndefinedReferenceHandleOrNone(SquadID);
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -433,10 +438,14 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BLeaderStartingSquad other)
 		{
 			if (FlyIn != other.FlyIn)
+			{
 				FlyIn.CompareTo(other.FlyIn);
+			}
 
 			if (Offset != other.Offset)
+			{
 				Offset.CompareTo(other.Offset);
+			}
 
 			return SquadID.CompareTo(other.SquadID);
 		}
@@ -445,20 +454,26 @@ namespace KSoft.Phoenix.Phx
 		#region IEquatable Members
 		public bool Equals(BLeaderStartingSquad other)
 		{
-			return FlyIn == other.FlyIn
+			return other != null
+				&& FlyIn == other.FlyIn
 				&& Offset == other.Offset
 				&& SquadID == other.SquadID;
 		}
-		#endregion
-	};
 
+		public override bool Equals(object obj)
+			=>  Equals(obj as BLeaderStartingSquad);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(FlyIn, Offset, SquadID);
+		#endregion
+	}
 	public sealed class BLeaderStartingUnit
 		: IO.ITagElementStringNameStreamable
 		, IComparable<BLeaderStartingUnit>
 		, IEquatable<BLeaderStartingUnit>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "StartingUnit",
 		};
@@ -502,7 +517,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public bool IsInvalid { get { return PhxUtil.IsUndefinedReferenceHandleOrNone(ObjectTypeID); } }
+		public bool IsInvalid => PhxUtil.IsUndefinedReferenceHandleOrNone(ObjectTypeID);
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -524,13 +539,19 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BLeaderStartingUnit other)
 		{
 			if (DoppleOnStart != other.DoppleOnStart)
+			{
 				DoppleOnStart.CompareTo(other.DoppleOnStart);
+			}
 
 			if (Offset != other.Offset)
+			{
 				Offset.CompareTo(other.Offset);
+			}
 
 			if (ObjectTypeID != other.ObjectTypeID)
+			{
 				ObjectTypeID.CompareTo(other.ObjectTypeID);
+			}
 
 			return BuildOtherID.CompareTo(other.BuildOtherID);
 		}
@@ -539,11 +560,17 @@ namespace KSoft.Phoenix.Phx
 		#region IEquatable Members
 		public bool Equals(BLeaderStartingUnit other)
 		{
-			return DoppleOnStart == other.DoppleOnStart
+			return other != null
+				&& DoppleOnStart == other.DoppleOnStart
 				&& Offset == other.Offset
 				&& ObjectTypeID == other.ObjectTypeID
 				&& BuildOtherID == other.BuildOtherID;
 		}
+		public override bool Equals(object obj)
+			=> Equals(obj as BLeaderStartingUnit);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(DoppleOnStart, Offset, ObjectTypeID, BuildOtherID);
 		#endregion
 	};
 }
