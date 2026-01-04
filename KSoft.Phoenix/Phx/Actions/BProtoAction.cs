@@ -59,13 +59,18 @@ namespace KSoft.Phoenix.Phx
 		float mAutoRepairSearchDistance = PhxUtil.kInvalidSingle;
 		int mInvalidTargetObjectID = TypeExtensions.kNone;
 
+		[Meta.BProtoObjectReference]
 		int mProtoObjectID = TypeExtensions.kNone;
 		bool mProtoObjectIsSquad;
+		string mBoneName;
 #if false
+		[Meta.LocStringReference]
 		int mCountStringID = TypeExtensions.kNone;
 #endif
 		int mMaxNumUnitsPerformAction = TypeExtensions.kNone;
 		float mDamageCharge = PhxUtil.kInvalidSingle;
+
+		bool mChargeOnTaken, mChargeOnDealt, mChargable;
 		#endregion
 
 		#region BListAutoIdObject Members
@@ -143,11 +148,13 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					// TODO: This IS optional, right? Only on 'true'?
-					// inner text: if 0, proto object, if not, proto squad
+					// #NOTE the game code does NOT read the contents of "Squad" for true/false. If the attribute is present, that MEANS true
+					// inner text: if attribute is PRESENT, proto object, if not, proto squad
 					s.StreamAttributeOpt("Squad", ref mProtoObjectIsSquad, Predicates.IsTrue);
-					xs.StreamDBID(s, null, ref mSquadTypeID,
+					xs.StreamDBID(s, null, ref mProtoObjectID,
 						mProtoObjectIsSquad ? DatabaseObjectKind.Squad : DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
+
+					s.StreamAttributeOpt("bone", ref mBoneName, Predicates.IsNotNullOrEmpty);
 				}
 			}
 			#endregion
@@ -156,6 +163,9 @@ namespace KSoft.Phoenix.Phx
 #endif
 			s.StreamElementOpt("MaxNumUnitsPerformAction", ref mMaxNumUnitsPerformAction, Predicates.IsNotNone);
 			s.StreamElementOpt("DamageCharge", ref mDamageCharge, PhxPredicates.IsNotInvalid);
+			s.StreamElementOpt("ChargeOnTaken", ref mChargeOnTaken, Predicates.IsTrue);
+			s.StreamElementOpt("ChargeOnDealt", ref mChargeOnDealt, Predicates.IsTrue);
+			s.StreamElementOpt("Chargable", ref mChargable, Predicates.IsTrue);
 		}
 		#endregion
 	};
