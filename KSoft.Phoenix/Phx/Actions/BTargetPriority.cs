@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using BProtoUnitID = System.Int32; // object type or proto unit
-
 namespace KSoft.Phoenix.Phx
 {
 	// TODO: change to struct?
@@ -18,9 +16,9 @@ namespace KSoft.Phoenix.Phx
 		};
 		#endregion
 
-		int mUnitTypeID = TypeExtensions.kNone;
+		BProtoUnitID mUnitTypeID = TypeExtensions.kNone;
 		[Meta.UnitReference]
-		public int UnitTypeID => mUnitTypeID;
+		public BProtoUnitID UnitTypeID => mUnitTypeID;
 
 		float mPriorityAdjustment = PhxUtil.kInvalidSingle;
 		public float PriorityAdjustment => mPriorityAdjustment;

@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BDamageTypeID = System.Int32;
-using BProtoUnitID = System.Int32; // object type or proto unit
-
 namespace KSoft.Phoenix.Phx
 {
 	// BTargetRule
