@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseNamedObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "Skull",
 			DataName = DatabaseIdObject.kXmlAttrName,
@@ -22,7 +22,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BListArray<BCollectibleSkullEffect> Effects { get; private set; }
+		public Collections.BListArray<BCollectibleSkullEffect> Effects { get; private set; } = new();
 
 		#region DisplayImageOn
 		string mDisplayImageOn;
@@ -68,8 +68,6 @@ namespace KSoft.Phoenix.Phx
 			var textData = base.CreateDatabaseObjectUserInterfaceTextData();
 			textData.HasDescriptionID = true;
 			textData.HasDisplayNameID = true;
-
-			Effects = new Collections.BListArray<BCollectibleSkullEffect>();
 		}
 
 		#region ITagElementStreamable<string> Members

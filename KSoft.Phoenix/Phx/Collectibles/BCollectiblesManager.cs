@@ -7,7 +7,7 @@ namespace KSoft.Phoenix.Phx
 		#region Xml constants
 		public const string kXmlRootName = "CollectiblesDefinitions";
 
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Skulls.xml",
@@ -16,12 +16,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		int mXmlVersion = TypeExtensions.kNone;
-		public BCollectiblesSkullManager SkullManager { get; private set; }
-
-		public BCollectiblesManager()
-		{
-			SkullManager = new BCollectiblesSkullManager();
-		}
+		public BCollectiblesSkullManager SkullManager { get; private set; } = new();
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
