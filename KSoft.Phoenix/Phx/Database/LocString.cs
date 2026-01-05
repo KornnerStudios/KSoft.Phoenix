@@ -123,7 +123,9 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("_mouseKeyboard", ref mMouseKeyboardID, Predicates.IsNotNone);
 			s.StreamAttributeOpt("originally", ref mOriginalID, Predicates.IsNotNullOrEmpty);
 			if (s.IsReading || mText.IsNotNullOrEmpty())
+			{
 				s.StreamCursor(ref mText);
+			}
 		}
 		#endregion
 

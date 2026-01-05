@@ -1,5 +1,4 @@
 ﻿using System;
-using KSoft.Collections;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -39,7 +38,7 @@ namespace KSoft.Phoenix.Phx
 
 			kNumberOf
 		};
-		private BitVector32 mFlags;
+		private Collections.BitVector32 mFlags;
 
 		public bool HasNameID
 		{
@@ -108,9 +107,13 @@ namespace KSoft.Phoenix.Phx
 				mFlags.Set(Flags.HasGaiaRolloverTextID, value);
 
 				if (value)
-					GaiaRolloverText = new BListArray<GaiaRolloverTextData>();
+				{
+					GaiaRolloverText = new Collections.BListArray<GaiaRolloverTextData>();
+				}
 				else
+				{
 					GaiaRolloverText = null;
+				}
 			}
 		}
 
@@ -128,7 +131,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasNameID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mNameID;
 			}
@@ -146,7 +151,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasDisplayNameID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mDisplayNameID;
 			}
@@ -165,7 +172,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasDisplayName2ID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mDisplayName2ID;
 			}
@@ -183,7 +192,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasDescriptionID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mDescriptionID;
 			}
@@ -201,7 +212,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasLongDescriptionID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mLongDescriptionID;
 			}
@@ -219,7 +232,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasPrereqTextID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mPrereqTextID;
 			}
@@ -237,7 +252,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasStatsNameID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mStatsNameID;
 			}
@@ -255,7 +272,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasRoleTextID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mRoleTextID;
 			}
@@ -273,7 +292,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasRolloverTextID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mRolloverTextID;
 			}
@@ -291,7 +312,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasEnemyRolloverTextID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mEnemyRolloverTextID;
 			}
@@ -311,7 +334,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			get {
 				if (!HasChooseTextID)
+				{
 					return TypeExtensions.kNone;
+				}
 
 				return mChooseTextID;
 			}
@@ -330,29 +355,64 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			if (HasNameID)
+			{
 				xs.StreamStringID(s, "NameID", ref mNameID);
+			}
+
 			if (HasDisplayNameID)
+			{
 				xs.StreamStringID(s, "DisplayNameID", ref mDisplayNameID);
+			}
+
 			if (HasDisplayName2ID)
+			{
 				xs.StreamStringID(s, "DisplayName2ID", ref mDisplayName2ID);
+			}
+
 			if (HasDescriptionID)
+			{
 				xs.StreamStringID(s, "DescriptionID", ref mDescriptionID);
+			}
+
 			if (HasLongDescriptionID)
+			{
 				xs.StreamStringID(s, "LongDescriptionID", ref mLongDescriptionID);
+			}
+
 			if (HasPrereqTextID)
+			{
 				xs.StreamStringID(s, "PrereqTextID", ref mPrereqTextID);
+			}
+
 			if (HasRoleTextID)
+			{
 				xs.StreamStringID(s, "RoleTextID", ref mRoleTextID);
+			}
+
 			if (HasRolloverTextID)
+			{
 				xs.StreamStringID(s, "RolloverTextID", ref mRolloverTextID);
+			}
+
 			if (HasEnemyRolloverTextID)
+			{
 				xs.StreamStringID(s, "EnemyRolloverTextID", ref mEnemyRolloverTextID);
+			}
+
 			if (HasGaiaRolloverTextID)
+			{
 				XML.XmlUtil.Serialize(s, GaiaRolloverText, GaiaRolloverTextData.kBListXmlParams);
+			}
+
 			if (HasStatsNameID)
+			{
 				xs.StreamStringID(s, "StatsNameID", ref mStatsNameID);
+			}
+
 			if (HasChooseTextID)
+			{
 				xs.StreamStringID(s, "ChooseTextID", ref mChooseTextID);
+			}
 		}
 		#endregion
 	};
@@ -366,7 +426,7 @@ namespace KSoft.Phoenix.Phx
 		public const int cMaxGaiaRolloverTextIndices = 4;
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "GaiaRolloverTextID",
 		};
@@ -409,7 +469,9 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(GaiaRolloverTextData other)
 		{
 			if (CivID != other.CivID)
+			{
 				CivID.CompareTo(other.CivID);
+			}
 
 			return TextID.CompareTo(other.TextID);
 		}
@@ -418,9 +480,15 @@ namespace KSoft.Phoenix.Phx
 		#region IEquatable Members
 		public bool Equals(GaiaRolloverTextData other)
 		{
-			return CivID == other.CivID
+			return other != null
+				&& CivID == other.CivID
 				&& TextID == other.TextID;
 		}
+
+		public override bool Equals(object obj) => Equals(obj as GaiaRolloverTextData);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(CivID, TextID);
 		#endregion
 	};
 }

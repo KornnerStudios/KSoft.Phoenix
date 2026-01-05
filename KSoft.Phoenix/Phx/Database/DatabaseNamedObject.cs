@@ -31,8 +31,7 @@ namespace KSoft.Phoenix.Phx
 		#region IXmlElementStreamable Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
-			if (UserInterfaceTextData != null)
-				UserInterfaceTextData.Serialize(s);
+			UserInterfaceTextData?.Serialize(s);
 		}
 		#endregion
 	};

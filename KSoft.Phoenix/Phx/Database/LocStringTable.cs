@@ -52,8 +52,12 @@ namespace KSoft.Phoenix.Phx
 			Count = count;
 			ReservedFor = reservedFor;
 
+#pragma warning disable IDE0031 // Use null propagation
 			if (Parent != null)
+			{
 				Parent.SubRanges.Add(this);
+			}
+#pragma warning restore IDE0031 // Use null propagation
 		}
 
 		internal LocStringTableIndexRange MakeNextRange(int count, string reservedFor)
@@ -69,7 +73,9 @@ namespace KSoft.Phoenix.Phx
 
 			int expected_start_index = StartIndex + Count;
 			if (expected_start_index != absoluteStartIndex)
+			{
 				throw new ArgumentException(absoluteStartIndex + " != " + expected_start_index, nameof(absoluteStartIndex));
+			}
 
 			int count = (absoluteEndIndex+1) - absoluteStartIndex;
 			var next = MakeNextRange(count, reservedFor);
@@ -80,13 +86,13 @@ namespace KSoft.Phoenix.Phx
 
 		internal LocStringTableIndexRange StartSubRange(int count, string reservedFor)
 		{
-			var first_child = new LocStringTableIndexRange(count, reservedFor);
-			first_child.Parent = this;
-			first_child.Depth = this.Depth + 1;
-			first_child.StartIndex = this.StartIndex;
-
-			SubRanges = new List<LocStringTableIndexRange>();
-			SubRanges.Add(first_child);
+			var first_child = new LocStringTableIndexRange(count, reservedFor)
+			{
+				Parent = this,
+				Depth = this.Depth + 1,
+				StartIndex = this.StartIndex
+			};
+			SubRanges = [first_child];
 
 			return first_child;
 		}
@@ -102,15 +108,15 @@ namespace KSoft.Phoenix.Phx
 		, IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("StringTable",
+		public static readonly XML.BListXmlParams kBListXmlParams = new("StringTable",
 			XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading);
-		public static readonly Engine.XmlFileInfo kXmlFileInfoEnglish = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfoEnglish = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "StringTable-en.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfoEnglish = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfoEnglish = new(
 			Engine.XmlFilePriority.Lists,
 			kXmlFileInfoEnglish);
 		#endregion
@@ -192,8 +198,7 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		bool mDoNotUpdateUsedIndices;
-		public Collections.BitSet UsedIndices { get; private set; }
-			= new Collections.BitSet();
+		public Collections.BitSet UsedIndices { get; private set; } = new();
 
 		public LocStringTable()
 		{
@@ -203,10 +208,14 @@ namespace KSoft.Phoenix.Phx
 		protected override void InsertItem(int index, LocString item)
 		{
 			if (item == null)
+			{
 				return;
+			}
 
 			if (item.ID.IsNone())
+			{
 				throw new ArgumentOutOfRangeException(nameof(item));
+			}
 
 			index = FindInsertIndex(item);
 
@@ -221,7 +230,10 @@ namespace KSoft.Phoenix.Phx
 			foreach (int bit_index in UsedIndices.SetBitIndices)
 			{
 				if (bit_index > id)
+				{
 					break;
+				}
+
 				if (bit_index == id)
 				{
 					var existing_item = this[insert_index + 1];
@@ -240,7 +252,9 @@ namespace KSoft.Phoenix.Phx
 		private void OnStringTableChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (mDoNotUpdateUsedIndices)
+			{
 				return;
+			}
 
 			switch (e.Action)
 			{
@@ -267,22 +281,26 @@ namespace KSoft.Phoenix.Phx
 
 		private void RefreshUsedIndices(IEnumerable list, bool state = true, bool clearFirst = false)
 		{
-			if (list == null)
-				throw new ArgumentNullException(nameof(list));
+			ArgumentNullException.ThrowIfNull(list);
 
 			mDoNotUpdateUsedIndices = true;
 			if (clearFirst)
+			{
 				UsedIndices.Clear();
+			}
+
 			foreach (LocString str in list)
 			{
 				int id = str.ID;
 				if (id < UsedIndices.Length)
 				{
 					if (UsedIndices[id] == state)
+					{
 						throw new ArgumentException(string.Format(
 							"LocString #{0} '{1}' is already {2}",
 							str.ID, str.Text,
 							state ? "set" : "unset"));
+					}
 				}
 				else if (id >= UsedIndices.Length)
 				{
@@ -310,9 +328,11 @@ namespace KSoft.Phoenix.Phx
 				else if (new_item != null && old_item != null)
 				{
 					if (new_item.ID != old_item.ID)
+					{
 						throw new InvalidOperationException(string.Format(
 							"ID mismatch: {0} != {1}",
 							new_item, old_item));
+					}
 				}
 				else if (new_item != null)
 				{
@@ -332,23 +352,31 @@ namespace KSoft.Phoenix.Phx
 			Contract.Requires(range != null);
 
 			if (UsedIndices.Length == 0)
+			{
 				return range.StartIndex;
+			}
 
 			int max_index = UsedIndices.Length - 1;
 
 			if (range.StartIndex > max_index)
+			{
 				return range.StartIndex;
+			}
 
 			for (int clear_bit_index = range.StartIndex; (clear_bit_index = UsedIndices.NextClearBitIndex(clear_bit_index)) > 0; )
 			{
 				if (clear_bit_index > range.EndIndex)
+				{
 					break;
+				}
 
 				return clear_bit_index;
 			}
 
 			if (range.EndIndex > max_index)
+			{
 				return max_index + 1;
+			}
 
 			return TypeExtensions.kNone;
 		}
@@ -356,7 +384,9 @@ namespace KSoft.Phoenix.Phx
 		public int GetLocStringIndex(int id)
 		{
 			if (id < 0)
+			{
 				return TypeExtensions.kNone;
+			}
 
 			int index = TypeExtensions.kNone;
 			foreach (int bit_index in UsedIndices.SetBitIndices)
@@ -364,9 +394,14 @@ namespace KSoft.Phoenix.Phx
 				index++;
 
 				if (bit_index == id)
+				{
 					break;
+				}
+
 				if (bit_index > id)
+				{
 					index = TypeExtensions.kNone;
+				}
 			}
 
 			return index;
@@ -381,7 +416,9 @@ namespace KSoft.Phoenix.Phx
 			public override string ToString()
 			{
 				if (Range == null)
+				{
 					return base.ToString();
+				}
 
 				return string.Format("{0}Total={1},Used={2},Free={3}, {4}",
 					new string('\t', Range.Depth),
@@ -419,12 +456,16 @@ namespace KSoft.Phoenix.Phx
 
 			int used_count = 0;
 			if (range.StartIndex >= UsedIndices.Length)
+			{
 				return used_count;
+			}
 
 			foreach (int bit_index in UsedIndices.SetBitIndicesStartingAt(range.StartIndex))
 			{
 				if (bit_index > range.EndIndex)
+				{
 					break;
+				}
 
 				used_count++;
 			}
@@ -455,14 +496,18 @@ namespace KSoft.Phoenix.Phx
 							temp_list.Add(str);
 
 							if (is_sorted && prev_str != null && prev_str.ID >= str.ID)
+							{
 								is_sorted = false;
+							}
 
 							prev_str = str;
 						}
 					}
 
 					if (!is_sorted)
+					{
 						temp_list.Sort((x, y) => x.ID.CompareTo(y.ID));
+					}
 
 					int last_id = temp_list[temp_list.Count - 1].ID;
 					UsedIndices.Length = last_id + 1;
@@ -472,9 +517,11 @@ namespace KSoft.Phoenix.Phx
 					{
 						int id = str.ID;
 						if (UsedIndices[id])
+						{
 							s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
 								"Duplicate LocString: #{0} '{1}'",
 								str.ID, str.Text)));
+						}
 
 						UsedIndices[id] = true;
 					}

@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.Phx
 			mPoolVeterancies = new HashSet<BProtoObjectVeterancyList>();
 		}
 
-		public bool InternTypeValues<T>(ref Collections.BTypeValuesBase<T> values)
+		public bool InternTypeValues<T>(ref Collections.BTypeValuesBase<T> /*values*/_)
 		{
 			return false;
 		}

@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Phx
 	public abstract class DatabasePurchasableObject
 		: DatabaseNamedObject
 	{
-		XML.BTypeValuesXmlParams<float> mResourceCostXmlParams;
+		readonly XML.BTypeValuesXmlParams<float> mResourceCostXmlParams;
 
 		public Collections.BTypeValuesSingle ResourceCost { get; private set; }
 
@@ -27,17 +27,18 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		/// <summary>Time, in seconds, it takes to build or research this object</summary>
-		public float PurchaseTime { get {
-			return mBuildTime != PhxUtil.kInvalidSingle
+		public float PurchaseTime
+			=> mBuildTime != PhxUtil.kInvalidSingle
 				? mBuildTime
 				: mResearchTime;
-		} }
 
-		protected DatabasePurchasableObject(Collections.BTypeValuesParams<float> rsrcCostParams, XML.BTypeValuesXmlParams<float> rsrcCostXmlParams)
+		protected DatabasePurchasableObject(
+			Collections.BTypeValuesParams<float> rsrcCostParams,
+			XML.BTypeValuesXmlParams<float> rsrcCostXmlParams)
 		{
 			mResourceCostXmlParams = rsrcCostXmlParams;
 
-			ResourceCost = new Collections.BTypeValuesSingle(rsrcCostParams);
+			ResourceCost = new(rsrcCostParams);
 		}
 
 		#region IXmlElementStreamable Members
