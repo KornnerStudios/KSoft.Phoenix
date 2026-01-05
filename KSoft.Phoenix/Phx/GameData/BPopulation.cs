@@ -6,81 +6,86 @@ namespace KSoft.Phoenix.Phx
 	public struct BPopulation
 		: IO.ITagElementStringNameStreamable
 		, IComparable<BPopulation>
-		, IEqualityComparer<BPopulation>
+		, IEquatable<BPopulation>
+		, IEqualityComparer<BPopulation> // #REPLACE with IEquatable<>
 	{
-		sealed class _EqualityComparer : IEqualityComparer<BPopulation>
-		{
-			#region IEqualityComparer<BPopulation> Members
-			public bool Equals(BPopulation x, BPopulation y)
-			{
-				return x.Max == y.Max && x.Count == y.Count;
-			}
-
-			public int GetHashCode(BPopulation obj)
-			{
-				return obj.Max.GetHashCode() ^ obj.Count.GetHashCode();
-			}
-			#endregion
-		};
-		private static _EqualityComparer gEqualityComparer;
-		public static IEqualityComparer<BPopulation> EqualityComparer { get {
-			if (gEqualityComparer == null)
-				gEqualityComparer = new _EqualityComparer();
-
-			return gEqualityComparer;
-		} }
-
 		#region Xml constants
-		public static readonly Collections.BTypeValuesParams<BPopulation> kBListParams = new
-			Collections.BTypeValuesParams<BPopulation>(db => db.GameData.Populations)
+		public static readonly Collections.BTypeValuesParams<BPopulation> kBListParams =
+			new(db => db.GameData.Populations)
 			{
 				kTypeGetInvalid = () => BPopulation.kInvalid
 			};
-		public static readonly XML.BTypeValuesXmlParams<BPopulation> kBListXmlParams = new
-			XML.BTypeValuesXmlParams<BPopulation>("Pop", "Type");
+		public static readonly XML.BTypeValuesXmlParams<BPopulation> kBListXmlParams =
+			new("Pop", "Type");
 
-		public static readonly Collections.BTypeValuesParams<float> kBListParamsSingle = new
-			Collections.BTypeValuesParams<float>(db => db.GameData.Populations)
+		public static readonly Collections.BTypeValuesParams<float> kBListParamsSingle =
+			new(db => db.GameData.Populations)
 			{
 				kTypeGetInvalid = PhxUtil.kGetInvalidSingle
 			};
-		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle = new
-			XML.BTypeValuesXmlParams<float>("Pop", "Type");
-		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_LowerCase = new
-			XML.BTypeValuesXmlParams<float>("Pop", "Type".ToLowerInvariant());
-		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_CapAddition = new
-			XML.BTypeValuesXmlParams<float>("PopCapAddition", "Type");
+		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle =
+			new("Pop", "Type");
+		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_LowerCase =
+			new("Pop", "Type".ToLowerInvariant());
+		public static readonly XML.BTypeValuesXmlParams<float> kBListXmlParamsSingle_CapAddition =
+			new("PopCapAddition", "Type");
 		#endregion
 
-		private static BPopulation kInvalid { get { return new BPopulation(PhxUtil.kInvalidSingle, PhxUtil.kInvalidSingle); } }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
+		private static BPopulation kInvalid => new(PhxUtil.kInvalidSingle, PhxUtil.kInvalidSingle);
 
 		float mMax;
-		public float Max { get { return mMax; } }
+		public readonly float Max => mMax;
 
 		float mCount;
-		public float Count { get { return mCount; } }
+		public readonly float Count => mCount;
 
 		BPopulation(float max, float count) { mMax = max; mCount = count; }
 
 		#region IComparable<T> Members
-		int IComparable<BPopulation>.CompareTo(BPopulation other)
+		readonly int IComparable<BPopulation>.CompareTo(BPopulation other)
 		{
 			if (this.Max == other.Max)
+			{
 				return this.Count.CompareTo(other.Count);
+			}
 			else
+			{
 				return this.Max.CompareTo(other.Max);
+			}
 		}
 		#endregion
 
-		#region IEqualityComparer<BPopulation> Members
-		public bool Equals(BPopulation x, BPopulation y)
+		#region IEquatable<BPopulation> Members
+		public readonly bool Equals(BPopulation other)
+			=> this.Max == other.Max && this.Count == other.Count;
+
+		public override readonly bool Equals(object obj)
+			=> obj is BPopulation population && Equals(population);
+
+		public static bool operator ==(BPopulation left, BPopulation right)
 		{
-			return EqualityComparer.Equals(x, y);
+			return left.Equals(right);
 		}
 
-		public int GetHashCode(BPopulation obj)
+		public static bool operator !=(BPopulation left, BPopulation right)
 		{
-			return EqualityComparer.GetHashCode(obj);
+			return !(left == right);
+		}
+
+		public override readonly int GetHashCode()
+			=> HashCode.Combine(Max, Count);
+		#endregion
+
+		#region IEqualityComparer<BPopulation> Members
+		public readonly bool Equals(BPopulation x, BPopulation y)
+		{
+			return x.Equals(y);
+		}
+
+		public readonly int GetHashCode(BPopulation obj)
+		{
+			return obj.GetHashCode();
 		}
 		#endregion
 
@@ -93,5 +98,5 @@ namespace KSoft.Phoenix.Phx
 			s.StreamCursor(ref mCount);
 		}
 		#endregion
-	};
+	}
 }

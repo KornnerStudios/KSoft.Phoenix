@@ -17,62 +17,62 @@ namespace KSoft.Phoenix.Phx
 		#region Xml constants
 		const string kXmlRoot = "GameData";
 
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "GameData.xml",
 			RootName = kXmlRoot
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.GameData,
 			kXmlFileInfo);
 
-		public static readonly Collections.BTypeValuesParams<float> kRatesBListTypeValuesParams = new
-			Collections.BTypeValuesParams<float>(db => db.GameData.Rates) { kTypeGetInvalid = PhxUtil.kGetInvalidSingle };
-		static readonly XML.BListXmlParams kRatesXmlParams = new XML.BListXmlParams("Rate");
-		public static readonly XML.BTypeValuesXmlParams<float> kRatesBListTypeValuesXmlParams = new
-			XML.BTypeValuesXmlParams<float>("Rate", "Rate"); // oiy, really? name the 'type' attribute with the same name as the element?
-		static readonly XML.BListXmlParams kPlayerStatesXmlParams = new XML.BListXmlParams("PlayerState");
-		static readonly XML.BListXmlParams kPopsXmlParams = new XML.BListXmlParams("Pop");
-		static readonly XML.BListXmlParams kRefCountsXmlParams = new XML.BListXmlParams("RefCount");
-		static readonly XML.BListXmlParams kHUDItemsXmlParams = new XML.BListXmlParams("HUDItem");
-		static readonly XML.BListXmlParams kFlashableItemsXmlParams = new XML.BListXmlParams
+		public static readonly Collections.BTypeValuesParams<float> kRatesBListTypeValuesParams =
+			new(db => db.GameData.Rates) { kTypeGetInvalid = PhxUtil.kGetInvalidSingle };
+		static readonly XML.BListXmlParams kRatesXmlParams = new("Rate");
+		public static readonly XML.BTypeValuesXmlParams<float> kRatesBListTypeValuesXmlParams =
+			new("Rate", "Rate"); // oiy, really? name the 'type' attribute with the same name as the element?
+		static readonly XML.BListXmlParams kPlayerStatesXmlParams = new("PlayerState");
+		static readonly XML.BListXmlParams kPopsXmlParams = new("Pop");
+		static readonly XML.BListXmlParams kRefCountsXmlParams = new("RefCount");
+		static readonly XML.BListXmlParams kHUDItemsXmlParams = new("HUDItem");
+		static readonly XML.BListXmlParams kFlashableItemsXmlParams = new()
 		{
 			RootName = "FlashableItems",
 			ElementName = "Item",
 			Flags = XML.BCollectionXmlParamsFlags.UseInnerTextForData,
 		};
-		static readonly XML.BListXmlParams kUnitFlagsXmlParams = new XML.BListXmlParams("UnitFlag");
-		static readonly XML.BListXmlParams kSquadFlagsXmlParams = new XML.BListXmlParams("SquadFlag");
+		static readonly XML.BListXmlParams kUnitFlagsXmlParams = new("UnitFlag");
+		static readonly XML.BListXmlParams kSquadFlagsXmlParams = new("SquadFlag");
 
-		static readonly Collections.BTypeValuesParams<string> kCodeProtoObjectsParams = new Collections.BTypeValuesParams<string>(db => db.GameProtoObjectTypes);
-		static readonly XML.BTypeValuesXmlParams<string> kCodeProtoObjectsXmlParams = new XML.BTypeValuesXmlParams<string>("CodeProtoObject", "Type")
+		static readonly Collections.BTypeValuesParams<string> kCodeProtoObjectsParams = new(db => db.GameProtoObjectTypes);
+		static readonly XML.BTypeValuesXmlParams<string> kCodeProtoObjectsXmlParams = new("CodeProtoObject", "Type")
 		{
 			RootName = "CodeProtoObjects",
 		};
-		static readonly Collections.BTypeValuesParams<string> kCodeObjectTypesParams = new Collections.BTypeValuesParams<string>(db => db.GameObjectTypes);
-		static readonly XML.BTypeValuesXmlParams<string> kCodeObjectTypesXmlParams = new XML.BTypeValuesXmlParams<string>("CodeObjectType", "Type")
+		static readonly Collections.BTypeValuesParams<string> kCodeObjectTypesParams = new(db => db.GameObjectTypes);
+		static readonly XML.BTypeValuesXmlParams<string> kCodeObjectTypesXmlParams = new("CodeObjectType", "Type")
 		{
 			RootName = "CodeObjectTypes",
 		};
 		#endregion
 
-		public Collections.BListAutoId<BResource> Resources { get; private set; }
-		public Collections.BTypeNames Rates { get; private set; }
+		public Collections.BListAutoId<BResource> Resources { get; private set; } = new();
+		public Collections.BTypeNames Rates { get; private set; } = new();
 
 		#region GoodAgainstGrades
-		uint[] mGoodAgainstGrades = new uint[(int)ReticleAttackGrade.kNumberOf];
+		readonly uint[] mGoodAgainstGrades = new uint[(int)ReticleAttackGrade.kNumberOf];
 		public uint[] GoodAgainstGrades { get { return mGoodAgainstGrades; } }
 		#endregion
 
 		#region DifficultyModifiers
-		float[] mDifficultyModifiers = new float[(int)BDifficultyTypeModifier.kNumberOf];
+		readonly float[] mDifficultyModifiers = new float[(int)BDifficultyTypeModifier.kNumberOf];
 		public float[] DifficultyModifiers { get { return mDifficultyModifiers; } }
 		#endregion
 
-		public Collections.BTypeNames Populations { get; private set; }
-		public Collections.BTypeNames RefCounts { get; private set; }
-		public Collections.BTypeNames PlayerStates { get; private set; }
+		public Collections.BTypeNames Populations { get; private set; } = new();
+		public Collections.BTypeNames RefCounts { get; private set; } = new();
+		public Collections.BTypeNames PlayerStates { get; private set; } = new();
 
 		#region GarrisonDamageMultiplier
 		float mGarrisonDamageMultiplier = 1.0f;
@@ -148,7 +148,7 @@ namespace KSoft.Phoenix.Phx
 			set { mDefaultBurningEffectLimit = value; }
 		}
 
-		public Collections.BListArray<BBurningEffectLimit> BurningEffectLimits { get; private set; }
+		public Collections.BListArray<BBurningEffectLimit> BurningEffectLimits { get; private set; } = new();
 		#endregion
 
 		#region Fatality
@@ -986,50 +986,34 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BTypeValuesString CodeProtoObjects { get; private set; }
-		public Collections.BTypeValuesString CodeObjectTypes { get; private set; }
-		public Collections.BListArray<BInfectionMap> InfectionMap { get; private set; }
+		public Collections.BTypeValuesString CodeProtoObjects { get; private set; } = new(kCodeProtoObjectsParams);
+		public Collections.BTypeValuesString CodeObjectTypes { get; private set; } = new(kCodeObjectTypesParams);
+		public Collections.BListArray<BInfectionMap> InfectionMap { get; private set; } = new();
 
 		#region Nonsense
 		/// <remarks>Engine doesn't process these, but some trigger scripts use these dynamic types, so keep them on record</remarks>
-		public Collections.BTypeNames HUDItems { get; private set; }
+		public Collections.BTypeNames HUDItems { get; private set; } = new();
 		/// <remarks>Engine doesn't process these, but some trigger scripts use these dynamic types, so keep them on record</remarks>
-		public Collections.BTypeNames FlashableItems { get; private set; }
+		public Collections.BTypeNames FlashableItems { get; private set; } = new();
 		/// <remarks>Engine doesn't process these, but some trigger scripts use these dynamic types, so keep them on record</remarks>
-		public Collections.BTypeNames UnitFlags { get; private set; }
+		public Collections.BTypeNames UnitFlags { get; private set; } = new();
 		/// <remarks>Engine doesn't process these, but some trigger scripts use these dynamic types, so keep them on record</remarks>
-		public Collections.BTypeNames SquadFlags { get; private set; }
+		public Collections.BTypeNames SquadFlags { get; private set; } = new();
 		#endregion
 
 		/// <summary>Get how much it costs, in total, to tribute a resource to another player</summary>
-		public float TotalTributeCost { get { return (mTributeAmount * mTributeCost) + mTributeAmount; } }
+		public float TotalTributeCost => (mTributeAmount * mTributeCost) + mTributeAmount;
 
 		public BGameData()
 		{
-			ObjectDatabase = new ProtoDataObjectDatabase(this, typeof(GameDataObjectKind));
+			ObjectDatabase = new(this, typeof(GameDataObjectKind));
 
-			Resources = new Collections.BListAutoId<BResource>();
-			Rates = new Collections.BTypeNames();
 			#region DifficultyModifiers
 			mDifficultyModifiers[(int)BDifficultyTypeModifier.Normal] = 0.34f;
 			mDifficultyModifiers[(int)BDifficultyTypeModifier.Hard] = 0.67f;
 			mDifficultyModifiers[(int)BDifficultyTypeModifier.Legendary] = 1.0f;
 			mDifficultyModifiers[(int)BDifficultyTypeModifier.Default] = 0.4f;
 			mDifficultyModifiers[(int)BDifficultyTypeModifier.SPCAIDefault] = 0.5f;
-			#endregion
-			Populations = new Collections.BTypeNames();
-			RefCounts = new Collections.BTypeNames();
-			PlayerStates = new Collections.BTypeNames();
-			BurningEffectLimits = new Collections.BListArray<BBurningEffectLimit>();
-			CodeProtoObjects = new Collections.BTypeValuesString(kCodeProtoObjectsParams);
-			CodeObjectTypes = new Collections.BTypeValuesString(kCodeObjectTypesParams);
-			InfectionMap = new Collections.BListArray<BInfectionMap>();
-
-			#region Nonsense
-			HUDItems = new Collections.BTypeNames();
-			FlashableItems = new Collections.BTypeNames();
-			UnitFlags = new Collections.BTypeNames();
-			SquadFlags = new Collections.BTypeNames();
 			#endregion
 		}
 
@@ -1038,28 +1022,26 @@ namespace KSoft.Phoenix.Phx
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
 
-			switch (kind)
+			return kind switch
 			{
-			case GameDataObjectKind.Cost:	return Resources;
-			case GameDataObjectKind.Pop:	return Populations;
-			case GameDataObjectKind.Rate:	return Rates;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				GameDataObjectKind.Cost => Resources,
+				GameDataObjectKind.Pop => Populations,
+				GameDataObjectKind.Rate => Rates,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 
 		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(GameDataObjectKind kind)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
 
-			switch (kind)
+			return kind switch
 			{
-			case GameDataObjectKind.Cost:	return Resources;
-			case GameDataObjectKind.Pop:	return Populations;
-			case GameDataObjectKind.Rate:	return Rates;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				GameDataObjectKind.Cost => Resources,
+				GameDataObjectKind.Pop => Populations,
+				GameDataObjectKind.Rate => Rates,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 		#endregion
 
@@ -1239,7 +1221,9 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			using (s.EnterCursorBookmark(kXmlRoot))
+			{
 				StreamGameData(s);
+			}
 		}
 		#endregion
 
@@ -1266,7 +1250,7 @@ namespace KSoft.Phoenix.Phx
 		, IEquatable<BBurningEffectLimit>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "BurningEffectLimitEntry",
 		};
@@ -1291,7 +1275,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public bool IsInvalid { get { return PhxUtil.IsUndefinedReferenceHandleOrNone(ObjectTypeID); } }
+		public bool IsInvalid => PhxUtil.IsUndefinedReferenceHandleOrNone(ObjectTypeID);
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -1309,7 +1293,9 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BBurningEffectLimit other)
 		{
 			if (Limit != other.Limit)
+			{
 				Limit.CompareTo(other.Limit);
+			}
 
 			return ObjectTypeID.CompareTo(other.ObjectTypeID);
 		}
@@ -1318,9 +1304,15 @@ namespace KSoft.Phoenix.Phx
 		#region IEquatable Members
 		public bool Equals(BBurningEffectLimit other)
 		{
-			return Limit == other.Limit
+			return other != null
+				&& Limit == other.Limit
 				&& ObjectTypeID == other.ObjectTypeID;
 		}
+
+		public override bool Equals(object obj) => Equals(obj as BBurningEffectLimit);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(Limit, ObjectTypeID);
 		#endregion
 	};
 }

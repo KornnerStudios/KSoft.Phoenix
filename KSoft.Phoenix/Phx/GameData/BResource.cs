@@ -8,23 +8,22 @@ namespace KSoft.Phoenix.Phx
 		const bool kUseLowercaseCostTypeHack = true;
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Resource",
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Resource",
 			additionalFlags: XML.BCollectionXmlParamsFlags.DoNotWriteUndefinedData);
 
-		public static readonly Collections.BTypeValuesParams<float> kBListTypeValuesParams = new
-			Collections.BTypeValuesParams<float>(db => db.GameData.Resources) { kTypeGetInvalid = PhxUtil.kGetInvalidSingle };
-		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams = new
-			XML.BTypeValuesXmlParams<float>("Resource", "Type");
-		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_Cost = new
-			XML.BTypeValuesXmlParams<float>("Cost", "ResourceType");
+		public static readonly Collections.BTypeValuesParams<float> kBListTypeValuesParams =
+			new(db => db.GameData.Resources) { kTypeGetInvalid = PhxUtil.kGetInvalidSingle };
+		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams =
+			new("Resource", "Type");
+		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_Cost =
+			new("Cost", "ResourceType");
 #pragma warning disable 0429
 		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_CostLowercaseType = !kUseLowercaseCostTypeHack
 			? kBListTypeValuesXmlParams_Cost
-			: new XML.BTypeValuesXmlParams<float>("Cost", "ResourceType".ToLowerInvariant()
-			);
+			: new("Cost", "ResourceType".ToLowerInvariant());
 #pragma warning restore 0429
-		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_AddResource = new
-			XML.BTypeValuesXmlParams<float>("AddResource", null, XML.BCollectionXmlParamsFlags.UseInnerTextForData);
+		public static readonly XML.BTypeValuesXmlParams<float> kBListTypeValuesXmlParams_AddResource =
+			new("AddResource", null, XML.BCollectionXmlParamsFlags.UseInnerTextForData);
 		#endregion
 
 		bool mDeductable;
