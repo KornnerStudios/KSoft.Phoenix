@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Phx
 	/*public*/ sealed class BTacticState // suicide grunts use this...name and action are omitted, so fuck this
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "State",
 			DataName = "Name",

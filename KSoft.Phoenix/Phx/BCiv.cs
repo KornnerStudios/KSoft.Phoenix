@@ -6,18 +6,18 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseNamedObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Civ")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Civ")
 		{
 			DataName = "Name",
 			Flags = XML.BCollectionXmlParamsFlags.UseElementForData
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Civs.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.ProtoData,
 			kXmlFileInfo);
 		#endregion
@@ -159,7 +159,7 @@ namespace KSoft.Phoenix.Phx
 
 		// Empty Civs just have a name
 		[Browsable(false)]
-		public bool IsEmpty { get { return mTechID.IsNotNone(); } }
+		public bool IsEmpty => mTechID.IsNotNone();
 
 		public BCiv()
 		{

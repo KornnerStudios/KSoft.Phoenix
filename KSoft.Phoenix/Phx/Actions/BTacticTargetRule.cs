@@ -10,18 +10,18 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "TargetRule",
 			Flags = XML.BCollectionXmlParamsFlags.ForceNoRootElementStreaming
 		};
 
-		static readonly Collections.CodeEnum<BTargetRuleFlags> kFlagsProtoEnum = new Collections.CodeEnum<BTargetRuleFlags>();
-		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
+		static readonly Collections.CodeEnum<BTargetRuleFlags> kFlagsProtoEnum = new();
+		static readonly Collections.BBitSetParams kFlagsParams = new(() => kFlagsProtoEnum);
 
-		static readonly Collections.CodeEnum<BTargetRuleTargetStates> kTargetStatesProtoEnum = new Collections.CodeEnum<BTargetRuleTargetStates>();
-		static readonly Collections.BBitSetParams kTargetStatesParams = new Collections.BBitSetParams(() => kTargetStatesProtoEnum);
-		static readonly XML.BBitSetXmlParams kTargetStatesXmlParams = new XML.BBitSetXmlParams("TargetState");
+		static readonly Collections.CodeEnum<BTargetRuleTargetStates> kTargetStatesProtoEnum = new();
+		static readonly Collections.BBitSetParams kTargetStatesParams = new(() => kTargetStatesProtoEnum);
+		static readonly XML.BBitSetXmlParams kTargetStatesXmlParams = new("TargetState");
 		#endregion
 
 		#region Relation
@@ -45,9 +45,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		[Meta.BDamageTypeReference]
-		public List<BDamageTypeID> DamageTypes { get; private set; }
+		public List<BDamageTypeID> DamageTypes { get; private set; } = new();
 		[Meta.UnitReference]
-		public List<BProtoUnitID> TargetTypes { get; private set; }
+		public List<BProtoUnitID> TargetTypes { get; private set; } = new();
 
 		#region ActionID
 		int mActionID = TypeExtensions.kNone;
@@ -59,8 +59,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BBitSet Flags { get; private set; }
-		public Collections.BBitSet TargetStates { get; private set; }
+		public Collections.BBitSet Flags { get; private set; } = new(kFlagsParams);
+		public Collections.BBitSet TargetStates { get; private set; } = new(kTargetStatesParams);
 
 		#region AbilityID
 		int mAbilityID = TypeExtensions.kNone;
@@ -74,15 +74,6 @@ namespace KSoft.Phoenix.Phx
 		public bool IsOptionalAbility { get; private set; }
 		#endregion
 
-		public BTacticTargetRule()
-		{
-			DamageTypes = new List<BDamageTypeID>();
-			TargetTypes = new List<BProtoUnitID>();
-
-			Flags = new Collections.BBitSet(kFlagsParams);
-			TargetStates = new Collections.BBitSet(kTargetStatesParams);
-		}
-
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
@@ -93,8 +84,12 @@ namespace KSoft.Phoenix.Phx
 
 			s.StreamElementEnumOpt("Relation", ref mRelation, e => e != BRelationType.Enemy);
 			if (!s.StreamElementEnumOpt("SquadMode", ref mSquadMode, e => e != BSquadMode.Invalid))
+			{
 				if (s.StreamElementEnumOpt("AutoTargetSquadMode", ref mSquadMode, e => e != BSquadMode.Invalid))
+				{
 					AutoTargetSquadMode = true;
+				}
+			}
 
 			s.StreamElements("DamageType", DamageTypes, xs, XML.BDatabaseXmlSerializerBase.StreamDamageType);
 			s.StreamElements("TargetType", TargetTypes, xs, XML.BDatabaseXmlSerializerBase.StreamUnitID);
@@ -105,7 +100,9 @@ namespace KSoft.Phoenix.Phx
 			XML.XmlUtil.Serialize(s, TargetStates, kTargetStatesXmlParams);
 
 			if (!xs.StreamDBID(s, "Ability", ref mAbilityID, DatabaseObjectKind.Ability))
+			{
 				IsOptionalAbility = xs.StreamDBID(s, "OptionalAbility", ref mAbilityID, DatabaseObjectKind.Ability);
+			}
 		}
 		#endregion
 	};

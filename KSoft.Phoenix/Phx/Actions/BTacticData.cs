@@ -36,13 +36,10 @@ namespace KSoft.Phoenix.Phx
 		public Engine.XmlFileInfo SourceXmlFile { get; set; }
 		public bool SourceXmlFileIsXmb { get; set; }
 
-		public Collections.BListAutoId<		BWeapon> Weapons { get; private set; }
-			= new Collections.BListAutoId<	BWeapon>();
-		public Collections.BListAutoId<		BProtoAction> Actions { get; private set; }
-			= new Collections.BListAutoId<	BProtoAction>();
+		public Collections.BListAutoId<BWeapon> Weapons { get; private set; } = new();
+		public Collections.BListAutoId<BProtoAction> Actions { get; private set; } = new();
 
-		public BTactic Tactic { get; private set; }
-			= new BTactic();
+		public BTactic Tactic { get; private set; } = new();
 
 		public BTacticData()
 		{
@@ -61,28 +58,26 @@ namespace KSoft.Phoenix.Phx
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != TacticDataObjectKind.None);
 
-			switch (kind)
+			return kind switch
 			{
-			case TacticDataObjectKind.Weapon:		return Weapons;
-			//case TacticDataObjectKind.TacticState:	return TacticStates;
-			case TacticDataObjectKind.Action:		return Actions;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				TacticDataObjectKind.Weapon => Weapons,
+				//TacticDataObjectKind.TacticState => TacticStates,
+				TacticDataObjectKind.Action => Actions,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 
 		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(TacticDataObjectKind kind)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != TacticDataObjectKind.None);
 
-			switch (kind)
+			return kind switch
 			{
-			case TacticDataObjectKind.Weapon:		return Weapons;
-			//case TacticDataObjectKind.TacticState:	return TacticStates;
-			case TacticDataObjectKind.Action:		return Actions;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				TacticDataObjectKind.Weapon => Weapons,
+				//TacticDataObjectKind.TacticState => TacticStates,
+				TacticDataObjectKind.Action => Actions,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 		#endregion
 
@@ -103,9 +98,13 @@ namespace KSoft.Phoenix.Phx
 			if (s.IsReading)
 			{
 				if (isOptional)
+				{
 					was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 
 				if (was_streamed)
 				{
@@ -114,7 +113,9 @@ namespace KSoft.Phoenix.Phx
 					Contract.Assert(dbid.IsNotNone());
 				}
 				else
+				{
 					dbid = TypeExtensions.kNone;
+				}
 			}
 			else if (s.IsWriting && dbid.IsNotNone())
 			{
@@ -123,9 +124,13 @@ namespace KSoft.Phoenix.Phx
 				Contract.Assert(!string.IsNullOrEmpty(id_name));
 
 				if (isOptional)
+				{
 					s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 			}
 
 			return was_streamed;
@@ -158,7 +163,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IProtoDataObjectDatabaseProvider members
-		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return SourceXmlFile; } }
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference => SourceXmlFile;
 
 		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
 		{

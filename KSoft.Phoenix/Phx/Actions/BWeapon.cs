@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: Collections.BListAutoIdObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "Weapon",
 			DataName = "Name",
@@ -25,14 +25,24 @@ namespace KSoft.Phoenix.Phx
 		float mAttackRate = PhxUtil.kInvalidSingle;
 		public float AttackRate { get { return mAttackRate; } }
 		int mProjectileObjectID = TypeExtensions.kNone;
+		[Meta.BProtoObjectReference]
 		public float ProjectileObjectID { get { return mProjectileObjectID; } }
 
 		int mWeaponTypeID = TypeExtensions.kNone;
+		[Meta.BWeaponTypeReference]
 		public int WeaponTypeID { get { return mWeaponTypeID; } }
 		int mVisualAmmo = TypeExtensions.kNone;
 		public int VisualAmmo { get { return mVisualAmmo; } }
-		int mTriggerScriptID = TypeExtensions.kNone;
-		public int TriggerScriptID { get { return mTriggerScriptID; } }
+
+		#region TriggerScript
+		string mTriggerScript;
+		[Meta.TriggerScriptReference]
+		public string TriggerScript
+		{
+			get { return mTriggerScript; }
+			set { mTriggerScript = value; }
+		}
+		#endregion
 
 		float mMinRange = PhxUtil.kInvalidSingle;
 		public float MinRange { get { return mMinRange; } }
@@ -56,8 +66,8 @@ namespace KSoft.Phoenix.Phx
 		float mAirBurstSpan = PhxUtil.kInvalidSingle;
 		public float AirBurstSpan { get { return mAirBurstSpan; } }
 
-		public Collections.BTypeValues<BDamageRatingOverride> DamageOverrides { get; private set; }
-		public Collections.BListArray<BTargetPriority> TargetPriorities { get; private set; }
+		public Collections.BTypeValues<BDamageRatingOverride> DamageOverrides { get; private set; } = new(BDamageRatingOverride.kBListParams);
+		public Collections.BListArray<BTargetPriority> TargetPriorities { get; private set; } = new();
 
 		bool mStasisSmartTargeting;
 		public bool StasisSmartTargeting { get { return mStasisSmartTargeting; } }
@@ -73,32 +83,70 @@ namespace KSoft.Phoenix.Phx
 		public float MaxPullRange { get { return mMaxPullRange; } }
 		#endregion
 
-		public BWeapon()
-		{
-			DamageOverrides = new Collections.BTypeValues<BDamageRatingOverride>(BDamageRatingOverride.kBListParams);
-			TargetPriorities = new Collections.BListArray<BTargetPriority>();
-		}
-
 		#region BListAutoIdObject Members
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			var xs = s.GetSerializerInterface();
 
 			s.StreamElementOpt("DamagePerSecond", ref mDamagePerSecond, PhxPredicates.IsNotInvalid);
+			// #TODO_SUPPORT DPSRamp
 			s.StreamElementOpt("DOTrate", ref mDOTRate, PhxPredicates.IsNotInvalid);
 			s.StreamElementOpt("DOTduration", ref mDOTDuration, PhxPredicates.IsNotInvalid);
+			// #TODO_SUPPORT DOTEffect
+
+			// #TODO_SUPPORT Reapply
+			// #TODO_SUPPORT Apply
+			// #TODO_SUPPORT PostAttackCooldownMin
+			// #TODO_SUPPORT PostAttackCooldownMax
+			// #TODO_SUPPORT PreAttackCooldownMin
+			// #TODO_SUPPORT PreAttackCooldownMax
 
 			s.StreamElementOpt("AttackRate", ref mAttackRate, PhxPredicates.IsNotInvalid);
 			xs.StreamDBID(s, "Projectile", ref mProjectileObjectID, DatabaseObjectKind.Object);
 
+			// #TODO_SUPPORT ImpactEffect
+			// #TODO_SUPPORT ImpactCameraShake
+			// #TODO_SUPPORT ImpactRumble
+			// #TODO_SUPPORT ImpactCameraEffect
+
 			xs.StreamDBID(s, "WeaponType", ref mWeaponTypeID, DatabaseObjectKind.WeaponType);
 			s.StreamElementOpt("VisualAmmo", ref mVisualAmmo, Predicates.IsNotNone);
-			//TriggerScript
+
+			// #TODO_SUPPORT AOERadius
+			// #TODO_SUPPORT AOEPrimaryTargetFactor
+			// #TODO_SUPPORT AOEDistanceFactor
+			// #TODO_SUPPORT AOEDamageFactor
+			// #TODO_SUPPORT AOELinearDamage
+
+			// #TODO_SUPPORT PhysicsLaunchAngleMin
+			// #TODO_SUPPORT PhysicsLaunchAngleMax
+			// #TODO_SUPPORT PhysicsLaunchAxial
+			// #TODO_SUPPORT PhysicsForceMin
+			// #TODO_SUPPORT PhysicsForceMax
+			// #TODO_SUPPORT PhysicsForceMaxAngle
+
+			// #TODO_SUPPORT BWeaponFlags
+			// ThrowUnits,ThrowAliveUnits,ThrowDamageParts,FlailThrownUnits,Dodgeable,
+			// Deflectable,SmallArmsDeflectable,OverridesRevive,PullUnits,UseDPSasDPA,
+			// UseGroupRange,CarriedObjectAsProjectileVisual,
+			// AllowFriendlyFire,EnableHeightBonusDamage,
+			// UsesAmmo,
+			// TargetsFootOfUnit,KeepDPSRamp,
+			// StasisDrain,StasisBomb,
+			// ApplyKnockback,Tentacle,
+			// AOEIgnoresYAxis,
+			// AirBurst
+
+			// #TODO_SUPPORT Hardpoint, id that must exist on the ProtoObject's Hardpoints
+
+			s.StreamElementOpt("TriggerScript", ref mTriggerScript, Predicates.IsNotNullOrEmpty);
 
 			s.StreamElementOpt("MinRange", ref mMinRange, PhxPredicates.IsNotInvalid);
 			s.StreamElementOpt("MaxRange", ref mMaxRange, PhxPredicates.IsNotInvalid);
 
+			// #TODO_SUPPORT MaxDamagePerRam
 			s.StreamElementOpt("ReflectDamageFactor", ref mReflectDamageFactor, PhxPredicates.IsNotInvalid);
+			// #TODO_SUPPORT Accuracy
 			s.StreamElementOpt("MovingAccuracy", ref mMovingAccuracy, PhxPredicates.IsNotInvalid);
 			s.StreamElementOpt("MaxDeviation", ref mMaxDeviation, PhxPredicates.IsNotInvalid);
 			s.StreamElementOpt("MovingMaxDeviation", ref mMovingMaxDeviation, PhxPredicates.IsNotInvalid);
@@ -110,14 +158,25 @@ namespace KSoft.Phoenix.Phx
 			XML.XmlUtil.Serialize(s, DamageOverrides, BDamageRatingOverride.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, TargetPriorities, BTargetPriority.kBListXmlParams);
 
-			using (var bm = s.EnterCursorBookmarkOpt("Stasis", this, o => o.mStasisSmartTargeting)) if (bm.IsNotNull)
-				s.StreamAttribute("SmartTargeting", ref mStasisSmartTargeting);
+			// #TODO_SUPPORT CausePhysicsExplosion (particle, victimType)
+
+			using (var bm = s.EnterCursorBookmarkOpt("Stasis", this, o => o.mStasisSmartTargeting))
+			{
+				if (bm.IsNotNull)
+				{
+					s.StreamAttribute("SmartTargeting", ref mStasisSmartTargeting);
+				}
+			}
 
 			s.StreamElementOpt("StasisHealToDrainRatio", ref mStasisHealToDrainRatio, PhxPredicates.IsNotInvalid);
+			// #TODO_SUPPORT ThrowOffsetAngle
+			// #TODO_SUPPORT ThrowVelocity
+
+			// #TODO_SUPPORT Daze (...)
 
 			s.StreamElementOpt("Bounces", ref mBounces, Predicates.IsNotNone);
 			s.StreamElementOpt("BounceRange", ref mBounceRange, PhxPredicates.IsNotInvalid);
-
+			// #TODO_SUPPORT CameraRubleShakeScalarNotLocal
 			s.StreamElementOpt("MaxPullRange", ref mMaxPullRange, PhxPredicates.IsNotInvalid);
 		}
 		#endregion

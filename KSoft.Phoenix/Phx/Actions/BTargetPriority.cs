@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+
+using BProtoUnitID = System.Int32; // object type or proto unit
 
 namespace KSoft.Phoenix.Phx
 {
 	// TODO: change to struct?
 	public sealed class BTargetPriority
 		: IO.ITagElementStringNameStreamable
-		, IEqualityComparer<BTargetPriority>
+		, IEquatable<BTargetPriority>
+		, IEqualityComparer<BTargetPriority> // #REPLACE with IEquatable<>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "TargetPriority",
 		};
@@ -16,10 +20,10 @@ namespace KSoft.Phoenix.Phx
 
 		int mUnitTypeID = TypeExtensions.kNone;
 		[Meta.UnitReference]
-		public int UnitTypeID { get { return mUnitTypeID; } }
+		public int UnitTypeID => mUnitTypeID;
 
-		float mPriority = PhxUtil.kInvalidSingle;
-		public float Priority { get { return mPriority; } }
+		float mPriorityAdjustment = PhxUtil.kInvalidSingle;
+		public float PriorityAdjustment => mPriorityAdjustment;
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -29,19 +33,33 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			xs.StreamDBID(s, "type", ref mUnitTypeID, DatabaseObjectKind.Unit, false, XML.XmlUtil.kSourceAttr);
-			s.StreamCursor(ref mPriority);
+			// Optional, engine defaults to 0.0:
+			s.StreamCursor(ref mPriorityAdjustment);
 		}
+		#endregion
+
+		#region IEquatable<BTargetPriority> Members
+		public bool Equals(BTargetPriority other)
+			=> other != null
+				&& this.UnitTypeID == other.UnitTypeID
+				&& this.PriorityAdjustment == other.PriorityAdjustment;
+
+		public override bool Equals(object obj)
+			=> Equals(obj as BTargetPriority);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(UnitTypeID, PriorityAdjustment);
 		#endregion
 
 		#region IEqualityComparer<BTargetPriority> Members
 		public bool Equals(BTargetPriority x, BTargetPriority y)
 		{
-			return x.UnitTypeID == y.UnitTypeID && x.Priority == y.Priority;
+			return x.Equals(y);
 		}
 
 		public int GetHashCode(BTargetPriority obj)
 		{
-			return obj.UnitTypeID.GetHashCode() ^ obj.Priority.GetHashCode();
+			return obj.GetHashCode();
 		}
 		#endregion
 	};
