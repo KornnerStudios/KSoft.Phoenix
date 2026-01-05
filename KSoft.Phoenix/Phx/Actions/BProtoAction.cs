@@ -70,7 +70,7 @@ namespace KSoft.Phoenix.Phx
 		int mMaxNumUnitsPerformAction = TypeExtensions.kNone;
 		float mDamageCharge = PhxUtil.kInvalidSingle;
 
-		bool mChargeOnTaken, mChargeOnDealt, mChargable;
+		bool mChargeOnTaken, mChargeOnDealt, mChargeable;
 		#endregion
 
 		#region BListAutoIdObject Members
@@ -165,7 +165,8 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("DamageCharge", ref mDamageCharge, PhxPredicates.IsNotInvalid);
 			s.StreamElementOpt("ChargeOnTaken", ref mChargeOnTaken, Predicates.IsTrue);
 			s.StreamElementOpt("ChargeOnDealt", ref mChargeOnDealt, Predicates.IsTrue);
-			s.StreamElementOpt("Chargable", ref mChargable, Predicates.IsTrue);
+			// Yes, the game has a typo
+			s.StreamElementOpt("Chargable", ref mChargeable, Predicates.IsTrue);
 		}
 		#endregion
 	};
