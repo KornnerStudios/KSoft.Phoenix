@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using BProtoSquadID = System.Int32;
-using BProtoPowerID = System.Int32;
 using BVector = System.Numerics.Vector4;
 
 namespace KSoft.Phoenix.Phx

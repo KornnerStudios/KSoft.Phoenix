@@ -1,5 +1,4 @@
 ﻿
-using BProtoObjectID = System.Int32;
 using BAIMissionID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

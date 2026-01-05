@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BProtoPowerID = System.Int32;
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
 using BPlayerState = System.UInt32; // states are defined in GameData.xml
@@ -256,7 +255,7 @@ namespace KSoft.Phoenix.Runtime
 		{
 			s.Stream(ref Index);
 			s.Stream(ref StatType);
-			s.Stream(ref Stat, 
+			s.Stream(ref Stat,
 				() => FromType(StatType));
 		}
 		#endregion
@@ -297,7 +296,7 @@ namespace KSoft.Phoenix.Runtime
 		public BStatsRecorder[] Recorders;
 		public List<BStatPowerKeyValuePair> Powers { get; private set; }
 		public List<BStatAbilityKeyValuePair> Abilities { get; private set; }
-		public BCost[] TotalResources, MaxResources, 
+		public BCost[] TotalResources, MaxResources,
 			GatheredResources, TributedResources;
 		public BPlayerID PlayerID;
 		public BTeamID TeamID;

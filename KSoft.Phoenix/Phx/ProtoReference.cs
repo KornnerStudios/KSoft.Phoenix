@@ -225,11 +225,12 @@ namespace KSoft.Phoenix.Phx.Meta
 		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Civ; } }
 	};
 
+	/// <summary>BDamageTypeID</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class BDamageTypeReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return typeof(BDamageType); } }
-		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.DamageType; } }
+		public override Type ProtoType => typeof(BDamageType);
+		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.DamageType;
 	};
 
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
@@ -246,11 +247,12 @@ namespace KSoft.Phoenix.Phx.Meta
 		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Leader; } }
 	};
 
+	/// <summary>BProtoObjectID</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class BProtoObjectReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return typeof(BProtoObject); } }
-		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Object; } }
+		public override Type ProtoType => typeof(BProtoObject);
+		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Object;
 	};
 
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
@@ -260,18 +262,20 @@ namespace KSoft.Phoenix.Phx.Meta
 		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.ObjectType; } }
 	};
 
+	/// <summary>BProtoPowerID</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class BProtoPowerReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return typeof(BProtoPower); } }
-		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Power; } }
+		public override Type ProtoType => typeof(BProtoPower);
+		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Power;
 	};
 
+	/// <summary>BProtoSquadID</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class BProtoSquadReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return typeof(BProtoSquad); } }
-		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Squad; } }
+		public override Type ProtoType => typeof(BProtoSquad);
+		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Squad;
 	};
 
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
@@ -281,11 +285,12 @@ namespace KSoft.Phoenix.Phx.Meta
 		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Tactic; } }
 	};
 
+	/// <summary>BProtoTechID</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class BProtoTechReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return typeof(BProtoTech); } }
-		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Tech; } }
+		public override Type ProtoType => typeof(BProtoTech);
+		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Tech;
 	};
 
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
@@ -295,12 +300,12 @@ namespace KSoft.Phoenix.Phx.Meta
 		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.TerrainTileType; } }
 	};
 
-	/// <summary>Object or ObjectType</summary>
+	/// <summary>BProtoUnitID; Object or ObjectType</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class UnitReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return null; } }
-		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.Unit; } }
+		public override Type ProtoType => null;
+		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Unit;
 	};
 
 	[AttributeUsage(kValidOn, AllowMultiple=false)]

@@ -1,6 +1,4 @@
 ﻿
-using BProtoPowerID = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerEntry

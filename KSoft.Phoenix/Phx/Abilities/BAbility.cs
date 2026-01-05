@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using BProtoObjectID = System.Int32;
+﻿using System.Collections.Generic;
 
 namespace KSoft.Phoenix.Phx
 {

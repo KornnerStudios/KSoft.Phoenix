@@ -2,7 +2,6 @@
 using BVector = System.Numerics.Vector4;
 using BCost = System.Single;
 using BEntityID = System.Int32;
-using BProtoObjectID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {

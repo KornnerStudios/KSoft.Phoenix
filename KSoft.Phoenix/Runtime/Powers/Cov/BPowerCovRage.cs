@@ -3,7 +3,6 @@ using BVector = System.Numerics.Vector4;
 using BCost = System.Single;
 using BCueIndex = System.Int32;
 using BEntityID = System.Int32;
-using BProtoObjectID = System.Int32;
 using BObjectTypeID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
@@ -30,9 +29,9 @@ namespace KSoft.Phoenix.Runtime
 			: IO.IEndianStreamSerializable
 		{
 			public string Name;
-			public BInterpTable ColorTransformRTable = new BInterpTable(), ColorTransformGTable = new BInterpTable(), 
+			public BInterpTable ColorTransformRTable = new BInterpTable(), ColorTransformGTable = new BInterpTable(),
 				ColorTransformBTable = new BInterpTable();
-			public BInterpTable ColorTransformFactorTable = new BInterpTable(), 
+			public BInterpTable ColorTransformFactorTable = new BInterpTable(),
 				BlurFactorTable = new BInterpTable(), // same data gets written 3x :s
 				FOVTable = new BInterpTable(), ZoomTable = new BInterpTable(), YawTable = new BInterpTable(),
 				PitchTable = new BInterpTable();
@@ -62,14 +61,14 @@ namespace KSoft.Phoenix.Runtime
 		public BParametricSplineCurve JumpSplineCurve = new BParametricSplineCurve();
 		public BCameraEffectData CameraEffectData = new BCameraEffectData();
 		public BCost[] CostPerTick, CostPerTickAttacking, CostPerJump;
-		public float TickLength, DamageMultiplier, DamageTakenMultiplier, 
+		public float TickLength, DamageMultiplier, DamageTakenMultiplier,
 			SpeedMultiplier, NudgeMultiplier, ScanRadius;
 		public BProtoObjectID ProjectileObject, HandAttachObject, TeleportAttachObject;
 		public float AudioReactionTimer, TeleportTime,
-			TeleportLateralDistance, TeleportJumpDistance, TimeBetweenRetarget, 
+			TeleportLateralDistance, TeleportJumpDistance, TimeBetweenRetarget,
 			MotionBlurAmount, MotionBlurDistance, MotionBlurTime,
 			DistanceVsAngleWeight, HealPerKillCombatValue, AuraRadius, AuraDamageBonus;
-		public BProtoObjectID AuraAttachObjectSmall, AuraAttachObjectMedium, AuraAttachObjectLarge, 
+		public BProtoObjectID AuraAttachObjectSmall, AuraAttachObjectMedium, AuraAttachObjectLarge,
 			HealAttachObject;
 		public BEntityID[] SquadsInAura;
 		public BObjectTypeID FilterTypeID;

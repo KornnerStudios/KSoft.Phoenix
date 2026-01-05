@@ -1,6 +1,4 @@
 ﻿
-using BProtoSquadID = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	partial class cSaveMarker

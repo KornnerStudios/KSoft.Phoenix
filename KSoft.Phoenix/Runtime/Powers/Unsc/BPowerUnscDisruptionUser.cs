@@ -1,6 +1,4 @@
 ﻿
-using BProtoObjectID = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerUnscDisruptionUser

@@ -2,7 +2,6 @@
 using BVector = System.Numerics.Vector4;
 using BCueIndex = System.Int32;
 using BEntityID = System.Int32;
-using BProtoObjectID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -37,7 +36,7 @@ namespace KSoft.Phoenix.Runtime
 			RockSmallProtoID, RockMediumProtoID, RockLargeProtoID;
 		public BCueIndex FiredSound;
 		public uint TargetingDelay, AutoShotDelay;
-		public float AutoShotInnerRadius, AutoShotOuterRadius, 
+		public float AutoShotInnerRadius, AutoShotOuterRadius,
 			XOffset, YOffset, ZOffset;
 		public int LOSMode;
 

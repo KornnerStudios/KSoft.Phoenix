@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
-
-using BVector = System.Numerics.Vector4;
+﻿
 using BEntityID = System.Int32;
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
 using BObjectTypeID = System.Int32;
-using BProtoObjectID = System.Int32;
-using BProtoSquadID = System.Int32;
 using BRelationType = System.Byte;
 
 namespace KSoft.Phoenix.Runtime
@@ -15,14 +11,14 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 	{
 		public byte Type;
-		public bool IsInverted, AppliesToUnits, 
+		public bool IsInverted, AppliesToUnits,
 			AppliesToSquads, AppliesToEntities;
 
 		#region IEndianStreamSerializable Members
 		public virtual void Serialize(IO.EndianStream s)
 		{
 			s.Stream(ref Type);
-			s.Stream(ref IsInverted); s.Stream(ref AppliesToUnits); 
+			s.Stream(ref IsInverted); s.Stream(ref AppliesToUnits);
 			s.Stream(ref AppliesToSquads); s.Stream(ref AppliesToEntities);
 		}
 		#endregion

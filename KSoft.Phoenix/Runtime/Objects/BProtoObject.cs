@@ -4,7 +4,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BProtoObjectID = System.Int32;
 using BProtoObjectTrainLimit = System.Int32; // idk, 4 bytes
 
 namespace KSoft.Phoenix.Runtime

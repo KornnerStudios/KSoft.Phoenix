@@ -1,7 +1,6 @@
 ﻿
 using BEntityID = System.Int32;
 using BEntityTimePair = System.UInt64;
-using BProtoObjectID = System.Int32;
 using BObjectTypeID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

@@ -2,7 +2,6 @@
 using BVector = System.Numerics.Vector4;
 using BCueIndex = System.Int32;
 using BEntityID = System.Int32;
-using BProtoObjectID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -13,7 +12,7 @@ namespace KSoft.Phoenix.Runtime
 		public float DisruptionRadius, DisruptionRadiusSqr, TimeRemainingSec,
 			DisruptionStartTime;
 		public BVector Direction, Right;
-		public BProtoObjectID BomberProtoID, DisruptionObjectProtoID, 
+		public BProtoObjectID BomberProtoID, DisruptionObjectProtoID,
 			PulseObjectProtoID, StrikeObjectProtoID;
 		public float PulseSpacing, NextPulseTime;
 		public int NumPulses;
