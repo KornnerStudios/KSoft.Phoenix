@@ -17,34 +17,27 @@ namespace KSoft.Phoenix.Phx
 		#region Xml constants
 		const string kXmlRoot = "HPBarDefinition";
 
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "HPBars.xml",
 			RootName = kXmlRoot
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.GameData,
 			kXmlFileInfo);
 		#endregion
 
-		public Collections.BListAutoId<BProtoHPBar> HPBars { get; private set; }
-		public Collections.BListAutoId<BProtoHPBarColorStages> ColorStages { get; private set; }
-		public Collections.BListAutoId<BProtoVeterancyBar> VeterancyBars { get; private set; }
-		public Collections.BListAutoId<BProtoPieProgress> PieProgress { get; private set; }
-		public Collections.BListAutoId<BProtoBobbleHead> BobbleHeads { get; private set; }
-		public Collections.BListAutoId<BProtoBuildingStrength> BuildingStrengths { get; private set; }
+		public Collections.BListAutoId<BProtoHPBar> HPBars { get; private set; } = new();
+		public Collections.BListAutoId<BProtoHPBarColorStages> ColorStages { get; private set; } = new();
+		public Collections.BListAutoId<BProtoVeterancyBar> VeterancyBars { get; private set; } = new();
+		public Collections.BListAutoId<BProtoPieProgress> PieProgress { get; private set; } = new();
+		public Collections.BListAutoId<BProtoBobbleHead> BobbleHeads { get; private set; } = new();
+		public Collections.BListAutoId<BProtoBuildingStrength> BuildingStrengths { get; private set; } = new();
 
 		public HPBarData()
 		{
 			ObjectDatabase = new ProtoDataObjectDatabase(this, typeof(HPBarDataObjectKind));
-
-			HPBars = new Collections.BListAutoId<BProtoHPBar>();
-			ColorStages = new Collections.BListAutoId<BProtoHPBarColorStages>();
-			VeterancyBars = new Collections.BListAutoId<BProtoVeterancyBar>();
-			PieProgress = new Collections.BListAutoId<BProtoPieProgress>();
-			BobbleHeads = new Collections.BListAutoId<BProtoBobbleHead>();
-			BuildingStrengths = new Collections.BListAutoId<BProtoBuildingStrength>();
 
 			InitializeDatabaseInterfaces();
 		}
@@ -74,34 +67,32 @@ namespace KSoft.Phoenix.Phx
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
 
-			switch (kind)
+			return kind switch
 			{
-			case HPBarDataObjectKind.HPBar:				return HPBars;
-			case HPBarDataObjectKind.ColorStages:		return ColorStages;
-			case HPBarDataObjectKind.VeterancyBar:		return VeterancyBars;
-			case HPBarDataObjectKind.PieProgress:		return PieProgress;
-			case HPBarDataObjectKind.BobbleHead:		return BobbleHeads;
-			case HPBarDataObjectKind.BuildingStrength:	return BuildingStrengths;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				HPBarDataObjectKind.HPBar => HPBars,
+				HPBarDataObjectKind.ColorStages => ColorStages,
+				HPBarDataObjectKind.VeterancyBar => VeterancyBars,
+				HPBarDataObjectKind.PieProgress => PieProgress,
+				HPBarDataObjectKind.BobbleHead => BobbleHeads,
+				HPBarDataObjectKind.BuildingStrength => BuildingStrengths,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 
 		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(HPBarDataObjectKind kind)
 		{
 			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
 
-			switch (kind)
+			return kind switch
 			{
-			case HPBarDataObjectKind.HPBar:				return HPBars;
-			case HPBarDataObjectKind.ColorStages:		return ColorStages;
-			case HPBarDataObjectKind.VeterancyBar:		return VeterancyBars;
-			case HPBarDataObjectKind.PieProgress:		return PieProgress;
-			case HPBarDataObjectKind.BobbleHead:		return BobbleHeads;
-			case HPBarDataObjectKind.BuildingStrength:	return BuildingStrengths;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				HPBarDataObjectKind.HPBar => HPBars,
+				HPBarDataObjectKind.ColorStages => ColorStages,
+				HPBarDataObjectKind.VeterancyBar => VeterancyBars,
+				HPBarDataObjectKind.PieProgress => PieProgress,
+				HPBarDataObjectKind.BobbleHead => BobbleHeads,
+				HPBarDataObjectKind.BuildingStrength => BuildingStrengths,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 		#endregion
 
@@ -124,12 +115,14 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			using (s.EnterCursorBookmark(kXmlRoot))
+			{
 				StreamHPBarData(s);
+			}
 		}
 		#endregion
 
 		#region IProtoDataObjectDatabaseProvider members
-		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return kXmlFileInfo; } }
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference => kXmlFileInfo;
 
 		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
 		{
