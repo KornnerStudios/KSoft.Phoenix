@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Runtime
 	public sealed class BPathMoveData
 		: IO.IEndianStreamSerializable
 	{
-		internal static readonly FreeListInfo kFreeListInfo = new FreeListInfo(cSaveMarker.PathMoveData)
+		internal static readonly FreeListInfo kFreeListInfo = new(cSaveMarker.PathMoveData)
 		{
 			MaxCount = 0x4E20,
 		};

@@ -62,11 +62,15 @@ namespace KSoft.Phoenix.Runtime
 				var t = reading ? new T() : c[x];
 				t.Serialize(s);
 				if (reading)
+				{
 					c.Add(t);
+				}
 			}
 
 			if (isIterated)
+			{
 				s.StreamSignature(cSaveMarker.IteratorEndInt32);
+			}
 
 			return s;
 		}
@@ -94,7 +98,9 @@ namespace KSoft.Phoenix.Runtime
 				int t = reading ? 0 : c[x];
 				s.Stream(ref t);
 				if (reading)
+				{
 					c.Add(t);
+				}
 			}
 
 			return s;
@@ -122,7 +128,9 @@ namespace KSoft.Phoenix.Runtime
 				string t = reading ? null : c[x];
 				s.StreamPascalString32(ref t);
 				if (reading)
+				{
 					c.Add(t);
+				}
 			}
 
 			return s;
@@ -157,7 +165,9 @@ namespace KSoft.Phoenix.Runtime
 				var t = reading ? new T() : array[x];
 				t.Serialize(s);
 				if (reading)
+				{
 					array[x] = t;
+				}
 			}
 
 			return s;
@@ -176,10 +186,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (byte)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new bool[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -196,10 +210,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (byte)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new byte[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -216,10 +234,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (byte)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new int[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -236,10 +258,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (byte)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new ulong[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -256,10 +282,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (byte)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new string[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.StreamPascalString32(ref array[x]);
+			}
 
 			return s;
 		}
@@ -284,7 +314,9 @@ namespace KSoft.Phoenix.Runtime
 			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.StreamV(ref array[x]);
+			}
 
 			return s;
 		}
@@ -317,11 +349,15 @@ namespace KSoft.Phoenix.Runtime
 				var t = reading ? new T() : array[x];
 				t.Serialize(s);
 				if (reading)
+				{
 					array[x] = t;
+				}
 			}
 
 			if (isIterated)
+			{
 				s.StreamSignature(cSaveMarker.IteratorEndUInt16);
+			}
 
 			return s;
 		}
@@ -337,10 +373,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (ushort)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new int[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -355,10 +395,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (ushort)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new uint[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -383,7 +427,9 @@ namespace KSoft.Phoenix.Runtime
 			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -398,10 +444,14 @@ namespace KSoft.Phoenix.Runtime
 			var count = (ushort)(reading ? 0 : array.Length);
 			s.Stream(ref count);
 			if (reading)
+			{
 				array = new float[count];
+			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.Stream(ref array[x]);
+			}
 
 			return s;
 		}
@@ -426,7 +476,9 @@ namespace KSoft.Phoenix.Runtime
 			}
 
 			for (int x = 0; x < count; x++)
+			{
 				s.StreamV(ref array[x]);
+			}
 
 			return s;
 		}
@@ -436,10 +488,14 @@ namespace KSoft.Phoenix.Runtime
 		public IO.EndianStream StreamBCost(IO.EndianStream s, ref BCost[] c)
 		{
 			if (s.IsReading)
+			{
 				c = new float[Database.Resources.Count];
+			}
 
 			for (int x = 0; x < c.Length; x++)
+			{
 				s.Stream(ref c[x]);
+			}
 
 			return s;
 		}
@@ -447,7 +503,9 @@ namespace KSoft.Phoenix.Runtime
 		public void ToStreamBCost(IO.IndentedTextWriter s, BCost[] c)
 		{
 			for (int x = 0; x < c.Length; x++)
+			{
 				s.WriteLine("{0}={1}", Database.Resources[x], c[x].ToString("r"));
+			}
 		}
 #endif
 		#endregion
@@ -463,9 +521,13 @@ namespace KSoft.Phoenix.Runtime
 
 			// only stream the index value if not NONE
 			if (in_use)
+			{
 				s.Stream(ref ptr);
+			}
 			else
+			{
 				ptr = TypeExtensions.kNone;
+			}
 
 			return s;
 		}
@@ -491,7 +553,9 @@ namespace KSoft.Phoenix.Runtime
 				if (id != invalidId)
 				{
 					if (obj == null)
+					{
 						obj = initializer();
+					}
 
 					setId(obj, id);
 				}

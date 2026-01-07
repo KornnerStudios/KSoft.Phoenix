@@ -76,7 +76,7 @@ namespace KSoft.Phoenix.Runtime
 		public struct PlayerColorCategory
 			: IO.IEndianStreamSerializable
 		{
-			public uint Objects, Corpse, Selection, 
+			public uint Objects, Corpse, Selection,
 				Minimap, UI;
 			public byte Index;
 
@@ -118,9 +118,9 @@ namespace KSoft.Phoenix.Runtime
 			s.StreamSignature(cSaveMarker.Players);
 			s.StreamSignature(cMaximumSupportedPlayers);
 			s.StreamSignature(cMaxPlayerColorCategories);
- 			for (int x = 0; x < cMaxPlayerColorCategories; x++)
- 				for (int y = 0; y < cMaximumSupportedPlayers; y++)
- 					s.Stream(ref PlayerColorCategories[x, y]);
+			for (int x = 0; x < cMaxPlayerColorCategories; x++)
+				for (int y = 0; y < cMaximumSupportedPlayers; y++)
+					s.Stream(ref PlayerColorCategories[x, y]);
 			s.StreamSignature(cSaveMarker.World2);
 			BSaveGame.StreamFreeList(s, SimOrders, BSimOrder.kFreeListInfo);
 			BSaveGame.StreamFreeList(s, UnitOpps, BUnitOpp.kFreeListInfo);

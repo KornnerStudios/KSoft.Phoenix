@@ -26,16 +26,23 @@ namespace KSoft.Phoenix.Runtime
 		void Read(IO.EndianReader s, out float value)
 		{
 			if (s.ReadBoolean())
+			{
 				value = s.ReadSingle();
+			}
 			else
+			{
 				value = 0f;
+			}
 		}
 		void Write(IO.EndianWriter s, float value)
 		{
 			bool not_zero = value != 0f;
 			s.Write(not_zero);
 
-			if (not_zero) s.Write(value);
+			if (not_zero)
+			{
+				s.Write(value);
+			}
 		}
 		void ReadFloats(IO.EndianReader s)
 		{

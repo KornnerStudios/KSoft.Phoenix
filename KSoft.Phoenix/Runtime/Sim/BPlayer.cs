@@ -71,7 +71,7 @@ namespace KSoft.Phoenix.Runtime
 			}
 			#endregion
 		};
-		static readonly CondensedListInfo kUnitCountsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kUnitCountsListInfo = new()
 		{
 			IndexSize=sizeof(short),
 		};
@@ -92,7 +92,7 @@ namespace KSoft.Phoenix.Runtime
 			#endregion
 		};
 		// Index = actual WeaponType
-		static readonly CondensedListInfo kWeaponTypesListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kWeaponTypesListInfo = new()
 		{
 			IndexSize=sizeof(sbyte),
 			MaxCount=0x4E20,
@@ -100,19 +100,19 @@ namespace KSoft.Phoenix.Runtime
 		#endregion
 
 		#region Player1
-		static readonly CondensedListInfo kProtoUnitsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kProtoUnitsListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(short),
 			MaxCount=0x4E20,
 		};
-		static readonly CondensedListInfo kProtoTechsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kProtoTechsListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(short),
 			MaxCount=0x1388,
 		};
-		static readonly CondensedListInfo kProtoUniqueUnitsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kProtoUniqueUnitsListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(short),
@@ -122,7 +122,7 @@ namespace KSoft.Phoenix.Runtime
 		public BVector LookAtPos; // Gaia's values are ints, not floats...
 		public string Name;
 		public BRallyPoint RallyPoint; // Gaia's values are ints, not floats...
-		public BStatsManager StatsManager = new BStatsManager();
+		public BStatsManager StatsManager = new();
 		public List<CondensedListItem16<BProtoObject>> ProtoObjects;
 		public List<CondensedListItem16<BProtoSquad>> ProtoSquads;
 		public List<CondensedListItem16<BProtoTech>> ProtoTechs;
@@ -147,7 +147,7 @@ namespace KSoft.Phoenix.Runtime
 		public BEntityID[] GotoBases;
 		public List<CondensedListItemValue8<WeaponType>> WeaponTypes;
 		public float[] AbilityRecoverTimes;
-		public BTechTree TechTree = new BTechTree();
+		public BTechTree TechTree = new();
 		#endregion
 		#region Player4
 		public int MPID, ColorIndex;
@@ -212,14 +212,23 @@ namespace KSoft.Phoenix.Runtime
 			BSaveGame.StreamArray(s, ref PowerEntries);
 			BSaveGame.StreamArray(s, ref Abilities);
 			for (int x = 0; x < Powers.Length; x++)
+			{
 				s.Stream(ref Powers[x]);
+			}
+
 			sg.StreamBCost(s, ref Resources);
 			for (int x = 0; x < Rates.Length; x++)
+			{
 				s.Stream(ref Rates[x]);
+			}
+
 			sg.StreamBCost(s, ref TotalResources);
 			sg.StreamBCost(s, ref ResourceTrickleRate);
 			for (int x = 0; x < Populations.Length; x++)
+			{
 				s.Stream(ref Populations[x]);
+			}
+
 			s.StreamSignature(cSaveMarker.Player1);
 			#endregion
 			#region Player2
