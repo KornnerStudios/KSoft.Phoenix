@@ -22,10 +22,8 @@ namespace KSoft.Phoenix.Phx
 		public ProtoDataObjectSourceKind ObjectSourceKind { get; private set; }
 		public IProtoDataObjectDatabaseProvider Provider { get; private set; }
 		public Type ObjectKindEnum { get; private set; }
-		public List<object> ObjectKinds { get; private set; }
-			= new List<object>();
-		public List<int> ObjectKindIds { get; private set; }
-			= new List<int>();
+		public List<object> ObjectKinds { get; private set; } = new();
+		public List<int> ObjectKindIds { get; private set; } = new();
 
 		public ProtoDataObjectDatabase(IProtoDataObjectDatabaseProvider provider, Type objectKindEnum)
 		{
@@ -33,7 +31,9 @@ namespace KSoft.Phoenix.Phx
 			ObjectKindEnum = objectKindEnum;
 
 			foreach (object e in Enum.GetValues(ObjectKindEnum))
+			{
 				ObjectKinds.Add(e);
+			}
 
 			ObjectKindIds.AddRange(ObjectKinds.Cast<int>());
 
@@ -60,26 +60,15 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		public bool Equals(ProtoDataObjectDatabase other)
-		{
-			return ObjectSourceKind == other.ObjectSourceKind
+			=> other != null
+				&& ObjectSourceKind == other.ObjectSourceKind
 				&& Provider == other.Provider;
-		}
 
 		public override bool Equals(object obj)
-		{
-			return obj is ProtoDataObjectDatabase && Equals((ProtoDataObjectDatabase)obj);
-		}
+			=> obj is ProtoDataObjectDatabase database && Equals(database);
 
 		public override int GetHashCode()
-		{
-			unchecked
-			{
-				int hash = 17;
-				hash *= 23 + ObjectSourceKind.GetHashCode();
-				hash *= 23 + Provider.GetHashCode();
-				return hash;
-			}
-		}
+			=> HashCode.Combine(ObjectSourceKind, Provider);
 	};
 }
 

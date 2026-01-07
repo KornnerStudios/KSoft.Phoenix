@@ -37,17 +37,15 @@ namespace KSoft.Phoenix
 		[Contracts.Pure]
 		public static bool RequiresFileReference(this Phx.ProtoDataObjectSourceKind kind)
 		{
-			switch (kind)
+			return kind switch
 			{
-				case Phx.ProtoDataObjectSourceKind.TacticData:
-				case Phx.ProtoDataObjectSourceKind.Visual:
-				case Phx.ProtoDataObjectSourceKind.TriggerScript:
-				case Phx.ProtoDataObjectSourceKind.Scenario:
-					return true;
-
-				default:
-					return false;
-			}
+				Phx.ProtoDataObjectSourceKind.TacticData or
+				Phx.ProtoDataObjectSourceKind.Visual or
+				Phx.ProtoDataObjectSourceKind.TriggerScript or
+				Phx.ProtoDataObjectSourceKind.Scenario
+				=> true,
+				_ => false,
+			};
 		}
 	};
 }

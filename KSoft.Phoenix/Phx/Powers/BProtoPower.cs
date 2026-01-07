@@ -6,51 +6,50 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseNamedObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Power")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Power")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrName,
 			Flags = XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Powers.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.ProtoData,
 			kXmlFileInfo);
 
-		static readonly Collections.CodeEnum<BPowerFlags> kFlagsProtoEnum = new Collections.CodeEnum<BPowerFlags>();
-		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
+		static readonly Collections.CodeEnum<BPowerFlags> kFlagsProtoEnum = new();
+		static readonly Collections.BBitSetParams kFlagsParams = new(() => kFlagsProtoEnum);
 
-		static readonly Collections.CodeEnum<BPowerToggableFlags> kFlags2ProtoEnum = new Collections.CodeEnum<BPowerToggableFlags>();
-		static readonly Collections.BBitSetParams kFlags2Params = new Collections.BBitSetParams(() => kFlags2ProtoEnum)
+		static readonly Collections.CodeEnum<BPowerToggableFlags> kFlags2ProtoEnum = new();
+		static readonly Collections.BBitSetParams kFlags2Params = new(() => kFlags2ProtoEnum)
 		{
 			kGetMemberDefaultValue = (id) =>
 			{
-				switch (id)
+				return (BPowerToggableFlags)id switch
 				{
-				case (int)BPowerToggableFlags.CameraEnableUserScroll:
-				case (int)BPowerToggableFlags.CameraEnableUserYaw:
-				case (int)BPowerToggableFlags.CameraEnableUserZoom:
-				case (int)BPowerToggableFlags.CameraEnableAutoZoomInstant:
-				case (int)BPowerToggableFlags.CameraEnableAutoZoom:
-				case (int)BPowerToggableFlags.ShowInPowerMenu:
-					return true;
+					BPowerToggableFlags.CameraEnableUserScroll or
+					BPowerToggableFlags.CameraEnableUserYaw or
+					BPowerToggableFlags.CameraEnableUserZoom or
+					BPowerToggableFlags.CameraEnableAutoZoomInstant or
+					BPowerToggableFlags.CameraEnableAutoZoom or
+					BPowerToggableFlags.ShowInPowerMenu
+					=> true,
 
-				case (int)BPowerToggableFlags.ShowTransportArrows:
-				default:
-					return false;
-				}
+					BPowerToggableFlags.ShowTransportArrows or
+					_ => false,
+				};
 			}
 		};
 		#endregion
 
-		public Collections.BTypeValuesSingle Cost { get; private set; }
-		public Collections.BListArray<BPowerDynamicCost> DynamicCosts { get; private set; }
-		public Collections.BListArray<BPowerTargetEffectiveness> TargetEffectiveness { get; private set; }
-		public Collections.BTypeValuesSingle Populations { get; private set; }
+		public Collections.BTypeValuesSingle Cost { get; private set; } = new(BResource.kBListTypeValuesParams);
+		public Collections.BListArray<BPowerDynamicCost> DynamicCosts { get; private set; } = new();
+		public Collections.BListArray<BPowerTargetEffectiveness> TargetEffectiveness { get; private set; } = new();
+		public Collections.BTypeValuesSingle Populations { get; private set; } = new(BPopulation.kBListParamsSingle);
 		#region UIRadius
 		float mUIRadius;
 		public float UIRadius
@@ -84,8 +83,8 @@ namespace KSoft.Phoenix.Phx
 			set { mUseLimit = value; }
 		}
 		#endregion
-		public Collections.BBitSet Flags { get; private set; }
-		public Collections.BBitSet Flags2 { get; private set; }
+		public Collections.BBitSet Flags { get; private set; } = new(kFlagsParams);
+		public Collections.BBitSet Flags2 { get; private set; } = new(kFlags2Params);
 		#region IconTextureName
 		string mIconTextureName;
 		[Meta.TextureReference]
@@ -95,9 +94,9 @@ namespace KSoft.Phoenix.Phx
 			set { mIconTextureName = value; }
 		}
 		#endregion
-		public List<int> IconLocations { get; private set; }
+		public List<int> IconLocations { get; private set; } = new();
 		[Meta.BProtoTechReference]
-		public List<int> TechPrereqs { get; private set; }
+		public List<BProtoTechID> TechPrereqs { get; private set; } = new();
 		#region ActionType
 		BActionType mActionType = BActionType.Invalid;
 		public BActionType ActionType
@@ -202,7 +201,8 @@ namespace KSoft.Phoenix.Phx
 				|| mShowTargetHighlightRelation != BRelationType.Any;
 		} }
 		#endregion
-		public List<int> ChildObjectIDs { get; private set; }
+		[Meta.BProtoObjectReference]
+		public List<BProtoObjectID> ChildObjectIDs { get; private set; } = new();
 		#region BaseDataLevel
 		BProtoPowerDataLevel mBaseDataLevel;
 		public BProtoPowerDataLevel BaseDataLevel
@@ -211,7 +211,7 @@ namespace KSoft.Phoenix.Phx
 			set { mBaseDataLevel = value; }
 		}
 		#endregion
-		public Collections.BListExplicitIndex<BProtoPowerDataLevel> LevelData { get; private set; }
+		public Collections.BListExplicitIndex<BProtoPowerDataLevel> LevelData { get; private set; } = new(BProtoPowerDataLevel.kBListExplicitIndexParams);
 		#region TriggerScript
 		string mTriggerScript;
 		[Meta.TriggerScriptReference]
@@ -238,20 +238,6 @@ namespace KSoft.Phoenix.Phx
 			textData.HasRolloverTextID = true;
 			textData.HasPrereqTextID = true;
 			textData.HasChooseTextID = true;
-
-			Cost = new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
-			DynamicCosts = new Collections.BListArray<BPowerDynamicCost>();
-			TargetEffectiveness = new Collections.BListArray<BPowerTargetEffectiveness>();
-			Populations = new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
-
-			Flags = new Collections.BBitSet(kFlagsParams);
-			Flags2 = new Collections.BBitSet(kFlags2Params);
-
-			IconLocations = new List<int>();
-			TechPrereqs = new List<int>();
-
-			ChildObjectIDs = new List<int>();
-			LevelData = new Collections.BListExplicitIndex<BProtoPowerDataLevel>(BProtoPowerDataLevel.kBListExplicitIndexParams);
 		}
 
 		#region ITagElementStreamable<string> Members
@@ -263,8 +249,14 @@ namespace KSoft.Phoenix.Phx
 			{
 				base.Serialize(s);
 
-				using (var bm = s.EnterCursorBookmarkOpt("Cost", Cost, x => x.HasNonZeroItems)) if (bm.IsNotNull)
-					XML.XmlUtil.SerializeCostHack(s, Cost);
+				using (var bm = s.EnterCursorBookmarkOpt("Cost", Cost, x => x.HasNonZeroItems))
+				{
+					if (bm.IsNotNull)
+					{
+						XML.XmlUtil.SerializeCostHack(s, Cost);
+					}
+				}
+
 				XML.XmlUtil.Serialize(s, DynamicCosts, BPowerDynamicCost.kBListXmlParams);
 				XML.XmlUtil.Serialize(s, TargetEffectiveness, BPowerTargetEffectiveness.kBListXmlParams);
 				XML.XmlUtil.Serialize(s, Populations, BPopulation.kBListXmlParamsSingle_LowerCase);
@@ -287,22 +279,36 @@ namespace KSoft.Phoenix.Phx
 				s.StreamElementOpt("CameraEffectOut", ref mCameraEffectOut, Predicates.IsNotNullOrEmpty);
 				s.StreamElementOpt("MinDistanceToSquad", ref mMinDistanceToSquad, PhxPredicates.IsNotInvalid);
 				s.StreamElementOpt("MaxDistanceToSquad", ref mMaxDistanceToSquad, PhxPredicates.IsNotInvalid);
-				using (var bm = s.EnterCursorBookmarkOpt("ShowTargetHighlight", this, x => x.HasShowTargetHighlightData)) if (bm.IsNotNull)
+				using (var bm = s.EnterCursorBookmarkOpt("ShowTargetHighlight", this, x => x.HasShowTargetHighlightData))
 				{
-					xs.StreamDBID(s, "ObjectType", ref mShowTargetHighlightObjectType, DatabaseObjectKind.ObjectType, xmlSource: XML.XmlUtil.kSourceAttr);
-					s.StreamAttributeEnumOpt("Relation", ref mShowTargetHighlightRelation, e => e != BRelationType.Any);
+					if (bm.IsNotNull)
+					{
+						xs.StreamDBID(s, "ObjectType", ref mShowTargetHighlightObjectType, DatabaseObjectKind.ObjectType, xmlSource: XML.XmlUtil.kSourceAttr);
+						s.StreamAttributeEnumOpt("Relation", ref mShowTargetHighlightRelation, e => e != BRelationType.Any);
+					}
 				}
-				using (var bm = s.EnterCursorBookmarkOpt("ChildObjects", ChildObjectIDs, Predicates.HasItems)) if (bm.IsNotNull)
-				{
-					s.StreamElements("Object", ChildObjectIDs, xs, XML.BDatabaseXmlSerializerBase.StreamObjectID);
-				}
-				using (var bm = s.EnterCursorBookmarkOpt("BaseDataLevel", this, x => x.BaseDataLevel != null)) if (bm.IsNotNull)
-				{
-					if (s.IsReading)
-						mBaseDataLevel = new BProtoPowerDataLevel();
 
-					BaseDataLevel.Serialize(s);
+				using (var bm = s.EnterCursorBookmarkOpt("ChildObjects", ChildObjectIDs, Predicates.HasItems))
+				{
+					if (bm.IsNotNull)
+					{
+						s.StreamElements("Object", ChildObjectIDs, xs, XML.BDatabaseXmlSerializerBase.StreamObjectID);
+					}
 				}
+
+				using (var bm = s.EnterCursorBookmarkOpt("BaseDataLevel", this, x => x.BaseDataLevel != null))
+				{
+					if (bm.IsNotNull)
+					{
+						if (s.IsReading)
+						{
+							mBaseDataLevel = new BProtoPowerDataLevel();
+						}
+
+						BaseDataLevel.Serialize(s);
+					}
+				}
+
 				XML.XmlUtil.Serialize(s, LevelData, BProtoPowerDataLevel.kBListExplicitIndexXmlParams);
 			}
 			s.StreamElementOpt("TriggerScript", ref mTriggerScript, Predicates.IsNotNullOrEmpty);
@@ -323,7 +329,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "DynamicCost",
 		};
@@ -365,7 +371,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "TargetEffectiveness",
 		};
@@ -408,13 +414,13 @@ namespace KSoft.Phoenix.Phx
 	{
 		#region Xml constants
 		public static readonly Collections.BListExplicitIndexParams<BProtoPowerDataLevel> kBListExplicitIndexParams = new
-			Collections.BListExplicitIndexParams<BProtoPowerDataLevel>()
+()
 		{
 			kComparer = new ComparerForDataCount(),//PhxUtil.CreateDummyComparerAlwaysNonZero<BProtoPowerDataLevel>(),
 			kTypeGetInvalid = () => new BProtoPowerDataLevel()
 		};
 		public static readonly XML.BListExplicitIndexXmlParams<BProtoPowerDataLevel> kBListExplicitIndexXmlParams = new
-			XML.BListExplicitIndexXmlParams<BProtoPowerDataLevel>("DataLevel", "level")
+("DataLevel", "level")
 		{
 			IndexBase = 0
 		};
@@ -425,29 +431,28 @@ namespace KSoft.Phoenix.Phx
 			public int Compare(BProtoPowerDataLevel x, BProtoPowerDataLevel y)
 			{
 				if (x == null || y == null)
+				{
 					return -1;
+				}
 
 				if (x.Data.Count == 0 && y.Data.Count == 0)
+				{
 					return 0;
+				}
 
 				return -1;
 			}
 		};
 		#endregion
 
-		public Collections.BListArray<BProtoPowerData> Data { get; private set; }
-
-		public BProtoPowerDataLevel()
-		{
-			Data = new Collections.BListArray<BProtoPowerData>();
-		}
+		public Collections.BListArray<BProtoPowerData> Data { get; private set; } = new();
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
-			var xs = s.GetSerializerInterface();
+//			var xs = s.GetSerializerInterface();
 
 			XML.XmlUtil.Serialize(s, Data, BProtoPowerData.kBListXmlParams);
 		}
@@ -458,7 +463,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "Data",
 		};
@@ -556,36 +561,36 @@ namespace KSoft.Phoenix.Phx
 
 			switch (DataType)
 			{
-			case ProtoPowerDataType.Float:
-				s.StreamCursor(ref mDataFloat);
-				break;
+				case ProtoPowerDataType.Float:
+					s.StreamCursor(ref mDataFloat);
+					break;
 
-			case ProtoPowerDataType.Int:
-				s.StreamCursor(ref mDataInt);
-				break;
-			case ProtoPowerDataType.ProtoObject:
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				break;
-			case ProtoPowerDataType.ProtoSquad:
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Squad, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				break;
-			case ProtoPowerDataType.Tech:
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Tech, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				break;
-			case ProtoPowerDataType.ObjectType:
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				break;
+				case ProtoPowerDataType.Int:
+					s.StreamCursor(ref mDataInt);
+					break;
+				case ProtoPowerDataType.ProtoObject:
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					break;
+				case ProtoPowerDataType.ProtoSquad:
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Squad, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					break;
+				case ProtoPowerDataType.Tech:
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Tech, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					break;
+				case ProtoPowerDataType.ObjectType:
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					break;
 
-			case ProtoPowerDataType.Bool:
-				s.StreamCursor(ref mDataBool);
-				break;
+				case ProtoPowerDataType.Bool:
+					s.StreamCursor(ref mDataBool);
+					break;
 
-			case ProtoPowerDataType.Sound:
-				s.StreamCursor(ref mDataString);
-				break;
-			case ProtoPowerDataType.Texture:
-				s.StreamCursor(ref mDataString);
-				break;
+				case ProtoPowerDataType.Sound:
+					s.StreamCursor(ref mDataString);
+					break;
+				case ProtoPowerDataType.Texture:
+					s.StreamCursor(ref mDataString);
+					break;
 			}
 
 			//xs.StreamDBID(s, "ObjectType", ref mObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
@@ -595,7 +600,7 @@ namespace KSoft.Phoenix.Phx
 
 	public static class BProtoPowerTypesData
 	{
-		public static Dictionary<string, ProtoPowerDataType> kHelper = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kHelper = new()
 		{
 			{"HudUpSound", ProtoPowerDataType.Sound},
 			{"HudAbortSound", ProtoPowerDataType.Sound},
@@ -606,7 +611,7 @@ namespace KSoft.Phoenix.Phx
 			{"HudStopEnvSound", ProtoPowerDataType.Sound},
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kCarpetBombing = new Dictionary<string,ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kCarpetBombing = new()
 		{
 			{"Projectile", ProtoPowerDataType.ProtoObject},
 			{"Impact", ProtoPowerDataType.ProtoObject},
@@ -630,7 +635,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kCleansing = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kCleansing = new()
 		{
 			{"Beam", ProtoPowerDataType.ProtoObject},
 			{"Projectile", ProtoPowerDataType.ProtoObject},
@@ -643,7 +648,7 @@ namespace KSoft.Phoenix.Phx
 			{"RequiresLOS", ProtoPowerDataType.Bool},
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kCryo = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kCryo = new()
 		{
 			{"CryoObject", ProtoPowerDataType.ProtoObject},
 			{"CryoRadius", ProtoPowerDataType.Float},
@@ -670,7 +675,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kDisruption = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kDisruption = new()
 		{
 			{"DisruptionObject", ProtoPowerDataType.ProtoObject},
 			{"PulseObject", ProtoPowerDataType.ProtoObject},
@@ -694,7 +699,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kOdst = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kOdst = new()
 		{
 			{"Projectile", ProtoPowerDataType.ProtoObject},
 			{"SquadSpawnDelay", ProtoPowerDataType.Float},
@@ -704,7 +709,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kOrbital = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kOrbital = new()
 		{
 			{"TargetBeam", ProtoPowerDataType.ProtoObject},
 			{"Projectile", ProtoPowerDataType.ProtoObject},
@@ -729,7 +734,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kRage = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kRage = new()
 		{
 			{"TickLength", ProtoPowerDataType.Float},
 			{"SuppliesPerTick", ProtoPowerDataType.Float},
@@ -768,7 +773,7 @@ namespace KSoft.Phoenix.Phx
 			{"CameraZoom", ProtoPowerDataType.Float},
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kRepair = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kRepair = new()
 		{
 			{"RepairObject", ProtoPowerDataType.ProtoObject},
 			{"RepairAttachment", ProtoPowerDataType.ProtoObject},
@@ -788,7 +793,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kTransport = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kTransport = new()
 		{
 			{"Base", ProtoPowerDataType.Texture},
 			{"Mover", ProtoPowerDataType.Texture},
@@ -803,7 +808,7 @@ namespace KSoft.Phoenix.Phx
 			//kHelper
 		};
 
-		public static Dictionary<string, ProtoPowerDataType> kWave = new Dictionary<string, ProtoPowerDataType>
+		public static readonly Dictionary<string, ProtoPowerDataType> kWave = new()
 		{
 			{"TickLength", ProtoPowerDataType.Float},
 			{"SuppliesPerTick", ProtoPowerDataType.Float},

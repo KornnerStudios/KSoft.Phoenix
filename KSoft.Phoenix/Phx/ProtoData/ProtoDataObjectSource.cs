@@ -23,7 +23,9 @@ namespace KSoft.Phoenix.Phx
 		public override string ToString()
 		{
 			if (FileReference == null)
+			{
 				return SourceKind.ToString();
+			}
 
 			return string.Format("{0} - {1}",
 				SourceKind, FileReference);
@@ -31,22 +33,15 @@ namespace KSoft.Phoenix.Phx
 
 		public ProtoDataObjectDatabase GetObjectDatabase(Engine.PhxEngine engine)
 		{
-			switch (SourceKind)
+			return SourceKind switch
 			{
-				case ProtoDataObjectSourceKind.Database:
-					return new ProtoDataObjectDatabase(engine.Database, typeof(DatabaseObjectKind));
-
-				case ProtoDataObjectSourceKind.GameData:
-					return new ProtoDataObjectDatabase(engine.Database.GameData, typeof(GameDataObjectKind));
-
-				case ProtoDataObjectSourceKind.HPData:
-					return new ProtoDataObjectDatabase(engine.Database.HPBars, typeof(HPBarDataObjectKind));
-
-				default:
-					throw new System.NotImplementedException(string.Format(
-						nameof(GetObjectDatabase) + " needs support for {0}",
-						this));
-			}
+				ProtoDataObjectSourceKind.Database => new(engine.Database, typeof(DatabaseObjectKind)),
+				ProtoDataObjectSourceKind.GameData => new(engine.Database.GameData, typeof(GameDataObjectKind)),
+				ProtoDataObjectSourceKind.HPData => new(engine.Database.HPBars, typeof(HPBarDataObjectKind)),
+				_ => throw new System.NotImplementedException(string.Format(
+					nameof(GetObjectDatabase) + " needs support for {0}",
+					this)),
+			};
 		}
 	};
 }
