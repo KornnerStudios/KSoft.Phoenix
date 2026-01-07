@@ -7,7 +7,7 @@ namespace KSoft.Phoenix.Runtime
 		: BPowerUser
 	{
 		public string HelpString;
-		public BPowerHelperHudSounds HudSounds = new BPowerHelperHudSounds();
+		public BPowerHelperHudSounds HudSounds = new();
 		public int LOSMode;
 		public BProtoObjectID ODSTProtoSquadID, ODSTProtoObjectID;
 		public int CanFire;

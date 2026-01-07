@@ -7,7 +7,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BPowerTransportUser
 		: BPowerUser
 	{
-		public BPowerHelperHudSounds HudSounds = new BPowerHelperHudSounds();
+		public BPowerHelperHudSounds HudSounds = new();
 		public BEntityID[] SquadsToTransport;
 		public BEntityID[] TargetedSquads;
 		public int LOSMode;

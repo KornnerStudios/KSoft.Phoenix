@@ -15,7 +15,7 @@ namespace KSoft.Phoenix.Runtime
 		public double NextTickTime;
 		public BWaveGravityBall RealGravityBall;
 		public BVector DesiredBallPosition;
-		public List<BEntityID> CapturedUnits = new List<BEntityID>();
+		public List<BEntityID> CapturedUnits = new();
 		public float ExplodeCooldownLeft;
 		public BEntityID[] UnitsToPull;
 		public BQueuedObject[] QueuedPickupObjects;

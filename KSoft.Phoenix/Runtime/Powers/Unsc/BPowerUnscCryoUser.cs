@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BPowerUnscCryoUser
 		: BPowerUser
 	{
-		public BPowerHelperHudSounds HudSounds = new BPowerHelperHudSounds();
+		public BPowerHelperHudSounds HudSounds = new();
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)

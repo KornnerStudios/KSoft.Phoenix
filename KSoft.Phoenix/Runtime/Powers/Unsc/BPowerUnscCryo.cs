@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Runtime
 		public float CryoRadius, MinCryoFalloff;
 		public uint TickDuration, TicksRemaining;
 		public float CryoAmountPerTick, KillableHpLeft, FreezingThawTime, FrozenThawTime;
-		public BPowerHelperBomber BomberData = new BPowerHelperBomber();
+		public BPowerHelperBomber BomberData = new();
 		public bool ReactionPlayed;
 
 		#region IEndianStreamSerializable Members

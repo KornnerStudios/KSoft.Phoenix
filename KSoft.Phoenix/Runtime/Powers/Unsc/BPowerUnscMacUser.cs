@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BPowerUnscMacUser
 		: BPowerUser
 	{
-		public BPowerHelperHudSounds HudSounds = new BPowerHelperHudSounds();
+		public BPowerHelperHudSounds HudSounds = new();
 		public string HelpString;
 		public BEntityID FakeTargettingLaserID, RealTargettingLaserID, TargettedSquadID;
 		public uint ShotsRemaining;

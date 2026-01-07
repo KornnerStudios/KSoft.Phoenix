@@ -16,7 +16,7 @@ namespace KSoft.Phoenix.Runtime
 			PulseObjectProtoID, StrikeObjectProtoID;
 		public float PulseSpacing, NextPulseTime;
 		public int NumPulses;
-		public BPowerHelperBomber BomberData = new BPowerHelperBomber();
+		public BPowerHelperBomber BomberData = new();
 		public BCueIndex PulseSound;
 
 		#region IEndianStreamSerializable Members

@@ -29,12 +29,12 @@ namespace KSoft.Phoenix.Runtime
 			: IO.IEndianStreamSerializable
 		{
 			public string Name;
-			public BInterpTable ColorTransformRTable = new BInterpTable(), ColorTransformGTable = new BInterpTable(),
-				ColorTransformBTable = new BInterpTable();
-			public BInterpTable ColorTransformFactorTable = new BInterpTable(),
-				BlurFactorTable = new BInterpTable(), // same data gets written 3x :s
-				FOVTable = new BInterpTable(), ZoomTable = new BInterpTable(), YawTable = new BInterpTable(),
-				PitchTable = new BInterpTable();
+			public BInterpTable ColorTransformRTable = new(), ColorTransformGTable = new(),
+				ColorTransformBTable = new();
+			public BInterpTable ColorTransformFactorTable = new(),
+				BlurFactorTable = new(), // same data gets written 3x :s
+				FOVTable = new(), ZoomTable = new(), YawTable = new(),
+				PitchTable = new();
 			public bool RadialBlur, Use3DPosition, ModeCameraEffect,
 				UserHoverPointAs3DPosition;
 
@@ -58,8 +58,8 @@ namespace KSoft.Phoenix.Runtime
 		public BVector LastDirectionInput, TeleportDestination, PositionInput;
 		public float TimeUntilTeleport, TimeUntilRetarget;
 		public BCueIndex AttackSound;
-		public BParametricSplineCurve JumpSplineCurve = new BParametricSplineCurve();
-		public BCameraEffectData CameraEffectData = new BCameraEffectData();
+		public BParametricSplineCurve JumpSplineCurve = new();
+		public BCameraEffectData CameraEffectData = new();
 		public BCost[] CostPerTick, CostPerTickAttacking, CostPerJump;
 		public float TickLength, DamageMultiplier, DamageTakenMultiplier,
 			SpeedMultiplier, NudgeMultiplier, ScanRadius;

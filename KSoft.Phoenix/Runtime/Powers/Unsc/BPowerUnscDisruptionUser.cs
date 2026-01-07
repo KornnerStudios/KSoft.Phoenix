@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public int LOSMode;
 		public BProtoObjectID DisruptionObjectProtoID;
-		public BPowerHelperHudSounds HudSounds = new BPowerHelperHudSounds();
+		public BPowerHelperHudSounds HudSounds = new();
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)

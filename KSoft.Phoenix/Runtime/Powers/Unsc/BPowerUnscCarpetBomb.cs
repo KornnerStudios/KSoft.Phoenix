@@ -22,7 +22,7 @@ namespace KSoft.Phoenix.Runtime
 		};
 
 		public BBombExplodeInfo[] BombExplodeInfos;
-		public List<BEntityID> NudgedUnits = new List<BEntityID>();
+		public List<BEntityID> NudgedUnits = new();
 		public BVector StartLocation, StartDirection, RightVector;
 		public sbyte State;
 		public bool GotStartLocation, GotStartDirection;
@@ -33,7 +33,7 @@ namespace KSoft.Phoenix.Runtime
 		public uint MaxBombs;
 		public float MaxBombOffset, BombSpacing, LengthMultiplier,
 			WedgeLengthMultiplier, WedgeMinOffset, NudgeMultiplier;
-		public BPowerHelperBomber BomberData = new BPowerHelperBomber();
+		public BPowerHelperBomber BomberData = new();
 		public sbyte LOSMode;
 		public bool ReactionPlayed;
 

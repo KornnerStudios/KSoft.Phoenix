@@ -37,21 +37,20 @@ namespace KSoft.Phoenix.Runtime
 
 		internal static BPower FromType(Phx.BPowerType type)
 		{
-			switch (type)
+			return type switch
 			{
-			case Phx.BPowerType.Cleansing: return new BPowerCovGlassing();
-			case Phx.BPowerType.Orbital: return new BPowerUnscMac();
-			case Phx.BPowerType.CarpetBombing: return new BPowerUnscCarpetBomb();
-			case Phx.BPowerType.Cryo: return new BPowerUnscCryo();
-			case Phx.BPowerType.Rage: return new BPowerCovRage();
-			case Phx.BPowerType.Wave: return new BPowerCovDebris();
-			case Phx.BPowerType.Disruption: return new BPowerUnscDisruption();
-			case Phx.BPowerType.Transport: return new BPowerTransport();
-			case Phx.BPowerType.ODST: return new BPowerUnscOdst();
-			case Phx.BPowerType.Repair: return new BPowerUnscHeal();
-
-			default: throw new KSoft.Debug.UnreachableException(type.ToString());
-			}
+				Phx.BPowerType.Cleansing => new BPowerCovGlassing(),
+				Phx.BPowerType.Orbital => new BPowerUnscMac(),
+				Phx.BPowerType.CarpetBombing => new BPowerUnscCarpetBomb(),
+				Phx.BPowerType.Cryo => new BPowerUnscCryo(),
+				Phx.BPowerType.Rage => new BPowerCovRage(),
+				Phx.BPowerType.Wave => new BPowerCovDebris(),
+				Phx.BPowerType.Disruption => new BPowerUnscDisruption(),
+				Phx.BPowerType.Transport => new BPowerTransport(),
+				Phx.BPowerType.ODST => new BPowerUnscOdst(),
+				Phx.BPowerType.Repair => new BPowerUnscHeal(),
+				_ => throw new KSoft.Debug.UnreachableException(type.ToString()),
+			};
 		}
 	};
 }

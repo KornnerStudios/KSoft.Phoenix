@@ -15,7 +15,7 @@ namespace KSoft.Phoenix.Runtime
 		public float MaxBombOffset, LengthMultiplier;
 		public sbyte LOSMode;
 		public BProtoObjectID ArrowProtoID;
-		public BPowerHelperHudSounds HudSounds = new BPowerHelperHudSounds();
+		public BPowerHelperHudSounds HudSounds = new();
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
