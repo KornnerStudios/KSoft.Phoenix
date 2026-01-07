@@ -13,7 +13,7 @@ namespace KSoft.Phoenix.Phx
 		const string kXmlElementTriggerInput = "TriggerInput";
 		const string kXmlElementTriggerOutput = "TriggerOutput";
 
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			RootName = "TriggerMappings",
 			ElementName = "TriggerTemplateMapping",

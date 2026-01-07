@@ -10,24 +10,18 @@ namespace KSoft.Phoenix.Phx
 		public const string kXmlRootName = "TriggerDatabase";
 		#endregion
 
-		public Collections.BListAutoId<BTriggerProtoCondition> Conditions { get; private set; }
-		public Collections.BListAutoId<BTriggerProtoEffect> Effects { get; private set; }
-		public Dictionary<uint, TriggerSystemProtoObject> LookupTable { get; private set; }
-		System.Collections.BitArray mUsedIds;
-
-		public TriggerDatabase()
-		{
-			Conditions = new Collections.BListAutoId<BTriggerProtoCondition>();
-			Effects = new Collections.BListAutoId<BTriggerProtoEffect>();
-			LookupTable = new Dictionary<uint, TriggerSystemProtoObject>();
-			mUsedIds = new System.Collections.BitArray(1088);
-		}
+		public Collections.BListAutoId<BTriggerProtoCondition> Conditions { get; private set; } = new();
+		public Collections.BListAutoId<BTriggerProtoEffect> Effects { get; private set; } = new();
+		public Dictionary<uint, TriggerSystemProtoObject> LookupTable { get; private set; } = new();
+		readonly System.Collections.BitArray mUsedIds = new (1088);
 
 		#region ITagElementStreamable<string> Members
 		static int SortById(TriggerSystemProtoObject x, TriggerSystemProtoObject y)
 		{
-			if(x.DbId != y.DbId)
+			if (x.DbId != y.DbId)
+			{
 				return x.DbId - y.DbId;
+			}
 
 			return x.Version - y.Version;
 		}
@@ -58,7 +52,9 @@ namespace KSoft.Phoenix.Phx
 				var task_unknowns = Task<int>.Factory.StartNew(() =>
 				{
 					using (s.EnterCursorBookmark("Unknowns"))
+					{
 						return WriteUnknowns(s);
+					}
 				});
 				s.WriteAttribute("UnknownCount", task_unknowns.Result);
 				s.WriteAttribute("ConditionsCount", Conditions.Count);
@@ -72,8 +68,15 @@ namespace KSoft.Phoenix.Phx
 
 			if (s.IsReading)
 			{
-				foreach (var c in Conditions) LookupTableAdd(c);
-				foreach (var e in Effects) LookupTableAdd(e);
+				foreach (var c in Conditions)
+				{
+					LookupTableAdd(c);
+				}
+
+				foreach (var e in Effects)
+				{
+					LookupTableAdd(e);
+				}
 			}
 		}
 		#endregion
@@ -111,8 +114,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		void TryUpdate(BTriggerSystem ts, BTriggerCondition cond)
 		{
-			TriggerSystemProtoObject dbo;
-			if (!LookupTableContains(cond, out dbo))
+			if (!LookupTableContains(cond, out TriggerSystemProtoObject dbo))
 			{
 				var dbo_cond = new BTriggerProtoCondition(ts, cond);
 
@@ -132,8 +134,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		void TryUpdate(BTriggerSystem ts, BTriggerEffect effe)
 		{
-			TriggerSystemProtoObject dbo;
-			if (!LookupTableContains(effe, out dbo))
+			if (!LookupTableContains(effe, out TriggerSystemProtoObject dbo))
 			{
 				var dbo_effe = new BTriggerProtoEffect(ts, effe);
 
@@ -157,9 +158,20 @@ namespace KSoft.Phoenix.Phx
 			{
 				foreach (var t in ts.Triggers)
 				{
-					foreach (var c in t.Conditions) TryUpdate(ts, c);
-					foreach (var e in t.EffectsOnTrue) TryUpdate(ts, e);
-					foreach (var e in t.EffectsOnFalse) TryUpdate(ts, e);
+					foreach (var c in t.Conditions)
+					{
+						TryUpdate(ts, c);
+					}
+
+					foreach (var e in t.EffectsOnTrue)
+					{
+						TryUpdate(ts, e);
+					}
+
+					foreach (var e in t.EffectsOnFalse)
+					{
+						TryUpdate(ts, e);
+					}
 				}
 			}
 		}

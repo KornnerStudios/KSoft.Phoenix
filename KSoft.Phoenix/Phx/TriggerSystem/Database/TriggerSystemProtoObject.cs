@@ -20,11 +20,10 @@ namespace KSoft.Phoenix.Phx
 		int mVersion = TypeExtensions.kNone;
 		public int Version { get { return mVersion; } }
 
-		public Collections.BListExplicitIndex<BTriggerParam> Params { get; private set; }
+		public Collections.BListExplicitIndex<BTriggerParam> Params { get; private set; } = new(BTriggerParam.kBListExplicitIndexParams);
 
 		protected TriggerSystemProtoObject()
 		{
-			Params = new Collections.BListExplicitIndex<BTriggerParam>(BTriggerParam.kBListExplicitIndexParams);
 		}
 		protected TriggerSystemProtoObject(BTriggerSystem root, TriggerScriptObjectWithArgs instance)
 		{
@@ -48,18 +47,25 @@ namespace KSoft.Phoenix.Phx
 			foreach (var arg in obj.Args)
 			{
 				if (arg.IsInvalid)
+				{
 					continue;
+				}
+
 				if (arg.GetVarType(ts) == BTriggerVarType.UserClassType)
+				{
 					return true;
+				}
 			}
 			return false;
 		}
 		public virtual int CompareTo(BTriggerSystem ts, TriggerScriptObjectWithArgs obj)
 		{
 			if (Name != obj.Name)
+			{
 				Debug.Trace.Engine.TraceInformation(
 					"TriggerProtoDbObject: '{0}' - Encountered different names for {1}, '{2}' != '{3}'",
 					ts, this.DbId.ToString(), this.Name, obj.Name);
+			}
 
 			if (ContainsUserClassTypeVar(ts, obj))
 			{

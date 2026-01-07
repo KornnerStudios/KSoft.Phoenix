@@ -6,19 +6,20 @@ namespace KSoft.Phoenix.Phx
 	public sealed class BTriggerParam
 		: IO.ITagElementStringNameStreamable
 		, IComparable<BTriggerParam>
-		, IEqualityComparer<BTriggerParam>
+		, IEquatable<BTriggerParam>
+		, IEqualityComparer<BTriggerParam> // #REPLACE with IEquatable<>
 	{
-		static readonly BTriggerParam kInvalid = new BTriggerParam();
-		public bool IsInvalid { get { return object.ReferenceEquals(this, kInvalid); } }
+		static readonly BTriggerParam kInvalid = new();
+		public bool IsInvalid => object.ReferenceEquals(this, kInvalid);
 
 		#region Xml constants
-		public static readonly Collections.BListExplicitIndexParams<BTriggerParam> kBListExplicitIndexParams = new
-			Collections.BListExplicitIndexParams<BTriggerParam>(10)
+		public static readonly Collections.BListExplicitIndexParams<BTriggerParam> kBListExplicitIndexParams =
+			new(10)
 			{
 				kTypeGetInvalid = () => kInvalid
 			};
-		public static readonly XML.BListExplicitIndexXmlParams<BTriggerParam> kBListExplicitIndexXmlParams = new
-			XML.BListExplicitIndexXmlParams<BTriggerParam>(/*null*/"Param", kXmlAttrSigId);
+		public static readonly XML.BListExplicitIndexXmlParams<BTriggerParam> kBListExplicitIndexXmlParams =
+			new(/*null*/"Param", kXmlAttrSigId);
 
 		const string kXmlAttrType = "Type";
 		const string kXmlAttrSigId = "SigID";
@@ -63,15 +64,27 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region IEquatable<BTriggerParam> Members
+		public bool Equals(BTriggerParam other)
+			=> other != null
+				&& this.mSigID == other.mSigID;
+
+		public override bool Equals(object obj)
+			=> Equals(obj as BTriggerParam);
+
+		public override int GetHashCode()
+			=> mSigID.GetHashCode();
+		#endregion
+
 		#region IEqualityComparer<BTriggerParam> Members
 		public bool Equals(BTriggerParam x, BTriggerParam y)
 		{
-			return x.mSigID == y.mSigID;
+			return x.Equals(y);
 		}
 
 		public int GetHashCode(BTriggerParam obj)
 		{
-			return mSigID;
+			return obj.GetHashCode();
 		}
 		#endregion
 
@@ -83,14 +96,19 @@ namespace KSoft.Phoenix.Phx
 
 			foreach (var arg in args)
 			{
-				if (arg.IsInvalid) continue;
+				if (arg.IsInvalid)
+				{
+					continue;
+				}
 
-				var param = new BTriggerParam();
-				param.mType = arg.Type;
-				param.mName = arg.Name;
-				param.mSigID = arg.SigID;
-				param.mOptional = arg.Optional;
-				param.mVarType = arg.GetVarType(root);
+				var param = new BTriggerParam
+				{
+					mType = arg.Type,
+					mName = arg.Name,
+					mSigID = arg.SigID,
+					mOptional = arg.Optional,
+					mVarType = arg.GetVarType(root)
+				};
 
 				p[param.mSigID-1] = param;
 			}

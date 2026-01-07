@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: TriggerSystemProtoObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Effect")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Effect")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrNameN,
 			Flags = 0,

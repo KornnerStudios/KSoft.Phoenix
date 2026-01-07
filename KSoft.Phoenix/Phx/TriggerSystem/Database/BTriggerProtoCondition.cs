@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: TriggerSystemProtoObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Condition")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Condition")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrNameN,
 			Flags = 0,
@@ -32,8 +32,10 @@ namespace KSoft.Phoenix.Phx
 		{
 			base.Serialize(s);
 
-			if(s.StreamAttributeOpt(kXmlAttrAsync, ref mAsync, Predicates.IsTrue))
+			if (s.StreamAttributeOpt(kXmlAttrAsync, ref mAsync, Predicates.IsTrue))
+			{
 				s.StreamAttribute(kXmlAttrAsyncParameterKey, ref mAsyncParameterKey);
+			}
 		}
 	};
 }
