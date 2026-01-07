@@ -36,9 +36,9 @@ namespace KSoft.Phoenix.Runtime
 			s.StreamSignature(k_size_in_bytes);
 			s.Stream(ref Flags);
 		}
-		void StreamAttachments(IO.EndianStream s)
+		void StreamAttachments(IO.EndianStream /*s*/_)
 		{
-			Contract.Assert(false); // TODO
+			Contract.Assert(false); // #TODO
 		}
 		public void Serialize(IO.EndianStream s)
 		{
@@ -51,7 +51,10 @@ namespace KSoft.Phoenix.Runtime
 			s.StreamV(ref MinCorner); s.StreamV(ref MaxCorner);
 			s.Stream(ref ModelAsset);
 			if (s.StreamCond(ModelUVOffsets, offsets => !offsets.EqualsZero()))
+			{
 				s.Stream(ModelUVOffsets);
+			}
+
 			StreamFlags(s);
 			StreamAttachments(s);
 		}

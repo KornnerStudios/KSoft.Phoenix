@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BProtoTech
 		: BProtoBuildableObject
 	{
-		public float ResearchPoints { get { return BuildPoints; } }
+		public float ResearchPoints => BuildPoints;
 
 		public bool OwnStaticData, Unobtainable, Unique,
 			Shadow, OrPrereqs, Perpetual,

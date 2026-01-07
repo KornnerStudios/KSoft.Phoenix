@@ -6,9 +6,9 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BUIManager
 		: IO.IEndianStreamSerializable
 	{
-		public BTimerManager TimerManager = new BTimerManager();
-		public BUICallouts UICallouts = new BUICallouts();
-		public BUIWidget UIWidgets = new BUIWidget();
+		public BTimerManager TimerManager = new();
+		public BUICallouts UICallouts = new();
+		public BUIWidget UIWidgets = new();
 		public bool WidgetsVisible, TalkingHeadShown, ObjectiveTrackerShown,
 			TimerShown, ObjectiveWidgetsShown, HintsVisible,
 			MinimapVisible, UnitStatsVisible, ReticleVisible,

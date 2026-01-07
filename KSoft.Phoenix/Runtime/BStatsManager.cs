@@ -79,7 +79,7 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 	{
 		public int Index;
-		public BStatCombat Combat = new BStatCombat();
+		public BStatCombat Combat = new();
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
@@ -129,7 +129,7 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 	{
 		public int Key;
-		public BStatTotal Value = new BStatTotal();
+		public BStatTotal Value = new();
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
@@ -161,14 +161,9 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kStatType = 1;
 
-		public List<BStatTotalKeyValuePair> Totals { get; private set; }
-		public BStatTotal Total = new BStatTotal();
+		public List<BStatTotalKeyValuePair> Totals { get; private set; } = new();
+		public BStatTotal Total = new();
 		public BStatCombat Combat_;
-
-		public BStatTotalsRecorder()
-		{
-			Totals = new List<BStatTotalKeyValuePair>();
-		}
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
@@ -186,7 +181,7 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kStatType = 2;
 
-		public BStatTotal Total = new BStatTotal();
+		public BStatTotal Total = new();
 		public BStatEvent[] Events;
 
 		#region IEndianStreamSerializable Members
@@ -236,20 +231,20 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		static BStatRecorderBase FromType(int statType)
 		{
-			switch (statType)
+			return statType switch
 			{
-			case BStatTotalsRecorder.kStatType: return new BStatTotalsRecorder();
-			case BStatEventRecorder.kStatType: return new BStatEventRecorder();
+				BStatTotalsRecorder.kStatType => new BStatTotalsRecorder(),
+				BStatEventRecorder.kStatType => new BStatEventRecorder(),
 #if false
-			case BStatGraphRecorder.kStatType: return new BStatGraphRecorder();
-			case BStatResourceGraphRecorder.kStatType: return new BStatResourceGraphRecorder();
-			case BStatPopGraphRecorder.kStatType: return new BStatPopGraphRecorder();
-			case BStatBaseGraphRecorder.kStatType: return new BStatBaseGraphRecorder();
-			case BStatScoreGraphRecorder.kStatType: return new BStatScoreGraphRecorder();
+				BStatGraphRecorder.kStatType => new BStatGraphRecorder(),
+				BStatResourceGraphRecorder.kStatType => new BStatResourceGraphRecorder(),
+				BStatPopGraphRecorder.kStatType => new BStatPopGraphRecorder(),
+				BStatBaseGraphRecorder.kStatType => new BStatBaseGraphRecorder(),
+				BStatScoreGraphRecorder.kStatType => new BStatScoreGraphRecorder(),
 #endif
 
-			default: throw new KSoft.Debug.UnreachableException(statType.ToString());
-			}
+				_ => throw new KSoft.Debug.UnreachableException(statType.ToString()),
+			};
 		}
 		public void Serialize(IO.EndianStream s)
 		{
@@ -294,8 +289,8 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 	{
 		public BStatsRecorder[] Recorders;
-		public List<BStatPowerKeyValuePair> Powers { get; private set; }
-		public List<BStatAbilityKeyValuePair> Abilities { get; private set; }
+		public List<BStatPowerKeyValuePair> Powers { get; private set; } = new();
+		public List<BStatAbilityKeyValuePair> Abilities { get; private set; } = new();
 		public BCost[] TotalResources, MaxResources,
 			GatheredResources, TributedResources;
 		public BPlayerID PlayerID;
@@ -306,12 +301,6 @@ namespace KSoft.Phoenix.Runtime
 		public int CivID, LeaderID;
 		public byte ResourcesUsed, PlayerType;
 		public bool RandomCiv, RandomLeader, Resigned, Defeated, Disconnected, Won;
-
-		public BStatsManager()
-		{
-			Powers = new List<BStatPowerKeyValuePair>();
-			Abilities = new List<BStatAbilityKeyValuePair>();
-		}
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

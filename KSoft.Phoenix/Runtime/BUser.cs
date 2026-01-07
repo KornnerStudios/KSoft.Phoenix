@@ -48,7 +48,10 @@ namespace KSoft.Phoenix.Runtime
 			public void Serialize(IO.EndianStream s)
 			{
 				s.Stream(ref HaveArrow);
-				if (!HaveArrow) return;
+				if (!HaveArrow)
+				{
+					return;
+				}
 
 				s.StreamV(ref Origin); s.StreamV(ref Target);
 				s.Stream(ref Offset);
@@ -87,8 +90,8 @@ namespace KSoft.Phoenix.Runtime
 		public float CameraHoverPointOffsetHeight;
 		public BVector LastCameraLoc, LastCameraHoverPoint;
 		public bool HaveHoverPoint, HoverPointOverTerrain;
-		public HUDItemEnabledStates HUDItemEnabled = new HUDItemEnabledStates();
-		public List<BObjectiveArrow> ObjectiveArrows = new List<BObjectiveArrow>();
+		public HUDItemEnabledStates HUDItemEnabled = new();
+		public List<BObjectiveArrow> ObjectiveArrows = new();
 
 		#region IEndianStreamSerializable Members
 		void SerializeUserMode16(IO.EndianStream s)
@@ -114,7 +117,9 @@ namespace KSoft.Phoenix.Runtime
 		{
 			s.Stream(ref UserMode); s.Stream(ref SubMode);
 			if (UserMode == 16)
+			{
 				SerializeUserMode16(s);
+			}
 
 			BSaveGame.StreamArray16(s, ref SelectionList);
 			s.Stream(ref CameraZoomMin); s.Stream(ref CameraZoomMax);

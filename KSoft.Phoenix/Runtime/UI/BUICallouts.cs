@@ -46,13 +46,13 @@ namespace KSoft.Phoenix.Runtime
 			}
 			#endregion
 		};
-		static readonly CondensedListInfo kCalloutsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kCalloutsListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(short),
 		};
 
-		public List<CondensedListItem16<BUICallout>> Callouts = new List<CondensedListItem16<BUICallout>>();
+		public List<CondensedListItem16<BUICallout>> Callouts = new();
 		public int[] CalloutWidgets = new int[cNumCallouts];
 		public int NextCalloutID;
 		public bool PanelVisible, CalloutsVisible;
@@ -64,7 +64,10 @@ namespace KSoft.Phoenix.Runtime
 			s.StreamSignature(cSaveMarker.UICallouts1);
 			s.StreamSignature(cNumCallouts);
 			for (int x = 0; x < CalloutWidgets.Length; x++)
+			{
 				s.Stream(ref CalloutWidgets[x]);
+			}
+
 			s.Stream(ref NextCalloutID);
 			s.Stream(ref PanelVisible); s.Stream(ref CalloutsVisible);
 			s.StreamSignature(cSaveMarker.UICallouts2);

@@ -27,22 +27,22 @@ namespace KSoft.Phoenix.Runtime
 		#region ITechNode Members
 		float ITechNode.ResearchPoints
 		{
-			get { return this.ResearchPoints; }
+			readonly get { return this.ResearchPoints; }
 			set { this.ResearchPoints = value; }
 		}
 		int ITechNode.ResearchBuilding
 		{
-			get { return this.ResearchBuilding; }
+			readonly get { return this.ResearchBuilding; }
 			set { this.ResearchBuilding = value; }
 		}
 		Phx.BProtoTechStatus ITechNode.Status
 		{
-			get { return this.Status; }
+			readonly get { return this.Status; }
 			set { this.Status = value; }
 		}
 		bool ITechNode.Unique
 		{
-			get { return this.Unique; }
+			readonly get { return this.Unique; }
 			set { this.Unique = value; }
 		}
 		#endregion

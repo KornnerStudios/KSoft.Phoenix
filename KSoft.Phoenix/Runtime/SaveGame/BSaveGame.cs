@@ -2,6 +2,7 @@
 
 namespace KSoft.Phoenix.Runtime
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
 	static partial class cSaveMarker
 	{
 		public const ushort

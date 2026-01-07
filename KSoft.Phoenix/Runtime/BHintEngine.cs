@@ -27,7 +27,7 @@ namespace KSoft.Phoenix.Runtime
 
 		public BVector Vector;
 		public BEntityID[] SquadList, UnitList;
-		public BEntityFilterSet EntityFilterSet = new BEntityFilterSet();
+		public BEntityFilterSet EntityFilterSet = new();
 		public float Float;
 		public int ObjectType;
 		public uint LocStringID;
@@ -59,7 +59,7 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kMaxCount = BParameterPage.kDoneIndex-1;
 
-		static readonly CondensedListInfo kPagesListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kPagesListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(short),
@@ -76,7 +76,7 @@ namespace KSoft.Phoenix.Runtime
 		public uint PreconditionTime;
 		public byte State;
 		public int GamesReinforced, TimesReinforced, HintDisplayedCount;
-		public List<CondensedListItem16<BParameterPage>> Pages = new List<CondensedListItem16<BParameterPage>>();
+		public List<CondensedListItem16<BParameterPage>> Pages = new();
 		public int TimesReinforcedThisGame;
 		public bool EventReady, Active, Permission;
 		public float InitialWaitTimeRemaining, TerminalWaitTimeRemaining;
@@ -112,7 +112,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BHintEngine
 		: IO.IEndianStreamSerializable
 	{
-		static readonly CondensedListInfo kConceptsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kConceptsListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(uint),
@@ -120,17 +120,12 @@ namespace KSoft.Phoenix.Runtime
 			DoneIndex=int.MaxValue,
 		};
 
-		public List<CondensedListItem32<BConcept>> Concepts { get; private set; }
+		public List<CondensedListItem32<BConcept>> Concepts { get; private set; } = new();
 		public float TimeSinceLastHint;
 		public bool HintMessageOn;
 		public int[] AllowedConcepts;
 		public float WaitForNextRescore;
 		public uint LastGameTime;
-
-		public BHintEngine()
-		{
-			Concepts = new List<CondensedListItem32<BConcept>>();
-		}
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

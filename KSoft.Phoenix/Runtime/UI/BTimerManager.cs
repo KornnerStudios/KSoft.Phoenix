@@ -31,7 +31,10 @@ namespace KSoft.Phoenix.Runtime
 		public void Serialize(IO.EndianStream s)
 		{
 			for (int x = 0; x < Timers.Length; x++)
+			{
 				s.Stream(ref Timers[x]);
+			}
+
 			s.Stream(ref NextTimerID);
 		}
 		#endregion

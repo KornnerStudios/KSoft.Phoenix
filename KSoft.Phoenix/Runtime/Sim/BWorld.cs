@@ -93,10 +93,10 @@ namespace KSoft.Phoenix.Runtime
 		ObjectGroup[] NumExplorationGroups;
 		BExplorationGroupTimerEntry[] ActiveExplorationGroups;
 		public BPlayer[] Players;
-		PlayerColorCategory[,] PlayerColorCategories = new PlayerColorCategory[cMaxPlayerColorCategories, cMaximumSupportedPlayers];
-		List<CondensedListItem16<BSimOrder>> SimOrders = new List<CondensedListItem16<BSimOrder>>();
-		List<CondensedListItem16<BUnitOpp>> UnitOpps = new List<CondensedListItem16<BUnitOpp>>();
-		List<CondensedListItem16<BPathMoveData>> PathMoveData = new List<CondensedListItem16<BPathMoveData>>();
+		readonly PlayerColorCategory[,] PlayerColorCategories = new PlayerColorCategory[cMaxPlayerColorCategories, cMaximumSupportedPlayers];
+		readonly List<CondensedListItem16<BSimOrder>> SimOrders = new();
+		readonly List<CondensedListItem16<BUnitOpp>> UnitOpps = new();
+		readonly List<CondensedListItem16<BPathMoveData>> PathMoveData = new();
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
@@ -107,20 +107,30 @@ namespace KSoft.Phoenix.Runtime
 			{
 				Players = new BPlayer[sg.Players.Count];
 				for(int x = 0; x < Players.Length; x++)
+				{
 					Players[x] = new BPlayer();
+				}
 			}
 
 			BSaveGame.StreamArray16(s, ref NumExplorationGroups, isIterated:true);
 			BSaveGame.StreamArray(s, ref ActiveExplorationGroups);
 			s.StreamSignature(cSaveMarker.World1);
 			foreach (var player in Players)
+			{
 				s.Stream(player);
+			}
+
 			s.StreamSignature(cSaveMarker.Players);
 			s.StreamSignature(cMaximumSupportedPlayers);
 			s.StreamSignature(cMaxPlayerColorCategories);
 			for (int x = 0; x < cMaxPlayerColorCategories; x++)
+			{
 				for (int y = 0; y < cMaximumSupportedPlayers; y++)
+				{
 					s.Stream(ref PlayerColorCategories[x, y]);
+				}
+			}
+
 			s.StreamSignature(cSaveMarker.World2);
 			BSaveGame.StreamFreeList(s, SimOrders, BSimOrder.kFreeListInfo);
 			BSaveGame.StreamFreeList(s, UnitOpps, BUnitOpp.kFreeListInfo);

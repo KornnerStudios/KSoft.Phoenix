@@ -88,13 +88,19 @@ namespace KSoft.Phoenix.Runtime
 			public BUIObjectiveProgressControl()
 			{
 				for (int x = 0; x < ObjectiveLabels.Length; x++)
+				{
 					ObjectiveLabels[x] = new BUILabel();
+				}
 			}
 
 			#region IEndianStreamSerializable Members
 			public void Serialize(IO.EndianStream s)
 			{
-				for (int x = 0; x < ObjectiveLabels.Length; x++) s.Stream(ref ObjectiveLabels[x]);
+				for (int x = 0; x < ObjectiveLabels.Length; x++)
+				{
+					s.Stream(ref ObjectiveLabels[x]);
+				}
+
 				BSaveGame.StreamArray(s, ref Objectives);
 			}
 			#endregion
@@ -113,8 +119,8 @@ namespace KSoft.Phoenix.Runtime
 		public BReticulePointer ReticulePointerType;
 		public BVector[] ReticulePointerArea = new BVector[3];
 		public BReticulePointer ReticulePointerEntities, PointerRotation, PointerRotationFloat;
-		public BUITalkingHeadControl TalkingHeadControl = new BUITalkingHeadControl();
-		public BUIObjectiveProgressControl ObjectiveProgressControl = new BUIObjectiveProgressControl();
+		public BUITalkingHeadControl TalkingHeadControl = new();
+		public BUIObjectiveProgressControl ObjectiveProgressControl = new();
 		public bool WidgetPanelVisible, TimerVisible, CitizensSavedVisible,
 			CounterVisible, TimerShown;
 
@@ -132,7 +138,11 @@ namespace KSoft.Phoenix.Runtime
 
 			s.Stream(ref ReticulePointersVisible0); s.Stream(ref ReticulePointersVisible4);
 			s.Stream(ref ReticulePointerType);
-			for (int x = 0; x < ReticulePointerArea.Length; x++) s.StreamV(ref ReticulePointerArea[x]);
+			for (int x = 0; x < ReticulePointerArea.Length; x++)
+			{
+				s.StreamV(ref ReticulePointerArea[x]);
+			}
+
 			s.Stream(ref ReticulePointerEntities);
 			s.Stream(ref PointerRotation);
 			s.Stream(ref PointerRotationFloat);
