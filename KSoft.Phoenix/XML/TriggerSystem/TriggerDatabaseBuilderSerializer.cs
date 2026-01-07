@@ -6,11 +6,12 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Phoenix.XML
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 	sealed class TriggerDatabaseBuilderSerializer
 		: BXmlSerializerInterface
 	{
-		Phx.BDatabaseBase mDatabase;
-		internal override Phx.BDatabaseBase Database { get { return mDatabase; } }
+		readonly Phx.BDatabaseBase mDatabase;
+		internal override Phx.BDatabaseBase Database => mDatabase;
 
 		public Phx.TriggerDatabase TriggerDb { get; private set; }
 
@@ -41,7 +42,9 @@ namespace KSoft.Phoenix.XML
 		{
 			// This HW script has all the debug info stripped :o
 			if (s.StreamName.EndsWith("skirmishai.triggerscript"))
+			{
 				return;
+			}
 
 			ParseTriggerScript(s);
 		}
@@ -54,45 +57,44 @@ namespace KSoft.Phoenix.XML
 			foreach (var e in s.ElementsByName(Phx.BTriggerSystem.kXmlRootName))
 			{
 				using (s.EnterCursorBookmark(e))
+				{
 					new Phx.BTriggerSystem().Serialize(s);
+				}
 			}
 		}
 
 		void ParseTriggerScripts(Engine.PhxEngine e)
 		{
-			System.Threading.Tasks.ParallelLoopResult result;
-
 			ReadDataFilesAsync(Engine.ContentStorage.Game,   Engine.GameDirectory.TriggerScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.TriggerScript),
-				ParseTriggerScriptSansSkrimishAI, out result);
+				ParseTriggerScriptSansSkrimishAI,
+				out System.Threading.Tasks.ParallelLoopResult result);
 
 			ReadDataFilesAsync(Engine.ContentStorage.Update, Engine.GameDirectory.TriggerScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.TriggerScript),
-				ParseTriggerScript, out result);
+				ParseTriggerScript,
+				out result);
 		}
 		void ParseAbilities(Engine.PhxEngine e)
 		{
-			System.Threading.Tasks.ParallelLoopResult result;
-
 			ReadDataFilesAsync(Engine.ContentStorage.Game,   Engine.GameDirectory.AbilityScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.Ability),
-				ParseTriggerScript, out result);
+				ParseTriggerScript,
+				out System.Threading.Tasks.ParallelLoopResult result);
 		}
 		void ParsePowers(Engine.PhxEngine e)
 		{
-			System.Threading.Tasks.ParallelLoopResult result;
-
 			ReadDataFilesAsync(Engine.ContentStorage.Game,   Engine.GameDirectory.PowerScripts,
 				Phx.BTriggerSystem.GetFileExtSearchPattern(Phx.BTriggerScriptType.Power),
-				ParseTriggerScript, out result);
+				ParseTriggerScript,
+				out System.Threading.Tasks.ParallelLoopResult result);
 		}
 		void ParseScenarios(Engine.PhxEngine e)
 		{
-			System.Threading.Tasks.ParallelLoopResult result;
-
 			ReadDataFilesAsync(Engine.ContentStorage.Game, Engine.GameDirectory.Scenario,
 				"*.scn",
-				ParseScenarioScripts, out result);
+				ParseScenarioScripts,
+				out System.Threading.Tasks.ParallelLoopResult result);
 		}
 
 		public void ParseScriptFiles()

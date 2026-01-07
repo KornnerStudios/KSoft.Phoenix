@@ -11,7 +11,9 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				if (mIsPreloading)
+				{
 					PreloadTactics();
+				}
 			}
 		}
 		protected virtual void PostStreamXml(FA mode)
@@ -22,15 +24,19 @@ namespace KSoft.Phoenix.XML
 		void PreloadTactics()
 		{
 			if (Database.Tactics.Count > 0)
+			{
 				return;
+			}
 
 			foreach (string tactic_filename in GameEngine.Directories.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
 				"*" + Phx.BTacticData.kFileExt))
 			{
 				string tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_filename);
 
-				var td = new Phx.BTacticData();
-				td.SourceFileName = tactic_filename;
+				var td = new Phx.BTacticData
+				{
+					SourceFileName = tactic_filename
+				};
 
 				Database.Tactics.DynamicAdd(td, tactic_name);
 			}
@@ -42,11 +48,15 @@ namespace KSoft.Phoenix.XML
 				string tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_filename);
 				tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_name);
 				if (Database.Tactics.TryGetId(tactic_name).IsNotNone())
+				{
 					continue;
+				}
 
-				var td = new Phx.BTacticData();
-				td.SourceFileName = tactic_filename;
-				td.SourceXmlFileIsXmb = true;
+				var td = new Phx.BTacticData
+				{
+					SourceFileName = tactic_filename,
+					SourceXmlFileIsXmb = true
+				};
 
 				Database.Tactics.DynamicAdd(td, tactic_name);
 			}
@@ -55,7 +65,10 @@ namespace KSoft.Phoenix.XML
 		void StreamTactic(IO.XmlElementStream s, Phx.BTacticData tactic)
 		{
 			if (s.IsReading && IsNotPreloading)
+			{
 				FixTacticsXml(s, tactic.Name);
+			}
+
 			tactic.Serialize(s);
 		}
 		#endregion
@@ -63,8 +76,11 @@ namespace KSoft.Phoenix.XML
 		/// <remarks>For streaming directly from gamedata.xml</remarks>
 		void StreamXmlGameData(IO.XmlElementStream s)
 		{
-			if(s.IsReading)
+			if (s.IsReading)
+			{
 				FixGameDataXml(s);
+			}
+
 			Database.GameData.StreamGameData(s);
 		}
 
@@ -106,7 +122,9 @@ namespace KSoft.Phoenix.XML
 		{
 			XmlUtil.Serialize(s, Database.WeaponTypes, Phx.BWeaponType.kBListXmlParams, ForceNoRootElementStreaming);
 			if (s.IsReading)
+			{
 				FixWeaponTypes();
+			}
 		}
 		/// <remarks>For streaming directly from UserClasses.xml</remarks>
 		void StreamXmlUserClasses(IO.XmlElementStream s)
@@ -147,7 +165,10 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlSquads(IO.XmlElementStream s)
 		{
 			if (s.IsReading)
+			{
 				FixSquadsXml(s);
+			}
+
 			XmlUtil.Serialize(s, mSquadsSerializer, ForceNoRootElementStreaming);
 
 			XML.XmlUtil.Serialize(s, Database.MergedSquads, Phx.BProtoMergedSquads.kBListXmlParams);
@@ -162,7 +183,10 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlPowers(IO.XmlElementStream s)
 		{
 			if (s.IsReading)
+			{
 				FixPowersXml(s);
+			}
+
 			XmlUtil.Serialize(s, mPowersSerializer, ForceNoRootElementStreaming);
 		}
 
@@ -174,7 +198,10 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlTechs(IO.XmlElementStream s)
 		{
 			if (s.IsReading)
+			{
 				FixTechsXml(s);
+			}
+
 			XmlUtil.Serialize(s, mTechsSerializer, ForceNoRootElementStreaming);
 		}
 
@@ -208,7 +235,10 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlTechsUpdate(IO.XmlElementStream s)
 		{
 			if (s.IsReading)
+			{
 				FixTechsXml(s);
+			}
+
 			XmlUtil.SerializeUpdate(s, mTechsSerializer, ForceNoRootElementStreaming);
 		}
 		#endregion

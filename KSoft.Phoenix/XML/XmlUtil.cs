@@ -27,7 +27,9 @@ namespace KSoft.Phoenix.XML
 
 			int child_element_count = s.TryGetCursorElementCount();
 			if (list.Capacity < child_element_count)
+			{
 				list.Capacity = child_element_count;
+			}
 		}
 
 		public static IEnumerable<TCursor> ReadGetNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string xmlName, IO.TagElementNodeType xmlSource)
@@ -63,18 +65,24 @@ namespace KSoft.Phoenix
 			if (s.IsReading)
 			{
 				if (isOptional)
+				{
 					was_streamed = s.StreamStringOpt(xmlName, ref string_value, to_lower, xmlSource);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref string_value, to_lower, xmlSource);
+				}
 
 				if (was_streamed)
 				{
 					var parse_result = PhxUtil.ParseBVectorString(string_value);
 					if (!parse_result.HasValue)
+					{
 						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
 							"Failed to parse value (hint: {0}) as vector: {1}",
 							xmlSource.RequiresName() ? xmlName : "ElementText",
 							string_value)));
+					}
 
 					vector = parse_result.Value;
 				}
@@ -90,9 +98,13 @@ namespace KSoft.Phoenix
 				string_value = vector.ToBVectorString();
 
 				if (isOptional)
+				{
 					s.StreamStringOpt(xmlName, ref string_value, to_lower, xmlSource);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref string_value, to_lower, xmlSource);
+				}
 			}
 
 			return was_streamed;
@@ -114,17 +126,23 @@ namespace KSoft.Phoenix
 			if (s.IsReading)
 			{
 				if (isOptional)
+				{
 					was_streamed = s.StreamStringOpt(xmlName, ref string_value, to_lower, xmlSource);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref string_value, to_lower, xmlSource);
+				}
 
 				if (was_streamed)
 				{
 					if (!PhxUtil.TokenizeIntegerColor(string_value, defaultAlpha, ref color))
+					{
 						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
 							"Failed to parse value (hint: {0}) as color: {1}",
 							xmlSource.RequiresName() ? xmlName : "ElementText",
 							string_value)));
+					}
 				}
 			}
 			else if (s.IsWriting)
@@ -138,9 +156,13 @@ namespace KSoft.Phoenix
 				string_value = color.ToIntegerColorString(defaultAlpha);
 
 				if (isOptional)
+				{
 					s.StreamStringOpt(xmlName, ref string_value, to_lower, xmlSource);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref string_value, to_lower, xmlSource);
+				}
 			}
 
 			return was_streamed;
@@ -164,9 +186,13 @@ namespace KSoft.Phoenix
 			if (s.IsReading)
 			{
 				if (isOptional)
+				{
 					was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 
 				if (was_streamed)
 				{
@@ -186,12 +212,18 @@ namespace KSoft.Phoenix
 
 				id_name = protoEnum.TryGetMemberName(dbid);
 				if (id_name.IsNullOrEmpty())
+				{
 					Contract.Assert(!id_name.IsNullOrEmpty(), dbid.ToString());
+				}
 
 				if (isOptional)
+				{
 					s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 				else
+				{
 					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+				}
 			}
 
 			return was_streamed;

@@ -20,8 +20,8 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(@params != null);
 
 			BTypeValuesXmlSerializerBase<float> xs;
-			if (attrName == null)	xs = new BTypeValuesSingleXmlSerializer(@params, list);
-			else					xs = new BTypeValuesSingleAttrHackXmlSerializer(@params, list, attrName);
+			if (attrName == null)	{ xs = new BTypeValuesSingleXmlSerializer(@params, list); }
+			else					{ xs = new BTypeValuesSingleAttrHackXmlSerializer(@params, list, attrName); }
 
 			using (xs)
 			{

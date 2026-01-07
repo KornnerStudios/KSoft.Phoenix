@@ -18,21 +18,21 @@ namespace KSoft.Phoenix.XML
 
 			switch (type)
 			{
-			case Phx.BTriggerScriptType.TriggerScript:
-				dir = Engine.GameDirectory.TriggerScripts;
-				location = Engine.ContentStorage.UpdateOrGame; // TUs have only included updated TS files only
-				break;
-			case Phx.BTriggerScriptType.Scenario:
-				dir = Engine.GameDirectory.Scenario;
-				break;
-			case Phx.BTriggerScriptType.Ability:
-				dir = Engine.GameDirectory.AbilityScripts;
-				break;
-			case Phx.BTriggerScriptType.Power:
-				dir = Engine.GameDirectory.PowerScripts;
-				break;
+				case Phx.BTriggerScriptType.TriggerScript:
+					dir = Engine.GameDirectory.TriggerScripts;
+					location = Engine.ContentStorage.UpdateOrGame; // TUs have only included updated TS files only
+					break;
+				case Phx.BTriggerScriptType.Scenario:
+					dir = Engine.GameDirectory.Scenario;
+					break;
+				case Phx.BTriggerScriptType.Ability:
+					dir = Engine.GameDirectory.AbilityScripts;
+					break;
+				case Phx.BTriggerScriptType.Power:
+					dir = Engine.GameDirectory.PowerScripts;
+					break;
 
-			default: throw new KSoft.Debug.UnreachableException(type.ToString());
+				default: throw new KSoft.Debug.UnreachableException(type.ToString());
 			}
 
 			return new Engine.XmlFileInfo()
@@ -47,8 +47,8 @@ namespace KSoft.Phoenix.XML
 			};
 		}
 
-		Phx.BDatabaseBase mDatabase;
-		internal override Phx.BDatabaseBase Database { get { return mDatabase; } }
+		readonly Phx.BDatabaseBase mDatabase;
+		internal override Phx.BDatabaseBase Database => mDatabase;
 
 		public Phx.TriggerDatabase TriggerDb { get; private set; }
 
@@ -93,7 +93,7 @@ namespace KSoft.Phoenix.XML
 			var ts = ctxt.Script = new Phx.BTriggerSystem();
 			ts.Serialize(s);
 		}
-		public void LoadScenarioScripts<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, StreamTriggerScriptContext ctxt)
+		public void LoadScenarioScripts<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, StreamTriggerScriptContext /*ctxt*/_)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -102,7 +102,9 @@ namespace KSoft.Phoenix.XML
 			foreach (var e in s.ElementsByName(Phx.BTriggerSystem.kXmlRootName))
 			{
 				using (s.EnterCursorBookmark(e))
+				{
 					new Phx.BTriggerSystem().Serialize(s);
+				}
 			}
 		}
 	};

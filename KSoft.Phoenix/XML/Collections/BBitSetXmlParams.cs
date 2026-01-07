@@ -22,8 +22,8 @@ namespace KSoft.Phoenix.XML
 				| BCollectionXmlParamsFlags.InternDataNames;
 		}
 
-		public static readonly BBitSetXmlParams kFlagsSansRoot = new BBitSetXmlParams("Flag");
-		public static readonly BBitSetXmlParams kFlagsAreElementNamesThatMeanTrue = new BBitSetXmlParams()
+		public static readonly BBitSetXmlParams kFlagsSansRoot = new("Flag");
+		public static readonly BBitSetXmlParams kFlagsAreElementNamesThatMeanTrue = new()
 		{
 			ElementItselfMeansTrue = true,
 		};

@@ -17,7 +17,7 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(s != null);
 			Contract.Requires(list != null);
 
-			using(var xs = new BCostTypeValuesSingleAttrHackXmlSerializer(list))
+			using (var xs = new BCostTypeValuesSingleAttrHackXmlSerializer(list))
 			{
 				xs.Serialize(s);
 			}
@@ -28,11 +28,12 @@ namespace KSoft.Phoenix.XML
 		BListExplicitIndexXmlSerializerBase<float>
 	{
 		// Just an alias for less typing and code
-		static XML.BTypeValuesXmlParams<float> kParams { get { return Phx.BResource.kBListTypeValuesXmlParams_Cost; } }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
+		static XML.BTypeValuesXmlParams<float> kParams => Phx.BResource.kBListTypeValuesXmlParams_Cost;
 
-		Collections.BTypeValuesSingle mList;
+		readonly Collections.BTypeValuesSingle mList;
 
-		public override Collections.BListExplicitIndexBase<float> ListExplicitIndex { get { return mList; } }
+		public override Collections.BListExplicitIndexBase<float> ListExplicitIndex => mList;
 
 		public BCostTypeValuesSingleAttrHackXmlSerializer(Collections.BTypeValuesSingle list) : base(kParams)
 		{
@@ -54,7 +55,10 @@ namespace KSoft.Phoenix.XML
 				// The only attributes in this are actual member names so we don't waste time calling
 				// penum.IsValidMemberName only to call GetMemberId when we can just compare id to -1
 				int index = penum.GetMemberId(attrName);
-				if (index.IsNone()) continue;
+				if (index.IsNone())
+				{
+					continue;
+				}
 
 				mList.InitializeItem(index);
 				float value = PhxUtil.kInvalidSingle;

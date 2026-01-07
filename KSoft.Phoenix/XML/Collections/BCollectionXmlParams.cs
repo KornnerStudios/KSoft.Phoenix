@@ -10,7 +10,7 @@ namespace KSoft.Phoenix.XML
 		public /*readonly*/ string ElementName;
 
 		/// <summary>Do we explicitly filter the XML tags to match <see cref="ElementName"/>?</summary>
-		public bool UseElementName { get { return ElementName != null; } }
+		public bool UseElementName => ElementName != null;
 
 		#region Flags
 		public /*readonly*/ BCollectionXmlParamsFlags Flags;
@@ -20,15 +20,23 @@ namespace KSoft.Phoenix.XML
 
 		public void SetForceNoRootElementStreaming(bool isSet)
 		{
-			if (isSet) Flags |= BCollectionXmlParamsFlags.ForceNoRootElementStreaming;
-			else Flags &= ~BCollectionXmlParamsFlags.ForceNoRootElementStreaming;
+			if (isSet)
+			{
+				Flags |= BCollectionXmlParamsFlags.ForceNoRootElementStreaming;
+			}
+			else
+			{
+				Flags &= ~BCollectionXmlParamsFlags.ForceNoRootElementStreaming;
+			}
 		}
 		#endregion
 
 		public string GetOptionalRootName()
 		{
 			if (!HasFlag(BCollectionXmlParamsFlags.ForceNoRootElementStreaming))
+			{
 				return RootName;
+			}
 
 			return null;
 		}
@@ -49,14 +57,21 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-				 if (useInnerText)		s.StreamCursor(ref value);
-			else if (useElement)		s.StreamElement(valueName, ref value);
-			else if (valueName != null)	s.StreamAttribute(valueName, ref value);
+				 if (useInnerText)		{ s.StreamCursor(ref value); }
+			else if (useElement)		{ s.StreamElement(valueName, ref value); }
+			else if (valueName != null)	{ s.StreamAttribute(valueName, ref value); }
 
 			if (s.IsReading)
 			{
-				if (toLower) value = value.ToLowerInvariant();
-				if (internValue) value = string.Intern(value);
+				if (toLower)
+				{
+					value = value.ToLowerInvariant();
+				}
+
+				if (internValue)
+				{
+					value = string.Intern(value);
+				}
 			}
 		}
 		protected static void StreamValue<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
@@ -65,9 +80,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-				 if (useInnerText)		s.StreamCursor(ref value);
-			else if (useElement)		s.StreamElement(valueName, ref value);
-			else if (valueName != null)	s.StreamAttribute(valueName, ref value);
+				 if (useInnerText)		{ s.StreamCursor(ref value); }
+			else if (useElement)		{ s.StreamElement(valueName, ref value); }
+			else if (valueName != null)	{ s.StreamAttribute(valueName, ref value); }
 		}
 		#endregion
 	};

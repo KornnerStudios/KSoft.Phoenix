@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(list != null);
 			Contract.Requires(@params != null);
 
-			using(var xs = new BListExplicitIndexXmlSerializer<T>(@params, list))
+			using (var xs = new BListExplicitIndexXmlSerializer<T>(@params, list))
 			{
 				xs.Serialize(s);
 			}
@@ -30,9 +30,9 @@ namespace KSoft.Phoenix.XML
 		: BListExplicitIndexXmlSerializerBase<T>
 		where T : IO.ITagElementStringNameStreamable, new()
 	{
-		Collections.BListExplicitIndex<T> mList;
+		readonly Collections.BListExplicitIndex<T> mList;
 
-		public override Collections.BListExplicitIndexBase<T> ListExplicitIndex { get { return mList; } }
+		public override Collections.BListExplicitIndexBase<T> ListExplicitIndex => mList;
 
 		public BListExplicitIndexXmlSerializer(BListExplicitIndexXmlParams<T> @params, Collections.BListExplicitIndex<T> list) : base(@params)
 		{
@@ -49,7 +49,7 @@ namespace KSoft.Phoenix.XML
 			Contract.Assert(index.IsNotNone());
 
 			mList.InitializeItem(index);
-			T data = new T();
+			T data = new();
 			data.Serialize(s);
 			mList[index] = data;
 		}

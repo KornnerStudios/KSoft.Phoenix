@@ -24,7 +24,10 @@ namespace KSoft.Phoenix.XML
 				"Collection only supports element name filtering");
 
 			if (gBitSetXmlSerializer == null)
+			{
 				gBitSetXmlSerializer = new BBitSetXmlSerializer();
+			}
+
 			var xs = gBitSetXmlSerializer;
 
 			using (xs.Reset(@params, bits))
@@ -56,7 +59,9 @@ namespace KSoft.Phoenix.XML
 		Collections.IProtoEnum GetProtoEnum(Phx.BDatabaseBase db)
 		{
 			if (Bits.Params.kGetProtoEnum != null)
+			{
 				return Bits.Params.kGetProtoEnum();
+			}
 
 			return Bits.Params.kGetProtoEnumFromDB(db);
 		}
@@ -76,7 +81,9 @@ namespace KSoft.Phoenix.XML
 					var element_name = s.GetElementName(e);
 					int id = penum.TryGetMemberId(element_name);
 					if (id.IsNone())
+					{
 						continue;
+					}
 
 					bool flag = true;
 					s.StreamElementOpt(element_name, ref flag);
@@ -86,7 +93,9 @@ namespace KSoft.Phoenix.XML
 						// do nothing, allow the Set call below
 					}
 					else if (!flag)
+					{
 						continue;
+					}
 
 					Bits.Set(id, flag);
 				}
@@ -113,7 +122,9 @@ namespace KSoft.Phoenix.XML
 			where TCursor : class
 		{
 			if (Bits.EnabledCount == 0)
+			{
 				return;
+			}
 
 			var xs = s.GetSerializerInterface();
 			Collections.IProtoEnum penum = GetProtoEnum(xs.Database);
@@ -154,7 +165,9 @@ namespace KSoft.Phoenix.XML
 			{
 				bool bitDefault = getDefault(x);
 				if (bitDefault == Bits[x])
+				{
 					continue;
+				}
 
 				string name = penum.GetMemberName(x);
 				using (s.EnterCursorBookmark(name))
@@ -172,8 +185,14 @@ namespace KSoft.Phoenix.XML
 			// #NOTE we don't check the book mark for null here because the root element is optional
 			using (s.EnterCursorBookmarkOpt(Params.GetOptionalRootName()))
 			{
-					 if (s.IsReading)	ReadNodes(s);
-				else if (s.IsWriting)	WriteNodes(s);
+				if (s.IsReading)
+				{
+					ReadNodes(s);
+				}
+				else if (s.IsWriting)
+				{
+					WriteNodes(s);
+				}
 			}
 		}
 		#endregion

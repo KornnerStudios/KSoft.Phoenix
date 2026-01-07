@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(list != null);
 			Contract.Requires(@params != null);
 
-			using(var xs = new BTypeValuesStringXmlSerializer(@params, list))
+			using (var xs = new BTypeValuesStringXmlSerializer(@params, list))
 			{
 				xs.Serialize(s);
 			}

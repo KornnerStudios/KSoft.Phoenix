@@ -9,10 +9,14 @@ namespace KSoft.Phoenix.XML
 			where TCursor : class
 		{
 			if (p.DoNotWriteUndefinedData)
+			{
 				return;
+			}
 
 			if (undefined.MemberUndefinedCount == 0)
+			{
 				return;
+			}
 
 			string element_name = "Undefined" + p.ElementName;
 

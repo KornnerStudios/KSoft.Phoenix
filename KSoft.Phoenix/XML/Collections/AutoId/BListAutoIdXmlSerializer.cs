@@ -30,12 +30,19 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(list != null);
 			Contract.Requires(@params != null);
 
-			if (forceNoRootElementStreaming) @params.SetForceNoRootElementStreaming(true);
+			if (forceNoRootElementStreaming)
+			{
+				@params.SetForceNoRootElementStreaming(true);
+			}
+
 			using (var xs = CreateXmlSerializer(list, @params))
 			{
 				xs.Serialize(s);
 			}
-			if (forceNoRootElementStreaming) @params.SetForceNoRootElementStreaming(false);
+			if (forceNoRootElementStreaming)
+			{
+				@params.SetForceNoRootElementStreaming(false);
+			}
 		}
 
 		public static void SerializePreload<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
@@ -46,9 +53,16 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(s != null);
 			Contract.Requires(xs != null);
 
-			if (forceNoRootElementStreaming) xs.Params.SetForceNoRootElementStreaming(true);
+			if (forceNoRootElementStreaming)
+			{
+				xs.Params.SetForceNoRootElementStreaming(true);
+			}
+
 			xs.StreamPreload(s);
-			if (forceNoRootElementStreaming) xs.Params.SetForceNoRootElementStreaming(false);
+			if (forceNoRootElementStreaming)
+			{
+				xs.Params.SetForceNoRootElementStreaming(false);
+			}
 		}
 		public static void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
 			IBListAutoIdXmlSerializer xs, bool forceNoRootElementStreaming = false)
@@ -58,9 +72,16 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(s != null);
 			Contract.Requires(xs != null);
 
-			if (forceNoRootElementStreaming) xs.Params.SetForceNoRootElementStreaming(true);
+			if (forceNoRootElementStreaming)
+			{
+				xs.Params.SetForceNoRootElementStreaming(true);
+			}
+
 			xs.Serialize(s);
-			if (forceNoRootElementStreaming) xs.Params.SetForceNoRootElementStreaming(false);
+			if (forceNoRootElementStreaming)
+			{
+				xs.Params.SetForceNoRootElementStreaming(false);
+			}
 		}
 		public static void SerializeUpdate<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
 			IBListAutoIdXmlSerializer xs, bool forceNoRootElementStreaming = false)
@@ -70,9 +91,16 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(s != null);
 			Contract.Requires(xs != null);
 
-			if (forceNoRootElementStreaming) xs.Params.SetForceNoRootElementStreaming(true);
+			if (forceNoRootElementStreaming)
+			{
+				xs.Params.SetForceNoRootElementStreaming(true);
+			}
+
 			xs.StreamUpdate(s);
-			if (forceNoRootElementStreaming) xs.Params.SetForceNoRootElementStreaming(false);
+			if (forceNoRootElementStreaming)
+			{
+				xs.Params.SetForceNoRootElementStreaming(false);
+			}
 		}
 	};
 
@@ -81,11 +109,11 @@ namespace KSoft.Phoenix.XML
 		, IBListAutoIdXmlSerializer
 		where T : class, Collections.IListAutoIdObject, new()
 	{
-		BListXmlParams mParams;
-		Collections.BListAutoId<T> mList;
+		readonly BListXmlParams mParams;
+		readonly Collections.BListAutoId<T> mList;
 
-		public override BListXmlParams Params { get { return mParams; } }
-		public override Collections.BListBase<T> List { get { return mList; } }
+		public override BListXmlParams Params => mParams;
+		public override Collections.BListBase<T> List => mList;
 
 		public BListAutoIdXmlSerializer(BListXmlParams @params, Collections.BListAutoId<T> list)
 		{
@@ -97,7 +125,7 @@ namespace KSoft.Phoenix.XML
 		}
 
 		bool mIsPreloaded;
-		bool RequiresDataNamePreloading { get { return Params.RequiresDataNamePreloading; } }
+		bool RequiresDataNamePreloading => Params.RequiresDataNamePreloading;
 
 		int mCountBeforeUpdate;
 		bool mIsUpdating;
@@ -139,15 +167,18 @@ namespace KSoft.Phoenix.XML
 			string item_name = null;
 			Params.StreamDataName(s, ref item_name);
 
-			T item;
-			if (SetupItem(out item, item_name, iteration))
+			if (SetupItem(out T item, item_name, iteration))
+			{
 				item.Serialize(s);
+			}
 		}
 		protected override void Write<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs, T data)
 		{
 			string item_name = data.Data;
 			if (item_name != null)
+			{
 				Params.StreamDataName(s, ref item_name);
+			}
 
 			try
 			{
@@ -190,7 +221,10 @@ namespace KSoft.Phoenix.XML
 			mCountBeforeUpdate = mList.Count;
 
 			if (RequiresDataNamePreloading)
+			{
 				Preload(s);
+			}
+
 			Serialize(s);
 
 			mIsUpdating = false;

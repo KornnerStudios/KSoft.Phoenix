@@ -43,7 +43,7 @@ namespace KSoft.Phoenix.XML
 			int index = ReadExplicitIndex(s, xs);
 
 			ListExplicitIndex.InitializeItem(index);
-			T data = new T();
+			T data = new();
 			data.Serialize(s);
 			ListExplicitIndex[index] = data;
 		}

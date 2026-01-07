@@ -24,7 +24,9 @@ namespace KSoft.Phoenix.XML
 		{
 			int child_element_count = s.TryGetCursorElementCount();
 			if (List.Capacity < child_element_count)
+			{
 				List.Capacity = child_element_count;
+			}
 		}
 		protected virtual IEnumerable<TCursor> ReadGetNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
@@ -44,7 +46,9 @@ namespace KSoft.Phoenix.XML
 			foreach (var n in ReadGetNodes(s))
 			{
 				using (s.EnterCursorBookmark(n))
+				{
 					Read(s, xs, x++);
+				}
 			}
 
 			List.OptimizeStorage();
@@ -58,8 +62,12 @@ namespace KSoft.Phoenix.XML
 			where TCursor : class
 		{
 			foreach (T data in List)
+			{
 				using (s.EnterCursorBookmark(WriteGetElementName(data)))
+				{
 					Write(s, xs, data);
+				}
+			}
 		}
 
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -71,14 +79,27 @@ namespace KSoft.Phoenix.XML
 			var xs = s.GetSerializerInterface();
 
 			if (s.IsReading) // If the stream doesn't have the expected element, don't try to stream
-				should_stream = root_name == null || s.ElementsExists(root_name);
-			else if (s.IsWriting)
-				should_stream = List != null && List.IsEmpty == false;
-
-			if (should_stream) using (s.EnterCursorBookmark(root_name))
 			{
-					 if (s.IsReading)	ReadNodes(s, xs);
-				else if (s.IsWriting)	WriteNodes(s, xs);
+				should_stream = root_name == null || s.ElementsExists(root_name);
+			}
+			else if (s.IsWriting)
+			{
+				should_stream = List != null && List.IsEmpty == false;
+			}
+
+			if (should_stream)
+			{
+				using (s.EnterCursorBookmark(root_name))
+				{
+					if (s.IsReading)
+					{
+						ReadNodes(s, xs);
+					}
+					else if (s.IsWriting)
+					{
+						WriteNodes(s, xs);
+					}
+				}
 			}
 		}
 		#endregion

@@ -18,6 +18,8 @@ namespace KSoft.Phoenix.XML
 		}
 
 		#region IDisposable Members
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize",
+			Justification = "Not expecting any derived classes to have Finalizers")]
 		public override void Dispose()
 		{
 			AutoIdSerializersDispose();
@@ -27,18 +29,34 @@ namespace KSoft.Phoenix.XML
 		protected virtual void AutoIdSerializersInitialize()
 		{
 			if (mDamageTypesSerializer == null)
+			{
 				mDamageTypesSerializer = XmlUtil.CreateXmlSerializer(Database.DamageTypes, Phx.BDamageType.kBListXmlParams);
+			}
+
 			if (mImpactEffectsSerializer == null)
+			{
 				mImpactEffectsSerializer = XmlUtil.CreateXmlSerializer(Database.ImpactEffects, Phx.BProtoImpactEffect.kBListXmlParams);
+			}
 
 			if (mObjectsSerializer == null)
+			{
 				mObjectsSerializer = XmlUtil.CreateXmlSerializer(Database.Objects, Phx.BProtoObject.kBListXmlParams);
+			}
+
 			if (mSquadsSerializer == null)
+			{
 				mSquadsSerializer = XmlUtil.CreateXmlSerializer(Database.Squads, Phx.BProtoSquad.kBListXmlParams);
+			}
+
 			if (mPowersSerializer == null)
+			{
 				mPowersSerializer = XmlUtil.CreateXmlSerializer(Database.Powers, Phx.BProtoPower.kBListXmlParams);
+			}
+
 			if (mTechsSerializer == null)
+			{
 				mTechsSerializer = XmlUtil.CreateXmlSerializer(Database.Techs, Phx.BProtoTech.kBListXmlParams);
+			}
 		}
 		protected virtual void AutoIdSerializersDispose()
 		{

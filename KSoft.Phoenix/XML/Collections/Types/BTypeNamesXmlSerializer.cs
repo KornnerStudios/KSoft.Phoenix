@@ -18,23 +18,30 @@ namespace KSoft.Phoenix.XML
 			Contract.Requires(list != null);
 			Contract.Requires(@params != null);
 
-			if (forceNoRootElementStreaming) @params.SetForceNoRootElementStreaming(true);
-			using(var xs = new BTypeNamesXmlSerializer(@params, list))
+			if (forceNoRootElementStreaming)
+			{
+				@params.SetForceNoRootElementStreaming(true);
+			}
+
+			using (var xs = new BTypeNamesXmlSerializer(@params, list))
 			{
 				xs.Serialize(s);
 			}
-			if (forceNoRootElementStreaming) @params.SetForceNoRootElementStreaming(false);
+			if (forceNoRootElementStreaming)
+			{
+				@params.SetForceNoRootElementStreaming(false);
+			}
 		}
 	};
 
 	internal class BTypeNamesXmlSerializer
 		: BListXmlSerializerBase<string>
 	{
-		BListXmlParams mParams;
-		Collections.BTypeNames mList;
+		readonly BListXmlParams mParams;
+		readonly Collections.BTypeNames mList;
 
-		public override BListXmlParams Params { get { return mParams; } }
-		public override Collections.BListBase<string> List { get { return mList; } }
+		public override BListXmlParams Params => mParams;
+		public override Collections.BListBase<string> List => mList;
 
 		public BTypeNamesXmlSerializer(BListXmlParams @params, Collections.BTypeNames list)
 		{

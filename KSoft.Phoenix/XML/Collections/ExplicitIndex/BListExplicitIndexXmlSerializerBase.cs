@@ -10,12 +10,12 @@ namespace KSoft.Phoenix.XML
 	internal abstract class BListExplicitIndexXmlSerializerBase<T>
 		: BListXmlSerializerBase<T>
 	{
-		BListExplicitIndexXmlParams<T> mParams;
+		readonly BListExplicitIndexXmlParams<T> mParams;
 
 		public abstract Collections.BListExplicitIndexBase<T> ListExplicitIndex { get; }
 
-		public override BListXmlParams Params { get { return mParams; } }
-		public override Collections.BListBase<T> List { get { return ListExplicitIndex; } }
+		public override BListXmlParams Params => mParams;
+		public override Collections.BListBase<T> List => ListExplicitIndex;
 
 		protected BListExplicitIndexXmlSerializerBase(BListExplicitIndexXmlParams<T> @params)
 		{

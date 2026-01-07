@@ -42,90 +42,92 @@ namespace KSoft.Phoenix.XML
 		private void SetupStreamXmlContexts()
 		{
 			if (mStreamXmlContexts != null)
+			{
 				return;
+			}
 
 			// #NOTE place new DatabaseObjectKind code here
 
 			mStreamXmlContexts = new List<StreamXmlContextData>()
 			{
 				#region Lists
-				new StreamXmlContextData(Phx.LocStringTable.kProtoFileInfoEnglish)
+				new(Phx.LocStringTable.kProtoFileInfoEnglish)
 				{
 					Preload=PreloadStringTable,
 				},
-				new StreamXmlContextData(Phx.BDatabaseBase.kObjectTypesProtoFileInfo)
+				new(Phx.BDatabaseBase.kObjectTypesProtoFileInfo)
 				{
 					Preload=StreamXmlObjectTypes,
 				},
-				new StreamXmlContextData(Phx.BDamageType.kProtoFileInfo)
+				new(Phx.BDamageType.kProtoFileInfo)
 				{
 					Preload=PreloadDamageTypes,
 					Stream=StreamXmlDamageTypes,
 				},
-				new StreamXmlContextData(Phx.BProtoImpactEffect.kProtoFileInfo)
+				new(Phx.BProtoImpactEffect.kProtoFileInfo)
 				{
 					Preload=StreamXmlImpactEffects,
 				},
-				new StreamXmlContextData(Phx.TerrainTileType.kProtoFileInfo)
+				new(Phx.TerrainTileType.kProtoFileInfo)
 				{
 					Preload=StreamXmlTerrainTileTypes,
 				},
-				new StreamXmlContextData(Phx.BWeaponType.kProtoFileInfo)
+				new(Phx.BWeaponType.kProtoFileInfo)
 				{
 					Preload=StreamXmlWeaponTypes,
 				},
-				new StreamXmlContextData(Phx.BUserClass.kProtoFileInfo)
+				new(Phx.BUserClass.kProtoFileInfo)
 				{
 					Preload=StreamXmlUserClasses,
 				},
 				#endregion
 
 				#region GameData
-				new StreamXmlContextData(Phx.HPBarData.kProtoFileInfo)
+				new(Phx.HPBarData.kProtoFileInfo)
 				{
 					Stream=StreamXmlHPBars,
 				},
-				new StreamXmlContextData(Phx.BGameData.kProtoFileInfo)
+				new(Phx.BGameData.kProtoFileInfo)
 				{
 					Stream=StreamXmlGameData,
 				},
-				new StreamXmlContextData(Phx.BAbility.kProtoFileInfo)
+				new(Phx.BAbility.kProtoFileInfo)
 				{
 					Stream=StreamXmlAbilities,
 				},
 				#endregion
 
 				#region ProtoData
-				new StreamXmlContextData(Phx.BProtoObject.kProtoFileInfo)
+				new(Phx.BProtoObject.kProtoFileInfo)
 				{
 					Preload=PreloadObjects,
 					Stream=StreamXmlObjects,
 					StreamUpdates=StreamXmlObjectsUpdate,
 				},
-				new StreamXmlContextData(Phx.BProtoSquad.kProtoFileInfo)
+				new(Phx.BProtoSquad.kProtoFileInfo)
 				{
 					Preload=PreloadSquads,
 					Stream=StreamXmlSquads,
 					StreamUpdates=StreamXmlSquadsUpdate,
 				},
-				new StreamXmlContextData(Phx.BProtoPower.kProtoFileInfo)
+				new(Phx.BProtoPower.kProtoFileInfo)
 				{
 					Preload=PreloadPowers,
 					Stream=StreamXmlPowers,
 				},
-				new StreamXmlContextData(Phx.BProtoTech.kProtoFileInfo)
+				new(Phx.BProtoTech.kProtoFileInfo)
 				{
 					Preload=PreloadTechs,
 					Stream=StreamXmlTechs,
 					StreamUpdates=StreamXmlTechsUpdate,
 				},
 
-				new StreamXmlContextData(Phx.BCiv.kProtoFileInfo)
+				new(Phx.BCiv.kProtoFileInfo)
 				{
 					//Preload=PreloadCivs,
 					Stream=StreamXmlCivs,
 				},
-				new StreamXmlContextData(Phx.BLeader.kProtoFileInfo)
+				new(Phx.BLeader.kProtoFileInfo)
 				{
 					//Preload=PreloadLeaders,
 					Stream=StreamXmlLeaders,
@@ -165,6 +167,7 @@ namespace KSoft.Phoenix.XML
 				TaskExceptions = new List<Exception>();
 			}
 
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0251:Make member 'readonly'")]
 			public bool UpdateResultWithTaskResults(ref bool r)
 			{
 				PhxUtil.UpdateResultWithTaskResults(ref r, Tasks, TaskExceptions);
@@ -172,6 +175,7 @@ namespace KSoft.Phoenix.XML
 				return r;
 			}
 
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0251:Make member 'readonly'")]
 			public void ClearTaskData()
 			{
 				Tasks.Clear();
@@ -204,7 +208,9 @@ namespace KSoft.Phoenix.XML
 				foreach (var ctxt in mStreamXmlContexts)
 				{
 					if (ctxt.ProtoFileInfo.Priority != p)
+					{
 						continue;
+					}
 
 					switch (args.Stage)
 					{
@@ -212,7 +218,9 @@ namespace KSoft.Phoenix.XML
 						case StreamXmlStage.Preload:
 						{
 							if (ctxt.Preload == null)
+							{
 								break;
+							}
 
 							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
 							args.Tasks.Add(task);
@@ -222,9 +230,11 @@ namespace KSoft.Phoenix.XML
 						case StreamXmlStage.Stream:
 						{
 							if (ctxt.Stream == null)
+							{
 								break;
+							}
 
-								var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
+							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
 								args.Tasks.Add(task);
 						} break;
 						#endregion
@@ -232,9 +242,14 @@ namespace KSoft.Phoenix.XML
 						case StreamXmlStage.StreamUpdates:
 						{
 							if (ctxt.FileInfoWithUpdates == null)
+							{
 								break;
+							}
+
 							if (ctxt.StreamUpdates == null)
+							{
 								break;
+							}
 
 							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
 							args.Tasks.Add(task);
@@ -268,7 +283,9 @@ namespace KSoft.Phoenix.XML
 				if (mode == FA.Read)
 				{
 					if (tactic.SourceXmlFile != null)
+					{
 						continue;
+					}
 
 					tactic.SourceXmlFile = Phx.BTacticData.CreateFileInfo(mode, tactic.Name);
 				}
@@ -279,7 +296,9 @@ namespace KSoft.Phoenix.XML
 
 				var engine = this.GameEngine;
 				if (mode == FA.Read)
+				{
 					engine.UpdateFileLoadStatus(tactic.SourceXmlFile, Engine.XmlFileLoadState.Loading);
+				}
 
 				var arg = tactic;
 				var task = Task<bool>.Factory.StartNew((state) =>
@@ -412,7 +431,9 @@ namespace KSoft.Phoenix.XML
 			PostStreamXml(k_mode);
 
 			if (!r)
+			{
 				Database.LoadState = Phx.DatabaseLoadState.Failed;
+			}
 
 			return r;
 		}

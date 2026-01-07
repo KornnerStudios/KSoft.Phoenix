@@ -13,7 +13,7 @@ namespace KSoft.Phoenix.XML
 	internal sealed class BTypeValuesSingleAttrHackXmlSerializer
 		: BTypeValuesXmlSerializerBase<float>
 	{
-		/*readonly*/ string kAttrName;
+		readonly string kAttrName;
 
 		public BTypeValuesSingleAttrHackXmlSerializer(BTypeValuesXmlParams<float> @params, Collections.BTypeValuesSingle list, string attributeName)
 			: base(@params, list)

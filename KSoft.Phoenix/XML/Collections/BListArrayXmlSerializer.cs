@@ -30,11 +30,11 @@ namespace KSoft.Phoenix.XML
 		: BListXmlSerializerBase<T>
 		where T : IO.ITagElementStringNameStreamable, new()
 	{
-		BListXmlParams mParams;
-		Collections.BListArray<T> mList;
+		readonly BListXmlParams mParams;
+		readonly Collections.BListArray<T> mList;
 
-		public override BListXmlParams Params { get { return mParams; } }
-		public override Collections.BListBase<T> List { get { return mList; } }
+		public override BListXmlParams Params => mParams;
+		public override Collections.BListBase<T> List => mList;
 
 		public BListArrayXmlSerializer(BListXmlParams @params, Collections.BListArray<T> list)
 		{
@@ -48,7 +48,7 @@ namespace KSoft.Phoenix.XML
 		#region IXmlElementStreamable Members
 		protected override void Read<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs, int iteration)
 		{
-			T item = new T();
+			T item = new();
 			item.Serialize(s);
 
 			List.AddItem(item);

@@ -25,7 +25,9 @@ namespace KSoft.Phoenix.XML
 		{
 			// 'rebase' the index to how the XML defs expect it
 			if (s.IsWriting)
+			{
 				index += IndexBase;
+			}
 
 			BCollectionXmlParams.StreamValue(s, DataName, ref index,
 				UseInnerTextForData, UseElementForData);

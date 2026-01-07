@@ -29,7 +29,7 @@ namespace KSoft.Phoenix.XML
 		#region IBListAutoIdXmlSerializer Members
 		public abstract BListXmlParams Params { get; }
 
-		public void StreamXmlPreload<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
+		public void StreamXmlPreload<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> /*s*/_, BXmlSerializerInterface /*xs*/_1)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -38,7 +38,7 @@ namespace KSoft.Phoenix.XML
 			throw new NotImplementedException();
 		}
 
-		public void StreamXmlUpdate<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
+		public void StreamXmlUpdate<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> /*s*/_, BXmlSerializerInterface /*xs*/_1)
 			where TDoc : class
 			where TCursor : class
 		{
