@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "TrainLimit",
 		};
@@ -37,7 +37,7 @@ namespace KSoft.Phoenix.Phx
 			set { mCount = value; }
 		}
 
-		public bool IsCountValid { get { return Count >= byte.MinValue && Count < byte.MaxValue; } }
+		public bool IsCountValid => Count >= byte.MinValue && Count < byte.MaxValue;
 		#endregion
 
 		#region Bucket
@@ -48,15 +48,14 @@ namespace KSoft.Phoenix.Phx
 			set { mBucket = value; }
 		}
 
-		public bool IsBucketValid { get { return Bucket >= byte.MinValue && Bucket < byte.MaxValue; } }
+		public bool IsBucketValid => Bucket >= byte.MinValue && Bucket < byte.MaxValue;
 		#endregion
 
-		public bool IsValid { get {
-			return Type != LimitType.Invalid
+		public bool IsValid
+			=> Type != LimitType.Invalid
 				&& ID.IsNotNone()
 				&& IsCountValid
 				&& IsBucketValid;
-		} }
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Phx
 		const float cPiOver12InDegrees = (float)(cPiOver12 * TypeExtensions.kDegreesPerRadian);
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "Hardpoint",
 		};

@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "CaptureCost",
 		};
@@ -40,12 +40,11 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public bool AppliesToAllCivs { get { return CivID.IsNone(); } }
+		public bool AppliesToAllCivs => CivID.IsNone();
 		/// <summary>Does the engine not ignore the XML data of this bit?</summary>
-		public bool IsNotIgnored { get {
-			return ResourceType >= 0
+		public bool IsNotIgnored
+			=> ResourceType >= 0
 				&& Cost != 0.0f;
-		} }
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -57,9 +56,11 @@ namespace KSoft.Phoenix.Phx
 			xs.StreamDBID(s, "Civ", ref mCivID, DatabaseObjectKind.Civ, xmlSource: XML.XmlUtil.kSourceAttr);
 
 			if (!xs.StreamTypeName(s, BResource.kBListTypeValuesXmlParams_Cost.DataName, ref mResourceType, GameDataObjectKind.Cost, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr))
+			{
 				s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
 					"ProtoObject's {0} XML doesn't define a {1}",
 					kBListXmlParams.ElementName, BResource.kBListTypeValuesXmlParams_Cost.DataName)));
+			}
 
 			s.StreamCursor(ref mCost);
 		}

@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "MergedSquads",
 		};
@@ -21,12 +21,7 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		[Meta.BProtoSquadReference]
-		public List<BProtoSquadID> BaseSquadIDs { get; private set; }
-
-		public BProtoMergedSquads()
-		{
-			BaseSquadIDs = new List<BProtoSquadID>();
-		}
+		public List<BProtoSquadID> BaseSquadIDs { get; private set; } = new();
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)

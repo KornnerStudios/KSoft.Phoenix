@@ -134,7 +134,7 @@ namespace KSoft.Phoenix.Phx
 					xs.StreamDBID(s, "squadType", ref TrainLimitType, kind, false, XML.XmlUtil.kSourceAttr);
 				}
 			}
-			public void StreamIcon<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
+			public void StreamIcon<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface /*xs*/_)
 				where TDoc : class
 				where TCursor : class
 			{

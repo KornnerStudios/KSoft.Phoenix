@@ -7,7 +7,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "GroundIK",
 		};
@@ -30,7 +30,7 @@ namespace KSoft.Phoenix.Phx
 			set { mIKRange = value; }
 		}
 
-		public bool IKRangeIsValid { get { return IKRange >= 0.0; } }
+		public bool IKRangeIsValid => IKRange >= 0.0;
 		#endregion
 
 		#region LinkCount
@@ -41,7 +41,7 @@ namespace KSoft.Phoenix.Phx
 			set { mLinkCount = value; }
 		}
 
-		public bool LinkCountIsValid { get { return LinkCount >= byte.MinValue && LinkCount <= byte.MaxValue; } }
+		public bool LinkCountIsValid => LinkCount >= byte.MinValue && LinkCount <= byte.MaxValue;
 		#endregion
 
 		#region AxisPositioning
@@ -52,11 +52,11 @@ namespace KSoft.Phoenix.Phx
 			set { mAxisPositioning = value; }
 		}
 
-		public bool OnLeft { get { return mAxisPositioning.X <= -1.0f; } }
-		public bool OnRight { get { return mAxisPositioning.X >= +1.0f; } }
+		public bool OnLeft => mAxisPositioning.X <= -1.0f;
+		public bool OnRight => mAxisPositioning.X >= +1.0f;
 
-		public bool InFront { get { return mAxisPositioning.Z >= +1.0f; } }
-		public bool InBack { get { return mAxisPositioning.Z <= -1.0f; } }
+		public bool InFront => mAxisPositioning.Z >= +1.0f;
+		public bool InBack => mAxisPositioning.Z <= -1.0f;
 		#endregion
 
 		#region ITagElementStreamable<string> Members

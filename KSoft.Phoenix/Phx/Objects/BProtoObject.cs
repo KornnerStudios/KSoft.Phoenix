@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseIdObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Object")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Object")
 		{
 			DataName = DatabaseNamedObject.kXmlAttrName,
 			Flags = 0
@@ -27,35 +27,35 @@ namespace KSoft.Phoenix.Phx
 				| XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
 				| XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
-		public static readonly Collections.BListAutoIdParams kBListParams = new Collections.BListAutoIdParams()
+		public static readonly Collections.BListAutoIdParams kBListParams = new()
 		{
 			ToLowerDataNames = kBListXmlParams.ToLowerDataNames,
 		};
 
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Location = Engine.ContentStorage.Game,
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Objects.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfoUpdate = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfoUpdate = new()
 		{
 			Location = Engine.ContentStorage.Update,
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Objects_Update.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.ProtoData,
 			kXmlFileInfo,
 			kXmlFileInfoUpdate);
 
-		static readonly Collections.CodeEnum<BProtoObjectFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoObjectFlags>();
-		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
+		static readonly Collections.CodeEnum<BProtoObjectFlags> kFlagsProtoEnum = new();
+		static readonly Collections.BBitSetParams kFlagsParams = new(() => kFlagsProtoEnum);
 
-		static readonly Collections.BBitSetParams kObjectTypesParams = new Collections.BBitSetParams(db => db.ObjectTypes);
-		static readonly XML.BBitSetXmlParams kObjectTypesXmlParams = new XML.BBitSetXmlParams("ObjectType");
+		static readonly Collections.BBitSetParams kObjectTypesParams = new(db => db.ObjectTypes);
+		static readonly XML.BBitSetXmlParams kObjectTypesXmlParams = new("ObjectType");
 
 		const string kXmlAttrIs = "is"; // boolean int, only streamed when '0', only used by tools?
 
@@ -81,14 +81,10 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BListArray<		BHardpoint> Hardpoints { get; private set; }
-			= new Collections.BListArray<	BHardpoint>();
-		public List<string> SingleBoneIKs { get; private set; }
-			= new List<string>();
-		public Collections.BListArray<		BGroundIKNode> GroundIKs { get; private set; }
-			= new Collections.BListArray<	BGroundIKNode>();
-		public Collections.BListArray<		BSweetSpotIKNode> SweetSpotIKs { get; private set; }
-			= new Collections.BListArray<	BSweetSpotIKNode>();
+		public Collections.BListArray<BHardpoint> Hardpoints { get; private set; } = new();
+		public List<string> SingleBoneIKs { get; private set; } = new();
+		public Collections.BListArray<BGroundIKNode> GroundIKs { get; private set; } = new();
+		public Collections.BListArray<BSweetSpotIKNode> SweetSpotIKs { get; private set; } = new();
 
 		#region ObstructionRadius
 		BVector mObstructionRadius;
@@ -274,11 +270,10 @@ namespace KSoft.Phoenix.Phx
 			set { mInitialPerturbanceMaxTime = value; }
 		}
 
-		bool HasInitialPerturbanceData { get {
-			return PerturbInitialVelocity != 0.0
+		bool HasInitialPerturbanceData
+			=> PerturbInitialVelocity != 0.0
 				|| InitialPerturbanceMinTime > 0.0
 				|| InitialPerturbanceMaxTime > 0.0;
-		} }
 		#endregion
 		#region ActiveScan
 		float mActiveScanChance;
@@ -295,10 +290,9 @@ namespace KSoft.Phoenix.Phx
 			set { mActiveScanRadiusScale = value; }
 		}
 
-		bool HasActiveScanData { get {
-			return ActiveScanChance > 0.0
+		bool HasActiveScanData
+			=> ActiveScanChance > 0.0
 				|| ActiveScanRadiusScale > 0.0;
-		} }
 		#endregion
 		#region TurnRate
 		float mTurnRate;
@@ -406,13 +400,12 @@ namespace KSoft.Phoenix.Phx
 		public bool TrainerApplyFormation
 		{
 			get { return mTrainerApplyFormation; }
-			set { TrainerApplyFormation = value; }
+			set { mTrainerApplyFormation = value; }
 		}
 
-		bool HasTrainerTypeData { get {
-			return TrainerType.IsNotNone()
+		bool HasTrainerTypeData
+			=> TrainerType.IsNotNone()
 				|| TrainerApplyFormation;
-		} }
 		#endregion
 		#region AutoLockDown
 		BAutoLockDown mAutoLockDown;
@@ -431,13 +424,11 @@ namespace KSoft.Phoenix.Phx
 			get { return mCostEscalation; }
 			set { mCostEscalation = value; }
 		}
-		public bool HasCostEscalation { get { return CostEscalation > 0.0f; } }
+		public bool HasCostEscalation => CostEscalation > 0.0f;
 		#endregion
 		[Meta.BProtoObjectReference]
-		public List<	BProtoObjectID> CostEscalationObjects { get; private set; }
-			 = new List<BProtoObjectID>();
-		public Collections.BListArray<		BProtoObjectCaptureCost> CaptureCosts { get; private set; }
-			= new Collections.BListArray<	BProtoObjectCaptureCost>();
+		public List<BProtoObjectID> CostEscalationObjects { get; private set; } = new();
+		public Collections.BListArray<BProtoObjectCaptureCost> CaptureCosts { get; private set; } = new();
 		#region Bounty
 		float mBounty;
 		/// <summary>Vet XP contribution value</summary>
@@ -507,8 +498,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		/// <remarks>Engine actually uses a fixed array that maps a BSquadMode to an AnimType</remarks>
-		public Collections.BListArray<		BProtoObjectSquadModeAnim> SquadModeAnims { get; private set; }
-			= new Collections.BListArray<	BProtoObjectSquadModeAnim>();
+		public Collections.BListArray<BProtoObjectSquadModeAnim> SquadModeAnims { get; private set; } = new();
 		#region RallyPoint
 		BRallyPointType mRallyPoint = BRallyPointType.Invalid;
 		public BRallyPointType RallyPoint
@@ -541,10 +531,9 @@ namespace KSoft.Phoenix.Phx
 			set { mGroundIKTiltBoneName = value; }
 		}
 
-		bool HasGroundIKTiltData { get {
-			return GroundIKTiltFactor > 0.0
+		bool HasGroundIKTiltData
+			=> GroundIKTiltFactor > 0.0
 				|| GroundIKTiltBoneName.IsNotNullOrEmpty();
-		} }
 		#endregion
 		#region DeathReplacement
 		int mDeathReplacementID = TypeExtensions.kNone;
@@ -579,11 +568,10 @@ namespace KSoft.Phoenix.Phx
 			set { mDeathSpawnSquadMaxPopCount = value; }
 		}
 
-		bool HasDeathSpawnSquadData { get {
-			return mDeathSpawnSquadID.IsNotNone()
+		bool HasDeathSpawnSquadData
+			=> mDeathSpawnSquadID.IsNotNone()
 				|| mDeathSpawnSquadCheckPosition
 				|| mDeathSpawnSquadMaxPopCount > 0;
-		} }
 		#endregion
 		#region SurfaceType
 		int mSurfaceType = TerrainTileType.cUndefinedIndex;
@@ -631,12 +619,11 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		[Meta.TriggerScriptReference]
-		public List<string> AbilityTriggerScripts { get; private set; }
-			= new List<string>();
-		public Collections.BListExplicitIndex<		BProtoObjectVeterancy> Veterancy { get; private set; }
-			= new Collections.BListExplicitIndex<	BProtoObjectVeterancy>(BProtoObjectVeterancy.kBListExplicitIndexParams);
+		public List<string> AbilityTriggerScripts { get; private set; } = new();
+		public Collections.BListExplicitIndex<BProtoObjectVeterancy> Veterancy { get; private set; }
+			= new(BProtoObjectVeterancy.kBListExplicitIndexParams);
 		public Collections.BTypeValuesSingle AddResource { get; private set; }
-			= new Collections.BTypeValuesSingle(BResource.kBListTypeValuesParams);
+			= new(BResource.kBListTypeValuesParams);
 		#region ExistSoundBoneName
 		string mExistSoundBoneName;
 		public string ExistSoundBoneName
@@ -703,13 +690,11 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		public Collections.BBitSet Flags { get; private set; }
-			= new Collections.BBitSet(kFlagsParams);
+			= new(kFlagsParams);
 		public Collections.BBitSet ObjectTypes { get; private set; }
-			 = new Collections.BBitSet(kObjectTypesParams);
-		public Collections.BListArray<		BProtoObjectDamageType> DamageTypes { get; private set; }
-			= new Collections.BListArray<	BProtoObjectDamageType>();
-		public Collections.BListArray<		BProtoObjectSound> Sounds { get; private set; }
-			= new Collections.BListArray<	BProtoObjectSound>();
+			 = new(kObjectTypesParams);
+		public Collections.BListArray<BProtoObjectDamageType> DamageTypes { get; private set; } = new();
+		public Collections.BListArray<BProtoObjectSound> Sounds { get; private set; } = new();
 		public BTerrainImpactDecalHandle ImpactDecal { get; set; }
 		#region ExtendedSoundBank
 		string mExtendedSoundBank;
@@ -743,7 +728,7 @@ namespace KSoft.Phoenix.Phx
 			set { mMiniMapIconSize = value; }
 		}
 
-		static BVector cDefaultMinimapColor { get { return new BVector(1.0f, 1.0f, 1.0f, 0.0f); } }
+		static BVector cDefaultMinimapColor => new(1.0f, 1.0f, 1.0f, 0.0f);
 		BVector mMinimapColor = cDefaultMinimapColor;
 		public BVector MinimapColor
 		{
@@ -751,16 +736,13 @@ namespace KSoft.Phoenix.Phx
 			set { mMinimapColor = value; }
 		}
 
-		bool HasMiniMapIconData { get {
-			return MinimapIcon.IsNotNullOrEmpty()
+		bool HasMiniMapIconData
+			=> MinimapIcon.IsNotNullOrEmpty()
 				|| MiniMapIconSize != 1.0f;
-		} }
-		bool HasMinimapColorData { get { return MinimapColor != cDefaultMinimapColor; } }
+		bool HasMinimapColorData => MinimapColor != cDefaultMinimapColor;
 		#endregion
-		public Collections.BListArray<		BProtoObjectCommand> Commands { get; private set; }
-			= new Collections.BListArray<	BProtoObjectCommand>();
-		public Collections.BListArray<		BProtoObjectTrainLimit> TrainLimits { get; private set; }
-			= new Collections.BListArray<	BProtoObjectTrainLimit>();
+		public Collections.BListArray<BProtoObjectCommand> Commands { get; private set; } = new();
+		public Collections.BListArray<BProtoObjectTrainLimit> TrainLimits { get; private set; } = new();
 		#region GatherLink
 
 		int mGatherLinkObjectType = TypeExtensions.kNone;
@@ -793,19 +775,17 @@ namespace KSoft.Phoenix.Phx
 			set { mGatherLinkSelf = value; }
 		}
 
-		bool HasGatherLinkData { get {
-			return GatherLinkObjectType.IsNotNone()
+		bool HasGatherLinkData
+			=> GatherLinkObjectType.IsNotNone()
 				|| GatherLinkRadius > 0.0f
 				|| GatherLinkTarget.IsNotNone()
 				|| GatherLinkSelf;
-		} }
 		#endregion
-		public Collections.BListArray<		BProtoObjectChildObject> ChildObjects { get; private set; }
-			= new Collections.BListArray<	BProtoObjectChildObject>();
+		public Collections.BListArray<BProtoObjectChildObject> ChildObjects { get; private set; } = new();
 		public Collections.BTypeValuesSingle Populations { get; private set; }
-			= new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
+			= new(BPopulation.kBListParamsSingle);
 		public Collections.BTypeValuesSingle PopulationsCapAddition { get; private set; }
-			= new Collections.BTypeValuesSingle(BPopulation.kBListParamsSingle);
+			= new(BPopulation.kBListParamsSingle);
 		#region Tactics
 		int mTactics = TypeExtensions.kNone;
 		[Meta.BTacticDataReference]
@@ -858,14 +838,12 @@ namespace KSoft.Phoenix.Phx
 			set { mHPBarOffset = value; }
 		}
 
-		bool HasHPBarData { get {
-			return mHPBarID.IsNotNullOrEmpty()
+		bool HasHPBarData
+			=> mHPBarID.IsNotNullOrEmpty()
 				|| PhxPredicates.IsNotZero(HPBarSize)
 				|| PhxPredicates.IsNotZero(HPBarOffset);
-		} }
 		#endregion
-		public Collections.BListArray<		BHitZone> HitZones { get; private set; }
-			= new Collections.BListArray<	BHitZone>();
+		public Collections.BListArray<BHitZone> HitZones { get; private set; } = new();
 		#region BeamHead
 		int mBeamHead = TypeExtensions.kNone;
 		[Meta.ObjectTypeReference]
@@ -943,11 +921,10 @@ namespace KSoft.Phoenix.Phx
 			set { mAutoSocket = value; }
 		}
 
-		bool HasSocketData { get {
-			return SocketID.IsNotNone()
+		bool HasSocketData
+			=> SocketID.IsNotNone()
 				|| SocketPlayerScope != BPlayerScope.Player
 				|| AutoSocket;
-		} }
 		#endregion
 		#region Rate
 
@@ -966,10 +943,9 @@ namespace KSoft.Phoenix.Phx
 			set { mRateAmount = value; }
 		}
 
-		bool HasRateData { get {
-			return RateID.IsNotNone()
+		bool HasRateData
+			=> RateID.IsNotNone()
 				|| RateAmount > 0.0f;
-		} }
 		#endregion
 		#region MaxContained
 		int mMaxContained;
@@ -988,8 +964,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		[Meta.ObjectTypeReference]
-		public List<	BProtoObjectID> Contains { get; private set; }
-			= new List<	BProtoObjectID>();
+		public List<BProtoObjectID> Contains { get; private set; } = new();
 		#region GarrisonSquadMode
 		BSquadMode mGarrisonSquadMode = BSquadMode.Invalid;
 		public BSquadMode GarrisonSquadMode
@@ -1106,11 +1081,10 @@ namespace KSoft.Phoenix.Phx
 			set { mAutoParkingLotOffset = value; }
 		}
 
-		bool HasAutoParkingLotData { get {
-			return AutoParkingLotObjectID.IsNotNone()
+		bool HasAutoParkingLotData
+			=> AutoParkingLotObjectID.IsNotNone()
 				|| AutoParkingLotRotation != 0.0
 				|| PhxPredicates.IsNotZero(AutoParkingLotOffset);
-		} }
 		#endregion
 		#region BuildingStrengthID
 		// #TODO this needs to be an actual ID
@@ -1184,7 +1158,7 @@ namespace KSoft.Phoenix.Phx
 			base.Serialize(s);
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttributeOpt("is", ref mUnusedIs, Predicates.IsNotNone);
+			s.StreamAttributeOpt(kXmlAttrIs, ref mUnusedIs, Predicates.IsNotNone);
 			s.StreamAttributeOpt("id", ref mUnusedId, Predicates.IsNotNone);
 			s.StreamAttributeOpt("update", ref mUpdate, Predicates.IsTrue);
 			s.StreamElementEnumOpt("MovementType", ref mMovementType, e => e != BProtoObjectMovementType.None);
@@ -1231,18 +1205,24 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("PerturbanceVelocity", ref mPerturbanceVelocity, Predicates.IsNotZero);
 			s.StreamElementOpt("PerturbanceMinTime", ref mPerturbanceMinTime, Predicates.IsNotZero);
 			s.StreamElementOpt("PerturbanceMaxTime", ref mPerturbanceMaxTime, Predicates.IsNotZero);
-			using (var bm = s.EnterCursorBookmarkOpt("PerturbInitialVelocity", this, v => v.HasInitialPerturbanceData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("PerturbInitialVelocity", this, v => v.HasInitialPerturbanceData))
 			{
-				s.StreamCursor(ref mPerturbInitialVelocity);
-				s.StreamAttributeOpt("minTime", ref mInitialPerturbanceMinTime, Predicates.IsNotZero);
-				s.StreamAttributeOpt("maxTime", ref mInitialPerturbanceMaxTime, Predicates.IsNotZero);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mPerturbInitialVelocity);
+					s.StreamAttributeOpt("minTime", ref mInitialPerturbanceMinTime, Predicates.IsNotZero);
+					s.StreamAttributeOpt("maxTime", ref mInitialPerturbanceMaxTime, Predicates.IsNotZero);
+				}
 			}
 			#endregion
 			#region ActiveScan
-			using (var bm = s.EnterCursorBookmarkOpt("ActiveScanChance", this, v => v.HasActiveScanData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("ActiveScanChance", this, v => v.HasActiveScanData))
 			{
-				s.StreamCursor(ref mActiveScanChance);
-				s.StreamAttributeOpt("radiusScale", ref mActiveScanRadiusScale, Predicates.IsNotZero);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mActiveScanChance);
+					s.StreamAttributeOpt("radiusScale", ref mActiveScanRadiusScale, Predicates.IsNotZero);
+				}
 			}
 			#endregion
 			s.StreamElementOpt("TurnRate", ref mTurnRate, Predicates.IsNotZero);
@@ -1250,9 +1230,11 @@ namespace KSoft.Phoenix.Phx
 			#region Shieldpoints
 			{
 				bool streamedShieldpoints = s.StreamElementOpt("Shieldpoints", ref mShieldpoints, Predicates.IsNotZero);
-				// #HACK fucking deal with original HW game data that was hand edited, but only when reading
+				// #HACK deal with original HW game data that was hand edited, but only when reading
 				if (s.IsReading && !streamedShieldpoints)
+				{
 					s.StreamElementOpt("ShieldPoints", ref mShieldpoints, Predicates.IsNotZero);
+				}
 			}
 			#endregion
 			s.StreamElementOpt("LOS", ref mLOS, Predicates.IsNotZero);
@@ -1268,10 +1250,13 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("RepairPoints", ref mRepairPoints, Predicates.IsNotZero);
 			s.StreamElementEnumOpt("ObjectClass", ref mClassType, x => x != BProtoObjectClassType.Object);
 			#region TrainerType
-			using (var bm = s.EnterCursorBookmarkOpt("TrainerType", this, v => v.HasTrainerTypeData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("TrainerType", this, v => v.HasTrainerTypeData))
 			{
-				s.StreamCursor(ref mTrainerType);
-				s.StreamAttributeOpt("ApplyFormation", ref mTrainerApplyFormation, Predicates.IsTrue);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mTrainerType);
+					s.StreamAttributeOpt("ApplyFormation", ref mTrainerApplyFormation, Predicates.IsTrue);
+				}
 			}
 			#endregion
 			s.StreamElementEnumOpt("AutoLockDown", ref mAutoLockDown, e => e != BAutoLockDown.None);
@@ -1290,32 +1275,40 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementEnumOpt("RallyPoint", ref mRallyPoint, x => x != BRallyPointType.Invalid);
 			s.StreamElementOpt("MaxProjectileHeight", ref mMaxProjectileHeight, Predicates.IsNotZero);
 			#region GroundIKTilt
-			using (var bm = s.EnterCursorBookmarkOpt("GroundIKTilt", this, v => v.HasGroundIKTiltData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("GroundIKTilt", this, v => v.HasGroundIKTiltData))
 			{
-				s.StreamCursor(ref mGroundIKTiltBoneName);
-				s.StreamAttributeOpt("factor", ref mGroundIKTiltFactor, Predicates.IsNotZero);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mGroundIKTiltBoneName);
+					s.StreamAttributeOpt("factor", ref mGroundIKTiltFactor, Predicates.IsNotZero);
+				}
 			}
 			#endregion
 			xs.StreamDBID(s, "DeathReplacement", ref mDeathReplacementID, DatabaseObjectKind.Object);
 			#region DeathSpawnSquad
-			using (var bm = s.EnterCursorBookmarkOpt("DeathSpawnSquad", this, v => v.HasDeathSpawnSquadData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("DeathSpawnSquad", this, v => v.HasDeathSpawnSquadData))
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDeathSpawnSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceCursor);
-
-				// #NOTE engine streams this as CheckPos, but it is also case insensitive
-				const string kCheckPosName = "checkPos";
-				// #NOTE the engine interprets the presence of this attribute as true
-				if (s.IsReading)
+				if (bm.IsNotNull)
 				{
-					mDeathSpawnSquadCheckPosition = s.AttributeExists(kCheckPosName);
-				}
-				else if (s.IsWriting)
-				{
-					if (mDeathSpawnSquadCheckPosition)
-						s.WriteAttribute(kCheckPosName, true);
-				}
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDeathSpawnSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceCursor);
 
-				s.StreamAttributeOpt("MaxPopCount", ref mDeathSpawnSquadMaxPopCount, Predicates.IsNotZero);
+					// #NOTE engine streams this as CheckPos, but it is also case insensitive
+					const string kCheckPosName = "checkPos";
+					// #NOTE the engine interprets the presence of this attribute as true
+					if (s.IsReading)
+					{
+						mDeathSpawnSquadCheckPosition = s.AttributeExists(kCheckPosName);
+					}
+					else if (s.IsWriting)
+					{
+						if (mDeathSpawnSquadCheckPosition)
+						{
+							s.WriteAttribute(kCheckPosName, true);
+						}
+					}
+
+					s.StreamAttributeOpt("MaxPopCount", ref mDeathSpawnSquadMaxPopCount, Predicates.IsNotZero);
+				}
 			}
 			#endregion
 			xs.StreamDBID(s, "SurfaceType", ref mSurfaceType, DatabaseObjectKind.TerrainTileType);
@@ -1327,9 +1320,12 @@ namespace KSoft.Phoenix.Phx
 			XML.XmlUtil.Serialize(s, Veterancy, BProtoObjectVeterancy.kBListExplicitIndexXmlParams);
 			XML.XmlUtil.Serialize(s, AddResource, BResource.kBListTypeValuesXmlParams_AddResource, "Amount");
 			#region ExistSound
-			using (var bm = s.EnterCursorBookmarkOpt("ExistSound", mExistSoundBoneName, Predicates.IsNotNullOrEmpty)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("ExistSound", mExistSoundBoneName, Predicates.IsNotNullOrEmpty))
 			{
-				s.StreamAttribute("bone", ref mExistSoundBoneName);
+				if (bm.IsNotNull)
+				{
+					s.StreamAttribute("bone", ref mExistSoundBoneName);
+				}
 			}
 			#endregion
 			s.StreamElementOpt("GathererLimit", ref mGathererLimit, Predicates.IsNotNone);
@@ -1344,42 +1340,57 @@ namespace KSoft.Phoenix.Phx
 			XML.XmlUtil.Serialize(s, DamageTypes, BProtoObjectDamageType.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, Sounds, BProtoObjectSound.kBListXmlParams);
 			#region ImpactDecal
-			using (var bm = s.EnterCursorBookmarkOpt(BTerrainImpactDecalHandle.kBListXmlParams.ElementName, ImpactDecal, Predicates.IsNotNull)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt(BTerrainImpactDecalHandle.kBListXmlParams.ElementName, ImpactDecal, Predicates.IsNotNull))
 			{
-				if (s.IsReading)
-					ImpactDecal = new BTerrainImpactDecalHandle();
+				if (bm.IsNotNull)
+				{
+					if (s.IsReading)
+					{
+						ImpactDecal = new BTerrainImpactDecalHandle();
+					}
 
-				ImpactDecal.Serialize(s);
+					ImpactDecal.Serialize(s);
+				}
 			}
 			#endregion
 			s.StreamElementOpt("ExtendedSoundBank", ref mExtendedSoundBank, Predicates.IsNotNullOrEmpty);
 			s.StreamElementOpt("PortraitIcon", ref mPortraitIcon, Predicates.IsNotNullOrEmpty);
 			#region Minimap
-			using (var bm = s.EnterCursorBookmarkOpt("MinimapIcon", this, v => v.HasMiniMapIconData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("MinimapIcon", this, v => v.HasMiniMapIconData))
 			{
-				s.StreamCursor(ref mMinimapIcon);
-				s.StreamAttributeOpt("size", ref mMiniMapIconSize, PhxPredicates.IsNotOne);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mMinimapIcon);
+					s.StreamAttributeOpt("size", ref mMiniMapIconSize, PhxPredicates.IsNotOne);
+				}
 			}
-			using (var bm = s.EnterCursorBookmarkOpt("MinimapColor", this, v => v.HasMinimapColorData)) if (bm.IsNotNull)
+
+			using (var bm = s.EnterCursorBookmarkOpt("MinimapColor", this, v => v.HasMinimapColorData))
 			{
-				// #NOTE we use IsNotZero here instead of IsNotOne (for cDefaultMinimapColor)
-				// because when loading the game defaults the temp rgb values to 0 and then sets
-				// the final game data to those values (so excluding red would mean it is zero).
-				// #NOTE the engine parses these names in lowercase, but actual data uses uppercase
-				s.StreamAttributeOpt("Red", ref mMinimapColor.X, Predicates.IsNotZero);
-				s.StreamAttributeOpt("Green", ref mMinimapColor.Y, Predicates.IsNotZero);
-				s.StreamAttributeOpt("Blue", ref mMinimapColor.Z, Predicates.IsNotZero);
+				if (bm.IsNotNull)
+				{
+					// #NOTE we use IsNotZero here instead of IsNotOne (for cDefaultMinimapColor)
+					// because when loading the game defaults the temp rgb values to 0 and then sets
+					// the final game data to those values (so excluding red would mean it is zero).
+					// #NOTE the engine parses these names in lowercase, but actual data uses uppercase
+					s.StreamAttributeOpt("Red", ref mMinimapColor.X, Predicates.IsNotZero);
+					s.StreamAttributeOpt("Green", ref mMinimapColor.Y, Predicates.IsNotZero);
+					s.StreamAttributeOpt("Blue", ref mMinimapColor.Z, Predicates.IsNotZero);
+				}
 			}
 			#endregion
 			XML.XmlUtil.Serialize(s, Commands, BProtoObjectCommand.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, TrainLimits, BProtoObjectTrainLimit.kBListXmlParams);
 			#region GatherLink
-			using (var bm = s.EnterCursorBookmarkOpt("GatherLink", this, v => v.HasGatherLinkData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("GatherLink", this, v => v.HasGatherLinkData))
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				s.StreamAttributeOpt("Radius", ref mGatherLinkRadius, Predicates.IsNotZero);
-				xs.StreamDBID(s, "Target", ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
-				s.StreamAttributeOpt("Self", ref mGatherLinkSelf, Predicates.IsTrue);
+				if (bm.IsNotNull)
+				{
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					s.StreamAttributeOpt("Radius", ref mGatherLinkRadius, Predicates.IsNotZero);
+					xs.StreamDBID(s, "Target", ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
+					s.StreamAttributeOpt("Self", ref mGatherLinkSelf, Predicates.IsTrue);
+				}
 			}
 			#endregion
 			XML.XmlUtil.Serialize(s, ChildObjects, BProtoObjectChildObject.kBListXmlParams);
@@ -1389,12 +1400,15 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("FlightLevel", ref mFlightLevel, f => f != cDefaultFlightLevel);
 			s.StreamElementOpt("ExitFromDirection", ref mExitFromDirection, Predicates.IsNotZero);
 			#region HPBar
-			using (var bm = s.EnterCursorBookmarkOpt("HPBar", this, v => v.HasHPBarData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("HPBar", this, v => v.HasHPBarData))
 			{
-				s.StreamCursor(ref mHPBarID);
-				s.StreamAttributeOpt("sizeX", ref mHPBarSize.X, Predicates.IsNotZero);
-				s.StreamAttributeOpt("sizeY", ref mHPBarSize.Y, Predicates.IsNotZero);
-				s.StreamBVector("offset", ref mHPBarOffset, xmlSource: XML.XmlUtil.kSourceAttr);
+				if (bm.IsNotNull)
+				{
+					s.StreamCursor(ref mHPBarID);
+					s.StreamAttributeOpt("sizeX", ref mHPBarSize.X, Predicates.IsNotZero);
+					s.StreamAttributeOpt("sizeY", ref mHPBarSize.Y, Predicates.IsNotZero);
+					s.StreamBVector("offset", ref mHPBarOffset, xmlSource: XML.XmlUtil.kSourceAttr);
+				}
 			}
 			#endregion
 			XML.XmlUtil.Serialize(s, HitZones, BHitZone.kBListXmlParams);
@@ -1405,20 +1419,26 @@ namespace KSoft.Phoenix.Phx
 			xs.StreamDBID(s, "RecoveringEffect", ref mRecoveringEffect, DatabaseObjectKind.Object);
 			xs.StreamDBID(s, "AutoTrainOnBuilt", ref mAutoTrainOnBuilt, DatabaseObjectKind.Squad);
 			#region Socket
-			using (var bm = s.EnterCursorBookmarkOpt("Socket", this, v => v.HasSocketData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("Socket", this, v => v.HasSocketData))
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mSocketID, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				// #NOTE engine reads this Player in lower case, but actual uses pascal case
-				s.StreamAttributeEnumOpt("Player", ref mSocketPlayerScope, e => e != BPlayerScope.Player);
-				s.StreamAttributeOpt("AutoSocket", ref mAutoSocket, Predicates.IsTrue);
+				if (bm.IsNotNull)
+				{
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mSocketID, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					// #NOTE engine reads this Player in lower case, but actual uses are pascal case
+					s.StreamAttributeEnumOpt("Player", ref mSocketPlayerScope, e => e != BPlayerScope.Player);
+					s.StreamAttributeOpt("AutoSocket", ref mAutoSocket, Predicates.IsTrue);
+				}
 			}
 			#endregion
 			#region Rate
-			using (var bm = s.EnterCursorBookmarkOpt(BGameData.kRatesBListTypeValuesXmlParams.ElementName, this, v => v.HasRateData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt(BGameData.kRatesBListTypeValuesXmlParams.ElementName, this, v => v.HasRateData))
 			{
-				// #NOTE engine reads Rate as lower case, but actual data is in pascal case
-				xs.StreamTypeName(s, BGameData.kRatesBListTypeValuesXmlParams.DataName, ref mRateID, GameDataObjectKind.Rate, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
-				s.StreamCursor(ref mRateAmount);
+				if (bm.IsNotNull)
+				{
+					// #NOTE engine reads Rate as lower case, but actual data is in pascal case
+					xs.StreamTypeName(s, BGameData.kRatesBListTypeValuesXmlParams.DataName, ref mRateID, GameDataObjectKind.Rate, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
+					s.StreamCursor(ref mRateAmount);
+				}
 			}
 			#endregion
 			s.StreamElementOpt("MaxContained", ref mMaxContained, Predicates.IsNotZero);
@@ -1430,12 +1450,17 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt(kXmlElementAttackGradeDPS, ref mAttackGradeDPS, Predicates.IsNotZero);
 			s.StreamElementOpt("RamDodgeFactor", ref mRamDodgeFactor, Predicates.IsNotZero);
 			#region HoveringRumble
-			using (var bm = s.EnterCursorBookmarkOpt("HoveringRumble", HoveringRumble, Predicates.IsNotNull)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("HoveringRumble", HoveringRumble, Predicates.IsNotNull))
 			{
-				if (s.IsReading)
-					HoveringRumble = new BRumbleEvent();
+				if (bm.IsNotNull)
+				{
+					if (s.IsReading)
+					{
+						HoveringRumble = new BRumbleEvent();
+					}
 
-				HoveringRumble.Serialize(s);
+					HoveringRumble.Serialize(s);
+				}
 			}
 			#endregion
 			s.StreamElementEnumOpt("VisualDisplayPriority", ref mVisualDisplayPriority, e => e != BVisualDisplayPriority.Normal);
@@ -1445,11 +1470,14 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("BuildRotation", ref mBuildRotation, Predicates.IsNotZero);
 			s.StreamBVector("BuildOffset", ref mBuildOffset);
 			#region AutoParkingLot
-			using (var bm = s.EnterCursorBookmarkOpt("AutoParkingLot", this, v => v.HasAutoParkingLotData)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("AutoParkingLot", this, v => v.HasAutoParkingLotData))
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mAutoParkingLotObjectID, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
-				s.StreamAttributeOpt("Rotation", ref mAutoParkingLotRotation, Predicates.IsNotZero);
-				s.StreamBVector("Offset", ref mAutoParkingLotOffset, xmlSource: XML.XmlUtil.kSourceAttr);
+				if (bm.IsNotNull)
+				{
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mAutoParkingLotObjectID, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					s.StreamAttributeOpt("Rotation", ref mAutoParkingLotRotation, Predicates.IsNotZero);
+					s.StreamBVector("Offset", ref mAutoParkingLotOffset, xmlSource: XML.XmlUtil.kSourceAttr);
+				}
 			}
 			#endregion
 			s.StreamElementOpt("BuildingStrengthDisplay", ref mBuildingStrengthID, Predicates.IsNotNullOrEmpty);
@@ -1485,10 +1513,14 @@ namespace KSoft.Phoenix.Phx
 		private static int CompareCommands(BProtoObjectCommand x, BProtoObjectCommand y)
 		{
 			if (x.Position != y.Position)
+			{
 				return x.Position.CompareTo(y.Position);
+			}
 
 			if (x.CommandType != y.CommandType)
+			{
 				return ((int)x.CommandType).CompareTo((int)y.CommandType);
+			}
 
 			// assuming Proto upgrades are defined after earlier Protos
 			return x.ID.CompareTo(y.ID);

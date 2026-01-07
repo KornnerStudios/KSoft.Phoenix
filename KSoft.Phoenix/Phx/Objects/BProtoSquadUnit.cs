@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Unit")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Unit")
 		{
 			Flags = 0
 		};

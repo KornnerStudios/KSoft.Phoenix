@@ -7,7 +7,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			RootName = "ChildObjects",
 			ElementName = "Object",
@@ -71,7 +71,9 @@ namespace KSoft.Phoenix.Phx
 
 		public DatabaseObjectKind TypeObjectKind { get {
 			if (Type == ChildObjectType.OneTimeSpawnSquad)
+			{
 				return DatabaseObjectKind.Squad;
+			}
 
 			return DatabaseObjectKind.Object;
 		} }

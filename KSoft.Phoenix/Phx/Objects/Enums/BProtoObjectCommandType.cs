@@ -34,47 +34,30 @@ namespace KSoft.Phoenix
 	partial class TypeExtensionsPhx
 	{
 		public static bool RequiresValidId(this Phx.BProtoObjectCommandType type)
-		{
-			switch(type)
+			=> type switch
 			{
-				case Phx.BProtoObjectCommandType.Research:
-				case Phx.BProtoObjectCommandType.TrainUnit:
-				case Phx.BProtoObjectCommandType.Build:
-				case Phx.BProtoObjectCommandType.BuildOther:
-				case Phx.BProtoObjectCommandType.TrainSquad:
-				case Phx.BProtoObjectCommandType.Ability:
-				case Phx.BProtoObjectCommandType.Power:
-					return true;
-
-				default:
-					return false;
-			}
-		}
+				Phx.BProtoObjectCommandType.Research or
+				Phx.BProtoObjectCommandType.TrainUnit or
+				Phx.BProtoObjectCommandType.Build or
+				Phx.BProtoObjectCommandType.BuildOther or
+				Phx.BProtoObjectCommandType.TrainSquad or
+				Phx.BProtoObjectCommandType.Ability or
+				Phx.BProtoObjectCommandType.Power
+				=> true,
+				_ => false,
+			};
 
 		public static Phx.DatabaseObjectKind GetIdKind(this Phx.BProtoObjectCommandType type)
-		{
-			switch (type)
+			=> type switch
 			{
-				case Phx.BProtoObjectCommandType.Research:
-					return Phx.DatabaseObjectKind.Tech;
-
-				case Phx.BProtoObjectCommandType.TrainUnit:
-				case Phx.BProtoObjectCommandType.Build:
-				case Phx.BProtoObjectCommandType.BuildOther:
-					return Phx.DatabaseObjectKind.Object;
-
-				case Phx.BProtoObjectCommandType.TrainSquad:
-					return Phx.DatabaseObjectKind.Squad;
-
-				case Phx.BProtoObjectCommandType.Ability:
-					return Phx.DatabaseObjectKind.Ability;
-
-				case Phx.BProtoObjectCommandType.Power:
-					return Phx.DatabaseObjectKind.Power;
-
-				default:
-					return Phx.DatabaseObjectKind.None;
-			}
-		}
+				Phx.BProtoObjectCommandType.Research => Phx.DatabaseObjectKind.Tech,
+				Phx.BProtoObjectCommandType.TrainUnit or
+				Phx.BProtoObjectCommandType.Build or
+				Phx.BProtoObjectCommandType.BuildOther => Phx.DatabaseObjectKind.Object,
+				Phx.BProtoObjectCommandType.TrainSquad => Phx.DatabaseObjectKind.Squad,
+				Phx.BProtoObjectCommandType.Ability => Phx.DatabaseObjectKind.Ability,
+				Phx.BProtoObjectCommandType.Power => Phx.DatabaseObjectKind.Power,
+				_ => Phx.DatabaseObjectKind.None,
+			};
 	};
 }

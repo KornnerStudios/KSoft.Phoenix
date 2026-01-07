@@ -8,7 +8,7 @@ namespace KSoft.Phoenix.Phx
 		, IEquatable<BProtoObjectSquadModeAnim>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "SquadModeAnim",
 		};
@@ -47,7 +47,9 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BProtoObjectSquadModeAnim other)
 		{
 			if (Mode != other.Mode)
+			{
 				Mode.CompareTo(other.Mode);
+			}
 
 			return AnimType.CompareTo(other.AnimType);
 		}
@@ -55,10 +57,15 @@ namespace KSoft.Phoenix.Phx
 
 		#region IEquatable Members
 		public bool Equals(BProtoObjectSquadModeAnim other)
-		{
-			return Mode == other.Mode
+			=> other != null
+				&& Mode == other.Mode
 				&& AnimType == other.AnimType;
-		}
+
+		public override bool Equals(object obj)
+			=> Equals(obj as BProtoObjectSquadModeAnim);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(Mode, AnimType);
 		#endregion
 	};
 }

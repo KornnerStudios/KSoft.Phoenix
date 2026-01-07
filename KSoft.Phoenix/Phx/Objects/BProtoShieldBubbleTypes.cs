@@ -16,17 +16,11 @@ namespace KSoft.Phoenix.Phx
 			set { mDefaultShieldSquadID = value; }
 		}
 
-		public Collections.BListArray<BProtoSquadShieldBubble> ProtoShieldIDs { get; private set; }
+		public Collections.BListArray<BProtoSquadShieldBubble> ProtoShieldIDs { get; private set; } = new();
 
-		public bool IsNotEmpty { get {
-			return DefaultShieldSquadID.IsNotNone()
+		public bool IsNotEmpty
+			=> DefaultShieldSquadID.IsNotNone()
 				|| !ProtoShieldIDs.IsEmpty;
-		} }
-
-		public BProtoShieldBubbleTypes()
-		{
-			ProtoShieldIDs = new Collections.BListArray<BProtoSquadShieldBubble>();
-		}
 
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -35,10 +29,13 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			using (var bm = s.EnterCursorBookmarkOpt(kXmlRoot)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt(kXmlRoot))
 			{
-				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDefaultShieldSquadID, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceCursor);
-				XML.XmlUtil.Serialize(s, ProtoShieldIDs, BProtoSquadShieldBubble.kBListXmlParams);
+				if (bm.IsNotNull)
+				{
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDefaultShieldSquadID, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceCursor);
+					XML.XmlUtil.Serialize(s, ProtoShieldIDs, BProtoSquadShieldBubble.kBListXmlParams);
+				}
 			}
 		}
 		#endregion

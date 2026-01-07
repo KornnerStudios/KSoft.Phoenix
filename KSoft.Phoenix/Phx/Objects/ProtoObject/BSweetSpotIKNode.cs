@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "SweetSpotIK",
 		};
@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Phx
 			set { mLinkCount = value; }
 		}
 
-		public bool LinkCountIsValid { get { return LinkCount >= byte.MinValue && LinkCount <= byte.MaxValue; } }
+		public bool LinkCountIsValid => LinkCount >= byte.MinValue && LinkCount <= byte.MaxValue;
 		#endregion
 
 		#region ITagElementStreamable<string> Members

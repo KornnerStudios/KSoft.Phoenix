@@ -6,61 +6,27 @@ namespace KSoft.Phoenix.Phx
 	public sealed class BProtoObjectVeterancy
 		: IO.ITagElementStringNameStreamable
 		, IComparable<BProtoObjectVeterancy>
-		, IEqualityComparer<BProtoObjectVeterancy>
+		, IEquatable<BProtoObjectVeterancy>
 	{
-		sealed class _EqualityComparer : IEqualityComparer<BProtoObjectVeterancy>
-		{
-			#region IEqualityComparer<BProtoObjectVeterancy> Members
-			public bool Equals(BProtoObjectVeterancy x, BProtoObjectVeterancy y)
-			{
-				return x.XP == y.XP
-					&& x.Damage == y.Damage
-					&& x.Velocity == y.Velocity
-					&& x.Accuracy == y.Accuracy
-					&& x.WorkRate == y.WorkRate
-					&& x.WeaponRange == y.WeaponRange
-					&& x.DamageTaken == y.DamageTaken;
-			}
-
-			public int GetHashCode(BProtoObjectVeterancy obj)
-			{
-				return obj.XP.GetHashCode()
-					^ obj.Damage.GetHashCode()
-					^ obj.Velocity.GetHashCode()
-					^ obj.Accuracy.GetHashCode()
-					^ obj.WorkRate.GetHashCode()
-					^ obj.WeaponRange.GetHashCode()
-					^ obj.DamageTaken.GetHashCode();
-			}
-			#endregion
-		};
-		private static _EqualityComparer gEqualityComparer;
-		public static IEqualityComparer<BProtoObjectVeterancy> EqualityComparer { get {
-			if (gEqualityComparer == null)
-				gEqualityComparer = new _EqualityComparer();
-
-			return gEqualityComparer;
-		} }
-
 		#region Constants
-		static readonly BProtoObjectVeterancy kInvalid = new BProtoObjectVeterancy(),
-			kDefaultLevel1 = new BProtoObjectVeterancy()
+		static readonly BProtoObjectVeterancy kInvalid = new(),
+			kDefaultLevel1 = new()
 			{
 				mDamage = 1.15f, mVelocity = 1, mAccuracy = 1.6f, mWorkRate = 1.2f, mWeaponRange = 1f, mDamageTaken = 0.87f
 			},
-			kDefaultLevel2 = new BProtoObjectVeterancy()
+			kDefaultLevel2 = new()
 			{
 				mDamage = 1.15f, mVelocity = 1, mAccuracy = 1.7f, mWorkRate = 1.2f, mWeaponRange = 1f, mDamageTaken = 0.80f
 			},
-			kDefaultLevel3 = new BProtoObjectVeterancy()
+			kDefaultLevel3 = new()
 			{
 				mDamage = 1.15f, mVelocity = 1, mAccuracy = 1.8f, mWorkRate = 1.2f, mWeaponRange = 1f, mDamageTaken = 0.74f
 			},
-			kDefaultLevel4 = new BProtoObjectVeterancy()
+			kDefaultLevel4 = new()
 			{
 				mDamage = 2.00f, mVelocity = 1, mAccuracy = 1.1f, mWorkRate = 2.0f, mWeaponRange = 1f, mDamageTaken = 0.50f
 			},
-			kDefaultLevel5 = new BProtoObjectVeterancy()
+			kDefaultLevel5 = new()
 			{
 				mDamage = 2.00f, mVelocity = 1, mAccuracy = 1.2f, mWorkRate = 2.0f, mWeaponRange = 1f, mDamageTaken = 0.50f
 			};
@@ -76,15 +42,15 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Xml constants
-		public static readonly Collections.BListExplicitIndexParams<BProtoObjectVeterancy> kBListExplicitIndexParams = new
-			Collections.BListExplicitIndexParams<BProtoObjectVeterancy>(5)
+		public static readonly Collections.BListExplicitIndexParams<BProtoObjectVeterancy> kBListExplicitIndexParams =
+			new(5)
 			{
 				// We use a zero'd instance as the invalid format
 				// Game considers Vets with XP = 0 as 'null' basically
 				kTypeGetInvalid = () => kInvalid
 			};
-		public static readonly XML.BListExplicitIndexXmlParams<BProtoObjectVeterancy> kBListExplicitIndexXmlParams = new
-			XML.BListExplicitIndexXmlParams<BProtoObjectVeterancy>("Veterancy", "Level");
+		public static readonly XML.BListExplicitIndexXmlParams<BProtoObjectVeterancy> kBListExplicitIndexXmlParams =
+			new("Veterancy", "Level");
 		#endregion
 
 		#region Properties
@@ -104,47 +70,73 @@ namespace KSoft.Phoenix.Phx
 		public float DamageTaken { get { return mDamageTaken; } }
 		#endregion
 
-		public bool IsInvalid { get { return object.ReferenceEquals(this, kInvalid); } }
-		public bool IsIgnored { get { return mXP == 0.0f; } }
+		public bool IsInvalid => object.ReferenceEquals(this, kInvalid);
+		public bool IsIgnored => mXP == 0.0f;
 
 		#region IComparable Members
 		int IComparable<BProtoObjectVeterancy>.CompareTo(BProtoObjectVeterancy other)
 		{
 			if (XP != other.XP)
+			{
 				return XP.CompareTo(other.XP);
+			}
 
 			if (Damage != other.Damage)
+			{
 				return Damage.CompareTo(other.Damage);
+			}
 
 			if (Velocity != other.Velocity)
+			{
 				return Velocity.CompareTo(other.Velocity);
+			}
 
 			if (Accuracy != other.Accuracy)
+			{
 				return Accuracy.CompareTo(other.Accuracy);
+			}
 
 			if (WorkRate != other.WorkRate)
+			{
 				return WorkRate.CompareTo(other.WorkRate);
+			}
 
 			if (WeaponRange != other.WeaponRange)
+			{
 				return WeaponRange.CompareTo(other.WeaponRange);
+			}
 
 			if (DamageTaken != other.DamageTaken)
+			{
 				return DamageTaken.CompareTo(other.DamageTaken);
+			}
 
 			return 0;
 		}
 		#endregion
 
-		#region IEqualityComparer<BProtoObjectVeterancy> Members
-		public bool Equals(BProtoObjectVeterancy x, BProtoObjectVeterancy y)
-		{
-			return EqualityComparer.Equals(x, y);
-		}
+		#region IEquatable<BProtoObjectVeterancy> Members
+		public bool Equals(BProtoObjectVeterancy other)
+			=> other != null
+				&& this.XP == other.XP
+				&& this.Damage == other.Damage
+				&& this.Velocity == other.Velocity
+				&& this.Accuracy == other.Accuracy
+				&& this.WorkRate == other.WorkRate
+				&& this.WeaponRange == other.WeaponRange
+				&& this.DamageTaken == other.DamageTaken;
 
-		public int GetHashCode(BProtoObjectVeterancy obj)
-		{
-			return EqualityComparer.GetHashCode(obj);
-		}
+		public override bool Equals(object obj)
+			=> Equals(obj as BProtoObjectVeterancy);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(XP,
+				Damage,
+				Velocity,
+				Accuracy,
+				WorkRate,
+				WeaponRange,
+				DamageTaken);
 		#endregion
 
 		#region ITagElementStreamable<string> Members

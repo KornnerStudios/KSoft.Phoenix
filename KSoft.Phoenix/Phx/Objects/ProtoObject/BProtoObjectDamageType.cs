@@ -8,7 +8,7 @@ namespace KSoft.Phoenix.Phx
 		, IEquatable<BProtoObjectDamageType>
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "DamageType",
 		};
@@ -59,10 +59,14 @@ namespace KSoft.Phoenix.Phx
 		public int CompareTo(BProtoObjectDamageType other)
 		{
 			if (DamageType != other.DamageType)
+			{
 				DamageType.CompareTo(other.DamageType);
+			}
 
 			if (Direction != other.Direction)
+			{
 				Direction.CompareTo(other.Direction);
+			}
 
 			return Mode.CompareTo(other.Mode);
 		}
@@ -70,11 +74,16 @@ namespace KSoft.Phoenix.Phx
 
 		#region IEquatable Members
 		public bool Equals(BProtoObjectDamageType other)
-		{
-			return DamageType == other.DamageType
+			=> other != null
+				&& DamageType == other.DamageType
 				&& Direction == other.Direction
 				&& Mode == other.Mode;
-		}
+
+		public override bool Equals(object obj)
+			=> Equals(obj as BProtoObjectDamageType);
+
+		public override int GetHashCode()
+			=> HashCode.Combine(DamageType, Direction, Mode);
 		#endregion
 	};
 }
