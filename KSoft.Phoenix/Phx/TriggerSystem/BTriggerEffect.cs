@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Phx
 		public const string kXmlRootName_OnTrue = "TriggerEffectsOnTrue";
 		public const string kXmlRootName_OnFalse = "TriggerEffectsOnFalse";
 
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			RootName = null,
 			ElementName = "Effect",

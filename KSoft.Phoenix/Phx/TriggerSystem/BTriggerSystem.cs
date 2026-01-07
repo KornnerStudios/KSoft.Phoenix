@@ -20,25 +20,23 @@ namespace KSoft.Phoenix.Phx
 		#region File Util
 		public static string GetFileExt(BTriggerScriptType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case BTriggerScriptType.TriggerScript: return ".triggerscript";
-				case BTriggerScriptType.Ability: return ".ability";
-				case BTriggerScriptType.Power: return ".power";
-
-				default: throw new KSoft.Debug.UnreachableException(type.ToString());
-			}
+				BTriggerScriptType.TriggerScript => ".triggerscript",
+				BTriggerScriptType.Ability => ".ability",
+				BTriggerScriptType.Power => ".power",
+				_ => throw new KSoft.Debug.UnreachableException(type.ToString()),
+			};
 		}
 		public static string GetFileExtSearchPattern(BTriggerScriptType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case BTriggerScriptType.TriggerScript: return "*.triggerscript";
-				case BTriggerScriptType.Ability: return "*.ability";
-				case BTriggerScriptType.Power: return "*.power";
-
-				default: throw new KSoft.Debug.UnreachableException(type.ToString());
-			}
+				BTriggerScriptType.TriggerScript => "*.triggerscript",
+				BTriggerScriptType.Ability => "*.ability",
+				BTriggerScriptType.Power => "*.power",
+				_ => throw new KSoft.Debug.UnreachableException(type.ToString()),
+			};
 		}
 		#endregion
 
@@ -55,20 +53,12 @@ namespace KSoft.Phoenix.Phx
 		int mNextEffectID = TypeExtensions.kNone;
 		bool mExternal;
 
-		public Collections.BListAutoId<BTriggerGroup> Groups { get; private set; }
+		public Collections.BListAutoId<BTriggerGroup> Groups { get; private set; } = new();
 
-		public Collections.BListAutoId<BTriggerVar> Vars { get; private set; }
-		public Collections.BListAutoId<BTrigger> Triggers { get; private set; }
+		public Collections.BListAutoId<BTriggerVar> Vars { get; private set; } = new();
+		public Collections.BListAutoId<BTrigger> Triggers { get; private set; } = new();
 
 		public BTriggerEditorData EditorData { get; private set; }
-
-		public BTriggerSystem()
-		{
-			Groups = new Collections.BListAutoId<BTriggerGroup>();
-
-			Vars = new Collections.BListAutoId<BTriggerVar>();
-			Triggers = new Collections.BListAutoId<BTrigger>();
-		}
 
 		#region Database interfaces
 		Dictionary<int, BTriggerGroup> mDbiGroups;
@@ -81,13 +71,14 @@ namespace KSoft.Phoenix.Phx
 			dic = new Dictionary<int, T>(list.Count);
 
 			foreach (var item in list)
+			{
 				dic.Add(item.ID, item);
+			}
 		}
 
 		public BTriggerVar GetVar(int var_id)
 		{
-			BTriggerVar var;
-			mDbiVars.TryGetValue(var_id, out var);
+			mDbiVars.TryGetValue(var_id, out BTriggerVar var);
 
 			return var;
 		}
@@ -111,16 +102,28 @@ namespace KSoft.Phoenix.Phx
 			using (s.EnterUserDataBookmark(this))
 			{
 				XML.XmlUtil.Serialize(s, Groups, BTriggerGroup.kBListXmlParams);
-				if (s.IsReading) BuildDictionary(out mDbiGroups, Groups);
+				if (s.IsReading)
+				{
+					BuildDictionary(out mDbiGroups, Groups);
+				}
 
 				XML.XmlUtil.Serialize(s, Vars, BTriggerVar.kBListXmlParams);
-				if (s.IsReading) BuildDictionary(out mDbiVars, Vars);
+				if (s.IsReading)
+				{
+					BuildDictionary(out mDbiVars, Vars);
+				}
+
 				XML.XmlUtil.Serialize(s, Triggers, BTrigger.kBListXmlParams);
-				if (s.IsReading) BuildDictionary(out mDbiTriggers, Triggers);
+				if (s.IsReading)
+				{
+					BuildDictionary(out mDbiTriggers, Triggers);
+				}
 			}
 
-			if(s.IsReading)
+			if (s.IsReading)
+			{
 				(xs as XML.BTriggerScriptSerializer).TriggerDb.UpdateFromGameData(this);
+			}
 		}
 		#endregion
 	};

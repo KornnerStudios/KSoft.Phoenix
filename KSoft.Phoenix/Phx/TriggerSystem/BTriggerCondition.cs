@@ -7,13 +7,13 @@ namespace KSoft.Phoenix.Phx
 		#region Xml constants
 		public const string kXmlRootName = "TriggerConditions";
 
-		public static readonly XML.BListXmlParams kBListXmlParams_And = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams_And = new()
 		{
 			RootName = "And",
 			ElementName = "Condition",
 			DataName = kXmlAttrType,
 		};
-		public static readonly XML.BListXmlParams kBListXmlParams_Or = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams_Or = new()
 		{
 			RootName = "Or",
 			ElementName = "Condition",

@@ -6,19 +6,20 @@ namespace KSoft.Phoenix.Phx
 	public sealed class BTriggerArg
 		: IO.ITagElementStringNameStreamable
 		, IComparable<BTriggerArg>
-		, IEqualityComparer<BTriggerArg>
+		, IEquatable<BTriggerArg>
+		, IEqualityComparer<BTriggerArg> // #REPLACE with IEquatable<>
 	{
-		static readonly BTriggerArg kInvalid = new BTriggerArg();
-		public bool IsInvalid { get { return object.ReferenceEquals(this, kInvalid); } }
+		static readonly BTriggerArg kInvalid = new();
+		public bool IsInvalid => object.ReferenceEquals(this, kInvalid);
 
 		#region Xml constants
-		public static readonly Collections.BListExplicitIndexParams<BTriggerArg> kBListExplicitIndexParams = new
-			Collections.BListExplicitIndexParams<BTriggerArg>(10)
+		public static readonly Collections.BListExplicitIndexParams<BTriggerArg> kBListExplicitIndexParams =
+			new(10)
 			{
 				kTypeGetInvalid = () => kInvalid
 			};
-		public static readonly XML.BListExplicitIndexXmlParams<BTriggerArg> kBListExplicitIndexXmlParams = new
-			XML.BListExplicitIndexXmlParams<BTriggerArg>(null, kXmlAttrSigId);
+		public static readonly XML.BListExplicitIndexXmlParams<BTriggerArg> kBListExplicitIndexXmlParams =
+			new(null, kXmlAttrSigId);
 
 		const string kXmlAttrSigId = "SigID";
 		const string kXmlAttrOptional = "Optional";
@@ -44,7 +45,10 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			if (s.IsReading)
+			{
 				s.ReadCursorName(ref mType);
+			}
+
 			s.StreamAttribute(kXmlAttrSigId, ref mSigID);
 			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref mName);
 			s.StreamAttribute(kXmlAttrOptional, ref mOptional);
@@ -59,20 +63,33 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		#region IEquatable<BTriggerArg> Members
+		public bool Equals(BTriggerArg other)
+			=> other != null
+				&& this.mSigID == other.mSigID;
+
+		public override bool Equals(object obj)
+			=> Equals(obj as BTriggerArg);
+
+		public override int GetHashCode()
+			=> mSigID.GetHashCode();
+		#endregion
+
 		#region IEqualityComparer<BTriggerArg> Members
 		public bool Equals(BTriggerArg x, BTriggerArg y)
 		{
-			return x.mSigID == y.mSigID;
+			return x.Equals(y);
 		}
 
 		public int GetHashCode(BTriggerArg obj)
 		{
-			return mSigID;
+			return obj.GetHashCode();
 		}
 		#endregion
 
 		public BTriggerVarType GetVarType(BTriggerSystem root)
 		{
+			ArgumentNullException.ThrowIfNull(root);
 			return root.GetVar(mVarID).Type;
 		}
 	};

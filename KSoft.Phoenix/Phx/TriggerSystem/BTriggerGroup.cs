@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: TriggerScriptIdObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			RootName = "TriggerGroups",
 			ElementName = "Group",
