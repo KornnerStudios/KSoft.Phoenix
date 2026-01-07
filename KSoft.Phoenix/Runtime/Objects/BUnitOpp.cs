@@ -11,13 +11,13 @@ namespace KSoft.Phoenix.Runtime
 	{
 		const int cMaximumPathLength = 0xC8;
 
-		internal static readonly FreeListInfo kFreeListInfo = new FreeListInfo(cSaveMarker.UnitOpp)
+		internal static readonly FreeListInfo kFreeListInfo = new(cSaveMarker.UnitOpp)
 		{
 			MaxCount=0x4E20,
 		};
 
 		public BVector[] Path;
-		public BSimTarget Target { get; private set; }
+		public BSimTarget Target { get; private set; } = new();
 		public BEntityID Source;
 		public BUnitOppID ID;
 		public BUnitOppType Type;
@@ -30,11 +30,6 @@ namespace KSoft.Phoenix.Runtime
 			ForceLeash, Trigger, RemoveActions,
 			Complete, CompleteValue, PreserveDPS,
 			MustComplete, UserDataSet;
-
-		public BUnitOpp()
-		{
-			Target = new BSimTarget();
-		}
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

@@ -16,7 +16,7 @@ namespace KSoft.Phoenix.Runtime
 			}
 			#endregion
 		};
-		static readonly CondensedListInfo kTacticsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kTacticsListInfo = new()
 		{
 			IndexSize=sizeof(short),
 		};

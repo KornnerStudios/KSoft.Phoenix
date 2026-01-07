@@ -59,7 +59,7 @@ namespace KSoft.Phoenix.Runtime
 			;
 		#endregion
 
-		public bool HasRefs { get { return EntityRefs != null; } }
+		public bool HasRefs => EntityRefs != null;
 
 		#region IEndianStreamSerializable Members
 		public virtual void Serialize(IO.EndianStream s)
@@ -70,7 +70,9 @@ namespace KSoft.Phoenix.Runtime
 			bool has_refs = s.IsReading ? false : HasRefs;
 			s.Stream(ref has_refs);
 			if (has_refs)
+			{
 				BSaveGame.StreamArray16(s, ref EntityRefs, cMaximumEntityRefs);
+			}
 
 			s.Stream(ref ID);
 			s.Stream(ref PlayerID);

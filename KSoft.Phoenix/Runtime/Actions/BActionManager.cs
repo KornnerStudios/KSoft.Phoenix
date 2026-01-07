@@ -6,6 +6,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Phoenix.Runtime
 {
+	using System.Diagnostics.CodeAnalysis;
 	using BActionTypeStreamer = IO.EnumBinaryStreamer<Phx.BActionType, byte>;
 
 	partial class cSaveMarker
@@ -26,12 +27,13 @@ namespace KSoft.Phoenix.Runtime
 	public struct ActionListEntry
 		: IO.IEndianStreamSerializable
 	{
-		internal static ActionListEntry Invalid = new ActionListEntry();
+		internal static ActionListEntry Invalid = new(dummy:true);
 
 		public bool Action;
 		public Phx.BActionType ActionType;
 		public int ActionPtr;
 
+		[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
 		ActionListEntry(bool dummy)
 		{
 			Action = false;
@@ -88,7 +90,9 @@ namespace KSoft.Phoenix.Runtime
 				var t = reading ? ActionListEntry.Invalid : actionList[x];
 				t.Serialize(s);
 				if (reading)
+				{
 					actionList[x] = t;
+				}
 			}
 
 			s.StreamSignature(cSaveMarker.IteratorEndUInt8);

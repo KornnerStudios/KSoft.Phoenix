@@ -25,25 +25,24 @@ namespace KSoft.Phoenix.Runtime
 
 		internal static BEntityFilterBase FromType(int type)
 		{
-			switch (type)
+			return type switch
 			{
-			case BEntityFilterIsAlive.kType: return new BEntityFilterIsAlive();
-			case BEntityFilterIsIdle.kType: return new BEntityFilterIsIdle();
-			case BEntityFilterEntities.kType: return new BEntityFilterEntities();
-			case BEntityFilterPlayers.kType: return new BEntityFilterPlayers();
-			case BEntityFilterTeams.kType: return new BEntityFilterTeams();
-			case BEntityFilterProtoObjects.kType: return new BEntityFilterProtoObjects();
-			case BEntityFilterProtoSquads.kType: return new BEntityFilterProtoSquads();
-			case BEntityFilterObjectTypes.kType: return new BEntityFilterObjectTypes();
-			case BEntityFilterRefCountTypes.kType: return new BEntityFilterRefCountTypes();
-			case BEntityFilterDiplomacy.kType: return new BEntityFilterDiplomacy();
-			case BEntityFilterMaxObjectType.kType: return new BEntityFilterMaxObjectType();
-			case BEntityFilterIsSelected.kType: return new BEntityFilterIsSelected();
-			case BEntityFilterCanChangeOwner.kType: return new BEntityFilterCanChangeOwner();
-			case BEntityFilterJacking.kType: return new BEntityFilterJacking();
-
-			default: throw new KSoft.Debug.UnreachableException(type.ToString());
-			}
+				BEntityFilterIsAlive.kType => new BEntityFilterIsAlive(),
+				BEntityFilterIsIdle.kType => new BEntityFilterIsIdle(),
+				BEntityFilterEntities.kType => new BEntityFilterEntities(),
+				BEntityFilterPlayers.kType => new BEntityFilterPlayers(),
+				BEntityFilterTeams.kType => new BEntityFilterTeams(),
+				BEntityFilterProtoObjects.kType => new BEntityFilterProtoObjects(),
+				BEntityFilterProtoSquads.kType => new BEntityFilterProtoSquads(),
+				BEntityFilterObjectTypes.kType => new BEntityFilterObjectTypes(),
+				BEntityFilterRefCountTypes.kType => new BEntityFilterRefCountTypes(),
+				BEntityFilterDiplomacy.kType => new BEntityFilterDiplomacy(),
+				BEntityFilterMaxObjectType.kType => new BEntityFilterMaxObjectType(),
+				BEntityFilterIsSelected.kType => new BEntityFilterIsSelected(),
+				BEntityFilterCanChangeOwner.kType => new BEntityFilterCanChangeOwner(),
+				BEntityFilterJacking.kType => new BEntityFilterJacking(),
+				_ => throw new KSoft.Debug.UnreachableException(type.ToString()),
+			};
 		}
 	};
 	sealed class BEntityFilterIsAlive

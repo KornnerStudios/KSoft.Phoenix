@@ -15,7 +15,7 @@ namespace KSoft.Phoenix.Runtime
 			}
 			#endregion
 		};
-		static readonly CondensedListInfo kDataTagsListInfo = new CondensedListInfo()
+		static readonly CondensedListInfo kDataTagsListInfo = new()
 		{
 			SerializeCapacity=true,
 			IndexSize=sizeof(int),

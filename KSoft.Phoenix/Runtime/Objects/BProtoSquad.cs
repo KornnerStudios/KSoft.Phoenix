@@ -34,7 +34,11 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref Available); s.Stream(ref Forbid);
 			s.Stream(ref OneTimeSpawnUsed); s.Stream(ref KBAware);
 			s.Stream(ref HasOverrideNodes);
-			if (HasOverrideNodes) BSaveGame.StreamArray(s, ref OverrideNodes);
+			if (HasOverrideNodes)
+			{
+				BSaveGame.StreamArray(s, ref OverrideNodes);
+			}
+
 			s.StreamSignature(cSaveMarker.ProtoSquad1);
 		}
 		#endregion

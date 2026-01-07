@@ -103,8 +103,8 @@ namespace KSoft.Phoenix.Runtime
 
 		public bool IsObstruction; // "mpObstructionNode != NULL"
 
-		public bool HasObjectAttachments { get { return ObjectAttachments != null; } }
-		public bool HasAdditionalTextures { get { return AdditionalTextures != null; } }
+		public bool HasObjectAttachments => ObjectAttachments != null;
+		public bool HasAdditionalTextures => AdditionalTextures != null;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
@@ -124,10 +124,14 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref LastSimLOS);
 
 			if (s.StreamCond(this, me => me.HasObjectAttachments))
+			{
 				BSaveGame.StreamArray(s, ref ObjectAttachments, cMaximumObjectAttachments);
+			}
 
 			if (s.StreamCond(this, me => me.HasAdditionalTextures))
+			{
 				BSaveGame.StreamArray(s, ref AdditionalTextures, cMaximumAdditionalTextures);
+			}
 
 			BSaveGame.StreamArray(s, ref HardpointState, cMaximumHardpoints);
 			s.Stream(ref AnimationState);

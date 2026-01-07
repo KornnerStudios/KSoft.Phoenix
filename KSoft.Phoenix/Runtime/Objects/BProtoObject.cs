@@ -44,7 +44,9 @@ namespace KSoft.Phoenix.Runtime
 		public void CommandDisabledNone()
 		{
 			for (int x = 0; x < CommandDisabled.Length; x++)
+			{
 				CommandDisabled[x] = 0;
+			}
 		}
 
 		#region IEndianStreamSerializable Members
