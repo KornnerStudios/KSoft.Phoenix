@@ -2,6 +2,12 @@
 
 namespace KSoft.Phoenix
 {
+	internal static class PhxConstants
+	{
+		/// <summary>Applied to enumeration members which are values the engine doesn't actually use or implement functionality for</summary>
+		public const string kUnusedByEngineMsg = "Unused or implemented by Phoenix Engine.";
+	};
+
 	public static class Program
 	{
 		public static void Initialize()

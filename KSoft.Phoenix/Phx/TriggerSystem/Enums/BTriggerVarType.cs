@@ -2,6 +2,8 @@
 
 namespace KSoft.Phoenix.Phx
 {
+	// #TODO document why I marked up some of these with Obsolete
+
 	/// <remarks>
 	/// The engine's parsing logic for this duplicates the IsNull and InnerText.IsNullOrEmpty checks for all
 	/// the related cases. Would be more efficient to split these up into diff groups to avoid code dupe

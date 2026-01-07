@@ -60,7 +60,7 @@ namespace KSoft.Phoenix.Phx
 		ProtoSquad,
 		Tech,
 		Bool,
-		[System.Obsolete("Engine doesn't do anything with this type")]
+		[System.Obsolete(PhxConstants.kUnusedByEngineMsg)]
 		Cost,
 		ObjectType,
 		Sound,
