@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "TechStatus",
 		};
@@ -20,7 +20,7 @@ namespace KSoft.Phoenix.Phx
 			set { mTechStatus = value; }
 		}
 
-		static System.Predicate<BProtoTechStatus> BProtoTechStatusIsNotInvalid = (BProtoTechStatus v) => v != BProtoTechStatus.Invalid;
+		static readonly System.Predicate<BProtoTechStatus> BProtoTechStatusIsNotInvalid = (v) => v != BProtoTechStatus.Invalid;
 		#endregion
 
 		#region TechID

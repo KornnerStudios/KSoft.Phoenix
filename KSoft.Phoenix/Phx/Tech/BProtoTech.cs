@@ -10,7 +10,7 @@ namespace KSoft.Phoenix.Phx
 		: DatabaseIdObject
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Tech")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Tech")
 		{
 			RootName = "TechTree",
 			DataName = "name",
@@ -23,7 +23,7 @@ namespace KSoft.Phoenix.Phx
 		};
 		public static readonly Collections.BListAutoIdParams kBListParams
 #if TECH_NEEDS_ToLowerDataNames
-			= new Collections.BListAutoIdParams()
+			= new()
 		{
 			ToLowerDataNames = kBListXmlParams.ToLowerDataNames,
 		};
@@ -31,27 +31,27 @@ namespace KSoft.Phoenix.Phx
 			= null;
 #endif
 
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Location = Engine.ContentStorage.Game,
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Techs.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfoUpdate = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfoUpdate = new()
 		{
 			Location = Engine.ContentStorage.Update,
 			Directory = Engine.GameDirectory.Data,
 			FileName = "Techs_Update.xml",
 			RootName = kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.ProtoData,
 			kXmlFileInfo,
 			kXmlFileInfoUpdate);
 
-		static readonly Collections.CodeEnum<BProtoTechFlags> kFlagsProtoEnum = new Collections.CodeEnum<BProtoTechFlags>();
-		static readonly Collections.BBitSetParams kFlagsParams = new Collections.BBitSetParams(() => kFlagsProtoEnum);
+		static readonly Collections.CodeEnum<BProtoTechFlags> kFlagsProtoEnum = new();
+		static readonly Collections.BBitSetParams kFlagsParams = new(() => kFlagsProtoEnum);
 		#endregion
 
 		#region Alpha
@@ -63,7 +63,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BBitSet Flags { get; private set; }
+		public Collections.BBitSet Flags { get; private set; } = new(kFlagsParams);
 
 		#region Icon
 		string mIcon;
@@ -95,8 +95,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public BProtoTechPrereqs Prereqs { get; private set; }
-		public Collections.BListArray<BProtoTechEffect> Effects { get; private set; }
+		public BProtoTechPrereqs Prereqs { get; private set; } = new();
+		public Collections.BListArray<BProtoTechEffect> Effects { get; private set; } = new();
 
 		#region StatsObjectID
 		int mStatsObjectID = TypeExtensions.kNone;
@@ -116,10 +116,6 @@ namespace KSoft.Phoenix.Phx
 			textData.HasDisplayNameID = true;
 			textData.HasRolloverTextID = true;
 			textData.HasPrereqTextID = true;
-
-			Flags = new Collections.BBitSet(kFlagsParams);
-			Prereqs = new BProtoTechPrereqs();
-			Effects = new Collections.BListArray<BProtoTechEffect>();
 		}
 
 		#region IXmlElementStreamable Members
@@ -144,22 +140,31 @@ namespace KSoft.Phoenix.Phx
 
 			if (s.IsReading)
 			{
-				using (var bm = s.EnterCursorBookmarkOpt("Status")) if (bm.IsNotNull)
+				using (var bm = s.EnterCursorBookmarkOpt("Status"))
 				{
-					string statusValue = null;
-					s.ReadCursor(ref statusValue);
-					if (string.Equals(statusValue, "Unobtainable", System.StringComparison.OrdinalIgnoreCase))
-						Flags.Set((int)BProtoTechFlags.Unobtainable);
+					if (bm.IsNotNull)
+					{
+						string statusValue = null;
+						s.ReadCursor(ref statusValue);
+						if (string.Equals(statusValue, "Unobtainable", System.StringComparison.OrdinalIgnoreCase))
+						{
+							Flags.Set((int)BProtoTechFlags.Unobtainable);
+						}
+					}
 				}
 			}
 
 			s.StreamStringOpt("Icon", ref mIcon, toLower: false, type: XML.XmlUtil.kSourceElement);
 			s.StreamStringOpt("ResearchCompleteSound", ref mResearchCompleteSound, toLower: false, type: XML.XmlUtil.kSourceElement);
 			s.StreamStringOpt("ResearchAnim", ref mResearchAnim, toLower: false, type: XML.XmlUtil.kSourceElement);
-			using (var bm = s.EnterCursorBookmarkOpt("Prereqs", this, v => v.HasPrereqs)) if (bm.IsNotNull)
+			using (var bm = s.EnterCursorBookmarkOpt("Prereqs", this, v => v.HasPrereqs))
 			{
-				Prereqs.Serialize(s);
+				if (bm.IsNotNull)
+				{
+					Prereqs.Serialize(s);
+				}
 			}
+
 			XML.XmlUtil.Serialize(s, Effects, BProtoTechEffect.kBListXmlParams);
 			xs.StreamDBID(s, "StatsObject", ref mStatsObjectID, DatabaseObjectKind.Object);
 		}

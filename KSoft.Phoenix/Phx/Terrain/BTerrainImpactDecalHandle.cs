@@ -13,14 +13,14 @@ namespace KSoft.Phoenix.Phx
 		};
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "ImpactDecal",
 		};
 		#endregion
 
 		#region Size
-		BVector mSize = new BVector(2.0f, 0, 2.0f, 0);
+		BVector mSize = new(2.0f, 0, 2.0f, 0);
 		public BVector Size
 		{
 			get { return mSize; }

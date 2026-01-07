@@ -66,7 +66,9 @@ namespace KSoft.Phoenix.Phx
 				bool streamedUnitType = xs.StreamDBID(s, "UnitType", ref Cost_UnitType, DatabaseObjectKind.Object, true, XML.XmlUtil.kSourceAttr);
 				// #HACK deal with hand edited data in Halo Wars
 				if (!streamedUnitType && s.IsReading)
+				{
 					xs.StreamDBID(s, "unitType", ref Cost_UnitType, DatabaseObjectKind.Object, true, XML.XmlUtil.kSourceAttr);
+				}
 			}
 			void StreamCommandData<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
 				where TDoc : class
@@ -76,28 +78,28 @@ namespace KSoft.Phoenix.Phx
 
 				switch (CommandType)
 				{
-				case BProtoObjectCommandType.Research: // proto tech
-					xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Tech, false, XML.XmlUtil.kSourceAttr);
-					break;
-				case BProtoObjectCommandType.TrainUnit: // proto object
-				case BProtoObjectCommandType.Build:
-				case BProtoObjectCommandType.BuildOther:
-					xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
-					break;
-				case BProtoObjectCommandType.TrainSquad: // proto squad
-					xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceAttr);
-					break;
+					case BProtoObjectCommandType.Research: // proto tech
+						xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Tech, false, XML.XmlUtil.kSourceAttr);
+						break;
+					case BProtoObjectCommandType.TrainUnit: // proto object
+					case BProtoObjectCommandType.Build:
+					case BProtoObjectCommandType.BuildOther:
+						xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceAttr);
+						break;
+					case BProtoObjectCommandType.TrainSquad: // proto squad
+						xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceAttr);
+						break;
 
-				case BProtoObjectCommandType.ChangeMode: // unused
-					s.StreamAttributeEnum(attr_name, ref CommandDataSM);
-					break;
+					case BProtoObjectCommandType.ChangeMode: // unused
+						s.StreamAttributeEnum(attr_name, ref CommandDataSM);
+						break;
 
-				case BProtoObjectCommandType.Ability:
-					xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Ability, false, XML.XmlUtil.kSourceAttr);
-					break;
-				case BProtoObjectCommandType.Power:
-					xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Power, false, XML.XmlUtil.kSourceAttr);
-					break;
+					case BProtoObjectCommandType.Ability:
+						xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Ability, false, XML.XmlUtil.kSourceAttr);
+						break;
+					case BProtoObjectCommandType.Power:
+						xs.StreamDBID(s, attr_name, ref CommandData, DatabaseObjectKind.Power, false, XML.XmlUtil.kSourceAttr);
+						break;
 				}
 			}
 			public void StreamCommand<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
@@ -106,7 +108,9 @@ namespace KSoft.Phoenix.Phx
 			{
 				// #NOTE engine parses this as "CommandType", but its parser ignores case
 				if (s.StreamAttributeEnumOpt("commandType", ref CommandType, e => e != BProtoObjectCommandType.Invalid))
+				{
 					StreamCommandData(s, xs);
+				}
 			}
 			public void StreamDamageModifier<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
 				where TDoc : class
@@ -122,9 +126,13 @@ namespace KSoft.Phoenix.Phx
 				// #NOTE engine parses these as "UnitType" and "SquadType", but its parser ignores case
 
 				if (kind == DatabaseObjectKind.Object)
+				{
 					xs.StreamDBID(s, "unitType", ref TrainLimitType, kind, false, XML.XmlUtil.kSourceAttr);
+				}
 				else if (kind == DatabaseObjectKind.Squad)
+				{
 					xs.StreamDBID(s, "squadType", ref TrainLimitType, kind, false, XML.XmlUtil.kSourceAttr);
+				}
 			}
 			public void StreamIcon<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs)
 				where TDoc : class

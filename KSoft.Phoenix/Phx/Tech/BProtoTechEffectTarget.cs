@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("Target")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("Target")
 		{
 			RootName = null,
 			Flags = 0
@@ -27,18 +27,13 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		public DatabaseObjectKind ObjectKind { get {
-			switch (mType)
+			return mType switch
 			{
-			case BProtoTechEffectTargetType.ProtoUnit:
-				return DatabaseObjectKind.Unit;
-			case BProtoTechEffectTargetType.ProtoSquad:
-				return DatabaseObjectKind.Squad;
-			case BProtoTechEffectTargetType.Tech:
-				return DatabaseObjectKind.Tech;
-
-			default:
-				return DatabaseObjectKind.None;
-			}
+				BProtoTechEffectTargetType.ProtoUnit => DatabaseObjectKind.Unit,
+				BProtoTechEffectTargetType.ProtoSquad => DatabaseObjectKind.Squad,
+				BProtoTechEffectTargetType.Tech => DatabaseObjectKind.Tech,
+				_ => DatabaseObjectKind.None,
+			};
 		} }
 
 		#region ITagElementStreamable<string> Members
@@ -49,7 +44,9 @@ namespace KSoft.Phoenix.Phx
 			DatabaseObjectKind kind = ObjectKind;
 
 			if (kind != DatabaseObjectKind.None)
+			{
 				xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mValueID, kind, false, XML.XmlUtil.kSourceCursor);
+			}
 		}
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class

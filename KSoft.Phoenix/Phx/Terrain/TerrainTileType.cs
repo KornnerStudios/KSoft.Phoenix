@@ -7,18 +7,18 @@ namespace KSoft.Phoenix.Phx
 		public const int cUndefinedIndex = 0;
 
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams("TerrainTileType")
+		public static readonly XML.BListXmlParams kBListXmlParams = new("TerrainTileType")
 		{
 			DataName = "name",
 			Flags = 0,
 		};
-		public static readonly Engine.XmlFileInfo kXmlFileInfo = new Engine.XmlFileInfo
+		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
 			Directory = Engine.GameDirectory.Data,
 			FileName = "TerrainTileTypes.xml",
 			RootName = "TerrainTileTypes"//kBListXmlParams.RootName
 		};
-		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new Engine.ProtoDataXmlFileInfo(
+		public static readonly Engine.ProtoDataXmlFileInfo kProtoFileInfo = new(
 			Engine.XmlFilePriority.Lists,
 			kXmlFileInfo);
 		#endregion

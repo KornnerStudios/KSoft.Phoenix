@@ -1,12 +1,12 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	// TODO: Nothing in HW uses this
+	// #NOTE: Nothing in vanilla HW uses this
 	public sealed class BProtoTechPrereqTypeCount
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
-		public static readonly XML.BListXmlParams kBListXmlParams = new XML.BListXmlParams
+		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "TypeCount",
 		};
