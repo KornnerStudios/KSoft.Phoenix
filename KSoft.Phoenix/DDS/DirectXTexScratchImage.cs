@@ -8,17 +8,21 @@ namespace KSoft.DDS
 	{
 		IntPtr Pointer;
 
-		public bool IsNull { get { return Pointer == IntPtr.Zero; } }
-		public bool IsNotNull { get { return Pointer != IntPtr.Zero; } }
+		public readonly bool IsNull => Pointer == IntPtr.Zero;
+		public readonly bool IsNotNull => Pointer != IntPtr.Zero;
 
 		public void Dispose()
 		{
 			if (IsNull || DirectXTexDLL.EntryPointsNotFound)
+			{
 				return;
+			}
 
 			try
 			{
-				DirectXTexDLL.DirectXTex_ScratchImageFree(this);
+				var hresult = DirectXTexDLL.DirectXTex_ScratchImageFree(this);
+				DirectXTexDLL.ThrowIfFailed(hresult);
+
 				Pointer = IntPtr.Zero;
 			}
 			catch (EntryPointNotFoundException ex)
@@ -31,8 +35,8 @@ namespace KSoft.DDS
 		{
 			try
 			{
-				DirectXTexScratchImage image;
-				var hresult = DirectXTexDLL.DirectXTex_ScratchImageNew(out image);
+				var hresult = DirectXTexDLL.DirectXTex_ScratchImageNew(
+					out DirectXTexScratchImage image);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return image;
 			}
@@ -44,14 +48,16 @@ namespace KSoft.DDS
 			return new DirectXTexScratchImage();
 		}
 
-		public TexMetadata Metadata { get {
+		public readonly TexMetadata Metadata { get {
 			if (IsNull || DirectXTexDLL.EntryPointsNotFound)
+			{
 				return TexMetadata.Empty;
+			}
 
 			try
 			{
-				TexMetadata metadata;
-				var hresult = DirectXTexDLL.DirectXTex_ScratchImageGetMetadata(this, out metadata);
+				var hresult = DirectXTexDLL.DirectXTex_ScratchImageGetMetadata(this,
+					out TexMetadata metadata);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return metadata;
 			}

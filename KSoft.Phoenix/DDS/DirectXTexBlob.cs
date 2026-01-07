@@ -9,17 +9,21 @@ namespace KSoft.DDS
 	{
 		IntPtr Pointer;
 
-		public bool IsNull { get { return Pointer == IntPtr.Zero; } }
-		public bool IsNotNull { get { return Pointer != IntPtr.Zero; } }
+		public readonly bool IsNull => Pointer == IntPtr.Zero;
+		public readonly bool IsNotNull => Pointer != IntPtr.Zero;
 
 		public void Dispose()
 		{
 			if (IsNull || DirectXTexDLL.EntryPointsNotFound)
+			{
 				return;
+			}
 
 			try
 			{
-				DirectXTexDLL.DirectXTex_BlobFree(this);
+				var hresult = DirectXTexDLL.DirectXTex_BlobFree(this);
+				DirectXTexDLL.ThrowIfFailed(hresult);
+
 				Pointer = IntPtr.Zero;
 			}
 			catch (EntryPointNotFoundException ex)
@@ -32,8 +36,8 @@ namespace KSoft.DDS
 		{
 			try
 			{
-				DirectXTexBlob blob;
-				var hresult = DirectXTexDLL.DirectXTex_BlobNew(out blob);
+				var hresult = DirectXTexDLL.DirectXTex_BlobNew(
+					out DirectXTexBlob blob);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return blob;
 			}
@@ -45,15 +49,16 @@ namespace KSoft.DDS
 			return new DirectXTexBlob();
 		}
 
-		public IntPtr Buffer { get {
+		public readonly IntPtr Buffer { get {
 			if (IsNull || DirectXTexDLL.EntryPointsNotFound)
+			{
 				return IntPtr.Zero;
+			}
 
 			try
 			{
-				IntPtr bufferPointer;
-				uint bufferSize;
-				var hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this, out bufferPointer, out bufferSize);
+				var hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this,
+					out nint bufferPointer, out uint bufferSize);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return bufferPointer;
 			}
@@ -65,15 +70,16 @@ namespace KSoft.DDS
 			return IntPtr.Zero;
 		} }
 
-		public uint BufferSize { get {
+		public readonly uint BufferSize { get {
 			if (IsNull || DirectXTexDLL.EntryPointsNotFound)
+			{
 				return 0;
+			}
 
 			try
 			{
-				IntPtr bufferPointer;
-				uint bufferSize;
-				var hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this, out bufferPointer, out bufferSize);
+				var hresult = DirectXTexDLL.DirectXTex_BlobGetBuffer(this,
+					out nint bufferPointer, out uint bufferSize);
 				DirectXTexDLL.ThrowIfFailed(hresult);
 				return bufferSize;
 			}

@@ -31,7 +31,9 @@ namespace KSoft.Phoenix.Engine
 			get
 			{
 				if (!Initialized && !gEntryPointsNotFound && !gIsInitializing)
+				{
 					Initialize();
+				}
 
 				return gEntryPointsNotFound;
 			}
@@ -41,7 +43,9 @@ namespace KSoft.Phoenix.Engine
 		public static void HandleEntryPointNotFound(EntryPointNotFoundException ex)
 		{
 			if (EntryPointsNotFound)
+			{
 				return;
+			}
 
 			EntryPointsNotFound = true;
 			Phoenix.Debug.Trace.Phoenix.TraceData(System.Diagnostics.TraceEventType.Critical, TypeExtensions.kNone,
@@ -53,7 +57,9 @@ namespace KSoft.Phoenix.Engine
 		public static void Initialize()
 		{
 			if (Initialized)
+			{
 				return;
+			}
 
 			try
 			{
@@ -100,7 +106,9 @@ namespace KSoft.Phoenix.Engine
 		public static void Dispose()
 		{
 			if (!Initialized)
+			{
 				return;
+			}
 
 			Initialized = false;
 			EntryPointsNotFound = false;
@@ -182,19 +190,31 @@ namespace KSoft.Phoenix.Engine
 			Contract.Requires(height > 0);
 
 			if (EditorUtilsDLL.EntryPointsNotFound)
+			{
 				return false;
+			}
 
 			if (dstArray == null || srcArray == null)
+			{
 				return false;
+			}
 
 			try
 			{
-				if (dstArray is byte[] && srcArray is byte[])
-					return TileCopyData((byte[])dstArray, (byte[])srcArray, width, height, dxtFormat);
-				if (dstArray is short[] && srcArray is short[])
-					return TileCopyData((short[])dstArray, (short[])srcArray, width, height, dxtFormat);
-				if (dstArray is uint[] && srcArray is uint[])
-					return TileCopyData((uint[])dstArray, (uint[])srcArray, width, height, dxtFormat);
+				if (dstArray is byte[] dstArrayAsBytes && srcArray is byte[] srcArrayAsBytes)
+				{
+					return TileCopyData(dstArrayAsBytes, srcArrayAsBytes, width, height, dxtFormat);
+				}
+
+				if (dstArray is short[] dstArrayAs16Bit && srcArray is short[] srcArrayAs16Bit)
+				{
+					return TileCopyData(dstArrayAs16Bit, srcArrayAs16Bit, width, height, dxtFormat);
+				}
+
+				if (dstArray is uint[] dstArrayAs32Bit && srcArray is uint[] srcArrayAs32Bit)
+				{
+					return TileCopyData(dstArrayAs32Bit, srcArrayAs32Bit, width, height, dxtFormat);
+				}
 			}
 			catch (EntryPointNotFoundException ex)
 			{
@@ -221,19 +241,31 @@ namespace KSoft.Phoenix.Engine
 			Contract.Requires(height > 0);
 
 			if (EditorUtilsDLL.EntryPointsNotFound)
+			{
 				return false;
+			}
 
 			if (dstArray == null || srcArray == null)
+			{
 				return false;
+			}
 
 			try
 			{
-				if (dstArray is byte[] && srcArray is byte[])
-					return UntileCopyData((byte[])dstArray, (byte[])srcArray, width, height, dxtFormat);
-				if (dstArray is short[] && srcArray is short[])
-					return UntileCopyData((short[])dstArray, (short[])srcArray, width, height, dxtFormat);
-				if (dstArray is uint[] && srcArray is uint[])
-					return UntileCopyData((uint[])dstArray, (uint[])srcArray, width, height, dxtFormat);
+				if (dstArray is byte[] dstArrayAsBytes && srcArray is byte[] srcArrayAsBytes)
+				{
+					return UntileCopyData(dstArrayAsBytes, srcArrayAsBytes, width, height, dxtFormat);
+				}
+
+				if (dstArray is short[] dstArrayAs16Bit && srcArray is short[] srcArrayAs16Bit)
+				{
+					return UntileCopyData(dstArrayAs16Bit, srcArrayAs16Bit, width, height, dxtFormat);
+				}
+
+				if (dstArray is uint[] dstArrayAs32Bit && srcArray is uint[] srcArrayAs32Bit)
+				{
+					return UntileCopyData(dstArrayAs32Bit, srcArrayAs32Bit, width, height, dxtFormat);
+				}
 			}
 			catch (EntryPointNotFoundException ex)
 			{

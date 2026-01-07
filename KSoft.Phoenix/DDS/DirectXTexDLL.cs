@@ -38,7 +38,9 @@ namespace KSoft.DDS
 			get
 			{
 				if (!Initialized && !gEntryPointsNotFound && !gIsInitializing)
+				{
 					Initialize();
+				}
 
 				return gEntryPointsNotFound;
 			}
@@ -48,7 +50,9 @@ namespace KSoft.DDS
 		public static void HandleEntryPointNotFound(EntryPointNotFoundException ex)
 		{
 			if (EntryPointsNotFound)
+			{
 				return;
+			}
 
 			EntryPointsNotFound = true;
 			Phoenix.Debug.Trace.Phoenix.TraceData(System.Diagnostics.TraceEventType.Critical, TypeExtensions.kNone,
@@ -60,7 +64,9 @@ namespace KSoft.DDS
 		public static void Initialize()
 		{
 			if (Initialized)
+			{
 				return;
+			}
 
 			try
 			{
@@ -96,7 +102,9 @@ namespace KSoft.DDS
 		public static void Dispose()
 		{
 			if (!Initialized)
+			{
 				return;
+			}
 
 			Initialized = false;
 			EntryPointsNotFound = false;

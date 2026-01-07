@@ -12,24 +12,18 @@ namespace KSoft.DDS
 	public static class DirectXTex
 	{
 		// BMP, JPG, JPEG, PNG, TIF, TIFF, WDP
-		public static string DefaultFileExtensionForWIC = ".png";
+		public static string DefaultFileExtensionForWIC => ".png";
 
 		public static string ToFileExtension(this DirectXTexFileType type)
 		{
-			switch(type)
+			return type switch
 			{
-				case DirectXTexFileType.DDS:
-					return ".dds";
-				case DirectXTexFileType.HDR:
-					return ".hdr";
-				case DirectXTexFileType.TGA:
-					return ".tga";
-				case DirectXTexFileType.WIC:
-					return DefaultFileExtensionForWIC;
-
-				default:
-					return "";
-			}
+				DirectXTexFileType.DDS => ".dds",
+				DirectXTexFileType.HDR => ".hdr",
+				DirectXTexFileType.TGA => ".tga",
+				DirectXTexFileType.WIC => DefaultFileExtensionForWIC,
+				_ => "",
+			};
 		}
 
 		public static DirectXTexFileType FileTypeFromFileExtension(string file)
@@ -39,28 +33,23 @@ namespace KSoft.DDS
 			string ext = Path.GetExtension(file);
 			ext = ext.ToLowerInvariant();
 
-			switch (ext)
+			return ext switch
 			{
-				case ".dds":
-				case ".ddx": // #NOTE specific to Phoneix code
-					return DirectXTexFileType.DDS;
-				case ".hdr":
-					return DirectXTexFileType.HDR;
-				case ".tga":
-					return DirectXTexFileType.TGA;
-
-				case ".bmp":
-				case ".jpg":
-				case ".jpeg":
-				case ".png":
-				case ".tif":
-				case ".tiff":
-				case ".wdp":
-					return DirectXTexFileType.WIC;
-
-				default:
-					return DirectXTexFileType.Unknown;
-			}
+				".dds" or
+				".ddx" // #NOTE specific to Phoneix code
+				=> DirectXTexFileType.DDS,
+				".hdr" => DirectXTexFileType.HDR,
+				".tga" => DirectXTexFileType.TGA,
+				".bmp" or
+				".jpg" or
+				".jpeg" or
+				".png" or
+				".tif" or
+				".tiff" or
+				".wdp"
+				=> DirectXTexFileType.WIC,
+				_ => DirectXTexFileType.Unknown,
+			};
 		}
 
 		public static TexMetadata GetMetadataFromFile(string file
@@ -70,19 +59,25 @@ namespace KSoft.DDS
 			Contract.Requires(!string.IsNullOrEmpty(file));
 
 			if (!File.Exists(file))
+			{
 				throw new FileNotFoundException(file);
+			}
 
 			if (fileType == DirectXTexFileType.Unknown)
 			{
 				fileType = FileTypeFromFileExtension(file);
 			}
 			if (fileType == DirectXTexFileType.Unknown)
+			{
 				throw new NotSupportedException(file);
+			}
 
 			var result = TexMetadata.Empty;
 
 			if (DirectXTexDLL.EntryPointsNotFound)
+			{
 				return result;
+			}
 
 			try
 			{
@@ -111,7 +106,9 @@ namespace KSoft.DDS
 			var result = TexMetadata.Empty;
 
 			if (DirectXTexDLL.EntryPointsNotFound)
+			{
 				return result;
+			}
 
 			var bufferHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 			try
