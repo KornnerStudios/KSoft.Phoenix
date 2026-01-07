@@ -188,11 +188,13 @@ namespace KSoft.Phoenix.Phx
 		KillOnDetach,// = 1<<7,
 
 		#region Alpha only
-		[Obsolete] cFlagPhysicsControl,
+		[Obsolete(PhxConstants.kAlphaOnlyMsg)] cFlagPhysicsControl,
 		#endregion
 
 		//[Obsolete] NonCollidable = NonCollideable, // Fixed in HW's XmlFiles.cs
+		// #REVIEW I think I marked this as Obsolete because it appears in game data, but game code doesn't read it?
 		[Obsolete, XmlIgnore] NonSolid,
-		[Obsolete, XmlIgnore] RenderBelowDecals,
+		/// <remarks>This was non-functional on Xbox360 (and unused by the vanilla game), but was supported in HWDE</remarks>
+		RenderBelowDecals,
 	};
 }
