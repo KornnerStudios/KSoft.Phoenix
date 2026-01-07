@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -34,14 +35,14 @@ namespace KSoft.Phoenix.Phx
 		public ProtoDataObjectDatabase ObjectDatabase { get; private set; }
 
 		#region Xml constants
-		internal static readonly XML.BListXmlParams kObjectTypesXmlParams = new XML.BListXmlParams("ObjectType");
-		internal static readonly Engine.XmlFileInfo kObjectTypesXmlFileInfo = new Engine.XmlFileInfo
+		internal static readonly XML.BListXmlParams kObjectTypesXmlParams = new("ObjectType");
+		internal static readonly Engine.XmlFileInfo kObjectTypesXmlFileInfo = new()
 		{
 			Directory = Phoenix.Engine.GameDirectory.Data,
 			FileName = "ObjectTypes.xml",
 			RootName = kObjectTypesXmlParams.RootName
 		};
-		internal static readonly Engine.ProtoDataXmlFileInfo kObjectTypesProtoFileInfo = new Phoenix.Engine.ProtoDataXmlFileInfo(
+		internal static readonly Engine.ProtoDataXmlFileInfo kObjectTypesProtoFileInfo = new(
 			Phoenix.Engine.XmlFilePriority.Lists,
 			kObjectTypesXmlFileInfo);
 		#endregion
@@ -53,16 +54,20 @@ namespace KSoft.Phoenix.Phx
 			get
 			{
 				lock (mLoadStateLockee)
+				{
 					return mLoadState;
+				}
 			}
 			set
 			{
 				lock (mLoadStateLockee)
+				{
 					this.SetFieldEnum(ref mLoadState, value);
+				}
 			}
 		}
 
-		object mLoadStateLockee = new object();
+		readonly Lock mLoadStateLockee = new();
 		#endregion
 
 		public Engine.PhxEngine Engine { get; private set; }
@@ -72,12 +77,11 @@ namespace KSoft.Phoenix.Phx
 		public abstract Collections.IProtoEnum GameScenarioWorlds { get; }
 
 		#region StringTable stuff
-		public LocStringTable EnglishStringTable { get; private set; }
-			= new LocStringTable();
+		public LocStringTable EnglishStringTable { get; private set; } = new();
 
 		/// <summary>Maps a ID to a bit representing if any data references it somewhere. Only updated on data load</summary>
 		public Collections.BitSet ReferencedStringIds { get; private set; }
-			= new Collections.BitSet(ushort.MaxValue, fixedLength: false);
+			= new(ushort.MaxValue, fixedLength: false);
 
 		internal void AddStringIDReference(int id)
 		{
@@ -91,46 +95,32 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public BGameData GameData { get; private set; }
-			 = new BGameData();
-		public HPBarData HPBars { get; private set; }
-			 = new HPBarData();
+		public BGameData GameData { get; private set; } = new();
+		public HPBarData HPBars { get; private set; } = new();
 
 		#region DatabaseObjectKind lists
 		// #NOTE place new DatabaseObjectKind code here
-		public Collections.BListAutoId<		BDamageType> DamageTypes { get; private set; }
-			= new Collections.BListAutoId<	BDamageType>();
-		public Collections.BListAutoId<		BProtoImpactEffect> ImpactEffects { get; private set; }
-			= new Collections.BListAutoId<	BProtoImpactEffect>();
-		public Collections.BListAutoId<		BWeaponType> WeaponTypes { get; private set; }
-			= new Collections.BListAutoId<	BWeaponType>();
-		public Collections.BListAutoId<		BUserClass> UserClasses { get; private set; }
-			= new Collections.BListAutoId<	BUserClass>();
+		public Collections.BListAutoId<BDamageType> DamageTypes { get; private set; } = new();
+		public Collections.BListAutoId<BProtoImpactEffect> ImpactEffects { get; private set; } = new();
+		public Collections.BListAutoId<BWeaponType> WeaponTypes { get; private set; } = new();
+		public Collections.BListAutoId<BUserClass> UserClasses { get; private set; } = new();
 		public Collections.BTypeNamesWithCode ObjectTypes { get; private set; }
-		public Collections.BListAutoId<		BAbility> Abilities { get; private set; }
-			 = new Collections.BListAutoId<	BAbility>();
-		public Collections.BListAutoId<		BProtoObject> Objects { get; private set; }
-			= new Collections.BListAutoId<	BProtoObject>(BProtoObject.kBListParams);
-		public Collections.BListAutoId<		BProtoSquad> Squads { get; private set; }
-			= new Collections.BListAutoId<	BProtoSquad>(BProtoSquad.kBListParams);
-		public Collections.BListAutoId<		BProtoPower> Powers { get; private set; }
-			= new Collections.BListAutoId<	BProtoPower>();
-		public Collections.BListAutoId<		BTacticData> Tactics { get; private set; }
-			= new Collections.BListAutoId<	BTacticData>();
-		public Collections.BListAutoId<		BProtoTech> Techs { get; private set; }
-			= new Collections.BListAutoId<	BProtoTech>(BProtoTech.kBListParams);
-		public Collections.BListAutoId<		TerrainTileType> TerrainTileTypes { get; private set; }
-			= new Collections.BListAutoId<	TerrainTileType>();
-		public Collections.BListAutoId<		BCiv> Civs { get; private set; }
-			= new Collections.BListAutoId<	BCiv>();
-		public Collections.BListAutoId<		BLeader> Leaders { get; private set; }
-			= new Collections.BListAutoId<	BLeader>();
+		public Collections.BListAutoId<BAbility> Abilities { get; private set; } = new();
+		public Collections.BListAutoId<BProtoObject> Objects { get; private set; }
+			= new(BProtoObject.kBListParams);
+		public Collections.BListAutoId<BProtoSquad> Squads { get; private set; }
+			= new(BProtoSquad.kBListParams);
+		public Collections.BListAutoId<BProtoPower> Powers { get; private set; } = new();
+		public Collections.BListAutoId<BTacticData> Tactics { get; private set; } = new();
+		public Collections.BListAutoId<BProtoTech> Techs { get; private set; }
+			= new(BProtoTech.kBListParams);
+		public Collections.BListAutoId<TerrainTileType> TerrainTileTypes { get; private set; } = new();
+		public Collections.BListAutoId<BCiv> Civs { get; private set; } = new();
+		public Collections.BListAutoId<BLeader> Leaders { get; private set; } = new();
 		#endregion
 
-		public Collections.BListArray<		BProtoMergedSquads> MergedSquads { get; private set; }
-			= new Collections.BListArray<	BProtoMergedSquads>();
-		public BProtoShieldBubbleTypes ShieldBubbleTypes { get; private set; }
-			= new BProtoShieldBubbleTypes();
+		public Collections.BListArray<BProtoMergedSquads> MergedSquads { get; private set; } = new();
+		public BProtoShieldBubbleTypes ShieldBubbleTypes { get; private set; } = new();
 
 		protected BDatabaseBase(Engine.PhxEngine engine, Collections.IProtoEnum gameObjectTypes)
 		{
@@ -144,6 +134,8 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		#region IDisposable Members
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize",
+			Justification = "Not expecting any derived classes to have Finalizers")]
 		public virtual void Dispose()
 		{
 			Util.DisposeAndNull(ref mTriggerSerializer);
@@ -192,9 +184,13 @@ namespace KSoft.Phoenix.Phx
 			if (id.IsNone())
 			{
 				if ((id = ObjectTypes.TryGetId(name)).IsNotNone())
+				{
 					ObjectIdIsObjectTypeBitSet(ref id);
+				}
 				else
+				{
 					id = Objects.TryGetIdWithUndefined(name);
+				}
 			}
 
 			return id;
@@ -202,7 +198,9 @@ namespace KSoft.Phoenix.Phx
 		string TryGetNameUnit(int id)
 		{
 			if (ObjectIdIsObjectTypeBitGet(ref id))
+			{
 				return ObjectTypes.TryGetNameWithUndefined(id);
+			}
 
 			return Objects.TryGetNameWithUndefined(id);
 		}
@@ -225,26 +223,25 @@ namespace KSoft.Phoenix.Phx
 
 			// #NOTE place new DatabaseObjectKind code here
 
-			switch (kind)
+			return kind switch
 			{
-			case DatabaseObjectKind.Ability:	return Abilities;
-			case DatabaseObjectKind.Civ:		return Civs;
-			case DatabaseObjectKind.DamageType:	return DamageTypes;
-			case DatabaseObjectKind.ImpactEffect: return ImpactEffects;
-			case DatabaseObjectKind.Leader:		return Leaders;
-			case DatabaseObjectKind.Object:		return Objects;
-			case DatabaseObjectKind.ObjectType:	return ObjectTypes;
-			case DatabaseObjectKind.Power:		return Powers;
-			case DatabaseObjectKind.Squad:		return Squads;
-			case DatabaseObjectKind.Tactic:		return Tactics;
-			case DatabaseObjectKind.Tech:		return Techs;
-			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes;
-			case DatabaseObjectKind.Unit:		return null; // #TODO?
-			case DatabaseObjectKind.UserClass:	return UserClasses;
-			case DatabaseObjectKind.WeaponType:	return WeaponTypes;
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				DatabaseObjectKind.Ability => Abilities,
+				DatabaseObjectKind.Civ => Civs,
+				DatabaseObjectKind.DamageType => DamageTypes,
+				DatabaseObjectKind.ImpactEffect => ImpactEffects,
+				DatabaseObjectKind.Leader => Leaders,
+				DatabaseObjectKind.Object => Objects,
+				DatabaseObjectKind.ObjectType => ObjectTypes,
+				DatabaseObjectKind.Power => Powers,
+				DatabaseObjectKind.Squad => Squads,
+				DatabaseObjectKind.Tactic => Tactics,
+				DatabaseObjectKind.Tech => Techs,
+				DatabaseObjectKind.TerrainTileType => TerrainTileTypes,
+				DatabaseObjectKind.Unit => null,// #TODO?
+				DatabaseObjectKind.UserClass => UserClasses,
+				DatabaseObjectKind.WeaponType => WeaponTypes,
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 
 		public int GetId(GameDataObjectKind kind, string name)
@@ -267,27 +264,26 @@ namespace KSoft.Phoenix.Phx
 
 			// #NOTE place new DatabaseObjectKind code here
 
-			switch (kind)
+			return kind switch
 			{
-			case DatabaseObjectKind.Ability:	return Abilities.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Civ:		return Civs.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.DamageType:	return DamageTypes.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.ImpactEffect: return ImpactEffects.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Leader:		return Leaders.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Object:		return Objects.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.ObjectType:	return ObjectTypes.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Power:		return Powers.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Squad:		return Squads.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Tactic:		return Tactics.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.Tech:		return Techs.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes.TryGetIdWithUndefined(name);
-			// TODO: Should just use the Objects DBI AFAICT
-			case DatabaseObjectKind.Unit:		return TryGetIdUnit(name);
-			case DatabaseObjectKind.UserClass:	return UserClasses.TryGetIdWithUndefined(name);
-			case DatabaseObjectKind.WeaponType:	return WeaponTypes.TryGetIdWithUndefined(name);
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				DatabaseObjectKind.Ability => Abilities.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Civ => Civs.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.DamageType => DamageTypes.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.ImpactEffect => ImpactEffects.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Leader => Leaders.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Object => Objects.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.ObjectType => ObjectTypes.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Power => Powers.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Squad => Squads.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Tactic => Tactics.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.Tech => Techs.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.TerrainTileType => TerrainTileTypes.TryGetIdWithUndefined(name),
+				// TODO: Should just use the Objects DBI AFAICT
+				DatabaseObjectKind.Unit => TryGetIdUnit(name),
+				DatabaseObjectKind.UserClass => UserClasses.TryGetIdWithUndefined(name),
+				DatabaseObjectKind.WeaponType => WeaponTypes.TryGetIdWithUndefined(name),
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 		public string GetName(GameDataObjectKind kind, int id)
 		{
@@ -309,27 +305,26 @@ namespace KSoft.Phoenix.Phx
 
 			// #NOTE place new DatabaseObjectKind code here
 
-			switch (kind)
+			return kind switch
 			{
-			case DatabaseObjectKind.Ability:	return Abilities.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Civ:		return Civs.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.DamageType:	return DamageTypes.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.ImpactEffect: return ImpactEffects.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Leader:		return Leaders.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Object:		return Objects.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.ObjectType:	return ObjectTypes.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Power:		return Powers.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Squad:		return Squads.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Tactic:		return Tactics.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.Tech:		return Techs.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.TerrainTileType: return TerrainTileTypes.TryGetNameWithUndefined(id);
-			// TODO: Should just use the Objects DBI AFAICT
-			case DatabaseObjectKind.Unit:		return TryGetNameUnit(id);
-			case DatabaseObjectKind.UserClass:	return UserClasses.TryGetNameWithUndefined(id);
-			case DatabaseObjectKind.WeaponType:	return WeaponTypes.TryGetNameWithUndefined(id);
-
-			default: throw new KSoft.Debug.UnreachableException(kind.ToString());
-			}
+				DatabaseObjectKind.Ability => Abilities.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Civ => Civs.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.DamageType => DamageTypes.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.ImpactEffect => ImpactEffects.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Leader => Leaders.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Object => Objects.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.ObjectType => ObjectTypes.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Power => Powers.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Squad => Squads.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Tactic => Tactics.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.Tech => Techs.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.TerrainTileType => TerrainTileTypes.TryGetNameWithUndefined(id),
+				// TODO: Should just use the Objects DBI AFAICT
+				DatabaseObjectKind.Unit => TryGetNameUnit(id),
+				DatabaseObjectKind.UserClass => UserClasses.TryGetNameWithUndefined(id),
+				DatabaseObjectKind.WeaponType => WeaponTypes.TryGetNameWithUndefined(id),
+				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
+			};
 		}
 		#endregion
 
