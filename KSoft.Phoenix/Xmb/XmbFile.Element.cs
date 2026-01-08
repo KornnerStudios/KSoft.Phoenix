@@ -21,29 +21,37 @@ namespace KSoft.Phoenix.Xmb
 			public void ReadAttributes(XmbFile xmb, IO.EndianReader s)
 			{
 				if (mAttributesOffset.IsInvalidHandle)
+				{
 					return;
+				}
 
 				s.Seek((long)mAttributesOffset);
 				for (int x = 0; x < Attributes.Capacity; x++)
 				{
-					XmbVariant k; XmbVariantSerialization.Read(s, out k);
-					XmbVariant v; XmbVariantSerialization.Read(s, out v);
+					XmbVariantSerialization.Read(s, out XmbVariant k);
+					XmbVariantSerialization.Read(s, out XmbVariant v);
 
 					var kv = new KeyValuePair<XmbVariant, XmbVariant>(k, v);
 					Attributes.Add(kv);
 
 					if (k.HasUnicodeData || v.HasUnicodeData)
+					{
 						xmb.mHasUnicodeStrings = true;
+					}
 				}
 			}
 			public void ReadChildren(IO.EndianReader s)
 			{
 				if (mChildrenOffset.IsInvalidHandle)
+				{
 					return;
+				}
 
 				s.Seek((long)mChildrenOffset);
 				for (int x = 0; x < ChildrenIndices.Capacity; x++)
+				{
 					ChildrenIndices.Add(s.ReadInt32());
+				}
 			}
 			public void Read(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
 			{
@@ -56,8 +64,7 @@ namespace KSoft.Phoenix.Xmb
 				}
 
 				#region Attributes header
-				int count;
-				s.Read(out count);
+				s.Read(out int count);
 				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
 				{
 					s.Pad32();
@@ -77,13 +84,17 @@ namespace KSoft.Phoenix.Xmb
 				#endregion
 
 				if (NameVariant.HasUnicodeData || InnerTextVariant.HasUnicodeData)
+				{
 					xmb.mHasUnicodeStrings = true;
+				}
 			}
 
 			public void WriteAttributes(IO.EndianWriter s)
 			{
 				if (Attributes.Count == 0)
+				{
 					return;
+				}
 
 				mAttributesOffset = s.PositionPtr;
 				foreach (var kv in Attributes)
@@ -93,7 +104,7 @@ namespace KSoft.Phoenix.Xmb
 				}
 
 				// Update element entry
-				var pos = s.BaseStream.Position;
+				long pos = s.BaseStream.Position;
 				s.Seek((long)mAttributesOffsetPos);
 				s.WriteVirtualAddress(mAttributesOffset);
 				s.Seek(pos);
@@ -101,14 +112,18 @@ namespace KSoft.Phoenix.Xmb
 			public void WriteChildren(IO.EndianWriter s)
 			{
 				if (ChildrenIndices.Count == 0)
+				{
 					return;
+				}
 
 				mChildrenOffset = s.PositionPtr;
 				foreach (int ci in ChildrenIndices)
+				{
 					s.Write(ci);
+				}
 
 				// Update element entry
-				var pos = s.BaseStream.Position;
+				long pos = s.BaseStream.Position;
 				s.Seek((long)mChildrenOffsetPos);
 				s.WriteVirtualAddress(mChildrenOffset);
 				s.Seek(pos);
@@ -148,11 +163,15 @@ namespace KSoft.Phoenix.Xmb
 			#endregion
 
 			#region FromXml
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 			public void FromXmlProcessChildren(XmbFileBuilder builder, XmlElement e)
 			{
+				// #TODO
 			}
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 			public void FromXmlProcessAttributes(XmbFileBuilder builder, XmlElement e)
 			{
+				// #TODO
 			}
 			public void FromXmlInitialize(XmbFileBuilder builder, int rootIndex, int index, XmlElement e)
 			{
@@ -160,17 +179,29 @@ namespace KSoft.Phoenix.Xmb
 				this.RootElementIndex = rootIndex;
 
 				if (e.HasAttributes)
+				{
 					Attributes = new List<KeyValuePair<XmbVariant, XmbVariant>>(e.Attributes.Count);
-				if (e.HasChildNodes)
-					ChildrenIndices = new List<int>(e.ChildNodes.Count);
+				}
 
+				if (e.HasChildNodes)
+				{
+					ChildrenIndices = new List<int>(e.ChildNodes.Count);
+				}
+
+#if DEBUG
 				string name = e.Name;
 				string text = e.Value;
+#endif
 
 				if (e.HasAttributes)
+				{
 					FromXmlProcessAttributes(builder, e);
+				}
+
 				if (e.HasChildNodes)
+				{
 					FromXmlProcessChildren(builder, e);
+				}
 			}
 			#endregion
 			#region ToXml
@@ -184,42 +215,47 @@ namespace KSoft.Phoenix.Xmb
 			}
 			void AttributesToXml(XmbFile xmb, XmlDocument doc, XmlElement e)
 			{
-				if (Attributes.Count > 0) foreach (var kv in Attributes)
+				if (Attributes.Count > 0)
 				{
-					string k = xmb.ToString(kv.Key);
-					string v = xmb.ToString(kv.Value);
-
-					var attr = doc.CreateAttribute(k);
-					attr.Value = v;
-
-					// #HACK avoids exceptions like:
-					// "The prefix '' cannot be redefined from '' to 'http://www.w3.org/2000/09/xmldsig#' within the same start element tag."
-					// for XML files that weren't meant for the game but were transformed to XMB anyway
-					if (string.CompareOrdinal(k, "xmlns")==0)
+					foreach (var kv in Attributes)
 					{
-						var comment = doc.CreateComment(attr.OuterXml);
-						e.AppendChild(comment);
-						continue;
-					}
+						string k = xmb.ToString(kv.Key);
+						string v = xmb.ToString(kv.Value);
 
-					e.Attributes.Append(attr);
+						var attr = doc.CreateAttribute(k);
+						attr.Value = v;
+
+						// #HACK avoids exceptions like:
+						// "The prefix '' cannot be redefined from '' to 'http://www.w3.org/2000/09/xmldsig#' within the same start element tag."
+						// for XML files that weren't meant for the game but were transformed to XMB anyway
+						if (string.CompareOrdinal(k, "xmlns")==0)
+						{
+							var comment = doc.CreateComment(attr.OuterXml);
+							e.AppendChild(comment);
+							continue;
+						}
+
+						e.Attributes.Append(attr);
+					}
 				}
 			}
 			void ChildrenToXml(XmbFile xmb, XmlDocument doc, XmlElement e)
 			{
-				if (ChildrenIndices.Count > 0) foreach (int x in ChildrenIndices)
+				if (ChildrenIndices.Count > 0)
 				{
-					var element = xmb.mElements[x];
+					foreach (int x in ChildrenIndices)
+					{
+						var element = xmb.mElements[x];
 
-					element.ToXml(xmb, doc, e);
+						element.ToXml(xmb, doc, e);
+					}
 				}
 			}
 			public XmlElement ToXml(XmbFile xmb, XmlDocument doc, XmlElement root)
 			{
 				var e = doc.CreateElement(xmb.ToString(NameVariant));
 
-				if (root != null)
-					root.AppendChild(e);
+				root?.AppendChild(e);
 
 				AttributesToXml(xmb, doc, e);
 				ChildrenToXml(xmb, doc, e);

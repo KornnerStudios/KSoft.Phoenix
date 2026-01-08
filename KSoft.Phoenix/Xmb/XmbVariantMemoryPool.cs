@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Xmb
 		Dictionary<uint, PoolEntry> mEntries;
 		uint mPoolSize;
 
-		public uint Size { get { return mPoolSize; } }
+		public uint Size => mPoolSize;
 
 		IO.EndianReader mBuffer;
 		uint mBufferedDataRemaining;
@@ -29,9 +29,11 @@ namespace KSoft.Phoenix.Xmb
 		public XmbVariantMemoryPool(int initialEntryCount = kEntryStartCount)
 		{
 			if (initialEntryCount < 0)
+			{
 				initialEntryCount = kEntryStartCount;
+			}
 
-			mEntries = new Dictionary<uint, PoolEntry>(kEntryStartCount);
+			mEntries = new Dictionary<uint, PoolEntry>(initialEntryCount);
 		}
 		public XmbVariantMemoryPool(byte[] buffer, Shell.EndianFormat byteOrder = Shell.EndianFormat.Big)
 			: this()
@@ -62,7 +64,7 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Add
-		uint Add(XmbFileBuilder builder, PoolEntry e)
+		uint Add(XmbFileBuilder /*builder*/_, PoolEntry e)
 		{
 			uint size = e.CalculateSize();
 
@@ -77,8 +79,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, int v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -86,8 +92,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, uint v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -95,8 +105,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, float v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -104,8 +118,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, double v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -113,8 +131,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, string v, bool isUnicode = false)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			entry.IsUnicode = isUnicode;
@@ -123,8 +145,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, Vector2f v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -132,8 +158,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, Vector3f v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -141,8 +171,12 @@ namespace KSoft.Phoenix.Xmb
 		public uint Add(XmbFileBuilder builder, Vector4f v)
 		{
 			foreach (var kv in mEntries)
+			{
 				if (kv.Value.Equals(v))
+				{
 					return kv.Key;
+				}
+			}
 
 			var entry = PoolEntry.New(v);
 			return Add(builder, entry);
@@ -150,24 +184,37 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Get
-		bool ValidOffset(uint offset)	{ return offset < mPoolSize; }
+		bool ValidOffset(uint offset) => offset < mPoolSize;
 
 		PoolEntry DeBuffer(XmbVariantType type, uint offset, byte flags = 0)
 		{
 			if (!ValidOffset(offset))
-				throw new ArgumentOutOfRangeException("offset", string.Format("{0} > {1}",
-					offset.ToString("X8"), mPoolSize.ToString("X6")));
-
-			PoolEntry e;
-			if (!mEntries.TryGetValue(offset, out e))
 			{
-					 if (mBufferedDataRemaining == 0)	throw new InvalidOperationException("No data left in buffer");
-				else if (mBuffer == null)				throw new InvalidOperationException("No underlying buffer");
+				throw new ArgumentOutOfRangeException(nameof(offset), string.Format("{0} > {1}",
+					offset.ToString("X8"), mPoolSize.ToString("X6")));
+			}
+
+			if (!mEntries.TryGetValue(offset, out PoolEntry e))
+			{
+				if (mBufferedDataRemaining == 0)
+				{
+					throw new InvalidOperationException("No data left in buffer");
+				}
+				else if (mBuffer == null)
+				{
+					throw new InvalidOperationException("No underlying buffer");
+				}
 
 				// Create our new entry, setting any additional properties
 				e = PoolEntry.New(type);
-					 if (type == XmbVariantType.String) e.IsUnicode = flags != 0;
-				else if (type == XmbVariantType.Vector) e.VectorLength = flags;
+				if (type == XmbVariantType.String)
+				{
+					e.IsUnicode = flags != 0;
+				}
+				else if (type == XmbVariantType.Vector)
+				{
+					e.VectorLength = flags;
+				}
 				// Great, now read the entry's value data
 				mBuffer.Seek32(offset);
 				e.Read(mBuffer);
@@ -177,7 +224,9 @@ namespace KSoft.Phoenix.Xmb
 				mBufferedDataRemaining -= bytes_read;
 
 				if (mBufferedDataRemaining == 0)
+				{
 					DisposeBuffer();
+				}
 
 				mEntries.Add(offset, e);
 			}
@@ -238,7 +287,9 @@ namespace KSoft.Phoenix.Xmb
 		public void Write(IO.EndianWriter s)
 		{
 			foreach (var e in mEntries.Values)
+			{
 				e.Write(s);
+			}
 		}
 
 		public static bool IsInt32(string str, ref int value, bool useInt24)
@@ -261,21 +312,29 @@ namespace KSoft.Phoenix.Xmb
 
 			// VC++'s strtol returns 0, LONG_MIN, LONG_MAX when a conversion cannot be performed or when there's overflow
 			if (v == 0 || v == int.MinValue || v == int.MaxValue)
+			{
 				return false;
+			}
 
 			if (useInt24)
 			{
 				var int24 = v & XmbVariantSerialization.kValueBitMask;
 				if (int24 != v)
+				{
 					return false;
+				}
 			}
 
-			var unpackedV = v;
+			int unpackedV = v;
 			if ((unpackedV & 0x800000) != 0)
+			{
 				unpackedV |= unchecked( (int)0xFF000000 );
+			}
 
 			if (unpackedV != v)
+			{
 				return false;
+			}
 
 			value = unpackedV;
 			return true;
@@ -301,19 +360,24 @@ namespace KSoft.Phoenix.Xmb
 
 			// VC++'s strtoul returns 0, ULONG_MAX when a conversion cannot be performed or when there's overflow
 			if (v == uint.MinValue || v == uint.MaxValue)
+			{
 				return false;
+			}
 
 			if (useInt24)
 			{
 				var int24 = v & XmbVariantSerialization.kValueBitMask;
 				if (int24 != v)
+				{
 					return false;
+				}
 			}
 
 			value = v;
 			return true;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 		public static bool IsFloat(string str, ref uint value, double epsilon, bool useInt24)
 		{
 			double v;
@@ -328,9 +392,14 @@ namespace KSoft.Phoenix.Xmb
 
 			// VC++'s strtod returns 0, +HUGE_VAL, -HUGE_VAL when a conversion cannot be performed or when there's overflow
 			if (v == 0.0f)
+			{
 				return false;
+			}
+
 			if (double.IsNegativeInfinity(v) || double.IsPositiveInfinity(v))
+			{
 				return false;
+			}
 
 			// #TODO finish this
 

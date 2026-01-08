@@ -10,7 +10,7 @@ namespace KSoft.Phoenix.Xmb
 	{
 		const int kSizeOf = 8;
 
-		public static XmbVariant Empty { get { return new XmbVariant() { Type = XmbVariantType.Null }; } }
+		public static XmbVariant Empty => new() { Type = XmbVariantType.Null };
 
 		#region Properties
 		[Interop.FieldOffset(0)]
@@ -26,11 +26,9 @@ namespace KSoft.Phoenix.Xmb
 		[Interop.FieldOffset(2)]
 		public byte VectorLength;
 
-		public bool IsEmpty { get { return Type == XmbVariantType.Null; } }
+		public readonly bool IsEmpty => Type == XmbVariantType.Null;
 
-		public bool HasUnicodeData { get {
-			return Type == XmbVariantType.String && IsUnicode;
-		} }
+		public readonly bool HasUnicodeData => Type == XmbVariantType.String && IsUnicode;
 		#endregion
 
 		#region Data
@@ -54,7 +52,7 @@ namespace KSoft.Phoenix.Xmb
 		#region ToString
 		static string VectorToString(uint offset, int length, XmbVariantMemoryPool pool)
 		{
-			float x = 0, y = 0, z = 0, w = 0;
+			float x, y = 0, z = 0, w = 0;
 			switch (length)
 			{
 				case 1: {
@@ -80,38 +78,48 @@ namespace KSoft.Phoenix.Xmb
 				} break;
 
 				default:
-					throw new ArgumentOutOfRangeException("length", length.ToString());
+					throw new ArgumentOutOfRangeException(nameof(length), length.ToString());
 			}
 
 			var vector = new BVector(x, y, z, w);
 			return vector.ToBVectorString(length);
 		}
-		string StringToString(XmbVariantMemoryPool pool)
+		readonly string StringToString(XmbVariantMemoryPool pool)
 		{
-			string result = null;
+			string result;
 
 			if (IsIndirect)
+			{
 				result = pool.GetString(Offset, IsUnicode);
+			}
 			else
 			{
 				// Unicode is always indirect
-				//if (IsUnicode) result = new string((char)Char0, 1);
+				//if (IsUnicode) { result = new string((char)Char0, 1); }
 				//else
 				{
 					var sb = new System.Text.StringBuilder(3);
 					if (Char0 != '\0')
+					{
 						sb.Append((char)Char0);
+					}
+
 					if (Char1 != '\0')
+					{
 						sb.Append((char)Char1);
+					}
+
 					if (Char2 != '\0')
+					{
 						sb.Append((char)Char2);
+					}
 
 					result = sb.ToString();
 				}
 			}
 			return result;
 		}
-		internal string ToString(XmbVariantMemoryPool pool)
+		internal readonly string ToString(XmbVariantMemoryPool pool)
 		{
 			string result = "";
 
@@ -120,14 +128,20 @@ namespace KSoft.Phoenix.Xmb
 				case XmbVariantType.Single: {
 					float f = Single;
 					if (IsIndirect)
+					{
 						f = pool.GetSingle(Offset);
+					}
+
 					result = f.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier);
 				} break;
 
 				case XmbVariantType.Int: {
 					uint i = Int;
 					if (IsIndirect)
+					{
 						i = pool.GetUInt32(Offset);
+					}
+
 					result = IsUnsigned
 						? i.ToString()
 						: ((int)i).ToString();

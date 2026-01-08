@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Xmb
 			[Interop.FieldOffset(0)]
 			public Vector3f Vector3d;
 			[Interop.FieldOffset(0)]
-			public Vector4f Vector4d = new Vector4f();
+			public Vector4f Vector4d = new();
 
 			// we don't know how big a .NET reference really is (we could be compiling for x64!) so always give it 8 bytes
 			[Interop.FieldOffset(16)]
@@ -50,43 +50,43 @@ namespace KSoft.Phoenix.Xmb
 			public byte PrePadSize;
 
 			#region Equals
-			public bool Equals(uint v)		{ return Type == XmbVariantType.Int && Int == v; }
-			public bool Equals(int v)		{ return Type == XmbVariantType.Int && Int == (uint)v; }
-			public bool Equals(float v)		{ return Type == XmbVariantType.Single && Single == v; }
-			public bool Equals(double v)	{ return Type == XmbVariantType.Double && Double == v; }
-			public bool Equals(string v)	{ return Type == XmbVariantType.String && String == v; }
-			public bool Equals(Vector2f v)	{ return Type == XmbVariantType.Vector && VectorLength == 2 && Vector2d == v; }
-			public bool Equals(Vector3f v)	{ return Type == XmbVariantType.Vector && VectorLength == 3 && Vector3d == v; }
-			public bool Equals(Vector4f v)	{ return Type == XmbVariantType.Vector && VectorLength == 4 && Vector4d == v; }
+			public bool Equals(uint v)		=> Type == XmbVariantType.Int && Int == v;
+			public bool Equals(int v)		=> Type == XmbVariantType.Int && Int == (uint)v;
+			public bool Equals(float v)		=> Type == XmbVariantType.Single && Single == v;
+			public bool Equals(double v)	=> Type == XmbVariantType.Double && Double == v;
+			public bool Equals(string v)	=> Type == XmbVariantType.String && String == v;
+			public bool Equals(Vector2f v)	=> Type == XmbVariantType.Vector && VectorLength == 2 && Vector2d == v;
+			public bool Equals(Vector3f v)	=> Type == XmbVariantType.Vector && VectorLength == 3 && Vector3d == v;
+			public bool Equals(Vector4f v)	=> Type == XmbVariantType.Vector && VectorLength == 4 && Vector4d == v;
 			#endregion
 			#region New
-			public static PoolEntry New(uint v)		{ return new PoolEntry() { Type = XmbVariantType.Int, Int = v }; }
-			public static PoolEntry New(int v)		{ return new PoolEntry() { Type = XmbVariantType.Int, Int = (uint)v }; }
-			public static PoolEntry New(float v)	{ return new PoolEntry() { Type = XmbVariantType.Single, Single = v }; }
-			public static PoolEntry New(double v)	{ return new PoolEntry() { Type = XmbVariantType.Double, Double = v }; }
-			public static PoolEntry New(string v)	{ return new PoolEntry() { Type = XmbVariantType.String, String = v }; }
-			public static PoolEntry New(Vector2f v)	{ return new PoolEntry() { Type = XmbVariantType.Vector, VectorLength = 2, Vector2d = v }; }
-			public static PoolEntry New(Vector3f v)	{ return new PoolEntry() { Type = XmbVariantType.Vector, VectorLength = 3, Vector3d = v }; }
-			public static PoolEntry New(Vector4f v)	{ return new PoolEntry() { Type = XmbVariantType.Vector, VectorLength = 4, Vector4d = v }; }
-			public static PoolEntry New(XmbVariantType t)	{ return new PoolEntry() { Type = t }; }
+			public static PoolEntry New(uint v)		=> new() { Type = XmbVariantType.Int, Int = v };
+			public static PoolEntry New(int v)		=> new() { Type = XmbVariantType.Int, Int = (uint)v };
+			public static PoolEntry New(float v)	=> new() { Type = XmbVariantType.Single, Single = v };
+			public static PoolEntry New(double v)	=> new() { Type = XmbVariantType.Double, Double = v };
+			public static PoolEntry New(string v)	=> new() { Type = XmbVariantType.String, String = v };
+			public static PoolEntry New(Vector2f v)	=> new() { Type = XmbVariantType.Vector, VectorLength = 2, Vector2d = v };
+			public static PoolEntry New(Vector3f v)	=> new() { Type = XmbVariantType.Vector, VectorLength = 3, Vector3d = v };
+			public static PoolEntry New(Vector4f v)	=> new() { Type = XmbVariantType.Vector, VectorLength = 4, Vector4d = v };
+			public static PoolEntry New(XmbVariantType t) => new() { Type = t };
 			#endregion
 
 			public uint CalculateSize()
 			{
 				switch (Type)
 				{
-				case XmbVariantType.Int:
-				case XmbVariantType.Single:
-					return sizeof(uint);
-				case XmbVariantType.Double:
-					return sizeof(ulong);
-				case XmbVariantType.String:
-					var sse = IsUnicode ? kUnicodeEncoding : kAnsiEncoding;
-					return (uint)sse.GetByteCount(String);
-				case XmbVariantType.Vector:
-					return (uint)(sizeof(uint) * VectorLength);
+					case XmbVariantType.Int:
+					case XmbVariantType.Single:
+						return sizeof(uint);
+					case XmbVariantType.Double:
+						return sizeof(ulong);
+					case XmbVariantType.String:
+						var sse = IsUnicode ? kUnicodeEncoding : kAnsiEncoding;
+						return (uint)sse.GetByteCount(String);
+					case XmbVariantType.Vector:
+						return (uint)(sizeof(uint) * VectorLength);
 
-				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
+					default: throw new KSoft.Debug.UnreachableException(Type.ToString());
 				}
 			}
 
@@ -96,7 +96,9 @@ namespace KSoft.Phoenix.Xmb
 				PrePadSize = 0;
 
 				if (Type != XmbVariantType.String)
+				{
 					PrePadSize = (byte)IntegerMath.PaddingRequired(kAlignmentBit, offset);
+				}
 
 				return PrePadSize;
 			}
@@ -106,45 +108,85 @@ namespace KSoft.Phoenix.Xmb
 			{
 				switch (Type)
 				{
-				case XmbVariantType.Int:	s.Read(out Int); break;
-				case XmbVariantType.Single: s.Read(out Single); break;
-				case XmbVariantType.Double: s.Read(out Double); break;
-				case XmbVariantType.String:
-					String = s.ReadString(IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
-					break;
-				case XmbVariantType.Vector:
-					if (VectorLength >= 1) s.Read(out Vector4d.X);
-					if (VectorLength >= 2) s.Read(out Vector4d.Y);
-					if (VectorLength >= 3) s.Read(out Vector4d.Z);
-					if (VectorLength >= 4) s.Read(out Vector4d.W);
-					break;
+					case XmbVariantType.Int:	s.Read(out Int); break;
+					case XmbVariantType.Single: s.Read(out Single); break;
+					case XmbVariantType.Double: s.Read(out Double); break;
+					case XmbVariantType.String:
+						String = s.ReadString(IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						break;
+					case XmbVariantType.Vector:
+					{
+						if (VectorLength >= 1)
+						{
+							s.Read(out Vector4d.X);
+						}
 
-				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
+						if (VectorLength >= 2)
+						{
+							s.Read(out Vector4d.Y);
+						}
+
+						if (VectorLength >= 3)
+						{
+							s.Read(out Vector4d.Z);
+						}
+
+						if (VectorLength >= 4)
+						{
+							s.Read(out Vector4d.W);
+						}
+
+						break;
+					}
+
+					default: throw new KSoft.Debug.UnreachableException(Type.ToString());
 				}
 			}
 
 			public void Write(IO.EndianWriter s)
 			{
 				if (PrePadSize > 0)
+				{
 					for (int x = 0; x < PrePadSize; x++)
+					{
 						s.Write(byte.MinValue);
+					}
+				}
 
 				switch (Type)
 				{
-				case XmbVariantType.Int:	s.Write(Int); break;
-				case XmbVariantType.Single: s.Write(Single); break;
-				case XmbVariantType.Double: s.Write(Double); break;
-				case XmbVariantType.String:
-					s.Write(String, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
-					break;
-				case XmbVariantType.Vector:
-					if (VectorLength >= 1) s.Write(Vector4d.X);
-					if (VectorLength >= 2) s.Write(Vector4d.Y);
-					if (VectorLength >= 3) s.Write(Vector4d.Z);
-					if (VectorLength >= 4) s.Write(Vector4d.W);
-					break;
+					case XmbVariantType.Int:	s.Write(Int); break;
+					case XmbVariantType.Single: s.Write(Single); break;
+					case XmbVariantType.Double: s.Write(Double); break;
+					case XmbVariantType.String:
+						s.Write(String, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						break;
+					case XmbVariantType.Vector:
+					{
+						if (VectorLength >= 1)
+						{
+							s.Write(Vector4d.X);
+						}
 
-				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
+						if (VectorLength >= 2)
+						{
+							s.Write(Vector4d.Y);
+						}
+
+						if (VectorLength >= 3)
+						{
+							s.Write(Vector4d.Z);
+						}
+
+						if (VectorLength >= 4)
+						{
+							s.Write(Vector4d.W);
+						}
+
+						break;
+					}
+
+					default: throw new KSoft.Debug.UnreachableException(Type.ToString());
 				}
 			}
 			#endregion
