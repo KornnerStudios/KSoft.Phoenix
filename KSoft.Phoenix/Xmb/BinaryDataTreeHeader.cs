@@ -46,18 +46,16 @@ namespace KSoft.Phoenix.Xmb
 
 		public uint this[BinaryDataTreeSectionID sectionId]
 		{
-			get
+			readonly get
 			{
-				switch ((int)sectionId)
+				return (int)sectionId switch
 				{
-					case 0: return BaseSectionSize0;
-					case 1: return BaseSectionSize1;
-					case 2: return BaseSectionSize2;
-					case 3: return BaseSectionSize3;
-
-					default:
-						throw new KSoft.Debug.UnreachableException(sectionId.ToString());
-				}
+					0 => BaseSectionSize0,
+					1 => BaseSectionSize1,
+					2 => BaseSectionSize2,
+					3 => BaseSectionSize3,
+					_ => throw new KSoft.Debug.UnreachableException(sectionId.ToString()),
+				};
 			}
 			set
 			{
@@ -84,7 +82,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public Shell.EndianFormat SignatureAsEndianFormat
 		{
-			get
+			readonly get
 			{
 				return Signature == BinaryDataTreeHeaderSignature.LittleEndian
 					? Shell.EndianFormat.Little
@@ -98,7 +96,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public ushort GetCrc16()
+		public readonly ushort GetCrc16()
 		{
 			var computer = new Security.Cryptography.Crc16.BitComputer(PhxUtil.kCrc16Definition);
 			computer.ComputeBegin();
@@ -128,7 +126,9 @@ namespace KSoft.Phoenix.Xmb
 			byte signature = (byte)Signature;
 
 			if (!reading)
+			{
 				HeaderCrc8 = (byte)GetCrc16();
+			}
 
 			s.Stream(ref signature);
 			s.StreamSignature(kExpectedHeaderDwordCount);
@@ -149,12 +149,14 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public void Validate()
+		public readonly void Validate()
 		{
 			var actual_crc = (byte)GetCrc16();
 			if (actual_crc != HeaderCrc8)
+			{
 				throw new InvalidDataException(string.Format("Invalid CRC 0x{0}, expected 0x{1}",
 					actual_crc.ToString("X2"), HeaderCrc8.ToString("X2")));
+			}
 		}
 
 		public static BinaryDataTreeHeaderSignature PeekSignature(BinaryReader reader)
@@ -163,15 +165,13 @@ namespace KSoft.Phoenix.Xmb
 
 			var peek = reader.PeekByte();
 
-			switch (peek)
+			return peek switch
 			{
-				case (int)BinaryDataTreeHeaderSignature.LittleEndian:
-				case (int)BinaryDataTreeHeaderSignature.BigEndian:
-					return (BinaryDataTreeHeaderSignature)peek;
-
-				default:
-					throw new InvalidDataException(peek.ToString("X8"));
-			}
+				(int)BinaryDataTreeHeaderSignature.LittleEndian or
+				(int)BinaryDataTreeHeaderSignature.BigEndian
+				=> (BinaryDataTreeHeaderSignature)peek,
+				_ => throw new InvalidDataException(peek.ToString("X8")),
+			};
 		}
 
 		public static Shell.EndianFormat PeekSignatureAsEndianFormat(BinaryReader reader)

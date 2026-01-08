@@ -28,22 +28,22 @@ namespace KSoft.Phoenix.Xmb
 		{
 			// 0
 			public static readonly BitFieldTraits kTypeIsUnsignedBitField =
-				new BitFieldTraits(Bits.kBooleanBitCount);
+				new(Bits.kBooleanBitCount);
 			// 1
 			public static readonly BitFieldTraits kDirectEncodingBitField =
-				new BitFieldTraits(Bits.kBooleanBitCount, kTypeIsUnsignedBitField);
+				new(Bits.kBooleanBitCount, kTypeIsUnsignedBitField);
 			// 2
 			public static readonly BitFieldTraits kTypeBitField =
-				new BitFieldTraits(BitEncoders.BinaryDataTreeVariantType.BitCountTrait, kDirectEncodingBitField);
+				new(BitEncoders.BinaryDataTreeVariantType.BitCountTrait, kDirectEncodingBitField);
 			// 5
 			public static readonly BitFieldTraits kTypeSizeInBytesLog2BitField =
-				new BitFieldTraits(BitEncoders.BinaryDataTreeVariantTypeSizeInBytes.BitCountTrait, kTypeBitField);
+				new(BitEncoders.BinaryDataTreeVariantTypeSizeInBytes.BitCountTrait, kTypeBitField);
 			// 8
 			public static readonly BitFieldTraits kIsLastNameValueBitField =
-				new BitFieldTraits(Bits.kBooleanBitCount, kTypeSizeInBytesLog2BitField);
+				new(Bits.kBooleanBitCount, kTypeSizeInBytesLog2BitField);
 			// 9
 			public static readonly BitFieldTraits kSizeBitField =
-				new BitFieldTraits(kSizeBitCount, kIsLastNameValueBitField);
+				new(kSizeBitCount, kIsLastNameValueBitField);
 
 			public static readonly BitFieldTraits kLastBitField =
 				kSizeBitField;
@@ -56,9 +56,9 @@ namespace KSoft.Phoenix.Xmb
 		public const uint kIndirectSizeThreshold = 1U << kSizeBitCount;
 		#endregion
 
-		public static BinaryDataTreeNameValue Empty { get { return new BinaryDataTreeNameValue() { Type = BinaryDataTreeVariantType.Null }; } }
+		public static BinaryDataTreeNameValue Empty => new() { Type = BinaryDataTreeVariantType.Null };
 
-		public override string ToString()
+		public override readonly string ToString()
 		{
 			return string.Format("0x{0} 0x{1} 0x{2}",
 				NameOffset.ToString("X4"), Flags.ToString("X4"), Int.ToString("X8"));
@@ -72,57 +72,57 @@ namespace KSoft.Phoenix.Xmb
 
 		public bool IsUnsigned
 		{
-			get { return Bits.BitDecode(Flags, Constants.kTypeIsUnsignedBitField).ToBoolean(); }
+			readonly get { return Bits.BitDecode(Flags, Constants.kTypeIsUnsignedBitField).ToBoolean(); }
 			set { Flags = Bits.BitEncode(value.ToUInt16(), Flags, Constants.kTypeIsUnsignedBitField); }
 		}
 
 		public bool DirectEncoding
 		{
-			get { return Bits.BitDecode(Flags, Constants.kDirectEncodingBitField).ToBoolean(); }
+			readonly get { return Bits.BitDecode(Flags, Constants.kDirectEncodingBitField).ToBoolean(); }
 			set { Flags = Bits.BitEncode(value.ToUInt16(), Flags, Constants.kDirectEncodingBitField); }
 		}
 
 		public BinaryDataTreeVariantType Type
 		{
-			get { return BitEncoders.BinaryDataTreeVariantType.BitDecode(Flags, Constants.kTypeBitField); }
+			readonly get { return BitEncoders.BinaryDataTreeVariantType.BitDecode(Flags, Constants.kTypeBitField); }
 			set { Flags = BitEncoders.BinaryDataTreeVariantType.BitEncode(value, Flags, Constants.kTypeBitField); }
 		}
 
 		public BinaryDataTreeVariantTypeSizeInBytes TypeSizeInBytes
 		{
-			get { return BitEncoders.BinaryDataTreeVariantTypeSizeInBytes.BitDecode(Flags, Constants.kTypeSizeInBytesLog2BitField); }
+			readonly get { return BitEncoders.BinaryDataTreeVariantTypeSizeInBytes.BitDecode(Flags, Constants.kTypeSizeInBytesLog2BitField); }
 			set { Flags = BitEncoders.BinaryDataTreeVariantTypeSizeInBytes.BitEncode(value, Flags, Constants.kTypeSizeInBytesLog2BitField); }
 		}
 
 		public bool IsLastNameValue
 		{
-			get { return Bits.BitDecode(Flags, Constants.kIsLastNameValueBitField).ToBoolean(); }
+			readonly get { return Bits.BitDecode(Flags, Constants.kIsLastNameValueBitField).ToBoolean(); }
 			set { Flags = Bits.BitEncode(value.ToUInt16(), Flags, Constants.kIsLastNameValueBitField); }
 		}
 
 		public byte Size
 		{
-			get { return (byte)Bits.BitDecode(Flags, Constants.kSizeBitField); }
+			readonly get { return (byte)Bits.BitDecode(Flags, Constants.kSizeBitField); }
 			set { Flags = Bits.BitEncode(value, Flags, Constants.kSizeBitField); }
 		}
 
-		public bool IsEmpty { get { return Type == BinaryDataTreeVariantType.Null; } }
+		public readonly bool IsEmpty => Type == BinaryDataTreeVariantType.Null;
 
-		public bool IsIndirect { get { return !DirectEncoding; } }
-		public bool SizeIsIndirect { get { return Size == Constants.kSizeBitField.Bitmask32; } }
-		public bool IsArray { get { return Size > TypeSize; } }
+		public readonly bool IsIndirect => !DirectEncoding;
+		public readonly bool SizeIsIndirect => Size == Constants.kSizeBitField.Bitmask32;
+		public readonly bool IsArray => Size > TypeSize;
 
-		public bool IsUnicode { get {
-			return Type == BinaryDataTreeVariantType.String && TypeSizeInBytes == BinaryDataTreeVariantTypeSizeInBytes._2byte;
-		} }
+		public readonly bool IsUnicode
+			=> Type == BinaryDataTreeVariantType.String && TypeSizeInBytes == BinaryDataTreeVariantTypeSizeInBytes._2byte;
 
-		public bool HasUnicodeData { get {
-			return IsUnicode;
-		} }
+		public readonly bool HasUnicodeData => IsUnicode;
 
-		public uint TypeSize { get {
+		public readonly uint TypeSize { get {
 			if (IsEmpty)
+			{
 				return 0;
+			}
+
 			return 1U << (int)TypeSizeInBytes;
 		} }
 		#endregion
@@ -155,25 +155,35 @@ namespace KSoft.Phoenix.Xmb
 		}
 
 		#region ToString
-		string StringToString(XmbVariantMemoryPool pool)
+		readonly string StringToString(XmbVariantMemoryPool pool)
 		{
-			string result = null;
+			string result;
 
 			if (IsIndirect)
+			{
 				result = pool.GetString(Offset, IsUnicode);
+			}
 			else
 			{
 				// Unicode is always indirect
-				//if (IsUnicode) result = new string((char)Char0, 1);
+				//if (IsUnicode) { result = new string((char)Char0, 1); }
 				//else
 				{
 					var sb = new System.Text.StringBuilder(3);
 					if (Char0 != '\0')
+					{
 						sb.Append((char)Char0);
+					}
+
 					if (Char1 != '\0')
+					{
 						sb.Append((char)Char1);
+					}
+
 					if (Char2 != '\0')
+					{
 						sb.Append((char)Char2);
+					}
 
 					result = sb.ToString();
 				}
@@ -181,7 +191,7 @@ namespace KSoft.Phoenix.Xmb
 			return result;
 		}
 
-		uint GetDataSize(XmbVariantMemoryPool pool)
+		readonly uint GetDataSize(XmbVariantMemoryPool pool)
 		{
 			uint size = Size;
 
@@ -195,7 +205,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 
 		[Obsolete]
-		public uint GetLength(XmbVariantMemoryPool pool)
+		public readonly uint GetLength(XmbVariantMemoryPool pool)
 		{
 			uint length = 0;
 			switch (Type)
@@ -216,7 +226,7 @@ namespace KSoft.Phoenix.Xmb
 			return length;
 		}
 
-		internal string ToString(XmbVariantMemoryPool pool)
+		internal readonly string ToString(XmbVariantMemoryPool pool)
 		{
 			string result = "";
 
@@ -230,7 +240,10 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Int: {
 					uint i = Int;
 					if (IsIndirect)
+					{
 						i = pool.GetUInt32(Offset);
+					}
+
 					result = IsUnsigned
 						? i.ToString()
 						: ((int)i).ToString();
@@ -246,7 +259,10 @@ namespace KSoft.Phoenix.Xmb
 					{
 						float f = Single;
 						if (IsIndirect)
+						{
 							f = pool.GetSingle(Offset);
+						}
+
 						result = f.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier);
 					}
 				} break;
@@ -279,7 +295,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		#endregion
 
-		public BinaryDataTreeVariantTypeDesc GuessTypeDesc()
+		public readonly BinaryDataTreeVariantTypeDesc GuessTypeDesc()
 		{
 			switch (Type)
 			{
@@ -290,27 +306,22 @@ namespace KSoft.Phoenix.Xmb
 					return BinaryDataTreeVariantTypeDesc.Bool;
 
 				case BinaryDataTreeVariantType.Int:
-					switch (TypeSize)
+					return TypeSize switch
 					{
-						case sizeof(byte):
-							return IsUnsigned
-								? BinaryDataTreeVariantTypeDesc.UInt8
-								: BinaryDataTreeVariantTypeDesc. Int8;
-						case sizeof(ushort):
-							return IsUnsigned
-								? BinaryDataTreeVariantTypeDesc.UInt16
-								: BinaryDataTreeVariantTypeDesc. Int16;
-						case sizeof(uint):
-							return IsUnsigned
-								? BinaryDataTreeVariantTypeDesc.UInt32
-								: BinaryDataTreeVariantTypeDesc. Int32;
-						case sizeof(ulong):
-							return IsUnsigned
-								? BinaryDataTreeVariantTypeDesc.UInt64
-								: BinaryDataTreeVariantTypeDesc. Int64;
-					}
-					throw new KSoft.Debug.UnreachableException(Type + TypeSize.ToString());
-
+						sizeof(byte) => IsUnsigned
+							? BinaryDataTreeVariantTypeDesc.UInt8
+							: BinaryDataTreeVariantTypeDesc. Int8,
+						sizeof(ushort) => IsUnsigned
+							? BinaryDataTreeVariantTypeDesc.UInt16
+							: BinaryDataTreeVariantTypeDesc. Int16,
+						sizeof(uint) => IsUnsigned
+							? BinaryDataTreeVariantTypeDesc.UInt32
+							: BinaryDataTreeVariantTypeDesc. Int32,
+						sizeof(ulong) => IsUnsigned
+							? BinaryDataTreeVariantTypeDesc.UInt64
+							: BinaryDataTreeVariantTypeDesc. Int64,
+						_ => throw new KSoft.Debug.UnreachableException(Type + TypeSize.ToString()),
+					};
 				case BinaryDataTreeVariantType.Float:
 					if (TypeSize == sizeof(double))
 					{
@@ -320,15 +331,14 @@ namespace KSoft.Phoenix.Xmb
 					{
 						// #NOTE it doesn't matter if SizeIsIndirect, because SingleVector Size can fit within the 7-bits of Size
 						uint elements = Size / TypeSize;
-						switch (elements)
+						return elements switch
 						{
-							case 2:
-							case 3:
-							case 4:
-								return BinaryDataTreeVariantTypeDesc.SingleVector;
-						}
-
-						return BinaryDataTreeVariantTypeDesc.Single;
+							2 or
+							3 or
+							4
+							=> BinaryDataTreeVariantTypeDesc.SingleVector,
+							_ => BinaryDataTreeVariantTypeDesc.Single,
+						};
 					}
 
 				case BinaryDataTreeVariantType.String:

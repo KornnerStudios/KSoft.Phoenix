@@ -92,28 +92,28 @@ namespace KSoft.Phoenix.Xmb
 			}
 			#endregion
 
-			public BinaryDataTreeVariantType Type { get { return TypeDesc.Type; } }
-			public bool IsUnicode { get { return TypeDesc.IsUnicode; } }
-			public bool UseDirectEncoding { get { return TypeDesc.SizeOf <= sizeof(uint) && ArrayLength <= 1; } }
+			public BinaryDataTreeVariantType Type => TypeDesc.Type;
+			public bool IsUnicode => TypeDesc.IsUnicode;
+			public bool UseDirectEncoding => TypeDesc.SizeOf <= sizeof(uint) && ArrayLength <= 1;
 
 			public uint CalculateSize()
 			{
 				switch (Type)
 				{
-				case BinaryDataTreeVariantType.Null:
-					return 0;
+					case BinaryDataTreeVariantType.Null:
+						return 0;
 
-				case BinaryDataTreeVariantType.Bool:
-				case BinaryDataTreeVariantType.Int:
-				case BinaryDataTreeVariantType.Float:
-				case BinaryDataTreeVariantType.String:
-					int array_length = ArrayLength > 1
-						? ArrayLength
-						: 1;
-					int size = TypeDesc.SizeOf;
-					return (uint)(size * array_length);
+					case BinaryDataTreeVariantType.Bool:
+					case BinaryDataTreeVariantType.Int:
+					case BinaryDataTreeVariantType.Float:
+					case BinaryDataTreeVariantType.String:
+						int array_length = ArrayLength > 1
+							? ArrayLength
+							: 1;
+						int size = TypeDesc.SizeOf;
+						return (uint)(size * array_length);
 
-				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
+					default: throw new KSoft.Debug.UnreachableException(Type.ToString());
 				}
 			}
 
@@ -124,10 +124,14 @@ namespace KSoft.Phoenix.Xmb
 				int alignment_bit = System.Math.Max(TypeDesc.AlignmentBit, IntegerMath.kInt32AlignmentBit);
 
 				if (Type != BinaryDataTreeVariantType.String)
+				{
 					PrePadSize = (byte)IntegerMath.PaddingRequired(alignment_bit, offset);
+				}
 
 				if (willWriteSizeToo)
+				{
 					PrePadSize += sizeof(uint);
+				}
 
 				return PrePadSize;
 			}
@@ -151,12 +155,12 @@ namespace KSoft.Phoenix.Xmb
 			{
 				switch (Type)
 				{
-				case BinaryDataTreeVariantType.Bool: ReadBool(s); break;
-				case BinaryDataTreeVariantType.Int: ReadInt(s); break;
-				case BinaryDataTreeVariantType.Float: ReadFloat(s); break;
-				case BinaryDataTreeVariantType.String: ReadString(s); break;
+					case BinaryDataTreeVariantType.Bool: ReadBool(s); break;
+					case BinaryDataTreeVariantType.Int: ReadInt(s); break;
+					case BinaryDataTreeVariantType.Float: ReadFloat(s); break;
+					case BinaryDataTreeVariantType.String: ReadString(s); break;
 
-				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
+					default: throw new KSoft.Debug.UnreachableException(Type.ToString());
 				}
 			}
 			void ReadBool(IO.EndianReader s)
@@ -169,7 +173,9 @@ namespace KSoft.Phoenix.Xmb
 				{
 					var array = new bool[ArrayLength];
 					for (int x = 0; x < array.Length; x++)
+					{
 						array[x] = s.ReadBoolean();
+					}
 
 					OpaqueArrayRef = array;
 				}
@@ -198,7 +204,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new sbyte[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadSByte();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -219,7 +227,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new ushort[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadUInt16();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -227,7 +237,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new short[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadInt16();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -248,7 +260,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new uint[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadUInt32();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -256,7 +270,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new int[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadInt32();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -277,7 +293,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new ulong[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadUInt64();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -285,7 +303,9 @@ namespace KSoft.Phoenix.Xmb
 							{
 								var array = new long[ArrayLength];
 								for (int x = 0; x < array.Length; x++)
+								{
 									array[x] = s.ReadInt64();
+								}
 
 								OpaqueArrayRef = array;
 							}
@@ -310,7 +330,9 @@ namespace KSoft.Phoenix.Xmb
 						{
 							var array = new float[ArrayLength];
 							for (int x = 0; x < array.Length; x++)
+							{
 								array[x] = s.ReadSingle();
+							}
 
 							OpaqueArrayRef = array;
 						}
@@ -326,7 +348,9 @@ namespace KSoft.Phoenix.Xmb
 						{
 							var array = new double[ArrayLength];
 							for (int x = 0; x < array.Length; x++)
+							{
 								array[x] = s.ReadDouble();
+							}
 
 							OpaqueArrayRef = array;
 						}
@@ -351,39 +375,43 @@ namespace KSoft.Phoenix.Xmb
 			public void Write(IO.EndianWriter s)
 			{
 				if (PrePadSize > 0)
+				{
 					for (int x = 0; x < PrePadSize; x++)
+					{
 						s.Write(byte.MinValue);
+					}
+				}
 
 				switch (Type)
 				{
-				case BinaryDataTreeVariantType.Int:	s.Write(Int); break;
+					case BinaryDataTreeVariantType.Int:	s.Write(Int); break;
 #if false
-				case BinaryDataTreeVariantType.Single: s.Write(Single); break;
-				case BinaryDataTreeVariantType.Double: s.Write(Double); break;
-				case BinaryDataTreeVariantType.String:
-					s.Write(String, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
-					break;
-				case BinaryDataTreeVariantType.Vector:
-					if (VectorLength >= 1) s.Write(Vector4d.X);
-					if (VectorLength >= 2) s.Write(Vector4d.Y);
-					if (VectorLength >= 3) s.Write(Vector4d.Z);
-					if (VectorLength >= 4) s.Write(Vector4d.W);
-					break;
+					case BinaryDataTreeVariantType.Single: s.Write(Single); break;
+					case BinaryDataTreeVariantType.Double: s.Write(Double); break;
+					case BinaryDataTreeVariantType.String:
+						s.Write(String, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						break;
+					case BinaryDataTreeVariantType.Vector:
+						if (VectorLength >= 1) s.Write(Vector4d.X);
+						if (VectorLength >= 2) s.Write(Vector4d.Y);
+						if (VectorLength >= 3) s.Write(Vector4d.Z);
+						if (VectorLength >= 4) s.Write(Vector4d.W);
+						break;
 #endif
 
 				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
 				}
 			}
-			void WriteBool(IO.EndianWriter s)
+			void WriteBool(IO.EndianWriter _)
 			{
 			}
-			void WriteInt(IO.EndianWriter s)
+			void WriteInt(IO.EndianWriter _)
 			{
 			}
-			void WriteFloat(IO.EndianWriter s)
+			void WriteFloat(IO.EndianWriter _)
 			{
 			}
-			void WriteString(IO.EndianWriter s)
+			void WriteString(IO.EndianWriter _)
 			{
 			}
 			#endregion

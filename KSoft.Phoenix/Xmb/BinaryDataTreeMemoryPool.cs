@@ -19,10 +19,10 @@ namespace KSoft.Phoenix.Xmb
 		const int kEntryStartCount = 16;
 
 		Dictionary<uint, PoolEntry> mEntries;
-		Dictionary<uint, uint> mDataOffsetToSizeValue;
-		uint mPoolSize;
+		readonly Dictionary<uint, uint> mDataOffsetToSizeValue;
+		readonly uint mPoolSize;
 
-		public uint Size { get { return mPoolSize; } }
+		public uint Size => mPoolSize;
 
 		IO.EndianReader mBuffer;
 		uint mBufferedDataRemaining;
@@ -32,9 +32,11 @@ namespace KSoft.Phoenix.Xmb
 		public BinaryDataTreeMemoryPool(int initialEntryCount = kEntryStartCount)
 		{
 			if (initialEntryCount < 0)
+			{
 				initialEntryCount = kEntryStartCount;
+			}
 
-			mEntries = new Dictionary<uint, PoolEntry>(kEntryStartCount);
+			mEntries = new Dictionary<uint, PoolEntry>(initialEntryCount);
 			mDataOffsetToSizeValue = new Dictionary<uint, uint>();
 		}
 		public BinaryDataTreeMemoryPool(byte[] buffer, Shell.EndianFormat byteOrder = Shell.EndianFormat.Big)
@@ -69,23 +71,31 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Get
-		bool ValidOffset(uint offset) { return offset < mPoolSize; }
+		bool ValidOffset(uint offset) => offset < mPoolSize;
 
 		public uint GetSizeValue(uint dataOffset)
 		{
 			if (!ValidOffset(dataOffset))
-				throw new ArgumentOutOfRangeException("dataOffset", string.Format("{0} > {1}",
+			{
+				throw new ArgumentOutOfRangeException(nameof(dataOffset), string.Format("{0} > {1}",
 					dataOffset.ToString("X8"), mPoolSize.ToString("X6")));
-			if (dataOffset < sizeof(uint))
-				throw new ArgumentOutOfRangeException("dataOffset", "Offset doesn't have room for a size value");
+			}
 
-			uint size_value;
-			if (!mDataOffsetToSizeValue.TryGetValue(dataOffset, out size_value))
+			if (dataOffset < sizeof(uint))
+			{
+				throw new ArgumentOutOfRangeException(nameof(dataOffset), "Offset doesn't have room for a size value");
+			}
+
+			if (!mDataOffsetToSizeValue.TryGetValue(dataOffset, out uint size_value))
 			{
 				if (mBufferedDataRemaining == 0)
+				{
 					throw new InvalidOperationException("No data left in buffer");
+				}
 				else if (mBuffer == null)
+				{
 					throw new InvalidOperationException("No underlying buffer");
+				}
 
 				uint size_offset = dataOffset - sizeof(uint);
 				// Great, now read the entry's value data
@@ -96,7 +106,9 @@ namespace KSoft.Phoenix.Xmb
 				mBufferedDataRemaining -= sizeof(uint);
 
 				if (mBufferedDataRemaining == 0)
+				{
 					DisposeBuffer();
+				}
 
 				mDataOffsetToSizeValue.Add(dataOffset, size_value);
 			}
@@ -115,14 +127,21 @@ namespace KSoft.Phoenix.Xmb
 		PoolEntry DeBuffer(BinaryDataTreeVariantTypeDesc desc, uint offset, bool sizeIsIndirect = false)
 		{
 			if (!ValidOffset(offset))
-				throw new ArgumentOutOfRangeException("offset", string.Format("{0} > {1}",
-					offset.ToString("X8"), mPoolSize.ToString("X6")));
-
-			PoolEntry e;
-			if (!mEntries.TryGetValue(offset, out e))
 			{
-					 if (mBufferedDataRemaining == 0)	throw new InvalidOperationException("No data left in buffer");
-				else if (mBuffer == null)				throw new InvalidOperationException("No underlying buffer");
+				throw new ArgumentOutOfRangeException(nameof(offset), string.Format("{0} > {1}",
+					offset.ToString("X8"), mPoolSize.ToString("X6")));
+			}
+
+			if (!mEntries.TryGetValue(offset, out PoolEntry e))
+			{
+				if (mBufferedDataRemaining == 0)
+				{
+					throw new InvalidOperationException("No data left in buffer");
+				}
+				else if (mBuffer == null)
+				{
+					throw new InvalidOperationException("No underlying buffer");
+				}
 
 				// Create our new entry, setting any additional properties
 				e = PoolEntry.New(desc);
@@ -140,7 +159,9 @@ namespace KSoft.Phoenix.Xmb
 				mBufferedDataRemaining -= bytes_read;
 
 				if (mBufferedDataRemaining == 0)
+				{
 					DisposeBuffer();
+				}
 
 				mEntries.Add(offset, e);
 			}
@@ -152,7 +173,9 @@ namespace KSoft.Phoenix.Xmb
 		public void Write(IO.EndianWriter s)
 		{
 			foreach (var e in mEntries.Values)
+			{
 				e.Write(s);
+			}
 		}
 	};
 }

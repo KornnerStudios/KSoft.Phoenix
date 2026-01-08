@@ -37,16 +37,16 @@ namespace KSoft.Phoenix.Xmb
 		const byte kIsUnsigned = 1;
 
 		public EType Type;
-		private ESizeInBytes Size;
-		private ESizeInBytes Alignment;
-		private byte Flags;
+		private readonly ESizeInBytes Size;
+		private readonly ESizeInBytes Alignment;
+		private readonly byte Flags;
 
-		public bool IsUnsigned { get { return Flags != 0; } }
-		public bool IsUnicode { get { return Type == EType.String && Size == ESizeInBytes._2byte; } }
-		public int SizeBit { get { return (int)Size; } }
-		public int SizeOf { get { return 1<<SizeBit; } }
-		public int AlignmentBit { get { return (int)Alignment; } }
-		public int AlignmentOf { get { return 1<<AlignmentBit; } }
+		public readonly bool IsUnsigned => Flags != 0;
+		public readonly bool IsUnicode => Type == EType.String && Size == ESizeInBytes._2byte;
+		public readonly int SizeBit => (int)Size;
+		public readonly int SizeOf => 1 << SizeBit;
+		public readonly int AlignmentBit => (int)Alignment;
+		public readonly int AlignmentOf => 1 << AlignmentBit;
 
 		private BinaryDataTreeVariantTypeDesc(EType type, ESizeInBytes size, ESizeInBytes alignment, byte flags = 0)
 		{
@@ -56,7 +56,7 @@ namespace KSoft.Phoenix.Xmb
 			Flags = flags;
 		}
 
-		public override string ToString()
+		public override readonly string ToString()
 		{
 			return string.Format("{0} {1} {2} {3}",
 				Size, Alignment, Flags, Type);
@@ -78,19 +78,22 @@ namespace KSoft.Phoenix.Xmb
 				|| lhs.Flags != rhs.Flags;
 		}
 
-		public override bool Equals(object obj)
+		public override readonly bool Equals(object obj)
 		{
-			if (obj is BinaryDataTreeVariantTypeDesc)
-				return this == (BinaryDataTreeVariantTypeDesc)obj;
+			if (obj is BinaryDataTreeVariantTypeDesc desc)
+			{
+				return this == desc;
+			}
+
 			return false;
 		}
 
-		public override int GetHashCode()
+		public override readonly int GetHashCode()
 		{
-			return base.GetHashCode();
+			return HashCode.Combine(Type, Size, Alignment, Flags);
 		}
 
-		public uint GetSuperFastHashCode()
+		public readonly uint GetSuperFastHashCode()
 		{
 			var buffer = PhxUtil.GetBufferForSuperFastHash(sizeof(uint));
 
@@ -113,10 +116,12 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Array utils
-		public Array MakeArray(int length)
+		public readonly Array MakeArray(int length)
 		{
 			if (length <= 1)
+			{
 				return null;
+			}
 
 			switch (Type)
 			{
@@ -167,7 +172,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public Array ReadArray(IO.EndianReader reader, Array array)
+		public readonly Array ReadArray(IO.EndianReader reader, Array array)
 		{
 			switch (Type)
 			{
@@ -218,7 +223,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public Array WriteArray(IO.EndianWriter writer, Array array)
+		public readonly Array WriteArray(IO.EndianWriter writer, Array array)
 		{
 			switch (Type)
 			{
@@ -269,7 +274,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public string ArrayToString(Array array)
+		public readonly string ArrayToString(Array array)
 		{
 			switch (Type)
 			{
@@ -299,17 +304,23 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public Array ArrayFromString(string str)
+		public readonly Array ArrayFromString(string str)
 		{
 			if (str.IsNullOrEmpty() || Type == EType.Null)
+			{
 				return null;
+			}
 
 			var str_list = new List<string>();
 			if (!Util.ParseStringList(str, str_list))
+			{
 				throw new System.IO.InvalidDataException(str);
+			}
 
 			if (str_list.Count == 0)
+			{
 				return null;
+			}
 
 			switch (Type)
 			{
@@ -359,59 +370,49 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region ITagElementTextStreamable Members
-		string GetSerializedTypeName()
+		readonly string GetSerializedTypeName()
 		{
-			switch (Type)
+			return Type switch
 			{
-				case EType.Null:
-					return "null";
-				case EType.Bool:
-					return "bool";
-				case EType.Int:
-					return string.Format("{0}int{1}",
-						IsUnsigned ? "u" : "",
-						SizeOf * Bits.kByteBitCount);
-				case EType.Float:
-					return SizeOf == sizeof(float)
-						? "float"
-						: "double";
-				case EType.String:
-					return IsUnicode
-						? "ustring"
-						: "string";
-
-				default:
-					throw new KSoft.Debug.UnreachableException(this.ToString());
-			}
+				EType.Null => "null",
+				EType.Bool => "bool",
+				EType.Int => string.Format("{0}int{1}",
+					IsUnsigned ? "u" : "",
+					SizeOf * Bits.kByteBitCount),
+				EType.Float => SizeOf == sizeof(float)
+					? "float"
+					: "double",
+				EType.String => IsUnicode
+					? "ustring"
+					: "string",
+				_ => throw new KSoft.Debug.UnreachableException(this.ToString()),
+			};
 		}
 		static BinaryDataTreeVariantTypeDesc GuessTypeFromSerializedString(string typeName)
 		{
-			switch (typeName)
+			return typeName switch
 			{
-				case null:
-				case "":
-				case "null": return Null;
-
-				case "bool": return Bool;
-				case "uint8": return UInt8;
-				case "uint16": return UInt16;
-				case "uint32": return UInt32;
-				case "uint64": return UInt64;
-				case "int8": return Int8;
-				case "int16": return Int16;
-				case "int32": return Int32;
-				case "int64": return Int64;
-				case "float": return Single;
-				case "double": return Double;
-				case "ustring": return UnicodeString;
-				case "string": return String;
-
-				default:
-					throw new System.IO.InvalidDataException(typeName);
-			}
+				null or
+				"" or
+				"null" => Null,
+				"bool" => Bool,
+				"uint8" => UInt8,
+				"uint16" => UInt16,
+				"uint32" => UInt32,
+				"uint64" => UInt64,
+				"int8" => Int8,
+				"int16" => Int16,
+				"int32" => Int32,
+				"int64" => Int64,
+				"float" => Single,
+				"double" => Double,
+				"ustring" => UnicodeString,
+				"string" => String,
+				_ => throw new System.IO.InvalidDataException(typeName),
+			};
 		}
 
-		public void ToStream<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, int arrayLength)
+		public readonly void ToStream<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, int arrayLength)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -422,10 +423,14 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			if (Type != EType.Null && AlignmentOf > SizeOf)
+			{
 				s.WriteAttribute("alignment", AlignmentOf);
+			}
 
 			if (arrayLength > 1)
+			{
 				s.WriteAttribute("arraySize", arrayLength);
+			}
 		}
 
 		public static BinaryDataTreeVariantTypeDesc GuessFromStream<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, out int arrayLength)
@@ -436,7 +441,9 @@ namespace KSoft.Phoenix.Xmb
 
 			string typeName = null;
 			if (!s.ReadAttributeOpt("dataType", ref typeName))
+			{
 				return Null;
+			}
 
 			var guessedType = GuessTypeFromSerializedString(typeName);
 
@@ -446,7 +453,9 @@ namespace KSoft.Phoenix.Xmb
 			if (s.ReadAttributeOpt("arraySize", ref arrayLength) && arrayLength > 1)
 			{
 				if (guessedType.Type == EType.Float)
+				{
 					guessedType = SingleVector;
+				}
 			}
 
 			return guessedType;

@@ -35,18 +35,25 @@ namespace KSoft.Phoenix.Xmb
 		public void Serialize(IO.EndianStream s)
 		{
 			if (s.IsReading)
+			{
 				Endian = BinaryDataTreeHeader.PeekSignatureAsEndianFormat(s.Reader);
+			}
 
 			using (s.BeginEndianSwitch(this.Endian))
 			{
 				if (s.IsReading)
+				{
 					ReadInternal(s);
+				}
 				else if (s.IsWriting)
+				{
 					WriteInternal(s);
+				}
 			}
 		}
 
 		[Obsolete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value")]
 		void SerializeInternal(IO.EndianStream s)
 		{
 			bool reading = s.IsReading;
@@ -60,7 +67,9 @@ namespace KSoft.Phoenix.Xmb
 				if (ValidateData)
 				{
 					if (stream_length < BinaryDataTreeHeader.kSizeOf)
+					{
 						throw new InvalidDataException("Expected more bytes for header data");
+					}
 				}
 			}
 
@@ -77,7 +86,9 @@ namespace KSoft.Phoenix.Xmb
 						BinaryDataTreeHeader.kSizeOf +
 						(BinaryDataTreeSectionHeader.kSizeOf * mHeader.UserSectionCount);
 					if (s.BaseStream.Length < min_expected_bytes_remaining)
+					{
 						throw new InvalidDataException("Expected more bytes for header and user sections data");
+					}
 				}
 			}
 			#endregion
@@ -90,12 +101,16 @@ namespace KSoft.Phoenix.Xmb
 				{
 					long total_size = BinaryDataTreeHeader.kSizeOf + mHeader.DataSize;
 					if (s.BaseStream.Length < total_size)
+					{
 						throw new InvalidDataException("Expected more bytes for header and payload data");
+					}
 
 					uint actual_data_crc = GetDataCrc32(s.BaseStream);
 					if (mHeader.DataCrc32 != actual_data_crc)
+					{
 						throw new InvalidDataException(string.Format("Invalid Data CRC 0x{0}, expected 0x{1}",
 							actual_data_crc.ToString("X8"), mHeader.DataCrc32.ToString("X8")));
+					}
 				}
 			}
 			#endregion
@@ -111,7 +126,9 @@ namespace KSoft.Phoenix.Xmb
 					foreach (var header in section_headers)
 					{
 						if (stream_length < (header.Offset + header.Size))
+						{
 							throw new InvalidDataException("Expected more bytes for section data");
+						}
 					}
 				}
 			}
@@ -137,7 +154,10 @@ namespace KSoft.Phoenix.Xmb
 			offset_cursor += name_data_size;
 
 			if (mHeader[BinaryDataTreeSectionID.ValueDataSectionIndex] > 0)
+			{
 				offset_cursor = IntegerMath.Align(IntegerMath.k16ByteAlignmentBit, offset_cursor);
+			}
+
 			uint value_data_size = mHeader[BinaryDataTreeSectionID.ValueDataSectionIndex];
 			long value_data_offset = value_data_size > 0
 				? offset_cursor
@@ -149,7 +169,9 @@ namespace KSoft.Phoenix.Xmb
 				if (ValidateData)
 				{
 					if (stream_length < offset_cursor)
+					{
 						throw new InvalidDataException("Expected more bytes for section data");
+					}
 				}
 			}
 
@@ -170,7 +192,9 @@ namespace KSoft.Phoenix.Xmb
 			if (ValidateData)
 			{
 				if (stream_length < BinaryDataTreeHeader.kSizeOf)
+				{
 					throw new InvalidDataException("Expected more bytes for header data");
+				}
 			}
 
 			mHeader.Serialize(s);
@@ -183,7 +207,9 @@ namespace KSoft.Phoenix.Xmb
 					BinaryDataTreeHeader.kSizeOf +
 					(BinaryDataTreeSectionHeader.kSizeOf * mHeader.UserSectionCount);
 				if (stream_length < min_expected_bytes_remaining)
+				{
 					throw new InvalidDataException("Expected more bytes for header and user sections data");
+				}
 			}
 			#endregion
 
@@ -193,12 +219,16 @@ namespace KSoft.Phoenix.Xmb
 			{
 				long total_size = BinaryDataTreeHeader.kSizeOf + mHeader.DataSize;
 				if (stream_length < total_size)
+				{
 					throw new InvalidDataException("Expected more bytes for header and payload data");
+				}
 
 				uint actual_data_crc = GetDataCrc32(s.BaseStream);
 				if (mHeader.DataCrc32 != actual_data_crc)
+				{
 					throw new InvalidDataException(string.Format("Invalid Data CRC 0x{0}, expected 0x{1}",
 						actual_data_crc.ToString("X8"), mHeader.DataCrc32.ToString("X8")));
+				}
 			}
 			#endregion
 
@@ -211,7 +241,9 @@ namespace KSoft.Phoenix.Xmb
 				foreach (var header in section_headers)
 				{
 					if (stream_length < (header.Offset + header.Size))
+					{
 						throw new InvalidDataException("Expected more bytes for section data");
+					}
 				}
 			}
 
@@ -236,7 +268,10 @@ namespace KSoft.Phoenix.Xmb
 			offset_cursor += name_data_size;
 
 			if (mHeader[BinaryDataTreeSectionID.ValueDataSectionIndex] > 0)
+			{
 				offset_cursor = IntegerMath.Align(IntegerMath.k16ByteAlignmentBit, offset_cursor);
+			}
+
 			uint value_data_size = mHeader[BinaryDataTreeSectionID.ValueDataSectionIndex];
 			long value_data_offset = value_data_size > 0
 				? offset_cursor
@@ -246,7 +281,9 @@ namespace KSoft.Phoenix.Xmb
 			if (ValidateData)
 			{
 				if (stream_length < offset_cursor)
+				{
 					throw new InvalidDataException("Expected more bytes for section data");
+				}
 			}
 			#endregion
 
@@ -300,7 +337,9 @@ namespace KSoft.Phoenix.Xmb
 		public XmlDocument ToXmlDocument()
 		{
 			if (Decompiler != null)
+			{
 				return Decompiler.ToXmlDocument(this);
+			}
 
 			throw new InvalidOperationException();
 		}
@@ -363,7 +402,9 @@ namespace KSoft.Phoenix.Xmb
 
 			Nodes = new List<BinaryDataTreeBuildNode>(PackedNodes.Length);
 			for (int x = 0; x < PackedNodes.Length; x++)
+			{
 				Nodes.Add(new BinaryDataTreeBuildNode());
+			}
 
 			for (int x = 0; x < PackedNodes.Length; x++)
 			{
@@ -372,14 +413,15 @@ namespace KSoft.Phoenix.Xmb
 
 				build_node.SetParent(this, packed_node);
 
-				int num_child_nodes;
-				CalculateChildNodesCount(x, out num_child_nodes);
+				CalculateChildNodesCount(x, out int num_child_nodes);
 				build_node.SetChildren(this, packed_node, num_child_nodes);
 
-				int num_name_values;
-				CalculateNameValuesCount(x, out num_name_values);
+				CalculateNameValuesCount(x, out int num_name_values);
 				if (num_name_values == 0)
+				{
 					throw new InvalidDataException("No name-values: #" + x);
+				}
+
 				build_node.SetNameValues(this, packed_node, num_name_values);
 			}
 
@@ -389,7 +431,9 @@ namespace KSoft.Phoenix.Xmb
 		public string ReadName(int nameOffset)
 		{
 			if (NameData == null || nameOffset >= NameData.Length)
+			{
 				throw new InvalidOperationException(nameOffset.ToString("X8"));
+			}
 
 			NameDataReader.Seek(nameOffset);
 			return NameDataReader.ReadString(Memory.Strings.StringStorage.CStringAscii);
@@ -401,18 +445,26 @@ namespace KSoft.Phoenix.Xmb
 
 			numChildNodes = packed_node.ChildNodesCount;
 			if (!packed_node.HasChildNodesCountOverflow)
+			{
 				return;
+			}
 
 			for (int childNodeIndex = packed_node.ChildNodeIndex; ; numChildNodes++)
 			{
 				if ((childNodeIndex + numChildNodes) > Nodes.Count)
+				{
 					throw new InvalidDataException();
+				}
 				else if ((childNodeIndex + numChildNodes) == Nodes.Count)
+				{
 					break;
+				}
 
 				var childNode = PackedNodes[childNodeIndex + numChildNodes];
 				if (childNode.ParentIndex != nodeIndex)
+				{
 					break;
+				}
 			}
 		}
 
@@ -422,16 +474,22 @@ namespace KSoft.Phoenix.Xmb
 
 			numNameValues = packed_node.NameValuesCount;
 			if (!packed_node.HasNameValuesCountOverflow)
+			{
 				return;
+			}
 
 			for (int nameValueIndex = packed_node.NameValueOffset; ; numNameValues++)
 			{
 				if ((nameValueIndex + numNameValues) >= numNameValues)
+				{
 					throw new InvalidDataException();
+				}
 
 				var nameValue = NameValues[nameValueIndex + numNameValues];
 				if (nameValue.IsLastNameValue)
+				{
 					break;
+				}
 			}
 		}
 

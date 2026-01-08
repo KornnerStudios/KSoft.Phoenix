@@ -34,14 +34,16 @@ namespace KSoft.Phoenix.Xmb
 		[Interop.FieldOffset(16)]
 		public Array OpaqueArrayRef;
 
-		public BinaryDataTreeVariantType Type { get { return TypeDesc.Type; } }
-		public bool IsUnicode { get { return TypeDesc.IsUnicode; } }
+		public readonly BinaryDataTreeVariantType Type => TypeDesc.Type;
+		public readonly bool IsUnicode => TypeDesc.IsUnicode;
 
-		public bool UseDirectEncoding { get { return TypeDesc.SizeOf <= sizeof(uint) && ArrayLength <= 1; } }
+		public readonly bool UseDirectEncoding => TypeDesc.SizeOf <= sizeof(uint) && ArrayLength <= 1;
 
-		public int StringOrArrayLength { get {
+		public readonly int StringOrArrayLength { get {
 			if (Type == BinaryDataTreeVariantType.String)
+			{
 				return String != null ? String.Length : 0;
+			}
 
 			return OpaqueArrayRef != null ? OpaqueArrayRef.Length : 0;
 		} }
@@ -56,18 +58,24 @@ namespace KSoft.Phoenix.Xmb
 			if (nameValue.SizeIsIndirect)
 			{
 				if (direct_encoding)
+				{
 					throw new InvalidOperationException();
+				}
 
 				total_data_size = pool.GetSizeValue(nameValue.Offset);
 
 				if (total_data_size < BinaryDataTreeNameValue.kIndirectSizeThreshold)
+				{
 					throw new InvalidOperationException();
+				}
 			}
 
 			if (TypeDesc.SizeOf > 0)
 			{
 				if ((total_data_size % TypeDesc.SizeOf) != 0)
+				{
 					throw new InvalidOperationException(nameValue.ToString());
+				}
 
 				ArrayLength = (int)(total_data_size / TypeDesc.SizeOf);
 			}
@@ -75,7 +83,9 @@ namespace KSoft.Phoenix.Xmb
 			if (ArrayLength > 1)
 			{
 				if (Type != BinaryDataTreeVariantType.String)
+				{
 					OpaqueArrayRef = TypeDesc.MakeArray(ArrayLength);
+				}
 
 				pool.InternalBuffer.Seek(nameValue.Offset);
 			}
@@ -87,32 +97,49 @@ namespace KSoft.Phoenix.Xmb
 
 				case BinaryDataTreeVariantType.Bool:
 					if (ArrayLength > 1)
+					{
 						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef);
+					}
 					else
+					{
 						this.Bool = nameValue.Bool;
+					}
+
 					break;
 
 				case BinaryDataTreeVariantType.Int:
 					if (ArrayLength > 1)
+					{
 						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef);
+					}
 					else
 					{
 						if (TypeDesc.SizeOf < sizeof(long))
+						{
 							this.Int = nameValue.Int;
+						}
 						else
+						{
 							this.Int64 = pool.InternalBuffer.ReadUInt64();
+						}
 					}
 					break;
 
 				case BinaryDataTreeVariantType.Float:
 					if (ArrayLength > 1)
+					{
 						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef);
+					}
 					else
 					{
 						if (TypeDesc.SizeOf < sizeof(double))
+						{
 							this.Single = nameValue.Single;
+						}
 						else
+						{
 							this.Double = pool.InternalBuffer.ReadDouble();
+						}
 					}
 					break;
 
@@ -145,7 +172,9 @@ namespace KSoft.Phoenix.Xmb
 			where TCursor : class
 		{
 			if (Type == BinaryDataTreeVariantType.Null)
+			{
 				return;
+			}
 
 			TypeDesc.ToStream(s, ArrayLength);
 
@@ -168,14 +197,22 @@ namespace KSoft.Phoenix.Xmb
 
 				case BinaryDataTreeVariantType.Float:
 					if (TypeDesc.SizeOf < sizeof(double))
+					{
 						s.WriteCursor(this.Single);
+					}
 					else
+					{
 						s.WriteCursor(this.Double);
+					}
+
 					break;
 
 				case BinaryDataTreeVariantType.String:
 					if (this.String.IsNotNullOrEmpty())
+					{
 						s.WriteCursor(this.String);
+					}
+
 					break;
 
 				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
@@ -187,7 +224,9 @@ namespace KSoft.Phoenix.Xmb
 			where TCursor : class
 		{
 			if (Type == BinaryDataTreeVariantType.Null)
+			{
 				return;
+			}
 
 			if (ArrayLength > 1 && Type != BinaryDataTreeVariantType.String)
 			{
@@ -208,14 +247,22 @@ namespace KSoft.Phoenix.Xmb
 
 				case BinaryDataTreeVariantType.Float:
 					if (TypeDesc.SizeOf < sizeof(double))
+					{
 						s.WriteAttribute(attributeName, this.Single);
+					}
 					else
+					{
 						s.WriteAttribute(attributeName, this.Double);
+					}
+
 					break;
 
 				case BinaryDataTreeVariantType.String:
 					if (this.String.IsNotNullOrEmpty())
+					{
 						s.WriteAttribute(attributeName, this.String);
+					}
+
 					break;
 
 				default: throw new KSoft.Debug.UnreachableException(Type.ToString());
