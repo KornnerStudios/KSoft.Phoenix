@@ -25,13 +25,15 @@ namespace KSoft.Phoenix.Xmb
 		XmbVariantMemoryPool mPool;
 		bool mHasUnicodeStrings;
 
-		public bool HasUnicodeStrings { get { return mHasUnicodeStrings; } }
+		public bool HasUnicodeStrings => mHasUnicodeStrings;
 
 		Element NewElement(int rootElementIndex = TypeExtensions.kNone)
 		{
-			var e = new Element();
-			e.Index = mElements.Count;
-			e.RootElementIndex = rootElementIndex;
+			var e = new Element
+			{
+				Index = mElements.Count,
+				RootElementIndex = rootElementIndex
+			};
 
 			mElements.Add(e);
 			return e;
@@ -179,7 +181,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		#endregion
 
-		string ToString(XmbVariant v) { return v.ToString(mPool); }
+		string ToString(XmbVariant v) => v.ToString(mPool);
 
 		public XmlDocument ToXmlDocument()
 		{
@@ -206,9 +208,11 @@ namespace KSoft.Phoenix.Xmb
 		}
 
 		#region FromXml
-		public void FromXml(XmlElement root)
+		public void FromXml(XmlElement /*root*/_)
 		{
-			var e = new Element();
+			//var e = new Element();
+
+			// #TODO
 		}
 		#endregion
 		#region ToXml
