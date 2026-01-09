@@ -1,7 +1,6 @@
 ﻿
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
-using BObjectTypeID = System.Int32;
 using BRelationType = System.Byte;
 
 namespace KSoft.Phoenix.Runtime

@@ -1,6 +1,5 @@
 ﻿
 using BEntityTimePair = System.UInt64;
-using BObjectTypeID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {

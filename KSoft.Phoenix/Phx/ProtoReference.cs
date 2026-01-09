@@ -255,6 +255,16 @@ namespace KSoft.Phoenix.Phx.Meta
 		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Object;
 	};
 
+	/// <summary>BObjectTypeID</summary>
+	/// <remarks>
+	/// The engine loads objects.xml, objects_updates.xml, then objecttypes.xml.
+	/// "Base" objects - everything in objects.xml and objects_update.xml.
+	/// "Abstract" object types - everything in objecttypes.xml.
+	/// "Object Type" - a reference to either. Thus, BObjectTypeID is an index to either.
+	///
+	/// When loading, an internal id (int) counter starting at 0 is used and incremented for every Base
+	/// and Abstract object added. Thus, all Abstract ids will be a sequential id after all Base ids.
+	/// </remarks>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class ObjectTypeReferenceAttribute : ProtoReferenceAttribute
 	{
@@ -302,6 +312,8 @@ namespace KSoft.Phoenix.Phx.Meta
 
 	/// <summary>BProtoUnitID; Object or ObjectType</summary>
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
+	// #TODO these should all be a BObjectTypeID. Need to #REMOVE BProtoUnitID and UnitReference
+//	[Obsolete($"Use {nameof(ObjectTypeReferenceAttribute)} and {nameof(BObjectTypeID)}")]
 	public sealed class UnitReferenceAttribute : ProtoReferenceAttribute
 	{
 		public override Type ProtoType => null;
