@@ -167,7 +167,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public void ToStream<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
+		public readonly void ToStream<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -219,7 +219,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public void ToStreamAsAttribute<TDoc, TCursor>(string attributeName, IO.TagElementStream<TDoc, TCursor, string> s)
+		public readonly void ToStreamAsAttribute<TDoc, TCursor>(string attributeName, IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{

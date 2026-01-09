@@ -9,6 +9,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace KSoft.Phoenix.Engine
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")] // #TODO for future consideration
 	public static class EditorUtilsDLL
 	{
 		public enum LibraryMode : uint

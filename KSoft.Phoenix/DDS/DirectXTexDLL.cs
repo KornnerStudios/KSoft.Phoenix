@@ -18,6 +18,7 @@ namespace KSoft.DDS
 	/// <summary>
 	/// https://github.com/KornnerStudios/DirectXTex/tree/DotNet
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")] // #TODO for future consideration
 	static class DirectXTexDLL
 	{
 		public enum LibraryMode : uint

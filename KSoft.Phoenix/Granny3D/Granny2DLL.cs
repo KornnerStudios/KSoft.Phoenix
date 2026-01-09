@@ -5,6 +5,8 @@ using granny_matrix_4x4 = System.Numerics.Matrix4x4;
 
 namespace KSoft.Granny3D
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1401:P/Invokes should not be visible")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time")] // #TODO for future consideration
 	public static class Granny2DLL
 	{
 		public const int kAssumedPointerSize = sizeof(ulong);
@@ -13,6 +15,8 @@ namespace KSoft.Granny3D
 		const CharSet kCharSet = CharSet.Ansi;
 
 		[DllImport(kDllName, CharSet=kCharSet)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments",
+			Justification="I literally set CharSet. The fix it tries to perform is setting CharSet=Unicode, which is also wrong")]
 		public static extern bool GrannyFindBoneByName(TPtr<granny_skeleton> Skeleton, string BoneName, out int BoneIndex);
 
 		[DllImport(kDllName)]
@@ -46,7 +50,9 @@ namespace KSoft.Granny3D
 			[Out] granny_transform[] Results);
 
 		#region granny_file
-		[DllImport(kDllName)]
+		[DllImport(kDllName, CharSet=kCharSet)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments",
+			Justification = "I literally set CharSet. The fix it tries to perform is setting CharSet=Unicode, which is also wrong")]
 		public static extern IntPtr /* granny_file* */ GrannyReadEntireFile(string filename);
 		[DllImport(kDllName)]
 		public static extern void GrannyFreeFile(IntPtr /* granny_file* */ File);
