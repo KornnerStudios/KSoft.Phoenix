@@ -1,5 +1,4 @@
 ﻿
-using BTeamID = System.Int32;
 using BRelationType = System.Byte;
 
 namespace KSoft.Phoenix.Runtime

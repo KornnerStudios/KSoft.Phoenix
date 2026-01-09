@@ -47,3 +47,4 @@ global using BEntityID = System.Int32;
 global using BEntityTimePair = System.UInt64;
 
 global using BPlayerID = System.Int32;
+global using BTeamID = System.Int32;

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 using BCost = System.Single;
-using BTeamID = System.Int32;
 using BWaveGravityBall = System.UInt64; // idk, 8 bytes
 using BQueuedObject = System.UInt64; // idk, 8 bytes
 
