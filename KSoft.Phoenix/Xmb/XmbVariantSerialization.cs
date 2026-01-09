@@ -21,6 +21,7 @@ namespace KSoft.Phoenix.Xmb
 			Single			= 2, // Indirect
 			Int24			= 3,
 			Int				= 4, // Indirect
+			/// <summary>24-bit fixed point value (float multiplied by 10,000)</summary>
 			FixedPoint		= 5,
 			Double			= 6,
 			Bool			= 7,
@@ -54,7 +55,9 @@ namespace KSoft.Phoenix.Xmb
 			data = Bitwise.Int24.GetNumber(v.Int);
 
 			if (!v.IsUnsigned)
+			{
 				data = Bitwise.Int24.SetSigned(data, true);
+			}
 		}
 		public static void Int24ToVariant(ref XmbVariant v, RawVariantFlags f, uint data)
 		{
@@ -62,7 +65,9 @@ namespace KSoft.Phoenix.Xmb
 			v.IsUnsigned = (f & RawVariantFlags.Unsigned) != 0;
 
 			if (!v.IsUnsigned && Bitwise.Int24.IsSigned(data))
+			{
 				data |= 0xFF000000;
+			}
 
 			v.Int = data;
 		}
@@ -275,7 +280,9 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			if (v.Type == XmbVariantType.String)
+			{
 				StringToVariant(ref v, data);
+			}
 		}
 		public static void Read(IO.EndianReader s, out XmbVariant v)
 		{
@@ -302,12 +309,14 @@ namespace KSoft.Phoenix.Xmb
 				data = Bitwise.Single24.FromSingle(single);
 			}
 			else
+			{
 				data = v.Offset;
+			}
 		}
 		static void DecomposeInt(XmbVariant v, out RawVariantType t, ref RawVariantFlags f, out uint data)
 		{
 			t = RawVariantType.Int;
-			if (v.IsUnsigned) f |= RawVariantFlags.Unsigned;
+			if (v.IsUnsigned) { f |= RawVariantFlags.Unsigned; }
 			data = v.Int;
 
 			if (Bitwise.Int24.InRange(v.Int))
@@ -325,7 +334,10 @@ namespace KSoft.Phoenix.Xmb
 			data = 0;
 
 			bool is_indirect = v.IsIndirect;
+#if DEBUG
 			bool is_unsigned = v.Type == XmbVariantType.Int && v.IsUnsigned;
+			KSoft.Util.MarkUnusedVariable(ref is_unsigned);
+#endif
 
 			switch (v.Type)
 			{
@@ -358,16 +370,13 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			if (is_indirect)
+			{
 				data = v.Offset & kValueBitMask;
+			}
 		}
 		public static void Write(IO.EndianWriter s, XmbVariant v)
 		{
-			uint data = 0;
-
-			RawVariantType t;
-			RawVariantLength l;
-			RawVariantFlags f;
-			Decompose(v, out t, out l, out f, out data);
+			Decompose(v, out RawVariantType t, out RawVariantLength l, out RawVariantFlags f, out uint data);
 
 			SetType(t, ref data);
 			SetLength(l, ref data);
