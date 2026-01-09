@@ -1,6 +1,4 @@
 ﻿
-using BCueIndex = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerUnscMac

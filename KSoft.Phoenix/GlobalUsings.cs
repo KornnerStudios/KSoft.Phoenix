@@ -35,4 +35,8 @@ global using BProtoUnitID = System.Int32; // object type or proto unit
 
 /* -------- Runtime aliases */
 
+// Sound cue
+// cInvalidCueIndex = 0
+global using BCueIndex = System.UInt32;
+
 global using BEntityID = System.Int32;
