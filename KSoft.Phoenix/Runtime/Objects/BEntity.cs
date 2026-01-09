@@ -1,5 +1,9 @@
 ﻿
-using BEntityRef = System.UInt64; // idk, 8 bytes
+// BEntityID mID
+// short mData1
+// byte mType
+// byte mData2
+using BEntityRef = System.UInt64;
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -9,6 +13,11 @@ namespace KSoft.Phoenix.Runtime
 			Entity1 = 0x2710
 			;
 	};
+
+	// BEntityID bit encoded
+	// 0xF0000000 - object type; Object, Unit, Squad, Dopple, Projectile, Platoon, Army.
+	// 0x0FFF0000 - ref count
+	// 0x0000FFFF - object index
 
 	public abstract class BEntity
 		: IO.IEndianStreamSerializable

@@ -39,6 +39,7 @@ global using BProtoUnitID = System.Int32; // object type or proto unit
 // cInvalidCueIndex = 0
 global using BCueIndex = System.UInt32;
 
+// #TODO make this a struct, next to BEntity.cs
 global using BEntityID = System.Int32;
 // Pair<BEntityID,UInt32>. Second is a game time.
 // This is used in creating ignore lists, like in BPowerCryo,
