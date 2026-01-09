@@ -1,6 +1,4 @@
 ﻿
-using BEntityTimePair = System.UInt64;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerUnscCryo

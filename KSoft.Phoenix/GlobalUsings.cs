@@ -40,3 +40,8 @@ global using BProtoUnitID = System.Int32; // object type or proto unit
 global using BCueIndex = System.UInt32;
 
 global using BEntityID = System.Int32;
+// Pair<BEntityID,UInt32>. Second is a game time.
+// This is used in creating ignore lists, like in BPowerCryo,
+// where certain entities cannot be cryo'd again until a future game time.
+// #TODO this should probably be a struct in the Runtime namespace, under the Powers folder.
+global using BEntityTimePair = System.UInt64;
