@@ -1,6 +1,4 @@
 ﻿
-using BVec2 = System.Numerics.Vector2;
-
 namespace KSoft.Phoenix.Runtime
 {
 	public struct BAdditionalTextures

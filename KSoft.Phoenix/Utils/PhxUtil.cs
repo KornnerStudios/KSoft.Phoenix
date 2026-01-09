@@ -7,8 +7,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix
 {
 	static partial class PhxUtil

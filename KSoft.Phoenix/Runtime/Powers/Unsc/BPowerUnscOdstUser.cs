@@ -1,6 +1,4 @@
 ﻿
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerUnscOdstUser

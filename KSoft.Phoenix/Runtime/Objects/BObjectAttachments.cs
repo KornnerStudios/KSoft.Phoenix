@@ -1,5 +1,4 @@
 ﻿
-using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

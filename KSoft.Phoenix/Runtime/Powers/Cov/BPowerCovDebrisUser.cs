@@ -1,5 +1,4 @@
 ﻿
-using BVector = System.Numerics.Vector4;
 using BWaveGravityBall = System.UInt64; // idk, 8 bytes
 
 namespace KSoft.Phoenix.Runtime
@@ -8,7 +7,7 @@ namespace KSoft.Phoenix.Runtime
 		: BPowerUser
 	{
 		public BWaveGravityBall FakeGravityBall;
-		public BVector HorizontalMoveInputDir, VerticalMoveInputDir, 
+		public BVector HorizontalMoveInputDir, VerticalMoveInputDir,
 			LastUpdatePos, CameraFocusPoint;
 		public uint TimestampNextCommand;
 		public float TimeUntilHint;
@@ -17,7 +16,7 @@ namespace KSoft.Phoenix.Runtime
 			MaxBallHeight, MaxBallSpeedStagnant, MaxBallSpeedPulling,
 			CameraDistance, CameraHeight, CameraHoverPointDistance,
 			CameraMaxBallAngle, PullingRange, PickupShakeDuration,
-			PickupRumbleShakeStrength, PickupCameraShakeStrength, 
+			PickupRumbleShakeStrength, PickupCameraShakeStrength,
 			ExplodeTime, DelayShutdownTimeLeft;
 		public bool HintShown, HintCompleted, ShuttingDown;
 

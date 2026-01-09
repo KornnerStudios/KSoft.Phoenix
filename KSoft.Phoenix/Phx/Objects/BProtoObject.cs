@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Phx
 {
 	/* Deprecated fields:

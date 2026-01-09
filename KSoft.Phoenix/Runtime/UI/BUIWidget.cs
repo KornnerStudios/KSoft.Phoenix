@@ -1,12 +1,11 @@
 ﻿
-using BVector = System.Numerics.Vector4;
 using BObjectiveID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {
 	static partial class cSaveMarker
 	{
-		public const ushort 
+		public const ushort
 			UIWidget = 0x2710
 			;
 	};

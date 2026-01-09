@@ -1,7 +1,5 @@
 ﻿using Contracts = System.Diagnostics.Contracts;
 
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix
 {
 	static class PhxPredicates

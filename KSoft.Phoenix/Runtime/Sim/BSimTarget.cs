@@ -1,5 +1,4 @@
 ﻿
-using BVector = System.Numerics.Vector4;
 using BAbilityID = System.Int32;
 using BEntityID = System.Int32;
 

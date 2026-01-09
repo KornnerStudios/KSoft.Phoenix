@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 
-using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {
 	static partial class cSaveMarker
 	{
-		public const ushort 
+		public const ushort
 			UICallouts1 = 0x2710,
 			UICallouts2 = 0x2711,
 			UICallout = 0x2712

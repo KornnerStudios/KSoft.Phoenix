@@ -4,9 +4,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = System.Numerics.Vector4;
-using BMatrix = System.Numerics.Matrix4x4;
-
 using BVisualAsset = System.UInt64; // unknown fields
 
 namespace KSoft.Phoenix.Runtime

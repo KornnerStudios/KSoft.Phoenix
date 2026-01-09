@@ -1,8 +1,6 @@
 ﻿using System;
 using Interop = System.Runtime.InteropServices;
 
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Xmb
 {
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=kSizeOf)]

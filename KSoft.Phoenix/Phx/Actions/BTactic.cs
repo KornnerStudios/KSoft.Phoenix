@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BProtoActionID = System.Int32;
-
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BTactic
@@ -12,7 +10,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		public Collections.BListArray<BTacticTargetRule> TargetRules { get; private set; }
+		[Meta.BProtoActionReference]
 		public List<BProtoActionID> PersistentActions { get; private set; }
+		[Meta.BProtoActionReference]
 		public List<BProtoActionID> PersistentSquadActions { get; private set; }
 
 		public BTactic()

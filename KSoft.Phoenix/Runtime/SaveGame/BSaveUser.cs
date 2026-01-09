@@ -1,13 +1,11 @@
 ﻿
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BSaveUser
 		: IO.IEndianStreamSerializable
 	{
 		public int CurrentPlayer, CoopPlayer;
-		public BVector HoverPoint, CameraHoverPoint, CameraPosition, 
+		public BVector HoverPoint, CameraHoverPoint, CameraPosition,
 			CameraForward, CameraRight, CameraUp;
 		public float CameraDefaultPitch, CameraDefaultYaw, CameraDefaultZoom,
 			CameraPitch, CameraYaw, CameraZoom,

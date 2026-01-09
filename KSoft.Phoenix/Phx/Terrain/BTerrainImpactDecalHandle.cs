@@ -1,6 +1,4 @@
 ﻿
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BTerrainImpactDecalHandle

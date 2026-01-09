@@ -5,7 +5,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVector = System.Numerics.Vector4;
 using BEntityID = System.Int32;
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;

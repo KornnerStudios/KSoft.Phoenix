@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Phx
 {
 	public sealed class BLeader

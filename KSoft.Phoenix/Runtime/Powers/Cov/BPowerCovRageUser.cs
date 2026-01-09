@@ -1,6 +1,4 @@
 ﻿
-using BVector = System.Numerics.Vector4;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerCovRageUser
@@ -13,7 +11,7 @@ namespace KSoft.Phoenix.Runtime
 		public BVector LastMovePos, LastMoveDir, LastAttackDir;
 		public uint CommandInterval;
 		public float ScanRadius, MovementProjectionMultiplier;
-		public bool HasMoved, HasAttacked, HintShown, 
+		public bool HasMoved, HasAttacked, HintShown,
 			HintCompleted, ForceCommandNextUpdate;
 
 		#region IEndianStreamSerializable Members
