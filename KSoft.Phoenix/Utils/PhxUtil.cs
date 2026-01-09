@@ -12,13 +12,13 @@ namespace KSoft.Phoenix
 	static partial class PhxUtil
 	{
 		public static Security.Cryptography.Crc16.Definition kCrc16Definition = new(
-				initialValue: ushort.MinValue,
-				xorIn: ushort.MaxValue,
-				xorOut: ushort.MaxValue);
+			initialValue: ushort.MinValue,
+			xorIn: ushort.MaxValue,
+			xorOut: ushort.MaxValue);
 		public static Security.Cryptography.Crc32.Definition kCrc32Definition = new(
-				initialValue: uint.MinValue,
-				xorIn: uint.MaxValue,
-				xorOut: uint.MaxValue);
+			initialValue: uint.MinValue,
+			xorIn: uint.MaxValue,
+			xorOut: uint.MaxValue);
 
 		public const int kObjectKindNone = 0;
 
@@ -51,9 +51,7 @@ namespace KSoft.Phoenix
 		} }
 
 		public static bool StrEqualsIgnoreCase(string str1, string str2)
-		{
-			return string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase) == 0;
-		}
+			=> string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase) == 0;
 
 		public static string ToLowerIfContainsUppercase(this string str)
 		{
@@ -372,6 +370,7 @@ namespace KSoft.Phoenix
 			}
 		};
 
+		[Obsolete("Remove? Added in commit 8f9a88095cb9f6908de59d5c6c0541b104372f9c but I don't see uses")]
 		public static IComparer<T> CreateDummyComparerAlwaysNonZero<T>()
 			=> new DummyComparerAlwaysNonZero<T>();
 		#endregion
