@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
 using BPlayerState = System.UInt32; // states are defined in GameData.xml
 using BCost = System.Single;

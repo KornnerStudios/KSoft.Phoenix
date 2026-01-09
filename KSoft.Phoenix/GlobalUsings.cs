@@ -45,3 +45,5 @@ global using BEntityID = System.Int32;
 // where certain entities cannot be cryo'd again until a future game time.
 // #TODO this should probably be a struct in the Runtime namespace, under the Powers folder.
 global using BEntityTimePair = System.UInt64;
+
+global using BPlayerID = System.Int32;

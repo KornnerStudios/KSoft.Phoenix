@@ -5,7 +5,6 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
 using BBitVector32 = System.UInt32;
-using BPlayerID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {

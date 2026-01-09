@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BPlayerID = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	using BPowerTypeStreamer = IO.EnumBinaryStreamer<Phx.BPowerType, uint>;

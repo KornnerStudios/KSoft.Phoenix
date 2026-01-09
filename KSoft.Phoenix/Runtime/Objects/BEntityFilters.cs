@@ -1,5 +1,4 @@
 ﻿
-using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
 using BRelationType = System.Byte;
 

@@ -1,6 +1,5 @@
 ﻿
 using BEntityRef = System.UInt64; // idk, 8 bytes
-using BPlayerID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {
