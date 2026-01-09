@@ -1,5 +1,4 @@
 ﻿
-using BEntityID = System.Int32;
 using BUnitOppID = System.Int32;
 using BUnitOppType = System.Byte;
 

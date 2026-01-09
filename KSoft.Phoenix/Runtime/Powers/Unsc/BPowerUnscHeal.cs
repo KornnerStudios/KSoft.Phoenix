@@ -1,5 +1,4 @@
 ﻿
-using BEntityID = System.Int32;
 using BEntityTimePair = System.UInt64;
 using BObjectTypeID = System.Int32;
 

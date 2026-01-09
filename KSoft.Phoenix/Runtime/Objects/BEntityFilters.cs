@@ -1,5 +1,4 @@
 ﻿
-using BEntityID = System.Int32;
 using BPlayerID = System.Int32;
 using BTeamID = System.Int32;
 using BObjectTypeID = System.Int32;

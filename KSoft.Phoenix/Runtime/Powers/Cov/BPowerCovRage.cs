@@ -1,7 +1,6 @@
 ﻿
 using BCost = System.Single;
 using BCueIndex = System.Int32;
-using BEntityID = System.Int32;
 using BObjectTypeID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

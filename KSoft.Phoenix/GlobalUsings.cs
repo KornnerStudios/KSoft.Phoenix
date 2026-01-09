@@ -33,3 +33,5 @@ global using BProtoTechID = System.Int32;
 global using BProtoUnitID = System.Int32; // object type or proto unit
 
 /* -------- Runtime aliases */
+
+global using BEntityID = System.Int32;

@@ -1,6 +1,4 @@
 ﻿
-using BEntityID = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerHelperBomber

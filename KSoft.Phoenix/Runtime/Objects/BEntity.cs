@@ -1,5 +1,4 @@
 ﻿
-using BEntityID = System.Int32;
 using BEntityRef = System.UInt64; // idk, 8 bytes
 using BPlayerID = System.Int32;
 

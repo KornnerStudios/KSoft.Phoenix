@@ -1,5 +1,4 @@
 ﻿
-using BEntityID = System.Int32;
 using BPowerUserID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

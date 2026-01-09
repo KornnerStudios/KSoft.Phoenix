@@ -1,6 +1,5 @@
 ﻿
 using BCueIndex = System.Int32;
-using BEntityID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {

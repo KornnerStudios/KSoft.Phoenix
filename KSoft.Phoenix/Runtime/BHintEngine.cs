@@ -5,8 +5,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BEntityID = System.Int32;
-
 namespace KSoft.Phoenix.Runtime
 {
 	partial class cSaveMarker

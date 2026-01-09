@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BEntityID = System.Int32;
 using BPlayerID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime

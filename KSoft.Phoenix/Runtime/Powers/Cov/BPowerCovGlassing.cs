@@ -1,6 +1,5 @@
 ﻿
 using BCost = System.Single;
-using BEntityID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
 {
