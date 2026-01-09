@@ -1,4 +1,8 @@
 ﻿
+// bit encoded
+// 0xF0000000 - player id
+// 0x0FF00000 - power type (BPowerType)
+// 0x000FFFFF - ref count
 using BPowerUserID = System.Int32;
 
 namespace KSoft.Phoenix.Runtime
