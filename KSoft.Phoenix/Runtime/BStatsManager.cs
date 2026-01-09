@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BCost = System.Single;
-
 namespace KSoft.Phoenix.Runtime
 {
 	partial class cSaveMarker
@@ -288,7 +286,7 @@ namespace KSoft.Phoenix.Runtime
 		public BStatsRecorder[] Recorders;
 		public List<BStatPowerKeyValuePair> Powers { get; private set; } = new();
 		public List<BStatAbilityKeyValuePair> Abilities { get; private set; } = new();
-		public BCost[] TotalResources, MaxResources,
+		public BCostDatum[] TotalResources, MaxResources,
 			GatheredResources, TributedResources;
 		public BPlayerID PlayerID;
 		public BTeamID TeamID;

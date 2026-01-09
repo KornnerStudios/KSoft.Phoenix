@@ -1,6 +1,4 @@
 ﻿
-using BCost = System.Single;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerCovRage
@@ -56,7 +54,7 @@ namespace KSoft.Phoenix.Runtime
 		public BCueIndex AttackSound;
 		public BParametricSplineCurve JumpSplineCurve = new();
 		public BCameraEffectData CameraEffectData = new();
-		public BCost[] CostPerTick, CostPerTickAttacking, CostPerJump;
+		public BCostDatum[] CostPerTick, CostPerTickAttacking, CostPerJump;
 		public float TickLength, DamageMultiplier, DamageTakenMultiplier,
 			SpeedMultiplier, NudgeMultiplier, ScanRadius;
 		public BProtoObjectID ProjectileObject, HandAttachObject, TeleportAttachObject;

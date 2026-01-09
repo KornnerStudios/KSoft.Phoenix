@@ -1,6 +1,4 @@
 ﻿
-using BCost = System.Single;
-
 namespace KSoft.Phoenix.Runtime
 {
 	sealed class BPowerCovGlassing
@@ -15,7 +13,7 @@ namespace KSoft.Phoenix.Runtime
 		public BVector DesiredBeamPosition;
 		public BVector[] BeamPath;
 		public int[] RevealedTeamIDs; // BTeamID
-		public BCost[] CostPerTick;
+		public BCostDatum[] CostPerTick;
 		public BProtoObjectID Projectile;
 		public float TickLength, MinBeamDistance, MaxBeamDistance;
 		public uint CommandInterval;

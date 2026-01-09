@@ -5,7 +5,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BCost = System.Single;
 // [0,n) index into the BProtoPower's level data.
 // Never -1, powers must always have at least the 0th power level.
 using BPowerLevel = System.UInt32;
@@ -128,10 +127,10 @@ namespace KSoft.Phoenix.Runtime
 		public BPowerEntry[] PowerEntries;
 		public int[] Abilities;
 		public PowerInfo[] Powers;
-		public BCost[] Resources;
+		public BCostDatum[] Resources;
 		public RateInfo[] Rates;
-		public BCost[] TotalResources;
-		public BCost[] ResourceTrickleRate;
+		public BCostDatum[] TotalResources;
+		public BCostDatum[] ResourceTrickleRate;
 		public BPlayerPop[] Populations;
 		#endregion
 		#region Player2
@@ -156,7 +155,7 @@ namespace KSoft.Phoenix.Runtime
 		public BEntityID RallyObject;
 		public int Strength;
 		public float TributeCost;
-		public BCost[] RepairCost;
+		public BCostDatum[] RepairCost;
 		public float RepairTime, HandicapMultiplier, ShieldRegenRate;
 		public uint ShieldRegenDelay;
 		public float TotalCombatValue;

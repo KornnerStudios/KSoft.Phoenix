@@ -35,6 +35,11 @@ global using BProtoUnitID = System.Int32; // object type or proto unit
 
 /* -------- Runtime aliases */
 
+// A single value within BCost.
+// #TODO define a struct BCost, which has 4 (cMaxNumResources) values.
+// However, only the actual number of defined resources are serialized in the GameFile
+global using BCostDatum = System.Single;
+
 // Sound cue
 // cInvalidCueIndex = 0
 global using BCueIndex = System.UInt32;

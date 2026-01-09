@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BCost = System.Single;
 using BWaveGravityBall = System.UInt64; // idk, 8 bytes
 using BQueuedObject = System.UInt64; // idk, 8 bytes
 
@@ -15,7 +14,7 @@ namespace KSoft.Phoenix.Runtime
 		public float ExplodeCooldownLeft;
 		public BEntityID[] UnitsToPull;
 		public BQueuedObject[] QueuedPickupObjects;
-		public BCost[] CostPerTick;
+		public BCostDatum[] CostPerTick;
 		public float TickLength;
 		public BProtoObjectID BallProtoID, LightningProtoID, LightningBeamVisualProtoID,
 			DebrisProtoID, ExplodeProtoID, PickupAttachmentProtoID;

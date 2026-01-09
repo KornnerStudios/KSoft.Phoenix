@@ -6,8 +6,6 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BCost = System.Single;
-
 namespace KSoft.Phoenix.Runtime
 {
 	struct BVectorInt32
@@ -482,8 +480,8 @@ namespace KSoft.Phoenix.Runtime
 		}
 		#endregion
 
-		#region BCost
-		public IO.EndianStream StreamBCost(IO.EndianStream s, ref BCost[] c)
+		#region BCostDatum
+		public IO.EndianStream StreamBCost(IO.EndianStream s, ref BCostDatum[] c)
 		{
 			if (s.IsReading)
 			{
@@ -498,7 +496,7 @@ namespace KSoft.Phoenix.Runtime
 			return s;
 		}
 #if false
-		public void ToStreamBCost(IO.IndentedTextWriter s, BCost[] c)
+		public void ToStreamBCost(IO.IndentedTextWriter s, BCostDatum[] c)
 		{
 			for (int x = 0; x < c.Length; x++)
 			{
