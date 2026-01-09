@@ -5,9 +5,10 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BPlayerState = System.UInt32; // states are defined in GameData.xml
 using BCost = System.Single;
-using BPowerLevel = System.UInt32; // idk, 4 bytes
+// [0,n) index into the BProtoPower's level data.
+// Never -1, powers must always have at least the 0th power level.
+using BPowerLevel = System.UInt32;
 
 namespace KSoft.Phoenix.Runtime
 {

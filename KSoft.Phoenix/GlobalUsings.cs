@@ -48,4 +48,5 @@ global using BEntityID = System.Int32;
 global using BEntityTimePair = System.UInt64;
 
 global using BPlayerID = System.Int32;
+global using BPlayerState = System.Int32; // states are defined in GameData.xml
 global using BTeamID = System.Int32;

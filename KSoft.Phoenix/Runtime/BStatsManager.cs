@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using BPlayerState = System.UInt32; // states are defined in GameData.xml
 using BCost = System.Single;
 
 namespace KSoft.Phoenix.Runtime
