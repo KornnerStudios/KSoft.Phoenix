@@ -11,7 +11,9 @@ using BPowerLevel = System.UInt32;
 
 namespace KSoft.Phoenix.Runtime
 {
-	using BRallyPoint = System.Numerics.Vector4; // this is only a guess
+	// float x,y,z
+	// BEntityID mEntityID
+	using BRallyPoint = System.Numerics.Vector4; // #TODO make struct
 
 	partial class cSaveMarker
 	{

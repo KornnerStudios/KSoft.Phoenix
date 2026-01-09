@@ -4,6 +4,10 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
+// short mID
+// byte mCount
+// byte mBucket : 7
+// bool mSquad : 1
 using BProtoObjectTrainLimit = System.Int32; // idk, 4 bytes
 
 namespace KSoft.Phoenix.Runtime

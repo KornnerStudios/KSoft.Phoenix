@@ -1,4 +1,5 @@
 ﻿
+// Low=0, Mid=1, User=2
 using BPathLevel = System.Byte;
 
 namespace KSoft.Phoenix.Runtime

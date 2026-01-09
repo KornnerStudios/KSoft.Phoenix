@@ -1,5 +1,8 @@
 ﻿
-using BAIMissionID = System.Int32;
+// 0x7FFF0000 - ref count
+// 0x0000F000 - type
+// 0x00000FFF - index
+using BAIMissionID = System.UInt32;
 
 namespace KSoft.Phoenix.Runtime
 {
