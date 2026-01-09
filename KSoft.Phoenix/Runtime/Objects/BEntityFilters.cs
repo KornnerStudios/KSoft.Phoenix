@@ -1,5 +1,5 @@
 ﻿
-using BRelationType = System.Byte;
+using BRelationType = System.Byte; // #TODO BRelationType
 
 namespace KSoft.Phoenix.Runtime
 {

@@ -1,6 +1,6 @@
 ﻿
 using BUnitOppID = System.Int32;
-using BUnitOppType = System.Byte;
+using BUnitOppType = System.Byte; // #TODO EUnitOppType
 
 namespace KSoft.Phoenix.Runtime
 {

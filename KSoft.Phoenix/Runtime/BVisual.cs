@@ -4,7 +4,9 @@ using Contract = System.Diagnostics.ContractsShim.Contract;
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 #endif
 
-using BVisualAsset = System.UInt64; // unknown fields
+// int mType - cVisualAsset*
+// int mIndex
+using BVisualAsset = System.UInt64;
 
 namespace KSoft.Phoenix.Runtime
 {

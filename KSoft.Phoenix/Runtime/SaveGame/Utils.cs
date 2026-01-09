@@ -8,6 +8,7 @@ using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
 
 namespace KSoft.Phoenix.Runtime
 {
+	[Obsolete("Remove?")]
 	struct BVectorInt32
 		: IO.IEndianStreamSerializable
 	{

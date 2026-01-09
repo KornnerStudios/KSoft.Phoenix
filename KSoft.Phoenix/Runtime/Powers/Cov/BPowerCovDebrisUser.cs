@@ -1,5 +1,7 @@
 ﻿
-using BWaveGravityBall = System.UInt64; // idk, 8 bytes
+// BEntityID mBallID
+// uint mState - None, Stagnant, Pulling, PullingFull, Exploding
+using BWaveGravityBall = System.UInt64; // #TODO real struct
 
 namespace KSoft.Phoenix.Runtime
 {

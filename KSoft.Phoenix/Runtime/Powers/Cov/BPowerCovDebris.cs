@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
-using BWaveGravityBall = System.UInt64; // idk, 8 bytes
+using BWaveGravityBall = System.UInt64; // #TODO real struct
+// #REVIEW this should be 12-16 bytes?
+// BEntityID ObjectID
+// double AddTime
 using BQueuedObject = System.UInt64; // idk, 8 bytes
 
 namespace KSoft.Phoenix.Runtime
