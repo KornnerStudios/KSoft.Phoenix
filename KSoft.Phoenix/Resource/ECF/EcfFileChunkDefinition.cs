@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace KSoft.Phoenix.Resource.ECF
 {
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public sealed class EcfFileChunkDefinition
 		: IO.ITagElementStringNameStreamable
 	{
@@ -80,10 +82,23 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public void SetFilePathFromParentNameAndId()
 		{
-			string file_name = string.Format("{0}_{1}{2}",
-				Parent.EcfName, Id.ToString("X8"), kFileExtension);
+			bool requiresUniqueChunkFileName = Parent.HasMultipleChunksWithSameId(Id);
 
-			FilePath = file_name;
+			string relativeFilePath;
+			if (requiresUniqueChunkFileName)
+			{
+				// e.g., blood_gulch.xtt_00002222_00000002.ecf_chunk
+				// XTT can contain >1 TerrainAtlasLinkChunk entries.
+				// Other ECF files may have similar situations, this is to split them out into separate files.
+				relativeFilePath = $"{Parent.EcfName}_{Id:X8}_{RawChunkIndex:X8}{kFileExtension}";
+			}
+			else
+			{
+				// e.g., blood_gulch.xtt_00001111.ecf_chunk
+				relativeFilePath = $"{Parent.EcfName}_{Id:X8}{kFileExtension}";
+			}
+
+			FilePath = relativeFilePath;
 		}
 
 		internal void SetFileBytes(byte[] bytes)
@@ -202,5 +217,8 @@ namespace KSoft.Phoenix.Resource.ECF
 			}
 		}
 		#endregion
+
+		private string GetDebuggerDisplay()
+			=> $"{RawChunkIndex} {Id:X16} {FilePath}";
 	};
 }

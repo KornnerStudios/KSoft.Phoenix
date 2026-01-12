@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Contracts = System.Diagnostics.Contracts;
 #if CONTRACTS_FULL_SHIM
@@ -28,6 +29,7 @@ namespace KSoft.Phoenix.Resource.ECF
 	};
 
 	// BECFChunkHeader
+	[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 	public class EcfChunk
 		: IO.IEndianStreamSerializable
 	{
@@ -386,5 +388,8 @@ namespace KSoft.Phoenix.Resource.ECF
 			}
 		}
 		#endregion
-	};
+
+		private string GetDebuggerDisplay()
+			=> $"{EntryId:X16} {DataSize:X8} {DataOffset}";
+	}
 }

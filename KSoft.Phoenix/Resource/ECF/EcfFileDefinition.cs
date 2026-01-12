@@ -25,6 +25,29 @@ namespace KSoft.Phoenix.Resource.ECF
 		public List<EcfFileChunkDefinition> Chunks { get; private set; }
 			= new List<EcfFileChunkDefinition>();
 
+		#region UniqueCountsOfChunkIds
+		readonly Dictionary<ulong, int> mUniqueCountsOfChunkIds = new();
+
+		public bool HasMultipleChunksWithSameId(ulong chunkId)
+			=> mUniqueCountsOfChunkIds.TryGetValue(chunkId, out int count) && count > 1;
+
+		void IncrementUniqueCountOfChunkId(ulong chunkId)
+		{
+			if (!mUniqueCountsOfChunkIds.TryGetValue(chunkId, out int count))
+			{
+				// if you needed to breakpoint on a specific chunk id...
+			}
+			mUniqueCountsOfChunkIds[chunkId] = count + 1;
+		}
+		void AddUniqueCountsOfChunkIdsUsingChunksList()
+		{
+			foreach (var chunk in Chunks)
+			{
+				IncrementUniqueCountOfChunkId(chunk.Id);
+			}
+		}
+		#endregion
+
 		#region ITagElementStringNameStreamable
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
@@ -54,6 +77,12 @@ namespace KSoft.Phoenix.Resource.ECF
 				CullChunksPossiblyWithoutFileData();
 			}
 			#endif
+
+			if (s.IsReading)
+			{
+				mUniqueCountsOfChunkIds.Clear();
+				AddUniqueCountsOfChunkIdsUsingChunksList();
+			}
 		}
 
 		internal void CullChunksPossiblyWithoutFileData(
@@ -121,6 +150,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			var chunk = new EcfFileChunkDefinition();
 			chunk.Initialize(this, rawChunk, rawChunkIndex);
 			Chunks.Add(chunk);
+			IncrementUniqueCountOfChunkId(chunk.Id);
 
 			return chunk;
 		}
