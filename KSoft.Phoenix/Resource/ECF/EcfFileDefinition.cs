@@ -22,8 +22,9 @@ namespace KSoft.Phoenix.Resource.ECF
 		public uint HeaderId { get; private set; }
 		public uint ChunkExtraDataSize { get; private set; }
 
-		public List<EcfFileChunkDefinition> Chunks { get; private set; }
-			= new List<EcfFileChunkDefinition>();
+		private readonly List<EcfFileChunkDefinition> mChunks = new();
+
+		public IReadOnlyList<EcfFileChunkDefinition> Chunks => mChunks;
 
 		#region UniqueCountsOfChunkIds
 		readonly Dictionary<ulong, int> mUniqueCountsOfChunkIds = new();
@@ -38,6 +39,30 @@ namespace KSoft.Phoenix.Resource.ECF
 				// if you needed to breakpoint on a specific chunk id...
 			}
 			mUniqueCountsOfChunkIds[chunkId] = count + 1;
+		}
+		void DecrementUniqueCountOfChunkId(ulong chunkId)
+		{
+			if (mUniqueCountsOfChunkIds.TryGetValue(chunkId, out int count))
+			{
+				if (count <= 0)
+				{
+					throw new InvalidOperationException(
+						$"{nameof(DecrementUniqueCountOfChunkId)} failed, chunk {chunkId:X16}'s count={count}, we should have already removed it");
+				}
+				else if (count == 1)
+				{
+					mUniqueCountsOfChunkIds.Remove(chunkId);
+				}
+				else
+				{
+					mUniqueCountsOfChunkIds[chunkId] = count - 1;
+				}
+			}
+			else
+			{
+				throw new InvalidOperationException(
+					$"{nameof(DecrementUniqueCountOfChunkId)} failed, no chunks {chunkId:X16} are being tracked");
+			}
 		}
 		void AddUniqueCountsOfChunkIdsUsingChunksList()
 		{
@@ -64,9 +89,9 @@ namespace KSoft.Phoenix.Resource.ECF
 					s.StreamAttributeOpt("ChunkExtraDataSize", this, obj => ChunkExtraDataSize, Predicates.IsNotZero, NumeralBase.Hex);
 				}
 
-				using (var bm = s.EnterCursorBookmarkOpt("Chunks", Chunks, Predicates.HasItems))
+				using (var bm = s.EnterCursorBookmarkOpt("Chunks", mChunks, Predicates.HasItems))
 				{
-					s.StreamableElements("C", Chunks, obj => obj.HasPossibleFileData);
+					s.StreamableElements("C", mChunks, obj => obj.HasPossibleFileData);
 				}
 			}
 
@@ -100,7 +125,8 @@ namespace KSoft.Phoenix.Resource.ECF
 #pragma warning restore IDE1005 // Delegate invocation can be simplified.
 					}
 
-					Chunks.RemoveAt(x);
+					DecrementUniqueCountOfChunkId(chunk.Id);
+					mChunks.RemoveAt(x);
 					continue;
 				}
 			}
@@ -149,7 +175,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			var chunk = new EcfFileChunkDefinition();
 			chunk.Initialize(this, rawChunk, rawChunkIndex);
-			Chunks.Add(chunk);
+			mChunks.Add(chunk);
 			IncrementUniqueCountOfChunkId(chunk.Id);
 
 			return chunk;
