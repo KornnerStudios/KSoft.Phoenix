@@ -12,6 +12,8 @@ namespace KSoft.Phoenix.Xmb
 	/*public */sealed class XmbFileContext
 	{
 		public Shell.ProcessorSize PointerSize;
+
+		public bool CallOnRawDataRead;
 	};
 
 	/*public*/ sealed partial class XmbFile
@@ -26,6 +28,9 @@ namespace KSoft.Phoenix.Xmb
 		bool mHasUnicodeStrings;
 
 		public bool HasUnicodeStrings => mHasUnicodeStrings;
+
+		/// <summary>#HACK only valid during reading and when asked for</summary>
+		internal Dictionary<uint, XmbVariant> mRawDataToSingle24Hack;
 
 		Element NewElement(int rootElementIndex = TypeExtensions.kNone)
 		{
@@ -112,17 +117,17 @@ namespace KSoft.Phoenix.Xmb
 				s.Seek((long)elements_offset_pos);
 				for (int x = 0; x < mElements.Capacity; x++)
 				{
-					var e = new Element();
+					var e = new XmbFile.Element();
 					mElements.Add(e);
 
 					e.Index = x;
 					e.Read(this, context, s);
 				}
 
-				foreach (var e in mElements)
+				foreach (XmbFile.Element e in mElements)
 				{
-					e.ReadAttributes(this, s);
-					e.ReadChildren(s);
+					e.ReadAttributes(this, context, s);
+					e.ReadChildren(this, context, s);
 				}
 			}
 		}
@@ -198,7 +203,7 @@ namespace KSoft.Phoenix.Xmb
 
 			if (doc != null && mElements != null && mElements.Count > 1)
 			{
-				var root = mElements[0];
+				XmbFile.Element root = mElements[0];
 				var root_e = root.ToXml(this, doc, null);
 
 				doc.AppendChild(root_e);
@@ -247,5 +252,41 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 		#endregion
+
+		// #HACK
+		private void OnRawDataRead(XmbFile.Element element, uint rawData, XmbVariant variant)
+		{
+			Util.MarkUnusedVariable(ref element);
+
+			XmbVariantSerialization.RawVariantType rawVariantType = XmbVariantSerialization.GetTypeFromRawData(rawData);
+
+			if (rawVariantType == XmbVariantSerialization.RawVariantType.Single24)
+			{
+				if (mRawDataToSingle24Hack == null)
+				{
+					mRawDataToSingle24Hack = new Dictionary<uint, XmbVariant>();
+				}
+
+				mRawDataToSingle24Hack[rawData] = variant;
+			}
+		}
+
+		public bool DumpSingle24Values(Xmb.Single24DumpInfo dumpInfo)
+		{
+			ArgumentNullException.ThrowIfNull(dumpInfo);
+
+			if (mRawDataToSingle24Hack != null && mRawDataToSingle24Hack.Count > 1)
+			{
+				foreach (KeyValuePair<uint, XmbVariant> kvp in mRawDataToSingle24Hack)
+				{
+					uint rawDataValue = XmbVariantSerialization.GetValueFromRawData(kvp.Key);
+					dumpInfo.AddEntry(rawDataValue, kvp.Value.Single, null);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
 	};
 }

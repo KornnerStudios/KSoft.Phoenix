@@ -58,6 +58,10 @@ namespace KSoft.Phoenix.Resource
 			return kXmlBasedFilesExtensions.Contains(ext);
 		}
 
+		/// <summary>Pattern that can be fed to Directory.GetFiles, etc to find all XMB files</summary>
+		public static string XmbExtensionSearchPattern => $"*{Xmb.XmbFile.kFileExt}";
+
+
 		public static bool IsXmbFile(string filename)
 		{
 			string ext = Path.GetExtension(filename);

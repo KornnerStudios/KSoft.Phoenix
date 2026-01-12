@@ -20,6 +20,7 @@ namespace KSoft.Tool
 
 			Era,
 			Wwise,
+			Xmb,
 		};
 		static string GetValidTools()
 		{
@@ -28,6 +29,7 @@ namespace KSoft.Tool
 
 			sb.AppendFormat("{0},", ToolType.Era.ToString().ToLowerInvariant());
 			sb.AppendFormat("{0},", ToolType.Wwise.ToString().ToLowerInvariant());
+			sb.AppendFormat("{0},", ToolType.Xmb.ToString().ToLowerInvariant());
 
 			return sb.ToString();
 		}
@@ -55,6 +57,9 @@ namespace KSoft.Tool
 					break;
 				case ToolType.Wwise:
 					Phoenix.WwiseTool.MainEntryPoint(help_name, args);
+					break;
+				case ToolType.Xmb:
+					Phoenix.XmbTool.MainEntryPoint(help_name, args);
 					break;
 
 				default: Program.UnavailableOption(mToolType); break;

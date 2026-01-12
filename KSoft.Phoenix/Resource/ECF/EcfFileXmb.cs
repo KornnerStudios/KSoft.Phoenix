@@ -1,4 +1,5 @@
 ﻿#if CONTRACTS_FULL_SHIM
+using System;
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
 using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
@@ -74,8 +75,14 @@ namespace KSoft.Phoenix.Resource.ECF
 			}
 		}
 
-		public static void XmbToXml(IO.EndianStream xmbStream, System.IO.Stream outputStream, Shell.ProcessorSize vaSize)
+		private static Phoenix.Xmb.XmbFile ReadXmbFromStream(IO.EndianStream xmbStream, Xmb.XmbFileContext xmbFileContext)
 		{
+			ArgumentNullException.ThrowIfNull(xmbStream);
+			if (!xmbStream.CanRead)
+			{
+				throw new ArgumentException("Stream must be readable", nameof(xmbStream));
+			}
+
 			byte[] xmbBytes;
 
 			using (var xmb = new ECF.EcfFileXmb())
@@ -93,23 +100,57 @@ namespace KSoft.Phoenix.Resource.ECF
 				}
 			}
 
-			var context = new Xmb.XmbFileContext()
-			{
-				PointerSize = vaSize,
-			};
-
 			using (var ms = new System.IO.MemoryStream(xmbBytes, false))
 			using (var s = new IO.EndianReader(ms, xmbStream.ByteOrder,
 					name: $"{xmbStream.StreamName}:{nameof(FileData)}"))
 			{
-				s.UserData = context;
+				s.UserData = xmbFileContext;
 
-				using (var xmbf = new Phoenix.Xmb.XmbFile())
+				//using (var xmbf = new Phoenix.Xmb.XmbFile())
+				var xmbf = new Phoenix.Xmb.XmbFile();
 				{
 					xmbf.Read(s);
-					xmbf.ToXml(outputStream);
+					return xmbf;
 				}
 			}
+		}
+
+		public static void XmbToXml(IO.EndianStream xmbStream, System.IO.Stream outputStream, Shell.ProcessorSize vaSize)
+		{
+			var xmbFileContext = new Xmb.XmbFileContext()
+			{
+				PointerSize = vaSize,
+			};
+
+			using (Phoenix.Xmb.XmbFile xmbf = ReadXmbFromStream(xmbStream, xmbFileContext))
+			{
+				xmbf.ToXml(outputStream);
+			}
+		}
+
+		public static Xmb.Single24DumpInfo DumpSingle24Values(IO.EndianStream xmbStream, Shell.ProcessorSize vaSize)
+		{
+			var xmbFileContext = new Xmb.XmbFileContext()
+			{
+				PointerSize = vaSize,
+
+				CallOnRawDataRead = true, // #HACK
+			};
+
+			var dumpInfo = new Xmb.Single24DumpInfo()
+			{
+				SourcePath = xmbStream.StreamName,
+			};
+
+			using (Phoenix.Xmb.XmbFile xmbf = ReadXmbFromStream(xmbStream, xmbFileContext))
+			{
+				if (xmbf.DumpSingle24Values(dumpInfo))
+				{
+					return dumpInfo;
+				}
+			}
+
+			return null;
 		}
 	};
 }

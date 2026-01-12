@@ -1,5 +1,6 @@
 ﻿//#define TEST_ARGS
 //#define TEST_ENV_PHX
+//#define TEST_ENV_PHX_XMB
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,11 @@ using Mono.Options;
  *					mode=
  *					path=
  *					name=
+ *					out=
+ *					switches=
+ *				xmb
+ *					mode=
+ *					path=
  *					out=
  *					switches=
 */
@@ -158,6 +164,13 @@ namespace KSoft.Tool
 					"-out=" +		@"C:\KStudio\Vita\_test_results\KSoft.Phoenix\",
 
 					"-switches=" +	 "00110",
+	#elif TEST_ENV_PHX_XMB
+			"-env=phx",
+				"-tool=xmb",
+					"-mode=" +       "DumpSingle24Values",
+					"-path=" +      @"D:\HW\HWDE\Extracted\",
+
+					"-switches=" +   "0",
 	#elif !TEST_ENV_PHX_WWISE
 			"-env=phx",
 				"-tool=wwise",

@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Xmb
 			List<int> ChildrenIndices;
 
 			#region IEndianStreamable Members
-			public void ReadAttributes(XmbFile xmb, IO.EndianReader s)
+			public void ReadAttributes(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
 			{
 				if (mAttributesOffset.IsInvalidHandle)
 				{
@@ -28,8 +28,8 @@ namespace KSoft.Phoenix.Xmb
 				s.Seek((long)mAttributesOffset);
 				for (int x = 0; x < Attributes.Capacity; x++)
 				{
-					XmbVariantSerialization.Read(s, out XmbVariant k);
-					XmbVariantSerialization.Read(s, out XmbVariant v);
+					uint keyRawData = XmbVariantSerialization.Read(s, out XmbVariant k);
+					uint valueRawData = XmbVariantSerialization.Read(s, out XmbVariant v);
 
 					var kv = new KeyValuePair<XmbVariant, XmbVariant>(k, v);
 					Attributes.Add(kv);
@@ -38,10 +38,19 @@ namespace KSoft.Phoenix.Xmb
 					{
 						xmb.mHasUnicodeStrings = true;
 					}
+
+					if (xmbContext.CallOnRawDataRead) // #HACK
+					{
+						xmb.OnRawDataRead(this, keyRawData, k);
+						xmb.OnRawDataRead(this, valueRawData, v);
+					}
 				}
 			}
-			public void ReadChildren(IO.EndianReader s)
+			public void ReadChildren(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
 			{
+				Util.MarkUnusedVariable(ref xmb);
+				Util.MarkUnusedVariable(ref xmbContext);
+
 				if (mChildrenOffset.IsInvalidHandle)
 				{
 					return;
@@ -56,8 +65,8 @@ namespace KSoft.Phoenix.Xmb
 			public void Read(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
 			{
 				s.Read(out RootElementIndex);
-				XmbVariantSerialization.Read(s, out NameVariant);
-				XmbVariantSerialization.Read(s, out InnerTextVariant);
+				uint nameRawData = XmbVariantSerialization.Read(s, out NameVariant);
+				uint innerTextRawData = XmbVariantSerialization.Read(s, out InnerTextVariant);
 				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
 				{
 					s.Pad32();
@@ -86,6 +95,12 @@ namespace KSoft.Phoenix.Xmb
 				if (NameVariant.HasUnicodeData || InnerTextVariant.HasUnicodeData)
 				{
 					xmb.mHasUnicodeStrings = true;
+				}
+
+				if (xmbContext.CallOnRawDataRead) // #HACK
+				{
+					xmb.OnRawDataRead(this, nameRawData, NameVariant);
+					xmb.OnRawDataRead(this, innerTextRawData, InnerTextVariant);
 				}
 			}
 
@@ -209,7 +224,7 @@ namespace KSoft.Phoenix.Xmb
 			{
 				if (!InnerTextVariant.IsEmpty)
 				{
-					var text = doc.CreateTextNode(xmb.ToString(InnerTextVariant));
+					XmlText text = doc.CreateTextNode(xmb.ToString(InnerTextVariant));
 					e.AppendChild(text);
 				}
 			}
@@ -222,7 +237,7 @@ namespace KSoft.Phoenix.Xmb
 						string k = xmb.ToString(kv.Key);
 						string v = xmb.ToString(kv.Value);
 
-						var attr = doc.CreateAttribute(k);
+						XmlAttribute attr = doc.CreateAttribute(k);
 						attr.Value = v;
 
 						// #HACK avoids exceptions like:
@@ -245,7 +260,7 @@ namespace KSoft.Phoenix.Xmb
 				{
 					foreach (int x in ChildrenIndices)
 					{
-						var element = xmb.mElements[x];
+						XmbFile.Element element = xmb.mElements[x];
 
 						element.ToXml(xmb, doc, e);
 					}
@@ -253,7 +268,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 			public XmlElement ToXml(XmbFile xmb, XmlDocument doc, XmlElement root)
 			{
-				var e = doc.CreateElement(xmb.ToString(NameVariant));
+				XmlElement e = doc.CreateElement(xmb.ToString(NameVariant));
 
 				root?.AppendChild(e);
 

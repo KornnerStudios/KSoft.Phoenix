@@ -13,6 +13,11 @@ namespace KSoft.Phoenix.Xmb
 		public const uint kInfoBitMask = 0xFF000000;
 		public const uint kValueBitMask = 0x00FFFFFF;
 
+		internal static RawVariantType GetTypeFromRawData(uint rawData)
+			=> GetType(rawData);
+		internal static uint GetValueFromRawData(uint rawData)
+			=> rawData & kValueBitMask;
+
 		#region Type coding
 		public enum RawVariantType : byte
 		{
@@ -208,7 +213,7 @@ namespace KSoft.Phoenix.Xmb
 			RawVariantLength length = GetLength(data);
 			RawVariantFlags flags = GetFlags(data);
 			// Get the actual data value
-			data &= kValueBitMask;
+			data = GetValueFromRawData(data);
 
 			switch (type)
 			{
@@ -284,11 +289,13 @@ namespace KSoft.Phoenix.Xmb
 				StringToVariant(ref v, data);
 			}
 		}
-		public static void Read(IO.EndianReader s, out XmbVariant v)
+		public static uint Read(IO.EndianReader s, out XmbVariant v)
 		{
 			uint data = s.ReadUInt32();
 
 			Compose(out v, data);
+
+			return data;
 		}
 		#endregion
 
