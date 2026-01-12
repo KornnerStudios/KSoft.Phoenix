@@ -6,7 +6,7 @@ namespace KSoft.Tool
 {
 	sealed class ProgramPhx : ProgramBase
 	{
-		protected override Environment ProgramEnvironment { get { return Environment.Phx; } }
+		protected override Environment ProgramEnvironment => Environment.Phx;
 		public static void _Main(List<string> args)
 		{
 			var prog = new ProgramPhx();
@@ -62,8 +62,7 @@ namespace KSoft.Tool
 		}
 		void MainImpl(List<string> args)
 		{
-			List<string> extra;
-			MainImpl_Prologue(args, out extra, () => mToolType == ToolType.None);
+			MainImpl_Prologue(args, out List<string> extra, () => mToolType == ToolType.None);
 			MainImpl_Program(extra, MainBody);
 		}
 	};

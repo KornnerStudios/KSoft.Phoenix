@@ -8,12 +8,10 @@ namespace PhxGui
 {
 	public partial class ModManifestView : Window
 	{
-		private KSoft.Phoenix.HaloWars.ModManifestFile ModManifest { get {
-			return this.DataContext as KSoft.Phoenix.HaloWars.ModManifestFile;
-		} }
-		private KSoft.Phoenix.HaloWars.ModManifestDirectory SelectedModManifestDirectory { get {
-			return DirectoriesDataGrid.SelectedItem as KSoft.Phoenix.HaloWars.ModManifestDirectory;
-		} }
+		private KSoft.Phoenix.HaloWars.ModManifestFile ModManifest
+			=> this.DataContext as KSoft.Phoenix.HaloWars.ModManifestFile;
+		private KSoft.Phoenix.HaloWars.ModManifestDirectory SelectedModManifestDirectory
+			=> DirectoriesDataGrid.SelectedItem as KSoft.Phoenix.HaloWars.ModManifestDirectory;
 
 		public ModManifestView()
 		{
@@ -24,7 +22,9 @@ namespace PhxGui
 		{
 			var modmanifest = ModManifest;
 			if (modmanifest == null)
+			{
 				return;
+			}
 
 			modmanifest.ReadFromFile();
 		}
@@ -32,15 +32,21 @@ namespace PhxGui
 		private int SelectedModManifestDirectoryIndex { get {
 			var modmanifest = ModManifest;
 			if (modmanifest == null)
+			{
 				return TypeExtensions.kNone;
+			}
 
 			int selected_index = DirectoriesDataGrid.SelectedIndex;
 			if (selected_index.IsNone())
+			{
 				return TypeExtensions.kNone;
+			}
 
 			// deals with NewItemPlaceholder crap
 			if (selected_index >= modmanifest.Directories.Count)
+			{
 				return TypeExtensions.kNone;
+			}
 
 			return selected_index;
 		} }
@@ -49,7 +55,9 @@ namespace PhxGui
 		{
 			var manifest = ModManifest;
 			if (manifest == null)
+			{
 				return false;
+			}
 
 			try
 			{
@@ -76,7 +84,9 @@ namespace PhxGui
 		{
 			var manifest = ModManifest;
 			if (manifest == null)
+			{
 				return false;
+			}
 
 			try
 			{
@@ -104,7 +114,9 @@ namespace PhxGui
 		{
 			var item = SelectedModManifestDirectory;
 			if (item == null)
+			{
 				return;
+			}
 
 			using (var dlg = new WinForms.FolderBrowserDialog())
 			{
@@ -125,10 +137,14 @@ namespace PhxGui
 		{
 			int selected_index = SelectedModManifestDirectoryIndex;
 			if (selected_index.IsNone())
+			{
 				return;
+			}
 
 			if (selected_index == 0)
+			{
 				return;
+			}
 
 			ModManifest.Directories.Move(selected_index, selected_index - 1);
 		}
@@ -137,10 +153,14 @@ namespace PhxGui
 		{
 			int selected_index = SelectedModManifestDirectoryIndex;
 			if (selected_index.IsNone())
+			{
 				return;
+			}
 
 			if (selected_index == ModManifest.Directories.Count-1)
+			{
 				return;
+			}
 
 			ModManifest.Directories.Move(selected_index, selected_index + 1);
 		}
@@ -154,7 +174,9 @@ namespace PhxGui
 		{
 			int selected_index = SelectedModManifestDirectoryIndex;
 			if (selected_index.IsNone())
+			{
 				return;
+			}
 
 			ModManifest.Directories.RemoveAt(selected_index);
 		}
@@ -163,7 +185,9 @@ namespace PhxGui
 		{
 			var item = SelectedModManifestDirectory;
 			if (item == null)
+			{
 				return;
+			}
 
 			if (!item.IsValid)
 			{
@@ -192,7 +216,9 @@ namespace PhxGui
 		{
 			var manifest = ModManifest;
 			if (manifest == null)
+			{
 				return;
+			}
 
 			string path = manifest.ContainingFolder;
 

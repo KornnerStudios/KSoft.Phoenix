@@ -24,9 +24,13 @@ namespace PhxGui
 
 			var args = new BuildEcfFileParameters(Flags.Test(MiscFlags.UseVerboseOutput));
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+			{
 				args.EcfOptions.Set(KSoft.Phoenix.Resource.ECF.EcfFileUtilOptions.x64);
+			}
 			if (Flags.Test(MiscFlags.SkipVerification))
+			{
 				args.EcfOptions.Set(KSoft.Phoenix.Resource.ECF.EcfFileUtilOptions.SkipVerification);
+			}
 
 			args.AssetsPath = Path.GetDirectoryName(ecfListing);
 			#if false // #TODO make a EcfBuildOutputPath
@@ -68,21 +72,16 @@ namespace PhxGui
 					else
 					{
 						error_type = "FAILED";
-						switch (t.Result)
+						error_hint = t.Result switch
 						{
-							case BuildEcfFileResult.Error:
-								error_hint = "NO HINT";
-								break;
-							case BuildEcfFileResult.ReadFailed:
-								error_hint = "Failed reading or initializing .ECFDEF data";
-								break;
-							case BuildEcfFileResult.BuildFailed:
-								error_hint = "Failed building ECF (invalid files?). See PhxGui.log for possible details";
-								break;
-							default:
-								error_hint = "UNKNOWN";
-								break;
-						}
+							BuildEcfFileResult.Error
+							=> "NO HINT",
+							BuildEcfFileResult.ReadFailed
+							=> "Failed reading or initializing .ECFDEF data",
+							BuildEcfFileResult.BuildFailed
+							=> "Failed building ECF (invalid files?). See PhxGui.log for possible details",
+							_ => "UNKNOWN",
+						};
 					}
 					message_text += string.Format("Build {0} {1}{2}{3}",
 						error_type,
@@ -118,14 +117,18 @@ namespace PhxGui
 			public BuildEcfFileParameters(bool useVerboseOutput)
 			{
 				if (useVerboseOutput)
+				{
 					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
+				}
 			}
 
 			public string GetVerboseOutput()
 			{
 				string output = "";
 				if (VerboseOutput != null)
+				{
 					output = VerboseOutput.GetStringBuilder().ToString();
+				}
 
 				return output;
 			}

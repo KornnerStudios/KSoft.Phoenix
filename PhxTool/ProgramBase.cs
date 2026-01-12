@@ -18,7 +18,7 @@ namespace KSoft.Tool
 				v => mArgShowHelp = v != null);
 		}
 		protected abstract void InitializeOptions();
-		protected virtual bool ValidateArgs() { return true; }
+		protected virtual bool ValidateArgs() => true;
 
 		protected ProgramBase()
 		{
@@ -45,8 +45,10 @@ namespace KSoft.Tool
 		{
 			bool is_on = switches.Length >= (index+1) && switches[index] == '1';
 
-			if(is_on && switchCtxt != null)
+			if (is_on && switchCtxt != null)
+			{
 				Console.WriteLine("{0}: Switch enabled - {1}", switchCtxt, switchDesc);
+			}
 
 			return is_on;
 		}
@@ -61,7 +63,9 @@ namespace KSoft.Tool
 			Func<bool> showHelpOverride)
 		{
 			if (!Program.TryParse(env, mOptions, args, out extra) || showHelpOverride())
+			{
 				mArgShowHelp = true;
+			}
 		}
 		protected void TryParseOptions(List<string> args, out List<string> extra, Environment env)
 		{
@@ -69,10 +73,12 @@ namespace KSoft.Tool
 		}
 		protected bool ShowHelp(Environment env, string helpName = "")
 		{
-			bool help_shown = false;
+			bool help_shown;
 
 			if (help_shown = mArgShowHelp)
+			{
 				Program.ShowHelp(env, mOptions, helpName);
+			}
 
 			return help_shown;
 		}
@@ -81,19 +87,27 @@ namespace KSoft.Tool
 			Func<bool> modeIsNone)
 		{
 			if (!Program.TryParse(ProgramEnvironment, mOptions, args, out extra) || modeIsNone())
+			{
 				mArgShowHelp = true;
+			}
 		}
 		protected void MainImpl_Program(List<string> extra, Action<List<string>> body)
 		{
 			if (mArgShowHelp || !ValidateArgs())
+			{
 				Program.ShowHelp(ProgramEnvironment, mOptions);
+			}
 			else
+			{
 				body(extra);
+			}
 		}
 		protected void MainImpl_Tool(string helpName, string bodyName, Action body)
 		{
 			if (mArgShowHelp || !ValidateArgs())
+			{
 				Program.ShowHelp(ProgramEnvironment, mOptions, helpName);
+			}
 			else
 			{
 				try { body(); }
@@ -109,7 +123,9 @@ namespace KSoft.Tool
 						Console.WriteLine("InnerException: {0}", e.InnerException.Message);
 					}
 					if (System.Diagnostics.Debugger.IsAttached)
+					{
 						throw;
+					}
 				}
 			}
 		}

@@ -22,12 +22,18 @@ namespace PhxGui
 				EcfFiles = ecfFiles,
 			};
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+			{
 				stack.EcfOptions.Set(KSoft.Phoenix.Resource.ECF.EcfFileUtilOptions.x64);
+			}
 			if (Flags.Test(MiscFlags.SkipVerification))
+			{
 				stack.EcfOptions.Set(KSoft.Phoenix.Resource.ECF.EcfFileUtilOptions.SkipVerification);
+			}
 
 			if (Flags.Test(MiscFlags.DontOverwriteExistingFiles))
+			{
 				stack.EcfExpanderOptions.Set(KSoft.Phoenix.Resource.ECF.EcfFileExpanderOptions.DontOverwriteExistingFiles);
+			}
 
 			Task.Run((Action)stack.Expand);
 		}
@@ -46,11 +52,15 @@ namespace PhxGui
 			public void Expand()
 			{
 				if (mEcfFilesIndex >= EcfFiles.Length)
+				{
 					return;
+				}
 
-				var args = new ExpandEcfFileParameters(ViewModel.Flags.Test(MiscFlags.UseVerboseOutput));
-				args.EcfOptions = EcfOptions;
-				args.EcfExpanderOptions = EcfExpanderOptions;
+				var args = new ExpandEcfFileParameters(ViewModel.Flags.Test(MiscFlags.UseVerboseOutput))
+				{
+					EcfOptions = EcfOptions,
+					EcfExpanderOptions = EcfExpanderOptions
+				};
 
 				string ecfFile = EcfFiles[mEcfFilesIndex++];
 
@@ -94,21 +104,16 @@ namespace PhxGui
 						else
 						{
 							error_type = "FAILED";
-							switch (t.Result)
+							error_hint = t.Result switch
 							{
-								case ExpandEcfFileResult.Error:
-									error_hint = "NO HINT";
-									break;
-								case ExpandEcfFileResult.ReadFailed:
-									error_hint = "Failed reading ECF file";
-									break;
-								case ExpandEcfFileResult.ExpandFailed:
-									error_hint = "Failed expanding ECF (do you have the correct game version selected?)";
-									break;
-								default:
-									error_hint = "UNKNOWN";
-									break;
-							}
+								ExpandEcfFileResult.Error
+								=> "NO HINT",
+								ExpandEcfFileResult.ReadFailed
+								=> "Failed reading ECF file",
+								ExpandEcfFileResult.ExpandFailed
+								=> "Failed expanding ECF (do you have the correct game version selected?)",
+								_ => "UNKNOWN",
+							};
 						}
 						message_text = string.Format("Expand {0} {1}{2}{3}{4}",
 							error_type,
@@ -133,7 +138,9 @@ namespace PhxGui
 					}
 
 					if (mEcfFilesIndex < EcfFiles.Length)
+					{
 						Expand();
+					}
 					else
 					{
 						Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -158,14 +165,18 @@ namespace PhxGui
 			public ExpandEcfFileParameters(bool useVerboseOutput)
 			{
 				if (useVerboseOutput)
+				{
 					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
+				}
 			}
 
 			public string GetVerboseOutput()
 			{
 				string output = "";
 				if (VerboseOutput != null)
+				{
 					output = VerboseOutput.GetStringBuilder().ToString();
+				}
 
 				return output;
 			}

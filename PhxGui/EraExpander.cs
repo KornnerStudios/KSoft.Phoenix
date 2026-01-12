@@ -30,23 +30,39 @@ namespace PhxGui
 				OutputPath = Properties.Settings.Default.EraExpandOutputPath,
 			};
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+			{
 				stack.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
+			}
 			if (Flags.Test(MiscFlags.SkipVerification))
+			{
 				stack.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.SkipVerification);
+			}
 			stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt);
 
 			if (Flags.Test(MiscFlags.DontOverwriteExistingFiles))
+			{
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontOverwriteExistingFiles);
+			}
 			if (Flags.Test(MiscFlags.DecompressUIFiles))
+			{
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DecompressUIFiles);
+			}
 			if (Flags.Test(MiscFlags.TransformGfxFiles))
+			{
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.TranslateGfxFiles);
+			}
 			if (Flags.Test(MiscFlags.IgnoreNonDataFiles))
+			{
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.IgnoreNonDataFiles);
+			}
 			if (Flags.Test(MiscFlags.DontTranslateXmbFiles))
+			{
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontTranslateXmbFiles);
+			}
 			if (Flags.Test(MiscFlags.DontRemoveXmlOrXmbFiles))
+			{
 				stack.EraExpanderOptions.Set(KSoft.Phoenix.Resource.EraFileExpanderOptions.DontRemoveXmlOrXmbFiles);
+			}
 
 			Task.Run((Action)stack.Expand);
 		}
@@ -66,13 +82,16 @@ namespace PhxGui
 			public void Expand()
 			{
 				if (mEraFilesIndex >= EraFiles.Length)
+				{
 					return;
+				}
 
-				var args = new ExpandEraFileParameters(ViewModel.Flags.Test(MiscFlags.UseVerboseOutput));
-				args.EraOptions = EraOptions;
-				args.EraExpanderOptions = EraExpanderOptions;
-				args.OutputPath = OutputPath;
-
+				var args = new ExpandEraFileParameters(ViewModel.Flags.Test(MiscFlags.UseVerboseOutput))
+				{
+					EraOptions = EraOptions,
+					EraExpanderOptions = EraExpanderOptions,
+					OutputPath = OutputPath
+				};
 				string eraFile = EraFiles[mEraFilesIndex++];
 
 				Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -113,21 +132,16 @@ namespace PhxGui
 						else
 						{
 							error_type = "FAILED";
-							switch (t.Result)
+							error_hint = t.Result switch
 							{
-								case ExpandEraFileResult.Error:
-									error_hint = "NO HINT";
-									break;
-								case ExpandEraFileResult.ReadFailed:
-									error_hint = "Failed reading ERA file";
-									break;
-								case ExpandEraFileResult.ExpandFailed:
-									error_hint = "Failed expanding archive (do you have the correct game version selected?)";
-									break;
-								default:
-									error_hint = "UNKNOWN";
-									break;
-							}
+								ExpandEraFileResult.Error
+								=> "NO HINT",
+								ExpandEraFileResult.ReadFailed
+								=> "Failed reading ERA file",
+								ExpandEraFileResult.ExpandFailed
+								=> "Failed expanding archive (do you have the correct game version selected?)",
+								_ => "UNKNOWN",
+							};
 						}
 						message_text = string.Format("Expand {0} {1}{2}{3}{4}",
 							error_type,
@@ -152,7 +166,9 @@ namespace PhxGui
 					}
 
 					if (mEraFilesIndex < EraFiles.Length)
+					{
 						Expand();
+					}
 					else
 					{
 						Dispatcher.BeginInvoke(DispatcherPriority.Background,
@@ -178,14 +194,18 @@ namespace PhxGui
 			public ExpandEraFileParameters(bool useVerboseOutput)
 			{
 				if (useVerboseOutput)
+				{
 					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
+				}
 			}
 
 			public string GetVerboseOutput()
 			{
 				string output = "";
 				if (VerboseOutput != null)
+				{
 					output = VerboseOutput.GetStringBuilder().ToString();
+				}
 
 				return output;
 			}

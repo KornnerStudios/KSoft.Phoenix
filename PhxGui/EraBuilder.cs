@@ -22,13 +22,19 @@ namespace PhxGui
 
 			var args = new BuildEraFileParameters(Flags.Test(MiscFlags.UseVerboseOutput));
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
+			{
 				args.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.x64);
+			}
 			if (Flags.Test(MiscFlags.SkipVerification))
+			{
 				args.EraOptions.Set(KSoft.Phoenix.Resource.EraFileUtilOptions.SkipVerification);
+			}
 			args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.Encrypt);
 
 			if (Flags.Test(MiscFlags.AlwaysUseXmlOverXmb))
+			{
 				args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.AlwaysUseXmlOverXmb);
+			}
 
 			args.AssetsPath = System.IO.Path.GetDirectoryName(eraListing);
 			args.OutputPath = Properties.Settings.Default.EraBuildOutputPath;
@@ -67,21 +73,16 @@ namespace PhxGui
 					else
 					{
 						error_type = "FAILED";
-						switch (t.Result)
+						error_hint = t.Result switch
 						{
-							case BuildEraFileResult.Error:
-								error_hint = "NO HINT";
-								break;
-							case BuildEraFileResult.ReadFailed:
-								error_hint = "Failed reading or initializing .ERADEF data";
-								break;
-							case BuildEraFileResult.BuildFailed:
-								error_hint = "Failed building archive (invalid files?). See PhxGui.log for possible details";
-								break;
-							default:
-								error_hint = "UNKNOWN";
-								break;
-						}
+							BuildEraFileResult.Error
+							=> "NO HINT",
+							BuildEraFileResult.ReadFailed
+							=> "Failed reading or initializing .ERADEF data",
+							BuildEraFileResult.BuildFailed
+							=> "Failed building archive (invalid files?). See PhxGui.log for possible details",
+							_ => "UNKNOWN",
+						};
 					}
 					message_text += string.Format("Build {0} {1}{2}{3}",
 						error_type,
@@ -118,14 +119,18 @@ namespace PhxGui
 			public BuildEraFileParameters(bool useVerboseOutput)
 			{
 				if (useVerboseOutput)
+				{
 					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
+				}
 			}
 
 			public string GetVerboseOutput()
 			{
 				string output = "";
 				if (VerboseOutput != null)
+				{
 					output = VerboseOutput.GetStringBuilder().ToString();
+				}
 
 				return output;
 			}

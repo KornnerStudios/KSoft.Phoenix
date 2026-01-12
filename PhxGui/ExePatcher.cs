@@ -63,7 +63,7 @@ namespace PhxGui
 				return this;
 			}
 		};
-		private static List<PatchInfo> kPatches = new();
+		private static readonly List<PatchInfo> kPatches = new();
 
 		static ExePatching()
 		{

@@ -113,7 +113,9 @@ namespace KSoft.Tool.Hogan
 
 			string input_file = Path.Combine(mPath, mName) + KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted;
 			if (transformType == Security.Cryptography.CryptographyTransformType.Encrypt)
+			{
 				input_file += KSoft.Phoenix.Resource.EraFileUtil.kExtensionDecrypted;
+			}
 
 			if (!File.Exists(input_file))
 			{
@@ -125,26 +127,26 @@ namespace KSoft.Tool.Hogan
 		}
 		protected override bool ValidateArgs()
 		{
-			switch (mMode)
+			return mMode switch
 			{
-				case Mode.Expand:
-					return ValidateArgsExpand();
-				case Mode.Build:
-					return ValidateArgsBuild();
-
-				default: return true;
-			}
+				Mode.Expand => ValidateArgsExpand(),
+				Mode.Build => ValidateArgsBuild(),
+				_ => true,
+			};
 		}
 		#endregion
 
 		void MainImpl(string helpName, List<string> args)
 		{
-			List<string> extra;
-			if (!Program.TryParse(Environment.Hogan, mOptions, args, out extra) || mMode == Mode.None)
+			if (!Program.TryParse(Environment.Hogan, mOptions, args, out List<string> /*extra*/_) || mMode == Mode.None)
+			{
 				mArgShowHelp = true;
+			}
 
 			if (mArgShowHelp || !ValidateArgs())
+			{
 				Program.ShowHelp(Environment.Hogan, mOptions, helpName);
+			}
 			else
 			{
 				try
@@ -166,7 +168,9 @@ namespace KSoft.Tool.Hogan
 					Console.Write("Exception while PKG processing: ");
 					Console.WriteLine(e);
 					if (System.Diagnostics.Debugger.IsAttached)
+					{
 						throw;
+					}
 				}
 			}
 		}
@@ -174,7 +178,9 @@ namespace KSoft.Tool.Hogan
 		static void ParseSwitch(string switches, int index, ref bool flag)
 		{
 			if (switches.Length >= index+1)
+			{
 				flag = switches[index] == '1';
+			}
 		}
 		static void ExpandParseSwitches(string switches,
 			out Collections.BitVector32 options,
@@ -187,7 +193,9 @@ namespace KSoft.Tool.Hogan
 				skip_verification = false, dump_dbg_info = false, dont_remove_xml_xmb = false;
 
 			if (switches == null)
+			{
 				switches = "";
+			}
 
 			int index = 0;
 			ParseSwitch(switches, index++, ref only_dump_listing);
@@ -269,15 +277,21 @@ namespace KSoft.Tool.Hogan
 		static void Expand(string eraPath, string listingName, string outputPath, string switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
+			{
 				outputPath = Path.GetDirectoryName(eraPath);
+			}
 
-			Collections.BitVector32 options, expanderOptions;
-			ExpandParseSwitches(switches, out options, out expanderOptions);
+			ExpandParseSwitches(switches,
+				out Collections.BitVector32 options, out Collections.BitVector32 expanderOptions);
 
 			if (expanderOptions.Test(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt))
+			{
 				eraPath += KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted;
+			}
 			else
+			{
 				eraPath += KSoft.Phoenix.Resource.EraFileExpander.kNameExtension;
+			}
 
 			if (!File.Exists(eraPath))
 			{
@@ -298,17 +312,20 @@ namespace KSoft.Tool.Hogan
 				expander.DebugOutput = debug_output;
 
 				if (expander.Read())
+				{
 					expander.ExpandTo(outputPath, listingName);
+				}
 			}
 
-			if (debug_output != null)
-				debug_output.Close();
+			debug_output?.Close();
 		}
 
 		void Build(string path, string listingName, string outputPath)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
+			{
 				outputPath = path;
+			}
 
 			var builderOptions = new Collections.BitVector32();
 			{
@@ -335,15 +352,18 @@ namespace KSoft.Tool.Hogan
 				{
 #if false // #TODO
 					if (builder.Build(path, listingName, outputPath))
+					{
 						builder.ProgressOutput.WriteLine("Success!");
+					}
 					else
 #endif
+					{
 						builder.ProgressOutput.WriteLine("Failed!");
+					}
 				}
 			}
 
-			if (debug_output != null)
-				debug_output.Close();
+			debug_output?.Close();
 		}
 	};
 }

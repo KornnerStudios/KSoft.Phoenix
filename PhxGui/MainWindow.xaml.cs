@@ -9,7 +9,7 @@ namespace PhxGui
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private MainWindowViewModel mViewModel = new MainWindowViewModel();
+		private readonly MainWindowViewModel mViewModel = new();
 
 		public MainWindow()
 		{
@@ -27,7 +27,9 @@ namespace PhxGui
 		private void OnDrop(object sender, DragEventArgs e)
 		{
 			if (mViewModel.IsProcessing)
+			{
 				return;
+			}
 
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
@@ -40,7 +42,9 @@ namespace PhxGui
 		private void OnPreviewDragOver(object sender, DragEventArgs e)
 		{
 			if (mViewModel.IsProcessing)
+			{
 				return;
+			}
 
 			e.Handled = true;
 		}
@@ -49,7 +53,9 @@ namespace PhxGui
 		{
 			e.Effects = DragDropEffects.None;
 			if (mViewModel.IsProcessing)
+			{
 				return;
+			}
 
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
@@ -64,7 +70,9 @@ namespace PhxGui
 		private void OnPreviewDragLeave(object sender, DragEventArgs e)
 		{
 			if (mViewModel.IsProcessing)
+			{
 				return;
+			}
 
 			mViewModel.ClearProcessFilesHelpText();
 		}
@@ -72,19 +80,25 @@ namespace PhxGui
 		private void OnMessagesBlockMouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			if (mViewModel.IsProcessing)
+			{
 				return;
+			}
 
 			if (!string.IsNullOrWhiteSpace(mViewModel.MessagesText))
+			{
 				Clipboard.SetText(mViewModel.MessagesText);
+			}
 		}
 
 		private void OnEditModManifest(object sender, RoutedEventArgs e)
 		{
 			var button = (Button)sender;
 
-			var editor = new ModManifestView();
-			editor.Owner = this;
-			editor.DataContext = button.Tag;
+			var editor = new ModManifestView
+			{
+				Owner = this,
+				DataContext = button.Tag
+			};
 			editor.ShowDialog();
 		}
 	};

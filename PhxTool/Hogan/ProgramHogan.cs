@@ -6,7 +6,7 @@ namespace KSoft.Tool
 {
 	sealed class ProgramHogan : ProgramBase
 	{
-		protected override Environment ProgramEnvironment { get { return Environment.Hogan; } }
+		protected override Environment ProgramEnvironment => Environment.Hogan;
 		public static void _Main(List<string> args)
 		{
 			var prog = new ProgramHogan();
@@ -57,8 +57,7 @@ namespace KSoft.Tool
 		}
 		void MainImpl(List<string> args)
 		{
-			List<string> extra;
-			MainImpl_Prologue(args, out extra, () => mToolType == ToolType.None);
+			MainImpl_Prologue(args, out List<string> extra, () => mToolType == ToolType.None);
 			MainImpl_Program(extra, MainBody);
 		}
 	};

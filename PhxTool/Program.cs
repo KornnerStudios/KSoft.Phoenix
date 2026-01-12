@@ -1,9 +1,10 @@
 ﻿//#define TEST_ARGS
 //#define TEST_ENV_PHX
 
+using Mono.Options;
 using System;
 using System.Collections.Generic;
-using Mono.Options;
+using System.Diagnostics.CodeAnalysis;
 
 /*
  * KSoft.Tool
@@ -35,13 +36,15 @@ namespace KSoft.Tool
 {
 	partial class Program : ProgramBase
 	{
-		protected override Environment ProgramEnvironment { get { return Environment.None; } }
+		protected override Environment ProgramEnvironment => Environment.None;
 
 		static string gName;
 		public static string GetName()
 		{
 			if (gName == null)
+			{
 				gName = System.Reflection.Assembly.GetAssembly(typeof(Program)).GetName().Name;
+			}
 
 			return gName;
 		}
@@ -49,7 +52,9 @@ namespace KSoft.Tool
 		public static string GetVersion()
 		{
 			if (gVersion == null)
+			{
 				gVersion = System.Reflection.Assembly.GetAssembly(typeof(Program)).GetName().Version.ToString();
+			}
 
 			return gVersion;
 		}
@@ -71,7 +76,9 @@ namespace KSoft.Tool
 
 			DependentAssemblyExists("ICSharpCode.SharpZipLib", false);
 			if (!DependentAssemblyExists("KSoft"))
+			{
 				return;
+			}
 
 			Initialize();
 
@@ -82,7 +89,9 @@ namespace KSoft.Tool
 				Console.Write("UNHANDLED EXCEPTION: ");
 				Console.WriteLine(e);
 				if (System.Diagnostics.Debugger.IsAttached)
+				{
 					throw;
+				}
 			}
 
 			Dispose();
@@ -107,7 +116,9 @@ namespace KSoft.Tool
 		static string ToString(Environment env)
 		{
 			if (env == Environment.None)
+			{
 				return "Main";
+			}
 
 			return env.ToString();
 		}
@@ -191,12 +202,15 @@ namespace KSoft.Tool
 #endif
 			//return;
 
-			List<string> extra;
-			if (!TryParse(Environment.None, mOptions, args, out extra) || mArgEnv == Environment.None)
+			if (!TryParse(Environment.None, mOptions, args, out List<string> extra) || mArgEnv == Environment.None)
+			{
 				mArgShowHelp = true;
+			}
 
 			if (mArgShowHelp)
+			{
 				ShowHelp(Environment.None, mOptions);
+			}
 			else
 			{
 				switch (mArgEnv)
@@ -245,7 +259,9 @@ namespace KSoft.Tool
 			Console.WriteLine("{0} Options: {1}", ToString(env), subtoolName);
 			ops.WriteOptionDescriptions(Console.Out);
 		}
-		public static void UnavailableOption<T>(T option)
+		public static void UnavailableOption<T>(
+			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
+			T option)
 		{
 			//string option_str = option == null ? null : option.ToString();
 
@@ -261,7 +277,9 @@ namespace KSoft.Tool
 			where T : struct
 		{
 			if (!Enum.TryParse<T>(input, true, out value))
+			{
 				value = invalidValue;
+			}
 		}
 		#endregion
 	};

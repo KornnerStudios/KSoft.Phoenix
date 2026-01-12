@@ -59,7 +59,9 @@ namespace PhxGui
 		private static KSoft.WPF.BitVectorUserInterfaceData gFlagsUserInterfaceSource;
 		public static KSoft.WPF.BitVectorUserInterfaceData FlagsUserInterfaceSource { get {
 			if (gFlagsUserInterfaceSource == null)
+			{
 				gFlagsUserInterfaceSource = KSoft.WPF.BitVectorUserInterfaceData.ForEnum(typeof(MiscFlags));
+			}
 			return gFlagsUserInterfaceSource;
 		} }
 
@@ -177,10 +179,14 @@ namespace PhxGui
 
 			var engine = KSoft.Phoenix.Engine.PhxEngine.CreateForHaloWars(path, path, targets_360);
 			if (!engine.Preload())
+			{
 				return false;
+			}
 
 			if (!engine.Load())
+			{
 				return false;
+			}
 
 			return true;
 		}
@@ -230,7 +236,9 @@ namespace PhxGui
 			var results = new AcceptedFilesResults();
 
 			if (files == null || files.Length == 0)
+			{
 				return results;
+			}
 
 			results.FilesCount = files.Length;
 
@@ -306,12 +314,16 @@ namespace PhxGui
 		{
 			var results = DetermineAcceptedFiles(files, this.Flags);
 			if (results.FilesCount == 0)
+			{
 				return false;
+			}
 
 			if (results.AcceptedFileTypes.Cardinality != 0 && !results.AcceptedFileTypes.Test(AcceptedFileType.Unaccepted))
 			{
 				if (AcceptsFilesInternal(results, files))
+				{
 					return true;
+				}
 			}
 
 			ProcessFilesHelpText = "Unacceptable file or group of files";
@@ -321,16 +333,20 @@ namespace PhxGui
 		{
 			var results = DetermineAcceptedFiles(files, this.Flags);
 			if (results.FilesCount == 0)
+			{
 				return;
+			}
 
 			if (results.AcceptedFileTypes.Cardinality != 0 && !results.AcceptedFileTypes.Test(AcceptedFileType.Unaccepted))
 			{
 				if (ProcessFilesInternal(results, files))
+				{
 					ProcessFilesHelpText = "";
+				}
 			}
 		}
 
-		private bool AcceptsFilesInternal(AcceptedFilesResults results, string[] files)
+		private bool AcceptsFilesInternal(AcceptedFilesResults results, string[] /*files*/_)
 		{
 			foreach (int bitIndex in results.AcceptedFileTypes.SetBitIndices)
 			{
@@ -524,7 +540,7 @@ namespace PhxGui
 					{
 						if (results.AcceptedFileTypes.Cardinality == 1)
 						{
-							// TODO
+							// #TODO
 							//ProcessPkgFiles(files);
 							return true;
 						}

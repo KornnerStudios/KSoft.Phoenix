@@ -85,7 +85,7 @@ namespace KSoft.Tool.Phoenix
 
 			bool output_path_exists = true;
 
-			if (string.IsNullOrWhiteSpace(mOutputPath)) mOutputPath = Path.Combine(System.Environment.CurrentDirectory, @"\");
+			if (string.IsNullOrWhiteSpace(mOutputPath)) { mOutputPath = Path.Combine(System.Environment.CurrentDirectory, @"\"); }
 			if (!Directory.Exists(mOutputPath))
 			{
 				output_path_exists = false;
@@ -110,12 +110,11 @@ namespace KSoft.Tool.Phoenix
 		}
 		protected override bool ValidateArgs()
 		{
-			switch (mMode)
+			return mMode switch
 			{
-				case Mode.Extract: return ValidateArgsExtract();
-
-				default: return true;
-			}
+				Mode.Extract => ValidateArgsExtract(),
+				_ => true,
+			};
 		}
 		#endregion
 
@@ -130,8 +129,7 @@ namespace KSoft.Tool.Phoenix
 		}
 		void MainImpl(string helpName, List<string> args)
 		{
-			List<string> extra;
-			MainImpl_Prologue(args, out extra, () => mMode == Mode.None);
+			MainImpl_Prologue(args, out List<string> extra, () => mMode == Mode.None);
 			MainImpl_Tool(helpName, "Wwise", MainBody);
 		}
 
@@ -145,7 +143,7 @@ namespace KSoft.Tool.Phoenix
 			out ExtractSwitches flags)
 		{
 			flags = 0;
-			if (switches == null) switches = "";
+			if (switches == null) { switches = ""; }
 			const string k_switches_ctxt = "Wwise:Extract";
 
 			if (SwitchIsOn(switches, 0, k_switches_ctxt, "Dump sound.pck info to xml"))
@@ -157,7 +155,7 @@ namespace KSoft.Tool.Phoenix
 				flags |= ExtractSwitches.OverwriteExisting;
 			}
 		}
-		void Extract(string banksPath, string outputPath)
+		void Extract(string banksPath, string /*outputPath*/_)
 		{
 			if (!System.IO.File.Exists(kSoundTablePath))
 			{
@@ -166,8 +164,7 @@ namespace KSoft.Tool.Phoenix
 				return;
 			}
 
-			ExtractSwitches switches;
-			ExtractParseSwitches(mSwitches, out switches);
+			ExtractParseSwitches(mSwitches, out ExtractSwitches switches);
 
 			var stopwatch = mTimeOperation ? System.Diagnostics.Stopwatch.StartNew() : null;
 
@@ -231,19 +228,21 @@ namespace KSoft.Tool.Phoenix
 			}
 
 			#region DumpSoundPackToXml
-			if ( (switches & ExtractSwitches.DumpSoundPackToXml)!=0 )
-				using (var s = IO.XmlElementStream.CreateForWrite("soundsPack"))
+			if ((switches & ExtractSwitches.DumpSoundPackToXml) != 0)
 			{
-				Console.WriteLine("\t" + "Taking a dump...");
-				Serialize(s, pck_extractor);
-				Console.WriteLine("\t\t" + "flushing...");
-				s.Document.Save(Path.Combine(mOutputPath, kSoundsPackListingName));
-
-				if (mTimeOperation)
+				using (var s = IO.XmlElementStream.CreateForWrite("soundsPack"))
 				{
-					stopwatch.Stop();
-					Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
-					stopwatch.Restart();
+					Console.WriteLine("\t" + "Taking a dump...");
+					Serialize(s, pck_extractor);
+					Console.WriteLine("\t\t" + "flushing...");
+					s.Document.Save(Path.Combine(mOutputPath, kSoundsPackListingName));
+
+					if (mTimeOperation)
+					{
+						stopwatch.Stop();
+						Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
+						stopwatch.Restart();
+					}
 				}
 			}
 			#endregion
@@ -254,7 +253,9 @@ namespace KSoft.Tool.Phoenix
 			using (var fs = File.OpenRead(sounds_pck_filename))
 			using (var s = new IO.EndianStream(fs, Shell.EndianFormat.Big))
 			using (var towav = new StreamWriter(Path.Combine(mOutputPath, "HaloWars_towav.bat")))
+			{
 				pck_extractor.ExtractSounds(mOutputPath, towav, s.Reader, (switches & ExtractSwitches.OverwriteExisting) != 0);
+			}
 			#endregion
 
 			if (mTimeOperation)

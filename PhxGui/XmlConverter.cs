@@ -39,15 +39,12 @@ namespace PhxGui
 
 			private bool IsAcceptableInputFile(string inputFile)
 			{
-				switch (mMode)
+				return mMode switch
 				{
-					case XmlConverterMode.XmbToXml:
-						return KSoft.Phoenix.Resource.ResourceUtils.IsXmbFile(inputFile);
-					case XmlConverterMode.XmlToXmb:
-						return KSoft.Phoenix.Resource.ResourceUtils.IsXmlBasedFile(inputFile);
-					default:
-						return false;
-				}
+					XmlConverterMode.XmbToXml => KSoft.Phoenix.Resource.ResourceUtils.IsXmbFile(inputFile),
+					XmlConverterMode.XmlToXmb => KSoft.Phoenix.Resource.ResourceUtils.IsXmlBasedFile(inputFile),
+					_ => false,
+				};
 			}
 
 			private void GetConversionFiles(string inputFile, out string xmlFile, out string xmbFile, out string outputFile)
@@ -102,7 +99,7 @@ namespace PhxGui
 					}));
 			}
 
-			private void NotifyOutputFileReadOnly(string inputFile, string outputFile)
+			private void NotifyOutputFileReadOnly(string inputFile, string /*outputFile*/_)
 			{
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 					new Action(() =>
@@ -128,8 +125,8 @@ namespace PhxGui
 				{
 					try
 					{
-						string xml_file, xmb_file, output_file;
-						GetConversionFiles(f, out xml_file, out xmb_file, out output_file);
+						GetConversionFiles(f,
+							out string xml_file, out string xmb_file, out string output_file);
 
 						var output_info = new System.IO.FileInfo(output_file);
 						if (output_info.Exists)

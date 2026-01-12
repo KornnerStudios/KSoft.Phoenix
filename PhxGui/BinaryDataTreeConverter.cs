@@ -69,8 +69,8 @@ namespace PhxGui
 				{
 					try
 					{
-						string xml_file, xmb_file, output_file;
-						GetConversionFiles(f, out xml_file, out xmb_file, out output_file);
+						GetConversionFiles(f,
+							out string xml_file, out string xmb_file, out string output_file);
 
 						var output_info = new FileInfo(output_file);
 						if (output_info.Exists)
@@ -146,7 +146,7 @@ namespace PhxGui
 					}));
 			}
 
-			private void NotifyOutputFileReadOnly(string inputFile, string outputFile)
+			private void NotifyOutputFileReadOnly(string inputFile, string /*outputFile*/_)
 			{
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 					new Action(() =>

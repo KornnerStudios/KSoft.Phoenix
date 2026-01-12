@@ -7,7 +7,7 @@ namespace KSoft.Tool.Phoenix
 {
 	sealed class EraTool : ProgramBase
 	{
-		protected override Environment ProgramEnvironment { get { return Environment.Phx; } }
+		protected override Environment ProgramEnvironment => Environment.Phx;
 		public static void _Main(string helpName, List<string> args)
 		{
 			var prog = new EraTool();
@@ -104,7 +104,9 @@ namespace KSoft.Tool.Phoenix
 
 			string input_file = Path.Combine(mPath, mName) + KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted;
 			if (transformType == Security.Cryptography.CryptographyTransformType.Encrypt)
+			{
 				input_file += KSoft.Phoenix.Resource.EraFileUtil.kExtensionDecrypted;
+			}
 
 			if (!File.Exists(input_file))
 			{
@@ -116,31 +118,29 @@ namespace KSoft.Tool.Phoenix
 		}
 		protected override bool ValidateArgs()
 		{
-			switch (mMode)
+			return mMode switch
 			{
-				case Mode.Expand:
-					return ValidateArgsExpand();
-				case Mode.Build:
-					return ValidateArgsBuild();
+				Mode.Expand => ValidateArgsExpand(),
+				Mode.Build => ValidateArgsBuild(),
 
-				case Mode.Decrypt:
-					return ValidateCryptArgs(Security.Cryptography.CryptographyTransformType.Decrypt);
-				case Mode.Encrypt:
-					return ValidateCryptArgs(Security.Cryptography.CryptographyTransformType.Encrypt);
-
-				default: return true;
-			}
+				Mode.Decrypt => ValidateCryptArgs(Security.Cryptography.CryptographyTransformType.Decrypt),
+				Mode.Encrypt => ValidateCryptArgs(Security.Cryptography.CryptographyTransformType.Encrypt),
+				_ => true,
+			};
 		}
 		#endregion
 
 		void MainImpl(string helpName, List<string> args)
 		{
-			List<string> extra;
-			if (!Program.TryParse(Environment.Phx, mOptions, args, out extra) || mMode == Mode.None)
+			if (!Program.TryParse(Environment.Phx, mOptions, args, out List<string> /*extra*/_) || mMode == Mode.None)
+			{
 				mArgShowHelp = true;
+			}
 
 			if (mArgShowHelp || !ValidateArgs())
+			{
 				Program.ShowHelp(Environment.Phx, mOptions, helpName);
+			}
 			else
 			{
 				try
@@ -168,7 +168,9 @@ namespace KSoft.Tool.Phoenix
 					Console.Write("Exception while ERA processing: ");
 					Console.WriteLine(e);
 					if (System.Diagnostics.Debugger.IsAttached)
+					{
 						throw;
+					}
 				}
 			}
 		}
@@ -176,7 +178,9 @@ namespace KSoft.Tool.Phoenix
 		static void ParseSwitch(string switches, int index, ref bool flag)
 		{
 			if (switches.Length >= index+1)
+			{
 				flag = switches[index] == '1';
+			}
 		}
 		static void ExpandParseSwitches(string switches,
 			out Collections.BitVector32 options,
@@ -189,7 +193,9 @@ namespace KSoft.Tool.Phoenix
 				skip_verification = false, dump_dbg_info = false, dont_remove_xml_xmb = false;
 
 			if (switches == null)
+			{
 				switches = "";
+			}
 
 			int index = 0;
 			ParseSwitch(switches, index++, ref only_dump_listing);
@@ -271,15 +277,21 @@ namespace KSoft.Tool.Phoenix
 		static void Expand(string eraPath, string listingName, string outputPath, string switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
+			{
 				outputPath = Path.GetDirectoryName(eraPath);
+			}
 
-			Collections.BitVector32 options, expanderOptions;
-			ExpandParseSwitches(switches, out options, out expanderOptions);
+			ExpandParseSwitches(switches,
+				out Collections.BitVector32 options, out Collections.BitVector32 expanderOptions);
 
 			if (expanderOptions.Test(KSoft.Phoenix.Resource.EraFileExpanderOptions.Decrypt))
+			{
 				eraPath += KSoft.Phoenix.Resource.EraFileUtil.kExtensionEncrypted;
+			}
 			else
+			{
 				eraPath += KSoft.Phoenix.Resource.EraFileExpander.kNameExtension;
+			}
 
 			if (!File.Exists(eraPath))
 			{
@@ -300,11 +312,12 @@ namespace KSoft.Tool.Phoenix
 				expander.DebugOutput = debug_output;
 
 				if (expander.Read())
+				{
 					expander.ExpandTo(outputPath, listingName);
+				}
 			}
 
-			if (debug_output != null)
-				debug_output.Close();
+			debug_output?.Close();
 		}
 
 		static void BuildParseSwitches(string switches,
@@ -316,7 +329,9 @@ namespace KSoft.Tool.Phoenix
 			bool dump_dbg_info = false, is_32bit = false, encrypt = false;
 
 			if (switches == null)
+			{
 				switches = "";
+			}
 
 			int index = 0;
 			ParseSwitch(switches, index++, ref dump_dbg_info);
@@ -348,10 +363,12 @@ namespace KSoft.Tool.Phoenix
 		static void Build(string path, string listingName, string outputPath, string switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
+			{
 				outputPath = path;
+			}
 
-			Collections.BitVector32 options, builderOptions;
-			BuildParseSwitches(switches, out options, out builderOptions);
+			BuildParseSwitches(switches,
+				out Collections.BitVector32 options, out Collections.BitVector32 builderOptions);
 
 			StreamWriter debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_builder.txt")
@@ -369,17 +386,20 @@ namespace KSoft.Tool.Phoenix
 				if (builder.Read())
 				{
 					if (builder.Build(path, listingName, outputPath))
+					{
 						builder.ProgressOutput.WriteLine("Success!");
+					}
 					else
+					{
 						builder.ProgressOutput.WriteLine("Failed!");
+					}
 				}
 			}
 
-			if (debug_output != null)
-				debug_output.Close();
+			debug_output?.Close();
 		}
 
-		static void Crypt(string path, string eraName, string outputPath, string switches, Security.Cryptography.CryptographyTransformType transformType)
+		static void Crypt(string path, string eraName, string outputPath, string /*switches*/_, Security.Cryptography.CryptographyTransformType transformType)
 		{
 			KSoft.Phoenix.Resource.EraFileUtil.Crypt(path, eraName, outputPath, transformType,
 				Console.Out);
