@@ -10,7 +10,7 @@ namespace KSoft.Tool.Phoenix
 	sealed class WwiseTool : ProgramBase
 	{
 		protected override Environment ProgramEnvironment { get { return Environment.Phx; } }
-		public static void _Main(string helpName, List<string> args)
+		public static void MainEntryPoint(string helpName, List<string> args)
 		{
 			var prog = new WwiseTool();
 			prog.MainImpl(helpName, args);

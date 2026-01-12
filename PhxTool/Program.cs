@@ -1,22 +1,15 @@
 ﻿//#define TEST_ARGS
 //#define TEST_ENV_PHX
 
-using Mono.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Mono.Options;
 
 /*
  * KSoft.Tool
  *	?
  *	env=
- *		blam
- *		medusa
- *			help
- *			tool=
- *				rebase
- *					pe=
- *					out=
  *		phx
  *			help
  *			tool=
@@ -28,8 +21,6 @@ using System.Diagnostics.CodeAnalysis;
  *					name=
  *					out=
  *					switches=
- *		perf
- *			test=
 */
 
 namespace KSoft.Tool
@@ -171,27 +162,6 @@ namespace KSoft.Tool
 					"-out=" +		@"D:\HW\test",
 
 					"-switches=" +	 "0",
-	#elif TEST_ENV_BLAM_GVAR
-			"-env=blam",
-				"-tool=gvar",
-		#if !GVAR_DECODE
-					"-mode=" +		 "decode",
-					"-switches=" +	 "1",
-		#else
-					"-mode=" +		 "encode",
-					"-switches=" +	 "01",
-		#endif
-					"-stopwatch",
-					"-game=" +		 "HaloReach",
-					//"-offset=" +	 "53248",
-					//"-path=" +		@"C:\Mount\A\Bungie\Games\Halo4\Xbox\Retail\variants\Halomods\gfigmecdafz545555eo4szqgtcysgxrmv12ihzebo",
-					//"-path=" +		@"C:\Mount\A\Bungie\Games\Halo4\Xbox\Retail\variants\Halomods\HalomodsCTF.variant",
-					//"-path=" +		@"C:\Mount\A\Bungie\Games\Halo4\Xbox\Retail\variants\New\gfigmecdafz545555em4szqgtcysgxrmv12ihzebo.ctf_tu",
-					//"-name=" +		 "CTF",
-					//"-path=" +		@"C:\Mount\A\Bungie\Games\Halo4\Xbox\Retail\variants\New\campaign.game",
-					//"-name=" +		 "campaign",
-					"-path=" +		@"C:\Mount\A\Bungie\Games\HaloReach\Xbox\Retail\variants\Race\RaceTest.variant",
-					"-name=" +		 "Race",
 	#endif
 		};
 #endif
@@ -215,14 +185,8 @@ namespace KSoft.Tool
 			{
 				switch (mArgEnv)
 				{
-#if false
-					case Environment.Perf:
-						ProgramPerf._Main(extra);
-						break;
-#endif
-
 					case Environment.Phx:
-						ProgramPhx._Main(extra);
+						ProgramPhx.MainEntryPoint(extra);
 						break;
 
 					default:

@@ -7,7 +7,7 @@ namespace KSoft.Tool
 	sealed class ProgramPhx : ProgramBase
 	{
 		protected override Environment ProgramEnvironment => Environment.Phx;
-		public static void _Main(List<string> args)
+		public static void MainEntryPoint(List<string> args)
 		{
 			var prog = new ProgramPhx();
 			prog.MainImpl(args);
@@ -51,10 +51,10 @@ namespace KSoft.Tool
 			switch (mToolType)
 			{
 				case ToolType.Era:
-					Phoenix.EraTool._Main(help_name, args);
+					Phoenix.EraTool.MainEntryPoint(help_name, args);
 					break;
 				case ToolType.Wwise:
-					Phoenix.WwiseTool._Main(help_name, args);
+					Phoenix.WwiseTool.MainEntryPoint(help_name, args);
 					break;
 
 				default: Program.UnavailableOption(mToolType); break;

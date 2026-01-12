@@ -49,7 +49,7 @@ namespace KSoft.Tool
 			switch (mToolType)
 			{
 				case ToolType.Pkg:
-					Hogan.PkgTool._Main(help_name, args);
+					Hogan.PkgTool.MainEntryPoint(help_name, args);
 					break;
 
 				default: Program.UnavailableOption(mToolType); break;

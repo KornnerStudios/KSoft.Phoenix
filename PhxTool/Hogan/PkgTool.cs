@@ -8,7 +8,7 @@ namespace KSoft.Tool.Hogan
 	sealed class PkgTool : ProgramBase
 	{
 		protected override Environment ProgramEnvironment { get { return Environment.Hogan; } }
-		public static void _Main(string helpName, List<string> args)
+		public static void MainEntryPoint(string helpName, List<string> args)
 		{
 			var prog = new PkgTool();
 			prog.MainImpl(helpName, args);

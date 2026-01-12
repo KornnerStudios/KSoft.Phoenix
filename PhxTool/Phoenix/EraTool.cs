@@ -8,7 +8,7 @@ namespace KSoft.Tool.Phoenix
 	sealed class EraTool : ProgramBase
 	{
 		protected override Environment ProgramEnvironment => Environment.Phx;
-		public static void _Main(string helpName, List<string> args)
+		public static void MainEntryPoint(string helpName, List<string> args)
 		{
 			var prog = new EraTool();
 			prog.MainImpl(helpName, args);
