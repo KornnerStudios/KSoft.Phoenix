@@ -7,7 +7,7 @@ namespace KSoft.Tool
 	sealed class ProgramHogan : ProgramBase
 	{
 		protected override Environment ProgramEnvironment => Environment.Hogan;
-		public static void _Main(List<string> args)
+		public static void MainEntryPoint(List<string> args)
 		{
 			var prog = new ProgramHogan();
 			prog.MainImpl(args);

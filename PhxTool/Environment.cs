@@ -5,8 +5,6 @@ namespace KSoft.Tool
 	{
 		None,
 
-		Perf,
-
 		Phx,
 		Hogan,
 	};

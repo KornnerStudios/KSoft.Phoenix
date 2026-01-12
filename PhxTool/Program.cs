@@ -10,6 +10,10 @@ using Mono.Options;
  * KSoft.Tool
  *	?
  *	env=
+ *		hogan
+ *			tool=
+ *				pkg
+ *					mode=
  *		phx
  *			help
  *			tool=
@@ -185,6 +189,10 @@ namespace KSoft.Tool
 			{
 				switch (mArgEnv)
 				{
+					case Environment.Hogan:
+						ProgramHogan.MainEntryPoint(extra);
+						break;
+
 					case Environment.Phx:
 						ProgramPhx.MainEntryPoint(extra);
 						break;
