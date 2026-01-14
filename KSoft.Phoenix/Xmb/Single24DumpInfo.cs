@@ -42,6 +42,46 @@ namespace KSoft.Phoenix.Xmb
 			});
 		}
 
+		public static Single24DumpInfo Merge(IEnumerable<Single24DumpInfo> infos)
+		{
+			var mergedInfo = new Single24DumpInfo();
+			Dictionary<uint, Single24DumpEntry> bitsToEntries = new();
+
+			foreach (Single24DumpInfo sourceInfo in infos)
+			{
+				foreach (Single24DumpEntry sourceEntry in sourceInfo.Entries)
+				{
+					if (bitsToEntries.TryGetValue(sourceEntry.Single24Bits, out Single24DumpEntry existingEntry))
+					{
+						if (existingEntry.FloatValue != existingEntry.FloatValue)
+						{
+							throw new System.IO.InvalidDataException(
+								$"Expected {sourceEntry.Single24Bits:X6}->{sourceEntry.FloatValue}, got {existingEntry.FloatValue}");
+						}
+					}
+					else
+					{
+						var newEntry = sourceEntry.Description != null
+							? sourceEntry
+							: new Single24DumpEntry()
+							{
+								Single24Bits = sourceEntry.Single24Bits,
+								FloatValue = sourceEntry.FloatValue,
+								Description = sourceInfo.SourcePath,
+							};
+
+						bitsToEntries.Add(newEntry.Single24Bits, newEntry);
+					}
+				}
+			}
+
+			mergedInfo.Entries.AddRange(bitsToEntries.Values);
+			// sort from smallest to largest
+			mergedInfo.Entries.Sort((x, y) => x.Single24Bits.CompareTo(y.Single24Bits));
+
+			return mergedInfo;
+		}
+
 		#region ITagElementTextStreamable Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class

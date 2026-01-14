@@ -199,9 +199,12 @@ namespace KSoft.Tool.Phoenix
 				}
 			});
 
+			Single24DumpInfo mergedDumpInfo = Single24DumpInfo.Merge(dumpInfos);
+
 			using (var s = IO.XmlElementStream.CreateForWrite("Single24Dumps"))
 			{
-				Serialize(s, dumpInfos);
+				//Serialize(s, dumpInfos);
+				mergedDumpInfo.Serialize(s);
 				s.Document.Save(Path.Combine(outputPath, "_Single24Dumps.xml"));
 			}
 

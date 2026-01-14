@@ -137,7 +137,7 @@ namespace KSoft.Tool
 		}
 
 #if TEST_ARGS
-		static string[] kTestArgs = {
+		static readonly string[] kTestArgs = [
 	#if TEST_ENV_PHX
 			"-env=phx",
 				"-tool=era",
@@ -180,7 +180,7 @@ namespace KSoft.Tool
 
 					"-switches=" +	 "0",
 	#endif
-		};
+		];
 #endif
 		void MainImpl(string[] args)
 		{
