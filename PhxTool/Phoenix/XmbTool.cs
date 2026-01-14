@@ -204,6 +204,9 @@ namespace KSoft.Tool.Phoenix
 			const string kRootName = "Single24Dumps";
 			using (var s = IO.XmlElementStream.CreateForWrite(kRootName))
 			{
+				// #TODO add XmlDeclaration support to XmlElementStream
+				s.Document.InsertBefore(s.Document.CreateXmlDeclaration("1.0", "utf-8", null), s.Document.FirstChild);
+
 				//Serialize(s, dumpInfos);
 				mergedDumpInfo.Serialize(s);
 
