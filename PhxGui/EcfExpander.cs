@@ -1,10 +1,11 @@
-﻿using System;
+﻿using KSoft;
+using KSoft.Collections;
+using KSoft.Phoenix.Resource;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using KSoft;
-using KSoft.Collections;
 
 namespace PhxGui
 {
@@ -115,18 +116,25 @@ namespace PhxGui
 								_ => "UNKNOWN",
 							};
 						}
-						message_text = string.Format("Expand {0} {1}{2}{3}{4}",
-							error_type,
-							ecfFile, Environment.NewLine,
-							error_hint, Environment.NewLine);
+
+						var sb = new System.Text.StringBuilder();
+						sb.Append($"Expand {error_type} ");
+						sb.AppendLine(ecfFile);
+						sb.AppendLine(error_hint);
+
+						message_text = sb.ToString();
 					}
 
 					if (!string.IsNullOrEmpty(verbose_output))
 					{
-						message_text = string.Format("VerboseOutput:{0}{1}{2}" + "{3}{4}",
-							Environment.NewLine,
-							args.VerboseOutput.GetStringBuilder(), Environment.NewLine,
-							message_text, Environment.NewLine);
+						var sb = new System.Text.StringBuilder();
+						sb.AppendLine("VerboseOutput:");
+						// include the ECF path for context, when dealing with multiple files
+						sb.AppendLine(args.EcfPath);
+						sb.AppendLine(args.VerboseOutput.GetStringBuilder().ToString());
+						sb.AppendLine(message_text);
+
+						message_text = sb.ToString();
 					}
 					if (!string.IsNullOrEmpty(message_text))
 					{

@@ -143,8 +143,10 @@ namespace KSoft.Phoenix.Resource
 			{
 				EraFileEntryChunk file = mFiles[x];
 
-				if (mFileNameToChunk.TryGetValue(file.FileName, out EraFileEntryChunk /*existingFile*/_))
+				if (mFileNameToChunk.TryGetValue(file.FileName, out EraFileEntryChunk existingFile))
 				{
+					Util.MarkUnusedVariable(ref existingFile);
+
 					verboseOutput?.WriteLine("Removing duplicate {0} entry at #{1}",
 						file.FileName, FileIndexToListingIndex(x));
 

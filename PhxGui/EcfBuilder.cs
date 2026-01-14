@@ -83,17 +83,23 @@ namespace PhxGui
 							_ => "UNKNOWN",
 						};
 					}
-					message_text += string.Format("Build {0} {1}{2}{3}",
-						error_type,
-						args.ListingPath, Environment.NewLine, error_hint);
+
+					var sb = new System.Text.StringBuilder();
+					sb.Append($"Build {error_type} ");
+					sb.AppendLine(args.ListingPath);
+					sb.AppendLine(error_hint);
+
+					message_text = sb.ToString();
 				}
 
 				if (!string.IsNullOrEmpty(verbose_output))
 				{
-					message_text = string.Format("VerboseOutput:{0}{1}{2}" + "{3}{4}",
-						Environment.NewLine,
-						args.VerboseOutput.GetStringBuilder(), Environment.NewLine,
-						message_text, Environment.NewLine);
+					var sb = new System.Text.StringBuilder();
+					sb.AppendLine("VerboseOutput:");
+					sb.AppendLine(args.VerboseOutput.GetStringBuilder().ToString());
+					sb.AppendLine(message_text);
+
+					message_text = sb.ToString();
 				}
 				if (!string.IsNullOrEmpty(message_text))
 				{
