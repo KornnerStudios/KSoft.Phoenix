@@ -1,10 +1,10 @@
-﻿using KSoft.Shell;
-using Mono.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Mono.Options;
+
 using Single24DumpInfo = KSoft.Phoenix.Xmb.Single24DumpInfo;
 
 namespace KSoft.Tool.Phoenix
@@ -179,13 +179,13 @@ namespace KSoft.Tool.Phoenix
 				string relativeXmbFilePath = Path.GetRelativePath(workDirectory, xmbFilePath);
 
 				using (var xmb_ms = new MemoryStream(file_bytes, false))
-				using (var xmb = new IO.EndianStream(xmb_ms, EndianFormat.Big, System.IO.FileAccess.Read, name: relativeXmbFilePath))
+				using (var xmb = new IO.EndianStream(xmb_ms, KSoft.Shell.EndianFormat.Big, System.IO.FileAccess.Read, name: relativeXmbFilePath))
 				using (var xml_ms = new MemoryStream(IntegerMath.kMega * 1))
 				{
 					xmb.StreamMode = FileAccess.Read;
 
 					Single24DumpInfo dumpInfo = KSoft.Phoenix.Resource.ECF.EcfFileXmb.DumpSingle24Values(
-						xmb, ProcessorSize.x64); // #HACK HWDE
+						xmb, KSoft.Shell.ProcessorSize.x64); // #HACK HWDE
 
 					if (dumpInfo == null)
 					{
@@ -201,10 +201,38 @@ namespace KSoft.Tool.Phoenix
 
 			Single24DumpInfo mergedDumpInfo = Single24DumpInfo.Merge(dumpInfos);
 
-			using (var s = IO.XmlElementStream.CreateForWrite("Single24Dumps"))
+			const string kRootName = "Single24Dumps";
+			using (var s = IO.XmlElementStream.CreateForWrite(kRootName))
 			{
 				//Serialize(s, dumpInfos);
 				mergedDumpInfo.Serialize(s);
+
+				var sb = new System.Text.StringBuilder();
+				sb.AppendLine();
+				sb.AppendLine("static readonly KeyValuePair<uint, float>[] kSingle24BitsAndFloats =");
+				sb.AppendLine("[");
+				foreach (var entry in mergedDumpInfo.Entries)
+				{
+					string kvpCode = FormattableString.Invariant(
+						$"new(0x{entry.Single24Bits:X6}, {entry.FloatValue}f),");
+
+					sb.Append('\t');
+					sb.Append(kvpCode);
+					// 30 being the longest kvpCode length we expect, from cleansing_air_impact_large_a.vis.xmb's 0x1618DF
+					int spacesToDescription = 31 - kvpCode.Length;
+					if (spacesToDescription > 0)
+					{
+						sb.Append(' ', spacesToDescription);
+					}
+					sb.AppendLine($"// {entry.Description}");
+				}
+				sb.AppendLine("];");
+
+				var cdataElement = s.Document.CreateElement("Single24BitsAndFloats");
+				s.Document[kRootName].AppendChild(cdataElement);
+				var cdata = s.Document.CreateCDataSection(sb.ToString());
+				cdataElement.AppendChild(cdata);
+
 				s.Document.Save(Path.Combine(outputPath, "_Single24Dumps.xml"));
 			}
 
