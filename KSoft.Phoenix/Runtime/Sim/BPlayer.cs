@@ -176,7 +176,7 @@ namespace KSoft.Phoenix.Runtime
 		long mPositionMarker;
 		public void Serialize(IO.EndianStream s)
 		{
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			#region Init
 			if (s.IsReading)

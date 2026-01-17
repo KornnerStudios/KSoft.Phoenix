@@ -35,9 +35,7 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-#pragma warning disable IDE0019 // Use pattern matching
-			var eraUtil = s.Owner as EraFileUtil;
-#pragma warning restore IDE0019 // Use pattern matching
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
 			long position = s.BaseStream.Position;
 
 			base.Serialize(s);
@@ -103,9 +101,8 @@ namespace KSoft.Phoenix.Resource
 			{
 				bool remove_xmb_ext = true;
 
-#pragma warning disable IDE0019 // Use pattern matching
-				var expander = s.Owner as EraFileExpander;
-#pragma warning restore IDE0019 // Use pattern matching
+				KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileExpander expander);
+
 				if (expander != null && expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 				{
 					remove_xmb_ext = false;

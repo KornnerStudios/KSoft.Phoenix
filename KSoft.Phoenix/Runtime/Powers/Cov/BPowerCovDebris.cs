@@ -45,7 +45,7 @@ namespace KSoft.Phoenix.Runtime
 		{
 			base.Serialize(s);
 
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			s.Stream(ref NextTickTime);
 			s.Stream(ref RealGravityBall);

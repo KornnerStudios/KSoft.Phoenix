@@ -113,13 +113,11 @@ namespace KSoft.Phoenix.Resource.ECF
 			where TDoc : class
 			where TCursor : class
 		{
-#pragma warning disable IDE0019 // Use pattern matching
-			var ecf_expander = s.Owner as EcfFileExpander;
-#pragma warning restore IDE0019 // Use pattern matching
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EcfFileExpander ecf_expander);
 
 			if (s.IsReading)
 			{
-				Parent = (EcfFileDefinition)s.UserData;
+				Parent = KSoft.Debug.TypeCheck.CastReference<EcfFileDefinition>(s.UserData);
 			}
 
 			s.StreamAttribute("id", this, obj => Id, NumeralBase.Hex);

@@ -60,7 +60,7 @@ namespace KSoft.Phoenix.Xmb
 		#region IEndianStreamable Members
 		public void Read(IO.EndianReader s)
 		{
-			var context = s.UserData as XmbFileContext;
+			var context = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(s.UserData);
 
 			using (s.ReadSignatureWithByteSwapSupport(kSignature))
 			{
@@ -134,7 +134,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public void Write(IO.EndianWriter s)
 		{
-			var context = s.UserData as XmbFileContext;
+			var context = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(s.UserData);
 
 			s.Write(kSignature);
 			if (context.PointerSize == Shell.ProcessorSize.x64)

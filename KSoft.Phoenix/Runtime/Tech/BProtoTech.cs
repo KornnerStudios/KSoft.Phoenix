@@ -13,7 +13,7 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			sg.StreamBCost(s, ref Cost);
 			s.Stream(ref BuildPoints);

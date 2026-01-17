@@ -7,12 +7,12 @@ namespace KSoft.Phoenix.Resource
 		const uint kSiganture = 0x17FDBA9C;
 		const int kHeaderSize = 0x1E00;
 
-		public static int CalculateHeaderSize() { return kHeaderSize; }
+		public static int CalculateHeaderSize() => kHeaderSize;
 
 		ECF.EcfHeader mHeader;
 		readonly EraFileSignature mSignature = new();
 
-		public int FileCount { get { return mHeader.ChunkCount; } }
+		public int FileCount => mHeader.ChunkCount;
 
 		public EraFileHeader()
 		{
@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			var eraFile = s.Owner as EraFileUtil;
+			var eraFile = KSoft.Debug.TypeCheck.CastReference<EraFileUtil>(s.Owner);
 
 			if (s.IsWriting)
 			{

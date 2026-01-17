@@ -24,14 +24,18 @@ namespace KSoft.Phoenix.Runtime
 #if false
 		public void ToStream(IO.IndentedTextWriter s)
 		{
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			s.WriteLine("{1}\t{2}\t{3}\t{4}\t{5}\t{0}", sg.Database.ProtoPowers[ProtoPowerID],
 				TimesUsed.ToString(), IconLocation.ToString(),
 				IgnoreCost.ToString(), IgnoreTechPrereqs.ToString(), IgnorePop.ToString());
 			using (s.EnterIndentBookmark())
+			{
 				for (int x = 0; x < Items.Length; x++)
+				{
 					Items[x].ToStream(s);
+				}
+			}
 		}
 #endif
 		#endregion

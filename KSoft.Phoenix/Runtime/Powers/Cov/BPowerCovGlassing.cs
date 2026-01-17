@@ -26,7 +26,7 @@ namespace KSoft.Phoenix.Runtime
 		public override void Serialize(IO.EndianStream s)
 		{
 			base.Serialize(s);
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			BSaveGame.StreamVectorArray(s, ref Waypoints, cMaximumWaypoints);
 			s.Stream(ref BeamID); s.Stream(ref AirImpactObjectID);

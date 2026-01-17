@@ -58,9 +58,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		internal void SerializeBegin(IO.EndianStream s
 			, bool isFinalizing = false)
 		{
-#pragma warning disable IDE0019 // Use pattern matching
-			var ecfFile = s.Owner as EcfFileUtil;
-#pragma warning restore IDE0019 // Use pattern matching
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EcfFileUtil ecfFile);
 
 			if (s.IsWriting)
 			{

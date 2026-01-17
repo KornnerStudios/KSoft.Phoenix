@@ -101,7 +101,7 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			if (s.IsReading)
 			{

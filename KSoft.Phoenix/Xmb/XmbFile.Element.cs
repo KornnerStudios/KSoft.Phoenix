@@ -145,7 +145,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 			public void Write(IO.EndianWriter s)
 			{
-				var xmbContext = s.UserData as XmbFileContext;
+				var xmbContext = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(s.UserData);
 
 				s.Write(RootElementIndex);
 				XmbVariantSerialization.Write(s, NameVariant);

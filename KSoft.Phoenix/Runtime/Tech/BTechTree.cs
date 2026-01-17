@@ -34,10 +34,12 @@ namespace KSoft.Phoenix.Runtime
 #if false
 		public void ToStream(IO.IndentedTextWriter s)
 		{
-			var sg = s.Owner as BSaveGame;
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
 
 			for (int x = 0; x < Techs.Length; x++)
+			{
 				ToStream(s, sg.Database.ProtoTechs[x], Techs[x]);
+			}
 		}
 #endif
 		#endregion

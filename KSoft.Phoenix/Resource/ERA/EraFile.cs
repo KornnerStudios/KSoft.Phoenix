@@ -364,7 +364,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			Contract.Requires(blockStream.IsReading);
 
-			var eraExpander = (EraFileExpander)blockStream.Owner;
+			var eraExpander = KSoft.Debug.TypeCheck.CastReference<EraFileExpander>(blockStream.Owner);
 
 			eraExpander.ProgressOutput?.WriteLine("\tUnpacking files...");
 
@@ -667,7 +667,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			Contract.Requires(blockStream.IsWriting);
 
-			var builder = blockStream.Owner as EraFileBuilder;
+			var builder = KSoft.Debug.TypeCheck.CastReference<EraFileBuilder>(blockStream.Owner);
 
 			Contract.Assert(blockStream.BaseStream.Position == CalculateHeaderAndFileChunksSize());
 
@@ -806,7 +806,7 @@ namespace KSoft.Phoenix.Resource
 				return;
 			}
 
-			var expander = s.Owner as EraFileExpander;
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileExpander expander);
 			var progressOutput = expander?.ProgressOutput;
 			var verboseOutput = expander?.VerboseOutput;
 
@@ -836,9 +836,7 @@ namespace KSoft.Phoenix.Resource
 
 		void ReadFileNamesChunk(IO.EndianStream s)
 		{
-#pragma warning disable IDE0019 // Use pattern matching
-			var eraUtil = s.Owner as EraFileUtil;
-#pragma warning restore IDE0019 // Use pattern matching
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
 
 			EraFileEntryChunk filenames_chunk = mFiles[0];
 
@@ -877,7 +875,7 @@ namespace KSoft.Phoenix.Resource
 
 		void ValidateFileHashes(IO.EndianStream s)
 		{
-			var eraUtil = s.Owner as EraFileUtil;
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
 
 			if (eraUtil != null &&
 				eraUtil.Options.Test(EraFileUtilOptions.SkipVerification))
@@ -945,7 +943,7 @@ namespace KSoft.Phoenix.Resource
 
 		public void Serialize(IO.EndianStream s)
 		{
-			var eraUtil = s.Owner as EraFileUtil;
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
 
 			if (s.IsWriting)
 			{
