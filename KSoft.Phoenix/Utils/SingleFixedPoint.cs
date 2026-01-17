@@ -15,14 +15,42 @@ namespace KSoft.Phoenix
 			return value >= kMin && value <= kMax;
 		}
 
-		public static float ToSingle(uint value)
+		public static bool TryFromSingle(double inValue, out uint encodedBits)
+		{
+			double actual_value = inValue;
+			encodedBits = 0;
+			if (actual_value < 0.0)
+			{
+				encodedBits = Bitwise.Int24.SetSigned(0, true);
+				actual_value = -actual_value;
+			}
+
+			actual_value = System.Math.Floor(actual_value * kScaleFromSingleMultiplier);
+			if (actual_value > Bitwise.Int24.MaxValue)
+			{
+				return false;
+			}
+
+			uint value_as_uint = (uint)actual_value;
+			encodedBits |= value_as_uint;
+			return true;
+		}
+
+		public static double ToDouble(uint value)
 		{
 			bool is_signed = Bitwise.Int24.IsSigned(value);
 			value = Bitwise.Int24.GetNumber(value);
 
-			float single = (float)(kScaleToSingleMultiplier * value);
+			double single = (kScaleToSingleMultiplier * value);
 			return is_signed ? -single : single;
 		}
+
+		public static float ToSingle(uint value)
+		{
+			return (float)ToDouble(value);
+		}
+
+		[System.Obsolete($"Use {nameof(TryFromSingle)}")]
 		public static uint FromSingle(float single)
 		{
 			bool is_signed = single < 0.0F;

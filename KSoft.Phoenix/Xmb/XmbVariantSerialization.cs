@@ -190,6 +190,7 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region RequiresIndirectStorage
+		[Obsolete("Checking InRange is not enough, need to also check TryFromSingle is successful")]
 		public static bool SingleRequiresIndirectStorage(float single)
 		{
 			return !SingleFixedPoint.InRange(single) && !Bitwise.Single24.InRange(single);
@@ -305,18 +306,22 @@ namespace KSoft.Phoenix.Xmb
 			t = RawVariantType.Single;
 			float single = v.Single;
 
-			if (SingleFixedPoint.InRange(single))
+			// #TODO add a flag which will ignore all FixedPoint and Single24 optimizations and always store Indirect
+
+			if (SingleFixedPoint.InRange(single) && SingleFixedPoint.TryFromSingle(single, out uint singleAsFixedPointBits))
 			{
 				t = RawVariantType.FixedPoint;
-				data = SingleFixedPoint.FromSingle(single);
+				data = /*SingleFixedPoint.FromSingle(single)*/singleAsFixedPointBits;
 			}
-			else if (Bitwise.Single24.InRange(single))
+			else if (Bitwise.Single24.InRange(single) && Bitwise.Single24.TryFromSingle(single, out uint singleAs24Bits))
 			{
 				t = RawVariantType.Single24;
-				data = Bitwise.Single24.FromSingle(single);
+				data = /*Bitwise.Single24.FromSingle(single)*/singleAs24Bits;
 			}
 			else
 			{
+				// #TODO this assumes the value already exists in the xmb memory pool
+				// which is backwards, as we're trying to perform the optimized encodes above
 				data = v.Offset;
 			}
 		}
