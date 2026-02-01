@@ -10,13 +10,17 @@ namespace KSoft.Phoenix.Phx.Test
 		[TestMethod]
 		public void LocStringTable_IndexRangesTest()
 		{
-			var ranges = LocStringTable.IndexRanges;
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+			LocStringTableIndexRange ranges = LocStringTable.IndexRanges;
 			ranges = null;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 
 			var st = new LocStringTable();
 			var stats = st.RangeStats;
 			foreach (var stat in stats)
+			{
 				Console.WriteLine(stat.Value);
+			}
 		}
 
 		[TestMethod]
@@ -33,7 +37,9 @@ namespace KSoft.Phoenix.Phx.Test
 			for (int x = 0; x <= (range.EndIndex - 1); x++)
 			{
 				if (x == kExpectedFreeId)
+				{
 					continue;
+				}
 
 				var str = new Phx.LocString(x);
 				st.Add(str);
@@ -74,7 +80,9 @@ namespace KSoft.Phoenix.Phx.Test
 
 			var stats = st.RangeStats;
 			foreach (var stat in stats)
+			{
 				Console.WriteLine(stat.Value);
+			}
 		}
 	};
 }

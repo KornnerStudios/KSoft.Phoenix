@@ -56,7 +56,9 @@ namespace KSoft.Phoenix.Engine.Test
 			Console.WriteLine("English StringTable range stats:");
 			var stats = hw.Database.EnglishStringTable.RangeStats;
 			foreach (var stat in stats)
+			{
 				Console.WriteLine(stat.Value);
+			}
 		}
 
 		[TestMethod]
@@ -73,10 +75,12 @@ namespace KSoft.Phoenix.Engine.Test
 
 				hw.Database.Serialize(s);
 
-				var xw_settings = new System.Xml.XmlWriterSettings();
-				xw_settings.Indent = true;
-				xw_settings.IndentChars = "\t";
-				xw_settings.NewLineChars = "\n";
+				var xw_settings = new System.Xml.XmlWriterSettings
+				{
+					Indent = true,
+					IndentChars = "\t",
+					NewLineChars = "\n"
+				};
 				string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "Serina.xml");
 				Console.WriteLine("Saving to: {0}", output_path);
 				using (var xw = System.Xml.XmlWriter.Create(output_path, xw_settings))
@@ -184,7 +188,9 @@ namespace KSoft.Phoenix.Engine.Test
 			using (var fs = System.IO.File.OpenRead(k_sounds_pck))
 			using (var s = new IO.EndianStream(fs, Shell.EndianFormat.Big))
 			using (var towav = new System.IO.StreamWriter(k_sounds_path + "towav.bat"))
+			{
 				extractor.ExtractSounds(k_sounds_path, towav, s.Reader);
+			}
 		}
 	};
 }

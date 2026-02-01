@@ -8,7 +8,8 @@ namespace KSoft.Phoenix.Resource.Test
 		: BaseTestClass
 	{
 		const string kEraCryptInputDir = @"C:\KStudio\HaloWars\PC\";
-		string kEraCryptOutputDir { get { return TestContext.TestResultsDirectory; } }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
+		string kEraCryptOutputDir => TestContext.TestResultsDirectory;
 		const string kEraCryptTestFileName = "root";
 
 		static readonly Collections.BitVector32 kEraUtilTestOptions = new Collections.BitVector32()
@@ -19,18 +20,19 @@ namespace KSoft.Phoenix.Resource.Test
 			.Set(EraFileExpanderOptions.OnlyDumpListing)
 			.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
 			;
-		static readonly Collections.BitVector32 kEraBuilderTestOptions = new Collections.BitVector32()
+		static readonly Collections.BitVector32 kEraBuilderTestOptions = new()
 			//EraFileBuilderOptions
 			;
 		const string kEraExpanderFileName = kEraCryptTestFileName;
-		string kEraExpanderInputFile { get { return System.IO.Path.Combine(
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
+		string kEraExpanderInputFile => System.IO.Path.Combine(
 			kEraCryptOutputDir
 				, kEraExpanderFileName
 					+ EraFileUtil.kExtensionEncrypted
 					+ EraFileUtil.kExtensionDecrypted
 			);
-		} }
-		string kEraExpanderOutputDir { get { return System.IO.Path.Combine(TestContext.TestResultsDirectory, @"assets\"); } }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
+		string kEraExpanderOutputDir => System.IO.Path.Combine(TestContext.TestResultsDirectory, @"assets\");
 		const string kEraBuilderOutputDir = kEraCryptInputDir;
 
 		[TestMethod]
@@ -71,7 +73,7 @@ namespace KSoft.Phoenix.Resource.Test
 		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_ExpandTest()
 		{
-			bool result = false;
+			bool result;
 
 			string input_path = kEraExpanderInputFile;
 			Console.WriteLine("Reading from: {0}", input_path);
@@ -97,7 +99,7 @@ namespace KSoft.Phoenix.Resource.Test
 		{
 			string k_listing_path = System.IO.Path.Combine(kEraExpanderOutputDir, kEraExpanderFileName);
 
-			bool result = false;
+			bool result;
 
 			using (var builder = new EraFileBuilder(k_listing_path))
 			{
@@ -132,24 +134,27 @@ namespace KSoft.Phoenix.Resource.Test
 					+ EraFileUtil.kExtensionEncrypted
 				;
 
-			bool result = false;
+			bool result;
 
 			#region Expand
 			var expand = false;
-			if (expand) using (var expander = new EraFileExpander(k_input_era))
+			if (expand)
 			{
-				expander.Options = kEraUtilTestOptions;
-				expander.ExpanderOptions = kEraExpanderTestOptions
-					//.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
-					.Set(EraFileExpanderOptions.Decrypt);
-				expander.ProgressOutput = Console.Out;
-				expander.VerboseOutput = Console.Out;
+				using (var expander = new EraFileExpander(k_input_era))
+				{
+					expander.Options = kEraUtilTestOptions;
+					expander.ExpanderOptions = kEraExpanderTestOptions
+						//.Set(EraFileExpanderOptions.DontTranslateXmbFiles)
+						.Set(EraFileExpanderOptions.Decrypt);
+					expander.ProgressOutput = Console.Out;
+					expander.VerboseOutput = Console.Out;
 
-				result = expander.Read();
-				Assert.IsTrue(result, "Read failed");
+					result = expander.Read();
+					Assert.IsTrue(result, "Read failed");
 
-				result = expander.ExpandTo(kEraExpanderOutputDir, kEraExpanderFileName);
-				Assert.IsTrue(result, "Expansion failed");
+					result = expander.ExpandTo(kEraExpanderOutputDir, kEraExpanderFileName);
+					Assert.IsTrue(result, "Expansion failed");
+				}
 			}
 			#endregion
 			#region Build

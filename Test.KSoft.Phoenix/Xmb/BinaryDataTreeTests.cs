@@ -22,13 +22,13 @@ namespace KSoft.Phoenix.Xmb.Test
 			}
 		};
 
-		static UgxBdtReference[] UgxFiles = new UgxBdtReference[]
-		{
-			new UgxBdtReference(0x154A0, 0x476, @"C:\HaloWars\Alpha\art\unsc\infantry\odst_01\odst_01.ugx"),
-			//new UgxBdtReference(0, 0x0, @""),
-			new UgxBdtReference(0x2FD0, 0x3B0, @"M:\Ensemble\HaloWars2\HaloWars2_uwp_x64_store_1_1_57_0\data\units\unsc\actors\infantry\spartans\cs_spartan_alice\mesh_cs_spartan_alice.ugx"),
-			new UgxBdtReference(0x29BB4, 0x9F8, @"M:\Ensemble\HaloWars2\HaloWars2_uwp_x64_store_1_1_57_0\data\maps\rostermode\evenflowart\ivy_dressing\childmesh_child_asset284.ugx"),
-		};
+		static readonly UgxBdtReference[] UgxFiles =
+		[
+			new(0x154A0, 0x476, @"C:\HaloWars\Alpha\art\unsc\infantry\odst_01\odst_01.ugx"),
+			//new(0, 0x0, @""),
+			new(0x2FD0, 0x3B0, @"M:\Ensemble\HaloWars2\HaloWars2_uwp_x64_store_1_1_57_0\data\units\unsc\actors\infantry\spartans\cs_spartan_alice\mesh_cs_spartan_alice.ugx"),
+			new(0x29BB4, 0x9F8, @"M:\Ensemble\HaloWars2\HaloWars2_uwp_x64_store_1_1_57_0\data\maps\rostermode\evenflowart\ivy_dressing\childmesh_child_asset284.ugx"),
+		];
 
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
@@ -47,8 +47,10 @@ namespace KSoft.Phoenix.Xmb.Test
 
 					try
 					{
-						var bdt = new BinaryDataTree();
-						bdt.DecompileAttributesWithTypeData = true;
+						var bdt = new BinaryDataTree
+						{
+							DecompileAttributesWithTypeData = true
+						};
 						using (var bdt_ms = new MemoryStream(bdt_bytes))
 						using (var es = new IO.EndianStream(bdt_ms, Shell.EndianFormat.Big, permissions: FileAccess.Read))
 						{
@@ -66,8 +68,9 @@ namespace KSoft.Phoenix.Xmb.Test
 						Console.WriteLine();
 						Console.WriteLine(reference.FilePath);
 						using (var sr = new StreamReader(ms))
+						{
 							Console.WriteLine(sr.ReadToEnd());
-
+						}
 					} catch (Exception ex)
 					{
 						Console.WriteLine("Test failed on {0}:\n{1}",
