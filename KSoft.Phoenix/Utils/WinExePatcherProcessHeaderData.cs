@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace KSoft.Phoenix.zPatching
 {
@@ -13,8 +12,6 @@ namespace KSoft.Phoenix.zPatching
 		public int BytePatternNextJmpOffset;
 		public int BytePatternModJmpOffset;
 
-		public string SourceExeFileName;
-		public byte[] SourceExeBytes;
 		public List<int> PatternFileOffsets = new();
 
 		public int ModJmpFileOffset;
@@ -49,53 +46,36 @@ namespace KSoft.Phoenix.zPatching
 			BytePatternModJmpOffset = BytePattern.Length - sizeof(uint) - sizeof(ushort);
 		}
 
-		public bool ReadSourceExeBytes(string sourceExeFileName)
-		{
-			try
-			{
-				SourceExeFileName = sourceExeFileName;
-				SourceExeBytes = File.ReadAllBytes(SourceExeFileName);
-			} catch (Exception ex)
-			{
-				Debug.Trace.Phoenix.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone
-					, "Failed to read " + sourceExeFileName
-					, ex);
-				return false;
-			}
-
-			return true;
-		}
-
-		public bool FindPatterns()
+		public bool FindPatterns(ReadOnlySpan<byte> sourceExeBytes)
 		{
 			PatternFileOffsets.Clear();
 
 			int offset = 0;
-			while (PhxUtil.FindBytePattern(PatternFileOffsets, SourceExeBytes, ref offset, BytePattern))
+			while (PhxUtil.FindBytePattern(PatternFileOffsets, sourceExeBytes, ref offset, BytePattern))
 			{
 			}
 
 			return PatternFileOffsets.Count == 1;
 		}
 
-		public bool CalculateModJmp()
+		public bool CalculateModJmp(ReadOnlySpan<byte> sourceExeBytes)
 		{
 			ModJmpFileOffset = ModJmpVa = TypeExtensions.kNone;
 
 			int file_offset = PatternFileOffsets[0];
 			int next_jmp_index = file_offset + BytePatternNextJmpOffset;
-			int next_jmp_offset_va = BitConverter.ToInt32(SourceExeBytes, next_jmp_index);
+			int next_jmp_offset_va = BitConverter.ToInt32(sourceExeBytes.Slice(next_jmp_index));
 			int good_jmp_base = next_jmp_offset_va;
 			good_jmp_base += sizeof(uint);
 			good_jmp_base += next_jmp_index;
 
 			// jnz short i8
-			if (0x75 != SourceExeBytes[good_jmp_base])
+			if (0x75 != sourceExeBytes[good_jmp_base])
 			{
 				return false;
 			}
 
-			int good_asm_offset_va = SourceExeBytes[good_jmp_base + 1];
+			int good_asm_offset_va = sourceExeBytes[good_jmp_base + 1];
 			int good_asm_index = (good_jmp_base + 2);
 			good_asm_index += good_asm_offset_va;
 
@@ -111,11 +91,11 @@ namespace KSoft.Phoenix.zPatching
 			return true;
 		}
 
-		public void ApplyModJmp()
+		public void ApplyModJmp(byte[] dstExeBytes)
 		{
 			int index = ModJmpFileOffset;
-			SourceExeBytes[index++] = 0xE9;
-			Bitwise.ByteSwap.ReplaceBytes(SourceExeBytes, index, ModJmpVa);
+			dstExeBytes[index++] = 0xE9;
+			Bitwise.ByteSwap.ReplaceBytes(dstExeBytes, index, ModJmpVa);
 		}
 	};
 }

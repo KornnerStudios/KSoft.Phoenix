@@ -401,7 +401,7 @@ namespace KSoft.Phoenix
 			return r;
 		}
 
-		public static bool FindBytePattern(List<int> results, byte[] input, ref int inOutOffset, params short[] pattern)
+		public static bool FindBytePattern(List<int> results, ReadOnlySpan<byte> input, ref int inOutOffset, params short[] pattern)
 		{
 			int end = input.Length - pattern.Length;
 			int end_offset = inOutOffset;
@@ -421,6 +421,7 @@ namespace KSoft.Phoenix
 					var next_byte = pattern[offset];
 					if (next_byte < 0)
 					{
+						// -1 is treated as a wild card
 						continue;
 					}
 					else if (next_byte != input[index])

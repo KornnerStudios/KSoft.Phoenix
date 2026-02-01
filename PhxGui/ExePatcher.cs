@@ -18,6 +18,7 @@ namespace PhxGui
 			{
 				ExeFile = exeFile,
 				ExeFileType = fileType,
+				CanOverwriteFiles = Flags.Test(MiscFlags.DontOverwriteExistingFiles)==false,
 			};
 
 			var task = Task.Factory.StartNew(
@@ -47,7 +48,8 @@ namespace PhxGui
 
 	static class ExePatching
 	{
-		public sealed class PatchInfo
+		#region old PatchGameExeBySha1
+		sealed class PatchInfo
 		{
 			public string Sha1;
 			public Dictionary<uint, byte[]> Patches = new();
@@ -84,7 +86,7 @@ namespace PhxGui
 			kPatches.Add(v1_11279_1_2);
 		}
 
-		public static bool TryGetPatchInfo(string actualSha1, out PatchInfo info)
+		static bool TryGetPatchInfo(string actualSha1, out PatchInfo info)
 		{
 			info = null;
 
@@ -94,11 +96,13 @@ namespace PhxGui
 
 			return info != null;
 		}
+		#endregion
 
 		public sealed class PatchGameExeByParameters
 		{
 			public string ExeFile;
 			public MainWindowViewModel.AcceptedFileType ExeFileType;
+			public bool CanOverwriteFiles = true;
 
 			public void BackupFile()
 			{
@@ -107,14 +111,15 @@ namespace PhxGui
 				backup_file += "_UNTOUCHED.exe";
 				backup_file = Path.ChangeExtension(backup_file, extension);
 				backup_file = Path.Combine(Path.GetDirectoryName(ExeFile), backup_file);
-				File.Copy(ExeFile, backup_file);
+				File.Copy(ExeFile, backup_file, CanOverwriteFiles);
 			}
 		};
 
 		public static string PatchGameExeByPatternMatching(object taskState)
 		{
-			var args = taskState as PatchGameExeByParameters;
+			var args = KSoft.Debug.TypeCheck.CastReference<PatchGameExeByParameters>(taskState);
 
+			#region boilerplate
 			if (args.ExeFileType == MainWindowViewModel.AcceptedFileType.Xex)
 			{
 				return string.Format("ERROR patching XEX files is not supported: {0}",
@@ -139,17 +144,22 @@ namespace PhxGui
 					 ex);
 			}
 
-			var patch_pattern = new KSoft.Phoenix.zPatching.WinExePatcherProcessHeaderData();
-
-			bool read_bytes = patch_pattern.ReadSourceExeBytes(args.ExeFile);
-			if (!read_bytes)
+			byte[] sourceExeBytes;
+			try
 			{
-				return string.Format("ERROR Failed to read file to memory: {0}",
-					args.ExeFile);
+				sourceExeBytes = File.ReadAllBytes(args.ExeFile);
 			}
+			catch (Exception ex)
+			{
+				return string.Format("ERROR Failed to read file to memory: {0}{1}{2}",
+					args.ExeFile,
+					 Environment.NewLine,
+					 ex);
+			}
+			#endregion
 
 			byte[] exe_file_sha1_bytes = null;
-			using (var ms = new MemoryStream(patch_pattern.SourceExeBytes))
+			using (var ms = new MemoryStream(sourceExeBytes))
 			using (var sha1_provider = System.Security.Cryptography.SHA1.Create())
 			{
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(ms);
@@ -157,38 +167,79 @@ namespace PhxGui
 
 			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes);
 
-			bool found_pattern = patch_pattern.FindPatterns();
-			if (!found_pattern)
 			{
-				return string.Format("ERROR Failed to find the asm code that I need to patch: {0}" +
-					"SHA1={1}{2}" +
-					"File={3}{4}",
-					Environment.NewLine,
-					exe_file_sha1, Environment.NewLine,
-					args.ExeFile, Environment.NewLine);
+				string errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(sourceExeBytes, sourceExeBytes);
+				if (errorMessage.IsNotNullOrEmpty())
+				{
+					return string.Format("ERROR EraDigitalSignatureCheck - {0}: {1}" +
+						"SHA1={2}{3}" +
+						"File={4}{5}",
+						errorMessage, Environment.NewLine,
+						exe_file_sha1, Environment.NewLine,
+						args.ExeFile, Environment.NewLine);
+				}
 			}
 
-			bool calculate_mod = patch_pattern.CalculateModJmp();
-			if (!calculate_mod)
 			{
-				return string.Format("ERROR Found the asm code I needed to patch, but failed to calculate the correct patch code: {0}" +
-					"SHA1={1}{2}" +
-					"File={3}{4}",
-					Environment.NewLine,
-					exe_file_sha1, Environment.NewLine,
-					args.ExeFile, Environment.NewLine);
+				string errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(sourceExeBytes, sourceExeBytes);
+				if (errorMessage.IsNotNullOrEmpty())
+				{
+					return string.Format("ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
+						"SHA1={2}{3}" +
+						"File={4}{5}",
+						errorMessage, Environment.NewLine,
+						exe_file_sha1, Environment.NewLine,
+						args.ExeFile, Environment.NewLine);
+				}
 			}
-
-			patch_pattern.ApplyModJmp();
 
 			using (var fs = File.OpenWrite(args.ExeFile))
 			{
-				fs.Write(patch_pattern.SourceExeBytes, 0, patch_pattern.SourceExeBytes.Length);
+				fs.Write(sourceExeBytes, 0, sourceExeBytes.Length);
 			}
 
 			return args.ExeFile;
 		}
 
+		static string PatchGameExeEraDigitalSignatureCheckByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
+		{
+			var patch_pattern = new KSoft.Phoenix.zPatching.WinExePatcherProcessHeaderData();
+			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
+			if (!found_pattern)
+			{
+				return "Failed to find the asm code that I need to patch";
+			}
+
+			bool calculate_mod = patch_pattern.CalculateModJmp(sourceExeBytes);
+			if (!calculate_mod)
+			{
+				return "Found the asm code I needed to patch, but failed to calculate the correct patch code";
+			}
+
+			patch_pattern.ApplyModJmp(dstExeBytes);
+			return null;
+		}
+
+		static string PatchGameExeParticleGatewayAssertByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
+		{
+			var patch_pattern = new KSoft.Phoenix.Games.HaloWars.zPatching.WinExePatcherParticleGateway();
+			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
+			if (!found_pattern)
+			{
+				return "Failed to find the asm code that I need to patch";
+			}
+
+			bool calculate_mod = patch_pattern.CalculateModJmp(sourceExeBytes);
+			if (!calculate_mod)
+			{
+				return "Found the asm code I needed to patch, but failed to calculate the correct patch code";
+			}
+
+			patch_pattern.ApplyModJmp(dstExeBytes);
+			return null;
+		}
+
+		#region old PatchGameExeBySha1
 		public static string PatchGameExeBySha1(object taskState)
 		{
 			var args = taskState as PatchGameExeByParameters;
@@ -231,5 +282,6 @@ namespace PhxGui
 
 			return args.ExeFile;
 		}
+		#endregion
 	};
 }
