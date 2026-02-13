@@ -19,9 +19,13 @@ namespace PhxGui
 		[Display(	Name="Transform GFX files",
 					Description="During ERA expansion, .GFX files will be transformed to matching .SWF file")]
 		TransformGfxFiles,
-		[Display(	Name="Ignore non-data files",
-					Description="During ERA expansion, only text and .XMB files will be extracted")]
-		IgnoreNonDataFiles,
+	[Display(	Name="Ignore non-data files",
+				Description="During ERA expansion, only text and .XMB files will be extracted")]
+	IgnoreNonDataFiles,
+
+	[Display(	Name="Separate ERA folders",
+				Description="Expands each ERA into its own subfolder") ]
+	SeparateEraFolders,
 
 		[Browsable(false)] // no longer letting the user toggle this, they can just use the tool to convert the desired XMBs
 		[Display(	Name="Don't automatically translate XMB to XML",
@@ -113,7 +117,7 @@ namespace PhxGui
 
 		public MainWindowViewModel()
 		{
-			mFlags.Set(MiscFlags.DontTranslateXmbFiles);
+			mFlags.Set(MiscFlags.SeparateEraFolders);
 			mFlags.Set(MiscFlags.DontRemoveXmlOrXmbFiles);
 			mFlags.Set(MiscFlags.UseVerboseOutput);
 

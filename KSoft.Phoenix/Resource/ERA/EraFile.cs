@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -307,6 +308,11 @@ namespace KSoft.Phoenix.Resource
 			foreach (var kvp in mLocalFiles)
 			{
 				string file_name = kvp.Key;
+				if (ResourceUtils.IsLocalScenarioFile(file_name))
+				{
+					continue;
+				}
+
 				string file_data = kvp.Value;
 
 				using (s.EnterCursorBookmark("file"))
@@ -382,6 +388,8 @@ namespace KSoft.Phoenix.Resource
 				eraExpander.ProgressOutput.Write("\r\t\t{0} \r", new string(' ', 16));
 				eraExpander.ProgressOutput.WriteLine("\t\tDone");
 			}
+
+			WriteLocalScenarioFiles(workPath, eraExpander);
 
 			mDirsThatExistForUnpacking = null;
 		}
@@ -990,6 +998,47 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 		#endregion
+
+		internal void WriteLocalScenarioFiles(string workPath, EraFileExpander expander)
+		{
+			if (mLocalFiles.Count == 0)
+			{
+				return;
+			}
+
+			foreach (var kvp in mLocalFiles)
+			{
+				string fileName = kvp.Key;
+				if (!ShouldGenerateLocalScenarioFile(fileName, expander, workPath, out string fullPath))
+				{
+					continue;
+				}
+
+				string content = kvp.Value ?? "";
+				System.IO.File.WriteAllText(fullPath, content, Encoding.ASCII);
+			}
+		}
+
+		private bool ShouldGenerateLocalScenarioFile(string fileName, EraFileExpander expander, string workPath, out string fullPath)
+		{
+			fullPath = string.Empty;
+
+			if (string.IsNullOrEmpty(fileName) || IsIgnoredLocalFile(fileName) || !ResourceUtils.IsLocalScenarioFile(fileName))
+			{
+				return false;
+			}
+
+			fullPath = System.IO.Path.Combine(workPath, fileName);
+			if (expander != null &&
+				expander.ExpanderOptions.Test(EraFileExpanderOptions.DontOverwriteExistingFiles) &&
+				System.IO.File.Exists(fullPath))
+			{
+				return false;
+			}
+
+			CreatePathForUnpacking(fullPath);
+			return true;
+		}
 
 		#region Local file utils
 		private static bool IsIgnoredLocalFile(string fileName)

@@ -136,6 +136,8 @@ namespace KSoft.Phoenix.Resource
 		{
 			string listing_filename = System.IO.Path.Combine(workPath, listingName);
 
+			mEraFile.WriteLocalScenarioFiles(workPath, this);
+
 			using (var xml = IO.XmlElementStream.CreateForWrite("EraArchive", this))
 			{
 				xml.InitializeAtRootElement();

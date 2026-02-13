@@ -12,7 +12,8 @@ namespace PhxGui
 	{
 		private void ProcessEraFiles(string[] eraFiles)
 		{
-			if (!System.IO.Directory.Exists(Properties.Settings.Default.EraExpandOutputPath))
+			var expandPath = Properties.Settings.Default.EraExpandOutputPath;
+			if (!System.IO.Directory.Exists(expandPath))
 			{
 				MessagesText = "Cannot expand ERA file(s)\n" +
 					"Specify a valid expand output path";
@@ -27,7 +28,7 @@ namespace PhxGui
 				ViewModel = this,
 				Dispatcher = Application.Current.Dispatcher,
 				EraFiles = eraFiles,
-				OutputPath = Properties.Settings.Default.EraExpandOutputPath,
+				BaseOutputPath = expandPath,
 			};
 			if (Properties.Settings.Default.GameVersion == GameVersionType.DefinitiveEdition)
 			{
@@ -73,7 +74,7 @@ namespace PhxGui
 
 			public BitVector32 EraOptions;
 			public BitVector32 EraExpanderOptions;
-			public string OutputPath;
+			public string BaseOutputPath;
 
 			public Dispatcher Dispatcher;
 			public string[] EraFiles;
@@ -90,7 +91,6 @@ namespace PhxGui
 				{
 					EraOptions = EraOptions,
 					EraExpanderOptions = EraExpanderOptions,
-					OutputPath = OutputPath
 				};
 				string eraFile = EraFiles[mEraFilesIndex++];
 
@@ -103,6 +103,14 @@ namespace PhxGui
 
 				args.EraPath = eraFile;
 				args.ListingName = Path.GetFileNameWithoutExtension(eraFile);
+
+				var targetOutputPath = BaseOutputPath;
+				if (ViewModel.Flags.Test(MiscFlags.SeparateEraFolders))
+				{
+					targetOutputPath = Path.Combine(BaseOutputPath, args.ListingName);
+					System.IO.Directory.CreateDirectory(targetOutputPath);
+				}
+				args.OutputPath = targetOutputPath;
 
 				var task = Task.Run(() =>
 				{
