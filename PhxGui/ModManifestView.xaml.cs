@@ -181,6 +181,20 @@ namespace PhxGui
 			ModManifest.Directories.RemoveAt(selected_index);
 		}
 
+		private void OpenFolderInExplorer(string path, string messageBoxCaption = null)
+		{
+			if (!System.IO.Directory.Exists(path))
+			{
+				MessageBox.Show(this,
+					"Path does not exist: " + path,
+					messageBoxCaption ?? "Can not open folder",
+					MessageBoxButton.OK);
+				return;
+			}
+
+			System.Diagnostics.Process.Start("explorer.exe", path);
+		}
+
 		private void OnOpenModDirectoryClicked(object sender, RoutedEventArgs e)
 		{
 			var item = SelectedModManifestDirectory;
@@ -189,27 +203,20 @@ namespace PhxGui
 				return;
 			}
 
+			const string kMessageBoxCaption = "Can not open mod folder";
+
 			if (!item.IsValid)
 			{
 				MessageBox.Show(this,
 					"No path has been set yet",
-					"Can not open mod folder",
+					kMessageBoxCaption,
 					MessageBoxButton.OK);
 				return;
 			}
 
 			string path = item.Directory;
 
-			if (!System.IO.Directory.Exists(path))
-			{
-				MessageBox.Show(this,
-					"Path does not exist: " + path,
-					"Can not open mod folder",
-					MessageBoxButton.OK);
-				return;
-			}
-
-			System.Diagnostics.Process.Start(path);
+			OpenFolderInExplorer(path, kMessageBoxCaption);
 		}
 
 		private void OnOpenModManifestDirectoryClicked(object sender, RoutedEventArgs e)
@@ -222,16 +229,7 @@ namespace PhxGui
 
 			string path = manifest.ContainingFolder;
 
-			if (!System.IO.Directory.Exists(path))
-			{
-				MessageBox.Show(this,
-					"Path does not exist: " + path,
-					"Can not open folder",
-					MessageBoxButton.OK);
-				return;
-			}
-
-			System.Diagnostics.Process.Start(path);
+			OpenFolderInExplorer(path);
 		}
 
 		private void OnFileSaveClicked(object sender, RoutedEventArgs e)
