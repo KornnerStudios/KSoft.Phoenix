@@ -16,13 +16,13 @@ namespace PhxGui
 		};
 		private class XmlConverter
 		{
-			private XmlConverterMode mMode = XmlConverterMode.XmbToXml;
+			private readonly XmlConverterMode mMode = XmlConverterMode.XmbToXml;
 			public bool DontOverwriteExistingFiles;
 			public System.Windows.Threading.Dispatcher Dispatcher;
 			public MainWindowViewModel ViewModel;
 
-			private KSoft.Shell.ProcessorSize mVaSize;
-			private KSoft.Shell.EndianFormat mEndianFormat;
+			private readonly KSoft.Shell.ProcessorSize mVaSize;
+			private readonly KSoft.Shell.EndianFormat mEndianFormat;
 			private List<string> mInputFiles;
 
 			public XmlConverter(XmlConverterMode mode, MainWindowViewModel viewModel)

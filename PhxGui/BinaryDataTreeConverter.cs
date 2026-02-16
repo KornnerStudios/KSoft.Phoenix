@@ -41,7 +41,7 @@ namespace PhxGui
 		};
 		private class BinaryDataTreeConverter
 		{
-			private BinaryDataTreeConverterMode mMode = BinaryDataTreeConverterMode.BinToXml;
+			private readonly BinaryDataTreeConverterMode mMode = BinaryDataTreeConverterMode.BinToXml;
 			public bool DontOverwriteExistingFiles;
 			public bool DontDecompileAttributesWithTypeData;
 			public System.Windows.Threading.Dispatcher Dispatcher;
