@@ -11,6 +11,7 @@ namespace KSoft.Phoenix.Games.HaloWars.zPatching;
 public sealed class WinExePatcherParticleGateway
 {
 	public readonly byte[] TargetAsmBytesPattern;
+	public readonly byte[] NewAsmBytesPattern;
 
 	public readonly short[] BytePattern;
 	// BytePattern offset where the jmp relative address is stored
@@ -41,6 +42,24 @@ public sealed class WinExePatcherParticleGateway
 		*/
 		TargetAsmBytesPattern = [
 			0x41, 0xC7, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x48, 0x8B, 0x74, 0x24, 0x60,
+			0x48, 0x83, 0xC4, 0x40,
+			0x5F,
+			0xC3,
+		];
+		/*
+			mov     dword ptr [rsi], 0FFFFFFFFh
+			mov     rbx, [rsp+50h]
+			mov     rbp, [rsp+58h]
+			mov     rsi, [rsp+60h]
+			add     rsp, 40h
+			pop     rdi
+			retn
+		*/
+		NewAsmBytesPattern = [
+			0xC7, 0x06, 0xFF, 0xFF, 0xFF, 0xFF,
+			0x48, 0x8B, 0x5C, 0x24, 0x50,
+			0x48, 0x8B, 0x6C, 0x24, 0x58,
 			0x48, 0x8B, 0x74, 0x24, 0x60,
 			0x48, 0x83, 0xC4, 0x40,
 			0x5F,
@@ -83,7 +102,7 @@ public sealed class WinExePatcherParticleGateway
 		return PatternFileOffsets.Count == 1;
 	}
 
-	public bool CalculateModJmp(ReadOnlySpan<byte> sourceExeBytes)
+	public bool CalculateModJmp_Old(ReadOnlySpan<byte> sourceExeBytes)
 	{
 		ModJmpFileOffset = ModJmpVa = TypeExtensions.kNone;
 
@@ -111,7 +130,7 @@ public sealed class WinExePatcherParticleGateway
 		return true;
 	}
 
-	public void ApplyModJmp(byte[] dstExeBytes)
+	public void ApplyModJmp_Old(byte[] dstExeBytes)
 	{
 		// loc_1407A793A
 		int fileOffset = PatternFileOffsets[0];
@@ -119,5 +138,36 @@ public sealed class WinExePatcherParticleGateway
 
 		// ModJmpFileOffset already equals 0xE9
 		Bitwise.ByteSwap.ReplaceBytes(dstExeBytes, jmpFileOffset, ModJmpVa);
+	}
+
+	public bool CalculateModJmp(ReadOnlySpan<byte> sourceExeBytes)
+	{
+		ModJmpFileOffset = ModJmpVa = TypeExtensions.kNone;
+
+		// loc_1407A793A
+		int file_offset = PatternFileOffsets[0];
+		// loc_1407A78CF
+		int targetAsmBytesFileOffset = file_offset + TargetJmpRelativeOffset;
+
+		ReadOnlySpan<byte> actualTargetAsmBytes = sourceExeBytes.Slice(targetAsmBytesFileOffset, TargetAsmBytesPattern.Length);
+		if (!actualTargetAsmBytes.SequenceEqual(TargetAsmBytesPattern))
+		{
+			return false;
+		}
+
+		ModJmpFileOffset = file_offset + BytePatternModJmpOffset;
+		Contract.Assert(sourceExeBytes[ModJmpFileOffset] == 0xE9);
+
+		int jmpToAssertOffset = BitConverter.ToInt32(sourceExeBytes.Slice(ModJmpFileOffset + 1, sizeof(uint)));
+		ModJmpFileOffset += sizeof(byte) + sizeof(uint);
+		ModJmpFileOffset += jmpToAssertOffset;
+		Contract.Assert(sourceExeBytes[ModJmpFileOffset] == 0x48); // lea...
+
+		return true;
+	}
+
+	public void ApplyModJmp(byte[] dstExeBytes)
+	{
+		Array.Copy(NewAsmBytesPattern, 0, dstExeBytes, ModJmpFileOffset, NewAsmBytesPattern.Length);
 	}
 };
