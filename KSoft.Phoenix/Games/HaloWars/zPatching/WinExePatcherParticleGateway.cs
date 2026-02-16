@@ -101,10 +101,12 @@ public sealed class WinExePatcherParticleGateway
 		ModJmpFileOffset = file_offset + BytePatternModJmpOffset;
 		Contract.Assert(sourceExeBytes[ModJmpFileOffset] == 0xE9);
 
-		ModJmpVa = ModJmpFileOffset - targetAsmBytesFileOffset;
+		// the jmp offset is relative to after the jmp instruction, 0xE9 0x?? 0x?? 0x?? 0x??
+		int modJmpBase = ModJmpFileOffset + sizeof(byte) + sizeof(uint);
+		ModJmpVa = modJmpBase - targetAsmBytesFileOffset;
 		// negate, as we need to jump to an earlier address
 		ModJmpVa = -ModJmpVa;
-		Contract.Assert(ModJmpVa == -121);
+		Contract.Assert(ModJmpVa == -126);
 
 		return true;
 	}
