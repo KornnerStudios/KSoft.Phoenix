@@ -15,6 +15,8 @@ namespace KSoft.Security.Cryptography
 	{
 		public const int kSha1SizeOf = 20;
 
+		public static bool TraceSha1Hash { get; set; }
+
 		// NOTE: data is written to the buffer in MSB order
 		// #TODO make thread safe
 		static readonly byte[] gUInt64Buffer = new byte[sizeof(ulong)];
@@ -169,8 +171,8 @@ namespace KSoft.Security.Cryptography
 			}
 		}
 
+		// #TODO_PHOENIX rename and move this into PhxTEA
 		public const int kResultSize = 0x18;
-
 		public static void Sha1Hash(string str, byte[] result)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(str));
@@ -183,31 +185,48 @@ namespace KSoft.Security.Cryptography
 
 			using (var sha = SHA1.Create())
 			{
-				byte[] result1;
-				byte[] result_final;
+				byte[] hash1;
+				byte[] hash2;
 
 				PhxHash.UInt32(sha, 0xA4800C14);
 				//PhxHash.Ascii(sha, str);
 				sha.TransformBlock(str_bytes, 0, str_bytes.Length, null, 0);
 				PhxHash.UInt32(sha, 0x5AF4A9F1);
 				PhxHash.UInt32(sha, 0xCA6884EC, true);
-				result1 = sha.Hash;
-				if (System.Diagnostics.Debugger.IsAttached)
+				hash1 = sha.Hash;
+#if DEBUG
+				if (TraceSha1Hash && System.Diagnostics.Debugger.IsAttached)
 				{
-					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Result: {1}", str, Text.Util.ByteArrayToString(result1));
+					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Result: {1}", str, Text.Util.ByteArrayToString(hash1));
 				}
+#endif // DEBUG
 
 				sha.Initialize();
 				PhxHash.UInt32(sha, 0xCB92EAEB);
-				sha.TransformBlock(result1, 0, result1.Length, null, 0);
+				sha.TransformBlock(hash1, 0, hash1.Length, null, 0);
 				PhxHash.UInt32(sha, 0x1D919BF8, true);
-				result_final = sha.Hash;
-				if (System.Diagnostics.Debugger.IsAttached)
+				hash2 = sha.Hash;
+#if DEBUG
+				if (TraceSha1Hash && System.Diagnostics.Debugger.IsAttached)
 				{
-					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Final: {1}", str, Text.Util.ByteArrayToString(result_final));
+					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Final: {1}", str, Text.Util.ByteArrayToString(hash2));
 				}
+#endif // DEBUG
 
-				Array.Copy(result_final, result, result_final.Length);
+				Array.Copy(hash2, 0 * sizeof(uint), result, 0 * sizeof(uint), sizeof(uint));
+				Array.Copy(hash2, 1 * sizeof(uint), result, 1 * sizeof(uint), sizeof(uint));
+
+				Array.Copy(hash2, 2 * sizeof(uint), result, 2 * sizeof(uint), sizeof(uint));
+				Array.Copy(hash2, 3 * sizeof(uint), result, 3 * sizeof(uint), sizeof(uint));
+
+				Array.Copy(hash2, 4 * sizeof(uint), result, 4 * sizeof(uint), sizeof(uint));
+				Array.Copy(hash1, 0 * sizeof(uint), result, 5 * sizeof(uint), sizeof(uint));
+
+				// we want to read the dwords of the result as big endian, as this is how the engine reads the bytes
+				for (int x = 0; x < kResultSize; x += sizeof(uint))
+				{
+					Bitwise.ByteSwap.SwapUInt32(result, x);
+				}
 			}
 		}
 

@@ -227,6 +227,8 @@ namespace PhxGui
 			Xmb,
 			BinaryDataTree,
 			BinaryDataTreeXml,
+			Sav,
+			SavDecrypted,
 
 			kNumberOf
 		};
@@ -300,6 +302,12 @@ namespace PhxGui
 						break;
 					case KSoft.Phoenix.Xmb.BinaryDataTree.kTextFileExtension:
 						results.AcceptedFileTypes.Set(AcceptedFileType.BinaryDataTreeXml);
+						break;
+					case KSoft.Phoenix.Resource.SAV.WinSaveFile.kExtensionEncrypted:
+						results.AcceptedFileTypes.Set(AcceptedFileType.Sav);
+						break;
+					case KSoft.Phoenix.Resource.SAV.WinSaveFile.kExtensionDecrypted:
+						results.AcceptedFileTypes.Set(AcceptedFileType.SavDecrypted);
 						break;
 
 					default:
@@ -466,6 +474,25 @@ namespace PhxGui
 						}
 						break;
 					}
+
+					case AcceptedFileType.Sav:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "Decrypt SAV";
+							return true;
+						}
+						break;
+					}
+					case AcceptedFileType.SavDecrypted:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							ProcessFilesHelpText = "Encrypt SAV";
+							return true;
+						}
+						break;
+					}
 				}
 			}
 
@@ -502,7 +529,7 @@ namespace PhxGui
 					{
 						if (results.FilesCount == 1)
 						{
-							// TODO
+							// #TODO
 							//ProcessPkgListing(files[0]);
 							return true;
 						}
@@ -581,6 +608,26 @@ namespace PhxGui
 						break;
 					}
 					case AcceptedFileType.BinaryDataTreeXml:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							// #TODO
+							throw new NotImplementedException(type.ToString());
+							//return true;
+						}
+						break;
+					}
+
+					case AcceptedFileType.Sav:
+					{
+						if (results.AcceptedFileTypes.Cardinality == 1)
+						{
+							WinSaveFilesDecrypt(files);
+							return true;
+						}
+						break;
+					}
+					case AcceptedFileType.SavDecrypted:
 					{
 						if (results.AcceptedFileTypes.Cardinality == 1)
 						{

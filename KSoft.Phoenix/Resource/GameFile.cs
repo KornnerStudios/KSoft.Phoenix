@@ -78,7 +78,7 @@ namespace KSoft.Phoenix.Resource
 		static void Stream(IO.EndianStream s, bool crypt, IO.IEndianStreamSerializable obj,
 			long size = 0, ulong userKey = 0, Action<IO.EndianStream> streamLeftovers = null)
 		{
-			if(!crypt)
+			if (!crypt)
 			{
 				obj.Serialize(s);
 
