@@ -72,6 +72,12 @@ namespace KSoft.Phoenix.zPatching
 			// jnz short i8
 			if (0x75 != sourceExeBytes[good_jmp_base])
 			{
+				Debug.Trace.Phoenix.TraceDataSansId(System.Diagnostics.TraceEventType.Warning,
+					"Failed to find the expected jnz instruction at file offset 0x{0:X8}, got 0x{1:X2} instead of 0x{2:X2}"
+					.FormatWith(Util.InvariantCultureInfo,
+						good_jmp_base,
+						sourceExeBytes[good_jmp_base],
+						0x75));
 				return false;
 			}
 

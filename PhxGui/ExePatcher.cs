@@ -167,11 +167,12 @@ namespace PhxGui
 
 			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes);
 
+			var finalErrorMessage = new System.Text.StringBuilder();
 			{
 				string errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
-					return string.Format("ERROR EraDigitalSignatureCheck - {0}: {1}" +
+					finalErrorMessage.AppendFormat("ERROR EraDigitalSignatureCheck - {0}: {1}" +
 						"SHA1={2}{3}" +
 						"File={4}{5}",
 						errorMessage, Environment.NewLine,
@@ -184,13 +185,31 @@ namespace PhxGui
 				string errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
-					return string.Format("ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
+					finalErrorMessage.AppendFormat("ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
 						"SHA1={2}{3}" +
 						"File={4}{5}",
 						errorMessage, Environment.NewLine,
 						exe_file_sha1, Environment.NewLine,
 						args.ExeFile, Environment.NewLine);
 				}
+			}
+
+			{
+				string errorMessage = PatchGameExeUserProfileSetupTickerInfoByPatternMatching(sourceExeBytes, sourceExeBytes);
+				if (errorMessage.IsNotNullOrEmpty())
+				{
+					finalErrorMessage.AppendFormat("ERROR UserProfileSetupTickerInfo - {0}: {1}" +
+						"SHA1={2}{3}" +
+						"File={4}{5}",
+						errorMessage, Environment.NewLine,
+						exe_file_sha1, Environment.NewLine,
+						args.ExeFile, Environment.NewLine);
+				}
+			}
+
+			if (finalErrorMessage.Length > 0)
+			{
+				return finalErrorMessage.ToString();
 			}
 
 			using (var fs = File.OpenWrite(args.ExeFile))
@@ -236,6 +255,23 @@ namespace PhxGui
 			}
 
 			patch_pattern.ApplyModJmp(dstExeBytes);
+			return null;
+		}
+
+		static string PatchGameExeUserProfileSetupTickerInfoByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, Span<byte> dstExeBytes)
+		{
+			var patch_pattern = new KSoft.Phoenix.Games.HaloWars.zPatching.WinExePatcherUserProfileTickerInfo();
+			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
+			if (!found_pattern)
+			{
+				return "Failed to find the asm code that I need to patch";
+			}
+			bool calculate_mod = patch_pattern.BuildPatchData(sourceExeBytes);
+			if (!calculate_mod)
+			{
+				return "Found the asm code I needed to patch, but failed to calculate the correct patch code";
+			}
+			patch_pattern.ApplyPatches(dstExeBytes);
 			return null;
 		}
 
