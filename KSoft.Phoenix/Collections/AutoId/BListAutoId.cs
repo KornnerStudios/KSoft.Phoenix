@@ -53,6 +53,12 @@ namespace KSoft.Collections
 		}
 		internal int DynamicAdd(T item, string itemName, int id = TypeExtensions.kNone)
 		{
+			if (IsFullyPreloaded)
+			{
+				throw new InvalidOperationException(
+					$"Cannot dynamically add {typeof(T).Name} items after preloading: {itemName}");
+			}
+
 			PreAdd(item, itemName, id);
 			if (mDBI != null)
 			{
@@ -103,6 +109,12 @@ namespace KSoft.Collections
 		}
 		#endregion
 
+		// #HACK_PHOENIX This was to track down a Preload vs StreamXml issue
+		// e.g. BWeaponTypes streaming at the same time BDamageTypes are streaming.
+		// This is reset during StreamUpdate's Preload phase.
+		// This needs to be rethought in generally, but especially if we support adding new items like in an IDE
+		public bool IsFullyPreloaded { get; set; }
+
 		#region IProtoEnum Members
 		public int TryGetMemberId(string memberName)
 		{
@@ -125,6 +137,15 @@ namespace KSoft.Collections
 
 		public int GetMemberId(string memberName)
 		{
+			if (!IsFullyPreloaded)
+			{
+				// This was being hit when BWeaponTypes were being fully serialized inside the Preload method,
+				// instead of the StreamXml method. This was leading to them trying to resolve BDamageTypes
+				// (via the Modifiers properties) before they were fully preloaded.
+				throw new InvalidOperationException(
+					$"Cannot query {typeof(T).Name} items before preloading: {memberName}");
+			}
+
 			int index = TryGetMemberId(memberName);
 
 			if (index.IsNone())

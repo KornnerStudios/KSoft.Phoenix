@@ -7,6 +7,7 @@ namespace KSoft.Phoenix.XML
 	{
 		XML.IBListAutoIdXmlSerializer mDamageTypesSerializer
 			, mImpactEffectsSerializer
+			, mWeaponTypesSerializer
 			, mObjectsSerializer
 			, mSquadsSerializer
 			, mPowersSerializer
@@ -38,6 +39,11 @@ namespace KSoft.Phoenix.XML
 				mImpactEffectsSerializer = XmlUtil.CreateXmlSerializer(Database.ImpactEffects, Phx.BProtoImpactEffect.kBListXmlParams);
 			}
 
+			if (mWeaponTypesSerializer == null)
+			{
+				mWeaponTypesSerializer = XmlUtil.CreateXmlSerializer(Database.WeaponTypes, Phx.BWeaponType.kBListXmlParams);
+			}
+
 			if (mObjectsSerializer == null)
 			{
 				mObjectsSerializer = XmlUtil.CreateXmlSerializer(Database.Objects, Phx.BProtoObject.kBListXmlParams);
@@ -62,6 +68,7 @@ namespace KSoft.Phoenix.XML
 		{
 			Util.DisposeAndNull(ref mDamageTypesSerializer);
 			Util.DisposeAndNull(ref mImpactEffectsSerializer);
+			Util.DisposeAndNull(ref mWeaponTypesSerializer);
 
 			Util.DisposeAndNull(ref mObjectsSerializer);
 			Util.DisposeAndNull(ref mSquadsSerializer);

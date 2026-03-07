@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
 #else
@@ -11,9 +13,14 @@ namespace KSoft.Collections
 
 	internal sealed class ProtoEnumWithUndefinedImpl
 		: IProtoEnumWithUndefined
+		, IDisposable
 	{
 		readonly IProtoEnum mRoot;
 		ObservableCollection<string> mUndefined;
+		// This is only really needed while we're loading a database.
+		// Multiple files could be async loading, causing multiple threads
+		// to resolve undefined members which need to be added.
+		ReaderWriterLockSlim mUndefinedLock;
 
 		public ProtoEnumWithUndefinedImpl(IProtoEnum root)
 		{
@@ -22,17 +29,33 @@ namespace KSoft.Collections
 			mRoot = root;
 		}
 
+		public void Dispose()
+		{
+			if (mUndefinedLock != null)
+			{
+				mUndefinedLock.Dispose();
+				mUndefinedLock = null;
+			}
+		}
+
 		void InitializeUndefined()
 		{
+			// this itself is probably not thread safe
 			if (mUndefined == null)
 			{
 				mUndefined = new ObservableCollection<string>();
+				mUndefinedLock = new ReaderWriterLockSlim();
 			}
 		}
 
 		public void Clear()
 		{
-			mUndefined?.Clear();
+			if (mUndefined != null)
+			{
+				mUndefinedLock.EnterWriteLock();
+				mUndefined.Clear();
+				mUndefinedLock.ExitWriteLock();
+			}
 		}
 
 		#region IProtoEnum Members
@@ -52,7 +75,10 @@ namespace KSoft.Collections
 
 			if (id.IsNone() && MemberUndefinedCount != 0)
 			{
+				mUndefinedLock.EnterReadLock();
 				id = mUndefined.FindIndex(str => PhxUtil.StrEqualsIgnoreCase(str, memberName));
+				mUndefinedLock.ExitReadLock();
+
 				if (id.IsNotNone())
 				{
 					id = PhxUtil.GetUndefinedReferenceHandle(id);
@@ -70,9 +96,11 @@ namespace KSoft.Collections
 			{
 				InitializeUndefined();
 
+				mUndefinedLock.EnterWriteLock();
 				id = mUndefined.Count;
 				mUndefined.Add(memberName);
 				id = PhxUtil.GetUndefinedReferenceHandle(id);
+				mUndefinedLock.ExitWriteLock();
 			}
 
 			return id;
@@ -85,7 +113,9 @@ namespace KSoft.Collections
 			if (PhxUtil.IsUndefinedReferenceHandle(memberId))
 			{
 				Contract.Assert(mUndefined != null);
+				mUndefinedLock.EnterReadLock();
 				name = mUndefined[PhxUtil.GetUndefinedReferenceDataIndex(memberId)];
+				mUndefinedLock.ExitReadLock();
 			}
 			else
 			{
@@ -95,9 +125,16 @@ namespace KSoft.Collections
 			return name;
 		}
 
-		public int MemberUndefinedCount => mUndefined != null
-			? mUndefined.Count
-			: 0;
+		public int MemberUndefinedCount { get {
+			if (mUndefined != null)
+			{
+				mUndefinedLock.EnterReadLock();
+				int count = mUndefined.Count;
+				mUndefinedLock.ExitReadLock();
+				return count;
+			}
+			return 0;
+		} }
 
 		public ObservableCollection<string> UndefinedMembers => mUndefined;
 		#endregion

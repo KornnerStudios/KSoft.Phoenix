@@ -43,6 +43,15 @@ namespace KSoft.Phoenix.XML
 			{
 				@params.SetForceNoRootElementStreaming(false);
 			}
+
+			// if it hasn't already been marked preloaded, it is now
+			// This will be the case if something doesn't actually Preload,
+			// but instead fully streams as part of its Preload phase.
+			// E.g. TerrainTileType
+			if (s.IsReading && !list.IsFullyPreloaded)
+			{
+				list.IsFullyPreloaded = true;
+			}
 		}
 
 		public static void SerializePreload<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
@@ -206,6 +215,7 @@ namespace KSoft.Phoenix.XML
 			Serialize(s);
 
 			mIsPreloaded = true;
+			mList.IsFullyPreloaded = true;
 		}
 		public void StreamPreload<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
@@ -222,6 +232,7 @@ namespace KSoft.Phoenix.XML
 
 			if (RequiresDataNamePreloading)
 			{
+				mList.IsFullyPreloaded = false; // need to reset this ahead of preloading again
 				Preload(s);
 			}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 #if CONTRACTS_FULL_SHIM
 using Contract = System.Diagnostics.ContractsShim.Contract;
@@ -24,6 +25,8 @@ namespace KSoft.Phoenix.XML
 			kNumberOf
 		};
 		public delegate void StreamXmlCallback(IO.XmlElementStream s);
+
+		[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 		public sealed class StreamXmlContextData
 		{
 			public Engine.ProtoDataXmlFileInfo ProtoFileInfo;
@@ -36,6 +39,11 @@ namespace KSoft.Phoenix.XML
 			public StreamXmlContextData(Engine.ProtoDataXmlFileInfo protoFileInfo)
 			{
 				ProtoFileInfo = protoFileInfo;
+			}
+
+			private string GetDebuggerDisplay()
+			{
+				return FileInfo.ToString();
 			}
 		};
 		private List<StreamXmlContextData> mStreamXmlContexts;
@@ -74,7 +82,9 @@ namespace KSoft.Phoenix.XML
 				},
 				new(Phx.BWeaponType.kProtoFileInfo)
 				{
-					Preload=StreamXmlWeaponTypes,
+					// BWeaponType's BWeaponModifier list requires BDamageTypes to be loaded first
+					Preload=PreloadWeaponTypes,
+					Stream=StreamXmlWeaponTypes,
 				},
 				new(Phx.BUserClass.kProtoFileInfo)
 				{
@@ -203,9 +213,9 @@ namespace KSoft.Phoenix.XML
 		{
 			var mode = args.Mode;
 
-			for (var p = args.FirstPriority; p < args.LastPriorityPlusOne; p++)
+			for (Engine.XmlFilePriority p = args.FirstPriority; p < args.LastPriorityPlusOne; p++)
 			{
-				foreach (var ctxt in mStreamXmlContexts)
+				foreach (StreamXmlContextData ctxt in mStreamXmlContexts)
 				{
 					if (ctxt.ProtoFileInfo.Priority != p)
 					{
@@ -222,7 +232,8 @@ namespace KSoft.Phoenix.XML
 								break;
 							}
 
-							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
+							var task = Task<bool>.Factory.StartNew(
+								() => TryStreamData(ctxt.FileInfo, mode, ctxt.Preload));
 							args.Tasks.Add(task);
 						} break;
 						#endregion
@@ -234,8 +245,9 @@ namespace KSoft.Phoenix.XML
 								break;
 							}
 
-							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
-								args.Tasks.Add(task);
+							var task = Task<bool>.Factory.StartNew(
+								() => TryStreamData(ctxt.FileInfo, mode, ctxt.Stream));
+							args.Tasks.Add(task);
 						} break;
 						#endregion
 						#region StreamUpdates
@@ -251,7 +263,8 @@ namespace KSoft.Phoenix.XML
 								break;
 							}
 
-							var task = Task<bool>.Factory.StartNew(() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
+							var task = Task<bool>.Factory.StartNew(
+								() => TryStreamData(ctxt.FileInfoWithUpdates, mode, ctxt.StreamUpdates));
 							args.Tasks.Add(task);
 						} break;
 						#endregion

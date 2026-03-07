@@ -117,14 +117,22 @@ namespace KSoft.Phoenix.XML
 		{
 			XmlUtil.Serialize(s, Database.TerrainTileTypes, Phx.TerrainTileType.kBListXmlParams, ForceNoRootElementStreaming);
 		}
-		/// <remarks>For streaming directly from weapontypes.xml</remarks>
-		void StreamXmlWeaponTypes(IO.XmlElementStream s)
+		void PreloadWeaponTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, Database.WeaponTypes, Phx.BWeaponType.kBListXmlParams, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mWeaponTypesSerializer, ForceNoRootElementStreaming);
+
+			// We perform FixWeaponTypes in preload, as it currently only dynamically adds missing weapon types
+			// If fixing required changing values, this would need to be reworked so preload and stream
+			// fix ups are separate.
 			if (s.IsReading)
 			{
 				FixWeaponTypes();
 			}
+		}
+		/// <remarks>For streaming directly from weapontypes.xml</remarks>
+		void StreamXmlWeaponTypes(IO.XmlElementStream s)
+		{
+			XmlUtil.Serialize(s, mWeaponTypesSerializer, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from UserClasses.xml</remarks>
 		void StreamXmlUserClasses(IO.XmlElementStream s)

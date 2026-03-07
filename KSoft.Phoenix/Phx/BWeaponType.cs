@@ -8,7 +8,8 @@ namespace KSoft.Phoenix.Phx
 		public static readonly XML.BListXmlParams kBListXmlParams = new("WeaponType")
 		{
 			DataName = "Name",
-			Flags = XML.BCollectionXmlParamsFlags.UseElementForData
+			Flags = XML.BCollectionXmlParamsFlags.UseElementForData |
+					XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
 		};
 		public static readonly Engine.XmlFileInfo kXmlFileInfo = new()
 		{
@@ -30,6 +31,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
+		// The Modifiers list requires BWeaponType names!
+		[Meta.BWeaponTypeReference]
 		public Collections.BTypeValues<BWeaponModifier> Modifiers { get; private set; }
 
 		public BWeaponType()

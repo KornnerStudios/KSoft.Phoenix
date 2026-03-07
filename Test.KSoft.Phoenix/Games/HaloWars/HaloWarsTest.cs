@@ -46,6 +46,26 @@ namespace KSoft.Phoenix.Engine.Test
 			Load(hw);
 		}
 
+		// Break glass in case of emergency only:
+		// I added this to stress test async loading issues that I at first thought
+		// were somehow caused by non-ThreadStatic data being used.
+		//[TestMethod]
+		public void HaloWars_TestThreading()
+		{
+			int iterations = 10;
+			for (int x = 0; x < iterations; x++)
+			{
+				var thread2 = new System.Threading.Thread(HaloWars_DumpSortedObjectDbIdsTest);
+				var thread3 = new System.Threading.Thread(HaloWars_LoadTest);
+
+				thread2.Start();
+				thread3.Start();
+
+				thread2.Join();
+				thread3.Join();
+			}
+		}
+
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_LoadTest()

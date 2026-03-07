@@ -28,13 +28,15 @@ namespace KSoft.Phoenix.XML
 			string name = null;
 			Params.StreamDataName(s, ref name);
 
-			int index = mList.TypeValuesParams.kGetProtoEnumFromDB(xs.Database).GetMemberId(name);
+			Collections.IProtoEnum protoEnumFromDb = mList.TypeValuesParams.kGetProtoEnumFromDB(xs.Database);
+			int index = protoEnumFromDb.GetMemberId(name);
 
 			return index;
 		}
 		protected override void WriteExplicitIndex<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs, int index)
 		{
-			string name = mList.TypeValuesParams.kGetProtoEnumFromDB(xs.Database).GetMemberName(index);
+			Collections.IProtoEnum protoEnumFromDb = mList.TypeValuesParams.kGetProtoEnumFromDB(xs.Database);
+			string name = protoEnumFromDb.GetMemberName(index);
 
 			Params.StreamDataName(s, ref name);
 		}
