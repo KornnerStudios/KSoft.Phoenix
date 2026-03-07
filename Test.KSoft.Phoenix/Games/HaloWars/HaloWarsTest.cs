@@ -10,22 +10,12 @@ namespace KSoft.Phoenix.Engine.Test
 	public sealed class HaloWarsTest
 		: BaseTestClass
 	{
-		const string kBaseRoot
-			//= @"D:\HW\data\"
-			= @"U:\Ensemble\HaloWarsData\work\"
-			;
-		const string kGameRoot
-			= kBaseRoot
-			//+ @"Release\"
-			;
-		const string kGameRootAlpha
-			= kBaseRoot
-			//+ @"phx_alpha\"
-			;
-		const string kUpdateRoot
-			= kBaseRoot
-			//+ @"phx_tu6\"
-			;
+		private string HaloWarsAlphaRoot =>
+			TestContext.Properties[nameof(HaloWarsAlphaRoot)]?.ToString();
+		private string HaloWarsGameRoot =>
+			TestContext.Properties[nameof(HaloWarsGameRoot)]?.ToString();
+		private string HaloWarsUpdateRoot =>
+			TestContext.Properties[nameof(HaloWarsUpdateRoot)]?.ToString();
 
 		private void Load(PhxEngine engine)
 		{
@@ -38,11 +28,25 @@ namespace KSoft.Phoenix.Engine.Test
 			Assert.IsTrue(success, "Failed to load");
 		}
 
+		private PhxEngine CreateWithGameAndUpdateRoot()
+		{
+			Assert.IsTrue(System.IO.Directory.Exists(HaloWarsGameRoot),
+				$"Directory does not exist: {HaloWarsGameRoot}");
+			Assert.IsTrue(System.IO.Directory.Exists(HaloWarsUpdateRoot),
+				$"Directory does not exist: {HaloWarsUpdateRoot}");
+
+			var hw = PhxEngine.CreateForHaloWars(HaloWarsGameRoot, HaloWarsUpdateRoot);
+			return hw;
+		}
+
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_LoadAlphaTest()
 		{
-			var hw = PhxEngine.CreateForHaloWarsAlpha(kGameRootAlpha);
+			Assert.IsTrue(System.IO.Directory.Exists(HaloWarsAlphaRoot),
+				$"Directory does not exist: {HaloWarsAlphaRoot}");
+
+			var hw = PhxEngine.CreateForHaloWarsAlpha(HaloWarsAlphaRoot);
 			Load(hw);
 		}
 
@@ -70,7 +74,7 @@ namespace KSoft.Phoenix.Engine.Test
 		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_LoadTest()
 		{
-			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
+			PhxEngine hw = CreateWithGameAndUpdateRoot();
 			Load(hw);
 
 			Console.WriteLine("English StringTable range stats:");
@@ -83,9 +87,9 @@ namespace KSoft.Phoenix.Engine.Test
 
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
-		public void HaloWars_AppSaveTest()
+		public void HaloWars_App_Step1SaveTest()
 		{
-			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
+			PhxEngine hw = CreateWithGameAndUpdateRoot();
 			Load(hw);
 
 			using (var s = IO.XmlElementStream.CreateForWrite("Serina", hw))
@@ -101,22 +105,29 @@ namespace KSoft.Phoenix.Engine.Test
 					IndentChars = "\t",
 					NewLineChars = "\n"
 				};
-				string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "Serina.xml");
+				string output_path = System.IO.Path.Combine(TestContext.TestRunResultsDirectory, "Serina.xml");
 				Console.WriteLine("Saving to: {0}", output_path);
 				using (var xw = System.Xml.XmlWriter.Create(output_path, xw_settings))
 				{
 					s.Document.Save(xw);
 				}
+				TestContext.AddResultFile(output_path);
 			}
 		}
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
-		public void HaloWars_AppLoadTest()
+		public void HaloWars_App_Step2LoadTest()
 		{
-			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
-			string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "Serina.xml");
-			Console.WriteLine("Saving to: {0}", output_path);
-			using (var s = new IO.XmlElementStream(output_path, FA.Read))
+			string input_path = System.IO.Path.Combine(TestContext.TestRunResultsDirectory, "Serina.xml");
+
+			// Requires HaloWars_App_Step1SaveTest to run first
+			Assert.IsTrue(System.IO.File.Exists(input_path),
+				$"Input file does not exist: {input_path}");
+
+			PhxEngine hw = CreateWithGameAndUpdateRoot();
+
+			Console.WriteLine("Reading from: {0}", input_path);
+			using (var s = new IO.XmlElementStream(input_path, FA.Read))
 			{
 				s.InitializeAtRootElement();
 				s.StreamMode = FA.Read;
@@ -129,11 +140,8 @@ namespace KSoft.Phoenix.Engine.Test
 		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_DumpSortedObjectDbIdsTest()
 		{
-			var hw = PhxEngine.CreateForHaloWars(kGameRoot, kUpdateRoot);
-			bool success;
-
-			success = hw.Load();
-			Assert.IsTrue(success, "Failed to preload");
+			PhxEngine hw = CreateWithGameAndUpdateRoot();
+			Load(hw);
 
 			var objs = new List<Phx.BProtoObject>(hw.Database.Objects);
 			objs.Sort((x, y) => x.DbId - y.DbId);
@@ -154,9 +162,10 @@ namespace KSoft.Phoenix.Engine.Test
 					}
 				}
 
-				string output_path = System.IO.Path.Combine(TestContext.TestResultsDirectory, "ObjectDBIDs.xml");
+				string output_path = System.IO.Path.Combine(TestContext.TestRunResultsDirectory, "ObjectDBIDs.xml");
 				Console.WriteLine("Saving to: {0}", output_path);
 				s.Document.Save(output_path);
+				TestContext.AddResultFile(output_path);
 			}
 		}
 
@@ -164,10 +173,15 @@ namespace KSoft.Phoenix.Engine.Test
 		[TestCategory("ExcludedFromAppveyor")]
 		public void HaloWars_WwiseTest()
 		{
-			const string k_sound_table_xml = kGameRoot + @"data\soundtable.xml";
+			string k_sound_table_xml = System.IO.Path.Combine(HaloWarsGameRoot, @"data\soundtable.xml");
 			const string k_sounds_path = @"D:\HW\test\";
 			const string k_sounds_pck = @"C:\Mount\A\Xbox\Xbox360\Games\Halo Wars\sound\wwise_material\GeneratedSoundBanks\xbox360\sounds.pck";
 //			const string k_output_file = kTestResultsPath + @"sounds_pck.xml";
+
+			Assert.IsTrue(System.IO.File.Exists(k_sound_table_xml),
+				$"Input file does not exist: {k_sound_table_xml}");
+			Assert.IsTrue(System.IO.File.Exists(k_sounds_pck),
+				$"Input file does not exist: {k_sounds_pck}");
 
 			var sound_table = new Phx.BSoundTable();
 			using (var s = new IO.XmlElementStream(k_sound_table_xml, FA.Read))

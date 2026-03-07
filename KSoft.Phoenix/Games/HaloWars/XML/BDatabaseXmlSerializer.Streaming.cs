@@ -5,6 +5,7 @@ namespace KSoft.Phoenix.HaloWars
 {
 	partial class BDatabaseXmlSerializer
 	{
+		[SuppressMessage("Style", "IDE0044:Add readonly modifier")]
 		static bool gRemoveUndefined = false;
 
 		#region Utils
@@ -321,7 +322,7 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		static void FixObjectsXmlInvalidSoundsPowGpWave(
 			[SuppressMessage("Microsoft.Design", "IDE0060:ReviewUnusedParameters")]
-			IO.XmlElementStream s, 
+			IO.XmlElementStream s,
 			XmlNode node)
 		{
 			//Birth->Exist

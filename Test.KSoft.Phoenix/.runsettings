@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!--You can locally override these using a user.runsettings file-->
+  <TestRunParameters>
+    <Parameter name="HaloWarsAlphaRoot"
+      value="D:\HW\data\phx_alpha\" />
+    <Parameter name="HaloWarsGameRoot"
+      value="D:\HW\data\Release\" />
+    <Parameter name="HaloWarsUpdateRoot"
+      value="D:\HW\data\phx_tu6\" />
+  </TestRunParameters>
+  <MSTest>
+    <!--The default is true, but this causes AddResultFile to complain at the end of test runs (because they're nuked)-->
+    <!-- <DeleteDeploymentDirectoryAfterTestRunIsComplete>false</DeleteDeploymentDirectoryAfterTestRunIsComplete> -->
+  </MSTest>
+</RunSettings>

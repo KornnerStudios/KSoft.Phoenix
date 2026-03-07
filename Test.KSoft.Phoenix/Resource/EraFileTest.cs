@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Resource.Test
 	{
 		const string kEraCryptInputDir = @"C:\KStudio\HaloWars\PC\";
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
-		string kEraCryptOutputDir => TestContext.TestResultsDirectory;
+		string kEraCryptOutputDir => TestContext.TestRunResultsDirectory;
 		const string kEraCryptTestFileName = "root";
 
 		static readonly Collections.BitVector32 kEraUtilTestOptions = new Collections.BitVector32()
@@ -32,13 +32,18 @@ namespace KSoft.Phoenix.Resource.Test
 					+ EraFileUtil.kExtensionDecrypted
 			);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
-		string kEraExpanderOutputDir => System.IO.Path.Combine(TestContext.TestResultsDirectory, @"assets\");
+		string kEraExpanderOutputDir => System.IO.Path.Combine(TestContext.TestRunResultsDirectory, @"assets\");
 		const string kEraBuilderOutputDir = kEraCryptInputDir;
 
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
 		public void EraFile_DecryptTest()
 		{
+			Assert.IsTrue(System.IO.Directory.Exists(kEraCryptInputDir),
+				$"Input directory does not exist: {kEraCryptInputDir}");
+			Assert.IsTrue(System.IO.File.Exists(System.IO.Path.Combine(kEraCryptInputDir, kEraCryptTestFileName)),
+				$"Input file does not exist: {System.IO.Path.Combine(kEraCryptInputDir, kEraCryptTestFileName)}");
+
 			string output_path = System.IO.Path.Combine(kEraCryptOutputDir);
 			Console.WriteLine("Outputing to: {0}", output_path);
 
@@ -60,6 +65,12 @@ namespace KSoft.Phoenix.Resource.Test
 			string output_path = System.IO.Path.Combine(kEraCryptOutputDir);
 			Console.WriteLine("Outputing to: {0}", output_path);
 
+			Assert.IsTrue(System.IO.Directory.Exists(input_path),
+				$"Input directory does not exist: {input_path}");
+
+			Assert.IsTrue(System.IO.File.Exists(System.IO.Path.Combine(input_path, kEraCryptTestFileName)),
+				$"Input file does not exist: {System.IO.Path.Combine(input_path, kEraCryptTestFileName)}");
+
 			// miniloader.bin -> miniloader.era
 			EraFileUtil.Crypt(
 				input_path, // DecryptTest outputs here, and that output is what we'll use to test encryption
@@ -77,6 +88,9 @@ namespace KSoft.Phoenix.Resource.Test
 
 			string input_path = kEraExpanderInputFile;
 			Console.WriteLine("Reading from: {0}", input_path);
+
+			Assert.IsTrue(System.IO.File.Exists(input_path),
+				$"Input file does not exist: {input_path}");
 
 			using (var expander = new EraFileExpander(input_path))
 			{
@@ -98,6 +112,8 @@ namespace KSoft.Phoenix.Resource.Test
 		public void EraFile_BuildTest()
 		{
 			string k_listing_path = System.IO.Path.Combine(kEraExpanderOutputDir, kEraExpanderFileName);
+			Assert.IsTrue(System.IO.File.Exists(k_listing_path),
+				$"Listing file does not exist: {k_listing_path}");
 
 			bool result;
 
@@ -140,6 +156,9 @@ namespace KSoft.Phoenix.Resource.Test
 			var expand = false;
 			if (expand)
 			{
+				Assert.IsTrue(System.IO.File.Exists(k_input_era),
+					$"Input ERA file does not exist: {k_input_era}");
+
 				using (var expander = new EraFileExpander(k_input_era))
 				{
 					expander.Options = kEraUtilTestOptions;
@@ -158,6 +177,9 @@ namespace KSoft.Phoenix.Resource.Test
 			}
 			#endregion
 			#region Build
+			Assert.IsTrue(System.IO.File.Exists(k_listing_path),
+				$"Listing file does not exist: {k_listing_path}");
+
 			using (var builder = new EraFileBuilder(k_listing_path))
 			{
 				builder.Options = kEraUtilTestOptions;
@@ -174,6 +196,9 @@ namespace KSoft.Phoenix.Resource.Test
 			}
 			#endregion
 			#region Verify
+			Assert.IsTrue(System.IO.File.Exists(k_rebuilt_era),
+				$"Rebuilt file does not exist: {k_rebuilt_era}");
+
 			using (var expander = new EraFileExpander(k_rebuilt_era))
 			{
 				expander.Options = kEraUtilTestOptions;

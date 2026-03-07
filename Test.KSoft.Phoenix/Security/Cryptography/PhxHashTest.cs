@@ -17,8 +17,8 @@ namespace KSoft.Security.Cryptography.Test
 
 			ulong[] gameFileTeaKey = PhxTEA.CreateKeyFromPhrase(cKeyPhrase);
 			Assert.IsNotNull(gameFileTeaKey);
-			Assert.IsTrue(gameFileTeaKey.Length == PhxTEA.kKeySize);
-			Assert.IsTrue(gameFileTeaKey.EqualsArray(PhxTEA.kKeyGameFile));
+			Assert.HasCount(PhxTEA.kKeySize, gameFileTeaKey);
+			CollectionAssert.AreEqual(PhxTEA.kKeyGameFile, gameFileTeaKey);
 		}
 	};
 }
