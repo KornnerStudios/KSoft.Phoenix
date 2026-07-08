@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.Phx
 		public int Version { get { return mVersion; } }
 
 		protected void StreamType<TTypeEnum, TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, ref TTypeEnum type)
-			where TTypeEnum : struct, IComparable, IFormattable, IConvertible
+			where TTypeEnum : struct, Enum, IComparable, IFormattable, IConvertible
 			where TDoc : class
 			where TCursor : class
 		{

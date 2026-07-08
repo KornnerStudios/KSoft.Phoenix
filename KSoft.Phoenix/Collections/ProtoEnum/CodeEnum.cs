@@ -6,7 +6,7 @@ namespace KSoft.Collections
 
 	public sealed class CodeEnum<TEnum>
 		: IProtoEnum
-		where TEnum : struct
+		where TEnum : struct, Enum
 	{
 		static readonly string[] kNames;
 		static readonly string kUnregisteredMessage;
