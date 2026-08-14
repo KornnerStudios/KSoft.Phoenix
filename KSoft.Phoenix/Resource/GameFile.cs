@@ -215,7 +215,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				using (var cs = new CompressedStream(true))
 				{
-					Stream(s, EnumFlags.Test(Flags, FileFlags.EncryptContent), cs,
+					Stream(s, Flags.HasFlag(FileFlags.EncryptContent), cs,
 						userKey: Header.DataCryptKey, streamLeftovers: StreamLeftovers);
 
 					cs.Decompress();
@@ -234,7 +234,7 @@ namespace KSoft.Phoenix.Resource
 					cs.InitializeFromStream(ms);
 					cs.Compress();
 
-					Stream(s, EnumFlags.Test(Flags, FileFlags.EncryptContent), cs,
+					Stream(s, Flags.HasFlag(FileFlags.EncryptContent), cs,
 						userKey: Header.DataCryptKey, streamLeftovers: StreamLeftovers);
 				}
 			}
@@ -264,10 +264,10 @@ namespace KSoft.Phoenix.Resource
 			s.Stream(ref Flags, FileFlagsStreamer.Instance);
 			s.StreamVersion(kVersion);
 
-			Stream(s, EnumFlags.Test(Flags, FileFlags.EncryptHeader), Header, MediaHeader.kSizeOf);
+			Stream(s, Flags.HasFlag(FileFlags.EncryptHeader), Header, MediaHeader.kSizeOf);
 			GenerateHash();
 
-			if (EnumFlags.Test(Flags, FileFlags.CompressContent))
+			if (Flags.HasFlag(FileFlags.CompressContent))
 			{
 				StreamCompressedContent(s);
 			}
@@ -304,14 +304,14 @@ namespace KSoft.Phoenix.Resource
 			if (Version != kVersion) throw new IO.VersionMismatchException(s.BaseStream,
 				kVersion, Version);
 
-			Read(s, EnumFlags.Test(Flags, FileFlags.EncryptHeader), Header, MediaHeader.kSizeOf);
+			Read(s, Flags.HasFlag(FileFlags.EncryptHeader), Header, MediaHeader.kSizeOf);
 			GenerateHash();
 
-			if (EnumFlags.Test(Flags, FileFlags.CompressContent))
+			if (Flags.HasFlag(FileFlags.CompressContent))
 			{
 				using (var cs = new CompressedStream(true))
 				{
-					Read(s, EnumFlags.Test(Flags, FileFlags.EncryptContent), cs,
+					Read(s, Flags.HasFlag(FileFlags.EncryptContent), cs,
 						userKey: Header.DataCryptKey, readLeftovers: ReadLeftovers);
 
 					cs.Decompress();
@@ -328,10 +328,10 @@ namespace KSoft.Phoenix.Resource
 			s.Write(Flags, FileFlagsStreamer.Instance);
 			s.Write((ushort)kVersion);
 
-			Write(s, EnumFlags.Test(Flags, FileFlags.EncryptHeader), Header, MediaHeader.kSizeOf);
+			Write(s, Flags.HasFlag(FileFlags.EncryptHeader), Header, MediaHeader.kSizeOf);
 			GenerateHash();
 
-			if (EnumFlags.Test(Flags, FileFlags.CompressContent))
+			if (Flags.HasFlag(FileFlags.CompressContent))
 			{
 				using (var cs = new CompressedStream(true))
 				using (var ms = new System.IO.MemoryStream(kMaxContentSize))
@@ -343,7 +343,7 @@ namespace KSoft.Phoenix.Resource
 					cs.InitializeFromStream(ms);
 					cs.Compress();
 
-					Write(s, EnumFlags.Test(Flags, FileFlags.EncryptContent), cs,
+					Write(s, Flags.HasFlag(FileFlags.EncryptContent), cs,
 						userKey: Header.DataCryptKey, writeLeftovers: WriteLeftovers);
 				}
 			}
