@@ -245,7 +245,7 @@ namespace KSoft.Phoenix.Resource
 
 			if (s.IsWriting)
 			{
-				//Flags = EnumFlags.Remove(Flags, FileFlags.EncryptHeader | FileFlags.EncryptContent);
+				//Flags &= ~(FileFlags.EncryptHeader | FileFlags.EncryptContent);
 			}
 
 			// actually a union here:
@@ -323,7 +323,7 @@ namespace KSoft.Phoenix.Resource
 		}
 		public void Write(IO.EndianWriter s)
 		{
-			//Flags = EnumFlags.Remove(Flags, FileFlags.EncryptHeader | FileFlags.EncryptContent);
+			//Flags &= ~(FileFlags.EncryptHeader | FileFlags.EncryptContent);
 
 			s.Write(Flags, FileFlagsStreamer.Instance);
 			s.Write((ushort)kVersion);
