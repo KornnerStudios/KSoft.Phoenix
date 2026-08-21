@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Phx
 {
@@ -53,7 +48,9 @@ namespace KSoft.Phoenix.Phx
 			}
 			else
 			{
-				Contract.Assert(false, "Provider's Type doesn't have a ProtoDataTypeObjectSourceKindAttribute");
+				throw new InvalidOperationException(string.Format(
+					"Provider type {0} does not have a ProtoDataTypeObjectSourceKindAttribute.",
+					providerType.FullName));
 			}
 
 			return kind;
@@ -79,7 +76,7 @@ namespace KSoft.Phoenix
 		public static int GetId(this Phx.IProtoDataObjectDatabaseProvider provider
 			, int objectKind, string name)
 		{
-			Contract.Requires(provider != null);
+			ArgumentNullException.ThrowIfNull(provider);
 			if (objectKind == PhxUtil.kObjectKindNone)
 			{
 				throw new ArgumentOutOfRangeException(nameof(objectKind));
@@ -92,7 +89,7 @@ namespace KSoft.Phoenix
 		public static string GetName(this Phx.IProtoDataObjectDatabaseProvider provider
 			, int objectKind, int id)
 		{
-			Contract.Requires(provider != null);
+			ArgumentNullException.ThrowIfNull(provider);
 			if (objectKind == PhxUtil.kObjectKindNone)
 			{
 				throw new ArgumentOutOfRangeException(nameof(objectKind));
@@ -105,7 +102,7 @@ namespace KSoft.Phoenix
 		public static object GetObject(this Phx.IProtoDataObjectDatabaseProvider provider
 			, int objectKind, int id)
 		{
-			Contract.Requires(provider != null);
+			ArgumentNullException.ThrowIfNull(provider);
 			if (objectKind == PhxUtil.kObjectKindNone)
 			{
 				throw new ArgumentOutOfRangeException(nameof(objectKind));

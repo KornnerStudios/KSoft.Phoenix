@@ -3,11 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Phx
 {
@@ -69,7 +64,13 @@ namespace KSoft.Phoenix.Phx
 		}
 		internal LocStringTableIndexRange MakeNextRange(int absoluteStartIndex, int absoluteEndIndex, string reservedFor)
 		{
-			Contract.Requires(absoluteEndIndex > absoluteStartIndex);
+			if (absoluteEndIndex <= absoluteStartIndex)
+			{
+				throw new ArgumentException(string.Format(
+					"End index must be greater than start index; end is {0}, start is {1}.",
+					absoluteEndIndex,
+					absoluteStartIndex), nameof(absoluteEndIndex));
+			}
 
 			int expected_start_index = StartIndex + Count;
 			if (expected_start_index != absoluteStartIndex)
@@ -164,7 +165,7 @@ namespace KSoft.Phoenix.Phx
 
 		public static LocStringTableIndexRange FindRangeDefinition(int index)
 		{
-			Contract.Requires(index >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
 			LocStringTableIndexRange found_range = null;
 
@@ -353,7 +354,7 @@ namespace KSoft.Phoenix.Phx
 
 		public int NextFreeId(LocStringTableIndexRange range)
 		{
-			Contract.Requires(range != null);
+			ArgumentNullException.ThrowIfNull(range);
 
 			if (UsedIndices.Length == 0)
 			{
@@ -456,7 +457,7 @@ namespace KSoft.Phoenix.Phx
 
 		private int CountNumberUsed(LocStringTableIndexRange range)
 		{
-			Contract.Requires(range != null);
+			ArgumentNullException.ThrowIfNull(range);
 
 			int used_count = 0;
 			if (range.StartIndex >= UsedIndices.Length)

@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -37,9 +32,21 @@ namespace KSoft.Phoenix.Runtime
 		{
 			s.StreamV(ref Vector);
 			BSaveGame.StreamArray16(s, ref SquadList);
-			Contract.Assert(SquadList.Length <= kMaxEntitiesPerList);
+			if (SquadList.Length > kMaxEntitiesPerList)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Squad list count is {0}, maximum is {1}.",
+					SquadList.Length,
+					kMaxEntitiesPerList));
+			}
 			BSaveGame.StreamArray16(s, ref UnitList);
-			Contract.Assert(SquadList.Length <= kMaxEntitiesPerList);
+			if (UnitList.Length > kMaxEntitiesPerList)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Unit list count is {0}, maximum is {1}.",
+					UnitList.Length,
+					kMaxEntitiesPerList));
+			}
 			s.Stream(EntityFilterSet);
 			s.Stream(ref Float);
 			s.Stream(ref ObjectType);
@@ -99,7 +106,14 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref CoolDownTimer); s.Stream(ref LastCoolDownAmount);
 			s.Stream(ref CoolDownTimerAccumulator);
 			BSaveGame.StreamArray(s, ref SubHints);
-			s.Stream(ref ParentHint); Contract.Assert(ParentHint <= kMaxCount);
+			s.Stream(ref ParentHint);
+			if (ParentHint > kMaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Parent hint id is {0}, maximum is {1}.",
+					ParentHint,
+					kMaxCount));
+			}
 			s.Stream(ref PrereqsMet); s.Stream(ref DirtyProfile);
 			s.StreamSignature(cSaveMarker.Concept);
 		}
@@ -131,7 +145,13 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref TimeSinceLastHint);
 			s.Stream(ref HintMessageOn);
 			BSaveGame.StreamArray16(s, ref AllowedConcepts);
-			Contract.Assert(AllowedConcepts.Length <= BConcept.kMaxCount);
+			if (AllowedConcepts.Length > BConcept.kMaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Allowed concept count is {0}, maximum is {1}.",
+					AllowedConcepts.Length,
+					BConcept.kMaxCount));
+			}
 			s.Stream(ref WaitForNextRescore);
 			s.Stream(ref LastGameTime);
 			s.StreamSignature(cSaveMarker.HintEngine);

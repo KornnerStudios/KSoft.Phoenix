@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-// int mType - cVisualAsset*
+﻿// int mType - cVisualAsset*
 // int mIndex
 using BVisualAsset = System.UInt64;
 
@@ -37,7 +31,7 @@ namespace KSoft.Phoenix.Runtime
 		}
 		void StreamAttachments(IO.EndianStream /*s*/_)
 		{
-			Contract.Assert(false); // #TODO
+			System.Diagnostics.Debug.Fail("TODO");
 		}
 		public void Serialize(IO.EndianStream s)
 		{

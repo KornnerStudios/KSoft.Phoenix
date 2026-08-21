@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using FA = System.IO.FileAccess;
 
@@ -410,7 +405,10 @@ namespace KSoft.Phoenix.Phx
 
 		public bool Load()
 		{
-			Contract.Assert(mXmlSerializer != null);
+			if (mXmlSerializer == null)
+			{
+				throw new InvalidOperationException("XML serializer must be initialized before loading the database.");
+			}
 
 			var xs = mXmlSerializer;//using (var xs = NewXmlSerializer())
 			{
@@ -420,7 +418,10 @@ namespace KSoft.Phoenix.Phx
 
 		public bool LoadAllTactics()
 		{
-			Contract.Assert(mXmlSerializer != null);
+			if (mXmlSerializer == null)
+			{
+				throw new InvalidOperationException("XML serializer must be initialized before loading tactics.");
+			}
 
 			var xs = mXmlSerializer;//using (var xs = NewXmlSerializer())
 			{

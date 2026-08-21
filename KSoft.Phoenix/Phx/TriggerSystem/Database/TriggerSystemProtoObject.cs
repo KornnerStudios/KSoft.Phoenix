@@ -1,8 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -75,8 +71,20 @@ namespace KSoft.Phoenix.Phx
 				return 0;
 			}
 
-			Contract.Assert(Version == obj.Version);
-			Contract.Assert(Params.Count == obj.Args.Count);
+			if (Version != obj.Version)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Trigger proto object version is {0}, expected {1}.",
+					Version,
+					obj.Version));
+			}
+			if (Params.Count != obj.Args.Count)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Trigger proto object parameter count is {0}, expected {1}.",
+					Params.Count,
+					obj.Args.Count));
+			}
 
 			int diff = 0;
 			for (int x = 0; x < Params.Count; x++)

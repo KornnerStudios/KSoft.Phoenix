@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 // [0,n) index into the BProtoPower's level data.
 // Never -1, powers must always have at least the 0th power level.
@@ -204,9 +199,21 @@ namespace KSoft.Phoenix.Runtime
 			BSaveGame.StreamList(s, ProtoSquads, kProtoUnitsListInfo);
 			BSaveGame.StreamList(s, ProtoTechs, kProtoTechsListInfo);
 			BSaveGame.StreamArray16(s, ref UniqueProtoObjects);
-			Contract.Assert(UniqueProtoObjects.Length <= kProtoUniqueUnitsListInfo.MaxCount);
+			if (UniqueProtoObjects.Length > kProtoUniqueUnitsListInfo.MaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Unique proto-object count is {0}, maximum is {1}.",
+					UniqueProtoObjects.Length,
+					kProtoUniqueUnitsListInfo.MaxCount));
+			}
 			BSaveGame.StreamArray16(s, ref UniqueProtoSquad);
-			Contract.Assert(UniqueProtoSquad.Length <= kProtoUniqueUnitsListInfo.MaxCount);
+			if (UniqueProtoSquad.Length > kProtoUniqueUnitsListInfo.MaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Unique proto-squad count is {0}, maximum is {1}.",
+					UniqueProtoSquad.Length,
+					kProtoUniqueUnitsListInfo.MaxCount));
+			}
 			BSaveGame.StreamArray(s, ref PowerEntries);
 			BSaveGame.StreamArray(s, ref Abilities);
 			for (int x = 0; x < Powers.Length; x++)

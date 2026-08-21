@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-namespace KSoft.Phoenix.Runtime
+﻿namespace KSoft.Phoenix.Runtime
 {
 	using System.Diagnostics.CodeAnalysis;
 	using BActionTypeStreamer = IO.EnumBinaryStreamer<Phx.BActionType, byte>;
@@ -65,7 +59,10 @@ namespace KSoft.Phoenix.Runtime
 
 		public static IO.EndianStream StreamActionList(IO.EndianStream s, ref ActionListEntry[] actionList)
 		{
-			Contract.Requires(s.IsReading || actionList != null);
+			if (s.IsWriting)
+			{
+				System.ArgumentNullException.ThrowIfNull(actionList);
+			}
 
 			bool reading = s.IsReading;
 
@@ -73,7 +70,13 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref count);
 			if (reading)
 			{
-				Contract.Assert(count <= cActionListMaximumCount);
+				if (count > cActionListMaximumCount)
+				{
+					throw new System.IO.InvalidDataException(string.Format(
+						"Read action list count {0} exceeds maximum {1}.",
+						count,
+						cActionListMaximumCount));
+				}
 				actionList = new ActionListEntry[count];
 			}
 
@@ -83,8 +86,20 @@ namespace KSoft.Phoenix.Runtime
 				s.Stream(ref expected_index);
 				if (reading)
 				{
-					Contract.Assert(expected_index != cSaveMarker.IteratorEndUInt8);
-					Contract.Assert(expected_index == x);
+					if (expected_index == cSaveMarker.IteratorEndUInt8)
+					{
+						throw new System.IO.InvalidDataException(string.Format(
+							"Read action index {0} used the iterator-end sentinel {1}.",
+							expected_index,
+							cSaveMarker.IteratorEndUInt8));
+					}
+					if (expected_index != x)
+					{
+						throw new System.IO.InvalidDataException(string.Format(
+							"Read action index {0}, expected {1}.",
+							expected_index,
+							x));
+					}
 				}
 
 				var t = reading ? ActionListEntry.Invalid : actionList[x];

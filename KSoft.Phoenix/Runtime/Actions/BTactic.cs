@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-namespace KSoft.Phoenix.Runtime
+﻿namespace KSoft.Phoenix.Runtime
 {
 	partial class cSaveMarker
 	{
@@ -26,9 +20,21 @@ namespace KSoft.Phoenix.Runtime
 		public void Serialize(IO.EndianStream s)
 		{
 			BSaveGame.StreamArray(s, ref Weapons);
-			Contract.Assert(Weapons.Length <= BWeapon.kMaxCount);
+			if (Weapons.Length > BWeapon.kMaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Weapon count is {0}, maximum is {1}.",
+					Weapons.Length,
+					BWeapon.kMaxCount));
+			}
 			BSaveGame.StreamArray(s, ref ProtoActions);
-			Contract.Assert(ProtoActions.Length <= BProtoAction.kMaxCount);
+			if (ProtoActions.Length > BProtoAction.kMaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Proto-action count is {0}, maximum is {1}.",
+					ProtoActions.Length,
+					BProtoAction.kMaxCount));
+			}
 			s.Stream(ref AnimInfoLoaded);
 			s.StreamSignature(cSaveMarker.Tactic);
 		}

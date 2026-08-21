@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -159,14 +154,26 @@ namespace KSoft.Phoenix.Runtime
 			{
 				if (info.SerializeCapacity)
 				{
-					Contract.Assert(capacity <= info.MaxCount);
+					if (capacity > info.MaxCount)
+					{
+						throw new System.IO.InvalidDataException(string.Format(
+							"Read list capacity {0} exceeds maximum {1}.",
+							capacity,
+							info.MaxCount));
+					}
 					list.Capacity = capacity;
 				}
 
 				var item = new T();
 				for (item.Serialize(s, info); item.Index != info.DoneIndex; item.Serialize(s, info))
 				{
-					Contract.Assert(list.Count <= info.MaxCount);
+					if (list.Count > info.MaxCount)
+					{
+						throw new System.IO.InvalidDataException(string.Format(
+							"Read list count {0} exceeds maximum {1}.",
+							list.Count,
+							info.MaxCount));
+					}
 					list.Add(item);
 				}
 			}
@@ -194,7 +201,14 @@ namespace KSoft.Phoenix.Runtime
 
 			if (s.IsReading)
 			{
-				Contract.Assert(capacity <= info.MaxCount && count < info.MaxCount);
+				if (capacity > info.MaxCount || count >= info.MaxCount)
+				{
+					throw new System.IO.InvalidDataException(string.Format(
+						"Read free-list capacity/count {0}/{1} is outside maximum {2}.",
+						capacity,
+						count,
+						info.MaxCount));
+				}
 				list.Capacity = capacity;
 
 				for (int x = 0; x < count; x++)

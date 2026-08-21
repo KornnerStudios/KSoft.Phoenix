@@ -1,9 +1,5 @@
-﻿using System.ComponentModel;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+using System.ComponentModel;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -21,7 +17,10 @@ namespace KSoft.Phoenix.Phx
 
 		protected DatabaseObjectUserInterfaceTextData CreateDatabaseObjectUserInterfaceTextData()
 		{
-			Contract.Requires(UserInterfaceTextData == null);
+			if (UserInterfaceTextData != null)
+			{
+				throw new InvalidOperationException("User interface text data is already initialized.");
+			}
 
 			UserInterfaceTextData = new DatabaseObjectUserInterfaceTextData();
 			return UserInterfaceTextData;

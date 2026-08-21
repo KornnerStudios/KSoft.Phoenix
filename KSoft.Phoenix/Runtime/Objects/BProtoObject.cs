@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-// short mID
+﻿// short mID
 // byte mCount
 // byte mBucket : 7
 // bool mSquad : 1
@@ -61,9 +55,21 @@ namespace KSoft.Phoenix.Runtime
 
 			s.Stream(ref ProtoID);
 			BSaveGame.StreamArray(s, ref TrainLimits);
-			Contract.Assert(TrainLimits.Length <= kTrainLimitsMaxCount);
+			if (TrainLimits.Length > kTrainLimitsMaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Train-limit count is {0}, maximum is {1}.",
+					TrainLimits.Length,
+					kTrainLimitsMaxCount));
+			}
 			BSaveGame.StreamArray(s, ref Hardpoints);
-			Contract.Assert(Hardpoints.Length <= BHardpoint.kMaxCount);
+			if (Hardpoints.Length > BHardpoint.kMaxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Hardpoint count is {0}, maximum is {1}.",
+					Hardpoints.Length,
+					BHardpoint.kMaxCount));
+			}
 			sg.StreamBCost(s, ref Cost);
 			s.Stream(ref ProtoVisualIndex);
 			s.Stream(ref DesiredVelocity); s.Stream(ref MaxVelocity);

@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-using BBitVector32 = System.UInt32;
+﻿using BBitVector32 = System.UInt32;
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -165,7 +159,7 @@ namespace KSoft.Phoenix.Runtime
 
 			s.Stream(ref IsObstruction);
 
-			Contract.Assert(false);// mpPhysicsObject
+			System.Diagnostics.Debug.Fail("TODO mpPhysicsObject");
 
 			s.StreamSignature(cSaveMarker.Object1);
 		}

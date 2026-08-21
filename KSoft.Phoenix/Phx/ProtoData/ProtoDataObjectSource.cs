@@ -1,8 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -13,8 +9,14 @@ namespace KSoft.Phoenix.Phx
 
 		public ProtoDataObjectSource(ProtoDataObjectSourceKind kind, Engine.XmlFileInfo fileReference)
 		{
-			Contract.Requires(kind != ProtoDataObjectSourceKind.None);
-			Contract.Requires(!kind.RequiresFileReference() || fileReference != null);
+			if (kind == ProtoDataObjectSourceKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind), kind, "Source kind cannot be None.");
+			}
+			if (kind.RequiresFileReference())
+			{
+				ArgumentNullException.ThrowIfNull(fileReference);
+			}
 
 			SourceKind = kind;
 			FileReference = fileReference;
