@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using FA = System.IO.FileAccess;
 
@@ -158,8 +153,13 @@ namespace KSoft.Phoenix.Resource
 
 					// Right now we don't actually perform any file removing (eg, duplicates) until EraFile.Build so
 					// we also allow the written size to be LESS THAN the assumed preamble size
-					Contract.Assert(era_memory.BaseStream.Position <= preamble_size,
-						"Written ERA header size is greater than what we calculated");
+					if (era_memory.BaseStream.Position > preamble_size)
+					{
+						throw new InvalidOperationException(string.Format(
+							"Written ERA header ended at position {0}, maximum expected preamble is {1}.",
+							era_memory.BaseStream.Position,
+							preamble_size));
+					}
 
 					// finally, bake the ERA memory stream into a file
 					if (BuilderOptions.Test(EraFileBuilderOptions.Encrypt))

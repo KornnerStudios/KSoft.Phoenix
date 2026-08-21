@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource
 {
@@ -59,7 +54,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			s.StreamVersion(kVersionTU);
 
-			Contract.Assert(false, "TODO");
+			System.Diagnostics.Debug.Fail("TODO");
 		}
 		#endregion
 	};
@@ -106,7 +101,7 @@ namespace KSoft.Phoenix.Resource
 			}
 			else if (gpdStream.IsWriting)
 			{
-				Contract.Assert(false, "TODO");
+				System.Diagnostics.Debug.Fail("TODO");
 
 				using (var ms = new MemoryStream())
 				using (var s = new IO.EndianStream(ms, FileAccess.Write))

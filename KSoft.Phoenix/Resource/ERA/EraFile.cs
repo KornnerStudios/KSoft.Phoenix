@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource
 {
@@ -368,7 +363,13 @@ namespace KSoft.Phoenix.Resource
 		#region Expand
 		public void ExpandTo(IO.EndianStream blockStream, string workPath)
 		{
-			Contract.Requires(blockStream.IsReading);
+			ArgumentNullException.ThrowIfNull(blockStream);
+			if (!blockStream.IsReading)
+			{
+				throw new InvalidOperationException(string.Format(
+					"ERA expansion requires a readable block stream; stream mode is {0}.",
+					blockStream.StreamMode));
+			}
 
 			var eraExpander = KSoft.Debug.TypeCheck.CastReference<EraFileExpander>(blockStream.Owner);
 
@@ -650,7 +651,13 @@ namespace KSoft.Phoenix.Resource
 		#region Build
 		private bool BuildFileNamesTable(IO.EndianStream blockStream)
 		{
-			Contract.Requires(blockStream.IsWriting);
+			ArgumentNullException.ThrowIfNull(blockStream);
+			if (!blockStream.IsWriting)
+			{
+				throw new InvalidOperationException(string.Format(
+					"ERA file-name table building requires a writable block stream; stream mode is {0}.",
+					blockStream.StreamMode));
+			}
 
 			using (var ms = new System.IO.MemoryStream(mFiles.Count * 128))
 			using (var s = new IO.EndianWriter(ms, blockStream.ByteOrder))
@@ -673,11 +680,24 @@ namespace KSoft.Phoenix.Resource
 
 		public bool Build(IO.EndianStream blockStream, string workPath)
 		{
-			Contract.Requires(blockStream.IsWriting);
+			ArgumentNullException.ThrowIfNull(blockStream);
+			if (!blockStream.IsWriting)
+			{
+				throw new InvalidOperationException(string.Format(
+					"ERA building requires a writable block stream; stream mode is {0}.",
+					blockStream.StreamMode));
+			}
 
 			var builder = KSoft.Debug.TypeCheck.CastReference<EraFileBuilder>(blockStream.Owner);
 
-			Contract.Assert(blockStream.BaseStream.Position == CalculateHeaderAndFileChunksSize());
+			long expected_position = CalculateHeaderAndFileChunksSize();
+			if (blockStream.BaseStream.Position != expected_position)
+			{
+				throw new InvalidOperationException(string.Format(
+					"ERA build stream is at position {0}, expected {1}.",
+					blockStream.BaseStream.Position,
+					expected_position));
+			}
 
 			BuildFileNameMaps(builder?.VerboseOutput);
 			bool success = BuildFileNamesTable(blockStream);

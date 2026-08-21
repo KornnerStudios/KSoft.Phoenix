@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource
 {
@@ -119,10 +114,10 @@ namespace KSoft.Phoenix.Resource
 
 		public static void CryptStream(IO.EndianReader input, IO.EndianWriter output, CryptographyTransformType transformType)
 		{
-			Contract.Requires(input != null);
-			Contract.Requires(output != null);
+			ArgumentNullException.ThrowIfNull(input);
+			ArgumentNullException.ThrowIfNull(output);
 			// This should be OK because PhxTEA is buffered
-			//Contract.Requires(input.BaseStream != output.BaseStream);
+			// The input and output may share a base stream.
 
 			var tea = new Security.Cryptography.PhxTEA(input, output);
 			tea.InitializeKey(Security.Cryptography.PhxTEA.kKeyEra);

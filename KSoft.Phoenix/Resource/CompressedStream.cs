@@ -154,7 +154,10 @@ namespace KSoft.Phoenix.Resource
 			{
 				if (writing && mHeader.StreamMode != (uint)Mode.Streaming)
 				{
-					throw new InvalidOperationException("Unbuffered compressed streams must use streaming mode.");
+					throw new InvalidOperationException(string.Format(
+						"Unbuffered compressed streams must use mode {0}; actual mode is {1}.",
+						(uint)Mode.Streaming,
+						mHeader.StreamMode));
 				}
 
 				StreamCompressedData(s);
@@ -163,7 +166,10 @@ namespace KSoft.Phoenix.Resource
 			{
 				if (writing && mHeader.StreamMode != (uint)Mode.Buffered)
 				{
-					throw new InvalidOperationException("Buffered compressed streams must use buffered mode.");
+					throw new InvalidOperationException(string.Format(
+						"Buffered compressed streams must use mode {0}; actual mode is {1}.",
+						(uint)Mode.Buffered,
+						mHeader.StreamMode));
 				}
 
 				StreamCompressedDataInChunks(s);
@@ -171,7 +177,10 @@ namespace KSoft.Phoenix.Resource
 
 				if (writing && mHeader.StreamMode != (uint)Mode.BufferedEnd)
 				{
-					throw new InvalidOperationException("Buffered compressed stream footer must use buffered-end mode.");
+					throw new InvalidOperationException(string.Format(
+						"Buffered compressed stream footer must use mode {0}; actual mode is {1}.",
+						(uint)Mode.BufferedEnd,
+						mHeader.StreamMode));
 				}
 			}
 		}

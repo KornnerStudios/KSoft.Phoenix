@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using SHA1 = System.Security.Cryptography.SHA1;
 
 namespace KSoft.Phoenix.Resource
@@ -73,10 +68,13 @@ namespace KSoft.Phoenix.Resource
 			, long chunksLength
 			, ECF.EcfHeader header)
 		{
-			Contract.Requires(chunksStream != null);
-			Contract.Requires(chunksStream.CanSeek && chunksStream.CanRead);
-			Contract.Requires(chunksOffset >= 0);
-			Contract.Requires(chunksLength > 0);
+			ArgumentNullException.ThrowIfNull(chunksStream);
+			if (!chunksStream.CanSeek || !chunksStream.CanRead)
+			{
+				throw new ArgumentException("Stream must be readable and seekable.", nameof(chunksStream));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(chunksOffset);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(chunksLength);
 
 			using (var sha = SHA1.Create())
 			{

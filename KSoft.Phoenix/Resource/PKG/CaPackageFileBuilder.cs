@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource.PKG
 {
@@ -141,8 +136,13 @@ namespace KSoft.Phoenix.Resource.PKG
 					ms.Seek(0, SeekOrigin.Begin);
 					mPkgFile.Serialize(pkg_memory);
 
-					Contract.Assert(pkg_memory.BaseStream.Position == preamble_size,
-						"Written PKG header size is greater than what we calculated");
+					if (pkg_memory.BaseStream.Position != preamble_size)
+					{
+						throw new InvalidOperationException(string.Format(
+							"Written PKG header ended at position {0}, expected {1}.",
+							pkg_memory.BaseStream.Position,
+							preamble_size));
+					}
 
 					using (var fs = new FileStream(pkg_filename, FileMode.Create, FileAccess.Write))
 					{
@@ -154,4 +154,3 @@ namespace KSoft.Phoenix.Resource.PKG
 		}
 	};
 }
-

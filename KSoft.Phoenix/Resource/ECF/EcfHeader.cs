@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 // http://en.wikipedia.org/wiki/Unix_File_System
 
@@ -50,7 +45,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public void UpdateTotalSize(Stream s, int startOffset = 0)
 		{
-			Contract.Requires(startOffset >= 0);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentOutOfRangeException.ThrowIfNegative(startOffset);
 
 			TotalSize = (int)(s.Length - startOffset);
 		}
@@ -95,8 +91,12 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public readonly uint ComputeAdler32(Stream stream, long headerPosition)
 		{
-			Contract.Requires(stream != null);
-			Contract.Requires(headerPosition >= 0);
+			ArgumentNullException.ThrowIfNull(stream);
+			if (!stream.CanRead || !stream.CanSeek)
+			{
+				throw new ArgumentException("Stream must be readable and seekable.", nameof(stream));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(headerPosition);
 
 			long current_position = stream.Position;
 
@@ -111,8 +111,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public void ComputeAdler32AndWrite(IO.EndianStream s, long headerPosition)
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(headerPosition >= 0);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentOutOfRangeException.ThrowIfNegative(headerPosition);
 
 			long current_position = s.BaseStream.Position;
 

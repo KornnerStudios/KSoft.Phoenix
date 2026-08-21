@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource.ECF
 {
@@ -135,9 +130,15 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public string GetChunkAbsolutePath(EcfFileChunkDefinition chunk)
 		{
-			Contract.Requires(chunk != null && chunk.Parent == this);
-
-			Contract.Assert(WorkingDirectory.IsNotNullOrEmpty());
+			ArgumentNullException.ThrowIfNull(chunk);
+			if (chunk.Parent != this)
+			{
+				throw new ArgumentException("Chunk must belong to this ECF definition.", nameof(chunk));
+			}
+			if (WorkingDirectory.IsNullOrEmpty())
+			{
+				throw new InvalidOperationException("Working directory must be initialized before resolving chunk paths.");
+			}
 			string abs_path = Path.Combine(WorkingDirectory, chunk.FilePath);
 
 			abs_path = Path.GetFullPath(abs_path);
@@ -174,7 +175,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public EcfFileChunkDefinition Add(EcfChunk rawChunk, int rawChunkIndex)
 		{
-			Contract.Requires(rawChunk != null);
+			ArgumentNullException.ThrowIfNull(rawChunk);
 
 			var chunk = new EcfFileChunkDefinition();
 			chunk.Initialize(this, rawChunk, rawChunkIndex);
@@ -186,7 +187,11 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		internal MemoryStream GetChunkFileDataStream(EcfFileChunkDefinition chunk)
 		{
-			Contract.Assume(chunk != null && chunk.Parent == this);
+			ArgumentNullException.ThrowIfNull(chunk);
+			if (chunk.Parent != this)
+			{
+				throw new ArgumentException("Chunk must belong to this ECF definition.", nameof(chunk));
+			}
 
 			MemoryStream ms;
 

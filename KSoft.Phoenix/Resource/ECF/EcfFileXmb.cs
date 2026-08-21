@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource.ECF
 {
@@ -69,7 +64,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			}
 			else if (s.IsWriting)
 			{
-				Contract.Assert(false);
+				System.Diagnostics.Debug.Fail("TODO");
 
 				chunk.IsDeflateStream = true;
 			}

@@ -1,10 +1,5 @@
 ﻿using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using FA = System.IO.FileAccess;
 
@@ -161,8 +156,13 @@ namespace KSoft.Phoenix.Resource.ECF
 					ms.Seek(0, SeekOrigin.Begin);
 					mEcfFile.Serialize(ecf_memory);
 
-					Contract.Assert(ecf_memory.BaseStream.Position == preamble_size,
-						"Written ECF header size is NOT EQUAL what we calculated");
+					if (ecf_memory.BaseStream.Position != preamble_size)
+					{
+						throw new InvalidOperationException(string.Format(
+							"Written ECF header ended at position {0}, expected {1}.",
+							ecf_memory.BaseStream.Position,
+							preamble_size));
+					}
 
 					// Update sizes and checksums
 					ms.Seek(0, SeekOrigin.Begin);

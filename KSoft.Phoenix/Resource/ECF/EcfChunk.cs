@@ -2,11 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource.ECF
 {
@@ -168,7 +163,13 @@ namespace KSoft.Phoenix.Resource.ECF
 				UpdateDecompressedDataTigerHash(sourceFile, hasher);
 			}
 
-			Contract.Assert(blockStream.BaseStream.Position == blockStream.BaseStream.Length);
+			if (blockStream.BaseStream.Position != blockStream.BaseStream.Length)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Block stream must be positioned at the end before writing chunk data; position is {0}, length is {1}.",
+					blockStream.BaseStream.Position,
+					blockStream.BaseStream.Length));
+			}
 
 			DataOffset = blockStream.PositionPtr;
 
@@ -208,7 +209,14 @@ namespace KSoft.Phoenix.Resource.ECF
 					throw new KSoft.Debug.UnreachableException(assumed_compression_type.ToString());
 			}
 
-			Contract.Assert(blockStream.BaseStream.Position == ((long)DataOffset + DataSize));
+			long expected_end_position = (long)DataOffset + DataSize;
+			if (blockStream.BaseStream.Position != expected_end_position)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Chunk write ended at position {0}, expected {1}.",
+					blockStream.BaseStream.Position,
+					expected_end_position));
+			}
 		}
 
 		protected virtual void CompressSourceToStream(IO.EndianWriter blockStream, Stream sourceFile)
@@ -241,7 +249,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		[Contracts.Pure]
 		public uint ComputeAdler32(IO.EndianStream blockStream)
 		{
-			Contract.Requires(blockStream != null);
+			ArgumentNullException.ThrowIfNull(blockStream);
 
 			SeekTo(blockStream);
 			uint adler = Security.Cryptography.Adler32.Compute(blockStream.BaseStream, DataSize);
@@ -251,8 +259,8 @@ namespace KSoft.Phoenix.Resource.ECF
 		[Contracts.Pure]
 		public void ComputeHash(IO.EndianStream blockStream, Security.Cryptography.TigerHashBase hasher)
 		{
-			Contract.Requires(blockStream != null);
-			Contract.Requires(hasher != null);
+			ArgumentNullException.ThrowIfNull(blockStream);
+			ArgumentNullException.ThrowIfNull(hasher);
 
 			hasher.Initialize();
 			hasher.ComputeHash(blockStream.BaseStream,

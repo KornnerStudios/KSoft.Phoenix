@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource.PKG
 {
@@ -185,9 +180,17 @@ namespace KSoft.Phoenix.Resource.PKG
 		{
 			ArgumentNullException.ThrowIfNull(s);
 			ArgumentNullException.ThrowIfNull(entryStream);
-			Contract.Assume(entry.Name.IsNotNullOrEmpty());
-			Contract.Assume(entry.Offset == 0);
-			Contract.Assume(entry.Size == 0);
+			if (entry.Name.IsNullOrEmpty())
+			{
+				throw new ArgumentException("Package entry name must be initialized before writing bytes.", nameof(entry));
+			}
+			if (entry.Offset != 0 || entry.Size != 0)
+			{
+				throw new ArgumentException(string.Format(
+					"Package entry offset and size must be zero before writing bytes; offset is {0}, size is {1}.",
+					entry.Offset,
+					entry.Size), nameof(entry));
+			}
 
 			entry.Offset = s.BaseStream.Position;
 			entry.Size = entryStream.Length;
