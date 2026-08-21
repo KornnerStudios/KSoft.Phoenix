@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.XML
 {
@@ -15,9 +10,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(list != null);
-			Contract.Requires(@params != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(list);
+			ArgumentNullException.ThrowIfNull(@params);
 
 			using (var xs = new BListExplicitIndexXmlSerializer<T>(@params, list))
 			{
@@ -46,7 +41,10 @@ namespace KSoft.Phoenix.XML
 		protected override void Read<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs, int iteration)
 		{
 			int index = ReadExplicitIndex(s, xs);
-			Contract.Assert(index.IsNotNone());
+			if (index.IsNone())
+			{
+				throw new InvalidOperationException("Explicit index could not be resolved while reading XML.");
+			}
 
 			mList.InitializeItem(index);
 			T data = new();

@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.XML
 {
@@ -17,11 +12,13 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(bits != null);
-			Contract.Requires(@params != null);
-			Contract.Requires(@params.UseElementName || @params.ElementItselfMeansTrue,
-				"Collection only supports element name filtering");
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(bits);
+			ArgumentNullException.ThrowIfNull(@params);
+			if (!@params.UseElementName && !@params.ElementItselfMeansTrue)
+			{
+				throw new ArgumentException("Collection only supports element name filtering", nameof(@params));
+			}
 
 			if (gBitSetXmlSerializer == null)
 			{
@@ -131,7 +128,10 @@ namespace KSoft.Phoenix.XML
 
 			if (Bits.Params.kGetMemberDefaultValue != null)
 			{
-				Contract.Assert(Params.ElementItselfMeansTrue);
+				if (!Params.ElementItselfMeansTrue)
+				{
+					throw new InvalidOperationException("Default-value serialization requires element text values.");
+				}
 				WriteNodesNotEqualToDefaultValues(s, penum);
 				return;
 			}

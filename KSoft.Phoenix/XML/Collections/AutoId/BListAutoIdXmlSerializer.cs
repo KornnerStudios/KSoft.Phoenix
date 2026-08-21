@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.XML
 {
@@ -12,8 +7,8 @@ namespace KSoft.Phoenix.XML
 		public static IBListAutoIdXmlSerializer CreateXmlSerializer<T>(Collections.BListAutoId<T> list, BListXmlParams @params)
 			where T : class, Collections.IListAutoIdObject, new()
 		{
-			Contract.Requires(list != null);
-			Contract.Requires(@params != null);
+			ArgumentNullException.ThrowIfNull(list);
+			ArgumentNullException.ThrowIfNull(@params);
 
 			var xs = new BListAutoIdXmlSerializer<T>(@params, list);
 
@@ -26,9 +21,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(list != null);
-			Contract.Requires(@params != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(list);
+			ArgumentNullException.ThrowIfNull(@params);
 
 			if (forceNoRootElementStreaming)
 			{
@@ -59,8 +54,8 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(xs != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(xs);
 
 			if (forceNoRootElementStreaming)
 			{
@@ -78,8 +73,8 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(xs != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(xs);
 
 			if (forceNoRootElementStreaming)
 			{
@@ -97,8 +92,8 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(xs != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(xs);
 
 			if (forceNoRootElementStreaming)
 			{

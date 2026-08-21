@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.XML
 {
@@ -15,9 +10,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(list != null);
-			Contract.Requires(@params != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(list);
+			ArgumentNullException.ThrowIfNull(@params);
 
 			BTypeValuesXmlSerializerBase<float> xs;
 			if (attrName == null)	{ xs = new BTypeValuesSingleXmlSerializer(@params, list); }
