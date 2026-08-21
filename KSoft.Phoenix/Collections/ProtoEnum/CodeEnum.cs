@@ -55,6 +55,11 @@ namespace KSoft.Collections
 		}
 		public string GetMemberName(int memberId)
 		{
+			if (!IsValidMemberId(memberId))
+			{
+				throw new ArgumentOutOfRangeException(nameof(memberId));
+			}
+
 			return kNames[memberId];
 		}
 

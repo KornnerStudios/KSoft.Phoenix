@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Granny3D
 {
@@ -105,7 +100,7 @@ namespace KSoft.Granny3D
 			{
 				throw new ArgumentOutOfRangeException(nameof(index));
 			}
-			Contract.Requires(structSize > 0);
+			ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(structSize, 0);
 
 			int offset = structSize;
 			offset += index;

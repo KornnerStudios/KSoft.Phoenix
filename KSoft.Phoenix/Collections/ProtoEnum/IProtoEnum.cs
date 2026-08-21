@@ -1,14 +1,7 @@
-﻿using System;
-using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Collections
 {
-	[Contracts.ContractClass(typeof(IProtoEnumContract))]
 	public interface IProtoEnum
 	{
 		[Contracts.Pure]
@@ -29,39 +22,6 @@ namespace KSoft.Collections
 		/// <summary>Number of members</summary>
 		[Contracts.Pure]
 		int MemberCount { get; }
-	};
-
-	[Contracts.ContractClassFor(typeof(IProtoEnum))]
-	abstract class IProtoEnumContract
-		: IProtoEnum
-	{
-		#region IProtoEnum Members
-		int IProtoEnum.TryGetMemberId(string memberName)
-		{
-			Contract.Ensures(Contract.Result<int>().IsNoneOrPositive());
-
-			throw new NotImplementedException();
-		}
-		public abstract string TryGetMemberName(int memberId);
-		public abstract bool IsValidMemberId(int memberId);
-		public abstract bool IsValidMemberName(string memberName);
-		public abstract int GetMemberId(string memberName);
-		string IProtoEnum.GetMemberName(int memberId)
-		{
-			if (!IsValidMemberId(memberId))
-			{
-				throw new ArgumentOutOfRangeException(nameof(memberId));
-			}
-
-			throw new NotImplementedException();
-		}
-
-		int IProtoEnum.MemberCount { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
-			throw new NotImplementedException();
-		} }
-		#endregion
 	};
 }
 

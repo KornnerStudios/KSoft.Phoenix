@@ -1,15 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using Contracts = System.Diagnostics.Contracts;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
-	[Contracts.ContractClass(typeof(IProtoEnumWithUndefinedContract))]
 	public interface IProtoEnumWithUndefined
 		: IProtoEnum
 	{
@@ -25,39 +19,6 @@ namespace KSoft.Collections
 		int MemberUndefinedCount { get; }
 
 		ObservableCollection<string> UndefinedMembers { get; }
-	};
-	[Contracts.ContractClassFor(typeof(IProtoEnumWithUndefined))]
-	abstract class IProtoEnumWithUndefinedContract
-		: IProtoEnumWithUndefined
-	{
-		#region IProtoEnum Members
-		public abstract int TryGetMemberId(string memberName);
-		public abstract string TryGetMemberName(int memberId);
-		public abstract bool IsValidMemberId(int memberId);
-		public abstract bool IsValidMemberName(string memberName);
-		public abstract int GetMemberId(string memberName);
-		public abstract string GetMemberName(int memberId);
-		public abstract int MemberCount { get; }
-		#endregion
-
-		#region IProtoEnumWithUndefined
-		public abstract int TryGetMemberIdOrUndefined(string memberName);
-		public abstract int GetMemberIdOrUndefined(string memberName);
-		public abstract string GetMemberNameOrUndefined(int memberId);
-
-		int IProtoEnumWithUndefined.MemberUndefinedCount { get {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-
-			throw new NotImplementedException();
-		} }
-		ObservableCollection<string> IProtoEnumWithUndefined.UndefinedMembers { get {
-#if false
-				Contract.Ensures(Contract.Result<ObservableCollection<string>>() != null);
-#endif
-
-				throw new NotImplementedException();
-		} }
-		#endregion
 	};
 
 	public interface IHasUndefinedProtoMemberInterface
@@ -91,7 +52,7 @@ namespace KSoft.Phoenix
 
 		public static UndefinedObjectResult GetUndefinedObject(this Collections.IProtoEnumWithUndefined protoEnum, int memberId)
 		{
-			Contract.Requires(protoEnum != null);
+			ArgumentNullException.ThrowIfNull(protoEnum);
 
 			string name = protoEnum.GetMemberNameOrUndefined(memberId);
 

@@ -1,8 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
 
 // The integer type used to represent a handle
 using HandleWord = System.Int32;
@@ -30,8 +26,11 @@ namespace KSoft.Phoenix
 		}
 		public static HandleWord GetUndefinedReferenceHandle(HandleWord undefinedRefDataIndex)
 		{
-			Contract.Requires(undefinedRefDataIndex < HandleWord.MaxValue,
-				"Index value would generate a handle that matches the general invalid-handle sentinel");
+			if (undefinedRefDataIndex >= HandleWord.MaxValue)
+			{
+				throw new ArgumentOutOfRangeException(nameof(undefinedRefDataIndex),
+					"Index value would generate a handle that matches the general invalid-handle sentinel");
+			}
 
 			var index = (HandleWordUnsigned)undefinedRefDataIndex;
 

@@ -221,12 +221,22 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
+			if (!Params.RequiresDataNamePreloading)
+			{
+				throw new InvalidOperationException("Serializer parameters do not require data-name preloading.");
+			}
+
 			Preload(s);
 		}
 		public void StreamUpdate<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
 			where TCursor : class
 		{
+			if (!Params.SupportsUpdating)
+			{
+				throw new InvalidOperationException("Serializer parameters do not support updating.");
+			}
+
 			mIsUpdating = true;
 			mCountBeforeUpdate = mList.Count;
 

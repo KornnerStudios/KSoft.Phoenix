@@ -69,6 +69,11 @@ namespace KSoft.Collections
 		}
 		public virtual string GetMemberName(int memberId)
 		{
+			if (!IsValidMemberId(memberId))
+			{
+				throw new ArgumentOutOfRangeException(nameof(memberId));
+			}
+
 			return this[memberId];
 		}
 

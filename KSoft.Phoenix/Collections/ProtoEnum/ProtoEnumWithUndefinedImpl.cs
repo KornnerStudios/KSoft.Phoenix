@@ -1,11 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -24,7 +19,7 @@ namespace KSoft.Collections
 
 		public ProtoEnumWithUndefinedImpl(IProtoEnum root)
 		{
-			Contract.Requires(root != null);
+			ArgumentNullException.ThrowIfNull(root);
 
 			mRoot = root;
 		}
@@ -112,10 +107,25 @@ namespace KSoft.Collections
 
 			if (PhxUtil.IsUndefinedReferenceHandle(memberId))
 			{
-				Contract.Assert(mUndefined != null);
+				int undefined_index = PhxUtil.GetUndefinedReferenceDataIndex(memberId);
+				if (mUndefined == null)
+				{
+					throw new ArgumentOutOfRangeException(nameof(memberId));
+				}
+
 				mUndefinedLock.EnterReadLock();
-				name = mUndefined[PhxUtil.GetUndefinedReferenceDataIndex(memberId)];
-				mUndefinedLock.ExitReadLock();
+				try
+				{
+					if (undefined_index >= mUndefined.Count)
+					{
+						throw new ArgumentOutOfRangeException(nameof(memberId));
+					}
+					name = mUndefined[undefined_index];
+				}
+				finally
+				{
+					mUndefinedLock.ExitReadLock();
+				}
 			}
 			else
 			{
