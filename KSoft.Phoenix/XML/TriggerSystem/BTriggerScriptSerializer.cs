@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-using FA = System.IO.FileAccess;
+﻿using FA = System.IO.FileAccess;
 
 namespace KSoft.Phoenix.XML
 {
@@ -56,7 +50,7 @@ namespace KSoft.Phoenix.XML
 
 		public BTriggerScriptSerializer(Engine.PhxEngine phx, Phx.BScenario scnr = null)
 		{
-			Contract.Requires(phx != null);
+			System.ArgumentNullException.ThrowIfNull(phx);
 
 			mDatabase = phx.Database;
 			TriggerDb = phx.TriggerDb;

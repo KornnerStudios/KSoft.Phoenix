@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Engine
 {
@@ -27,7 +22,7 @@ namespace KSoft.Phoenix.Engine
 
 		internal void UpdateFileLoadStatus(XmlFileInfo file, XmlFileLoadState state)
 		{
-			Contract.Requires(file != null);
+			ArgumentNullException.ThrowIfNull(file);
 
 			lock (XmlFileLoadStatus)
 			{
@@ -44,7 +39,7 @@ namespace KSoft.Phoenix.Engine
 
 		public XmlFileLoadState GetFileLoadStatus(XmlFileInfo file)
 		{
-			Contract.Requires(file != null);
+			ArgumentNullException.ThrowIfNull(file);
 
 			XmlFileLoadState state;
 			lock (XmlFileLoadStatus)

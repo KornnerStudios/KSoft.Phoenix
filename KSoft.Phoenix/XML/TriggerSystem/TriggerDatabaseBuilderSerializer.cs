@@ -1,10 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
-namespace KSoft.Phoenix.XML
+﻿namespace KSoft.Phoenix.XML
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 	sealed class TriggerDatabaseBuilderSerializer
@@ -17,7 +11,7 @@ namespace KSoft.Phoenix.XML
 
 		public TriggerDatabaseBuilderSerializer(Engine.PhxEngine phx)
 		{
-			Contract.Requires(phx != null);
+			System.ArgumentNullException.ThrowIfNull(phx);
 
 			mDatabase = phx.Database;
 			TriggerDb = phx.TriggerDb;

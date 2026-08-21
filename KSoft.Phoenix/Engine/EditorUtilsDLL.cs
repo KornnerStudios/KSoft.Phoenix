@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Vector3 = System.Numerics.Vector3;
 
 namespace KSoft.Phoenix.Engine
@@ -187,8 +182,8 @@ namespace KSoft.Phoenix.Engine
 			int height,
 			TileCopyFormat dxtFormat)
 		{
-			Contract.Requires(width > 0);
-			Contract.Requires(height > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
 			if (EditorUtilsDLL.EntryPointsNotFound)
 			{
@@ -238,8 +233,8 @@ namespace KSoft.Phoenix.Engine
 			int height,
 			TileCopyFormat dxtFormat)
 		{
-			Contract.Requires(width > 0);
-			Contract.Requires(height > 0);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
 
 			if (EditorUtilsDLL.EntryPointsNotFound)
 			{
@@ -284,4 +279,3 @@ namespace KSoft.Phoenix.Engine
 		#endregion
 	};
 }
-

@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using FA = System.IO.FileAccess;
 
@@ -304,7 +299,12 @@ namespace KSoft.Phoenix.XML
 				}
 				else if (mode == FA.Write)
 				{
-					Contract.Assert(tactic.SourceXmlFile != null, tactic.Name);
+					if (tactic.SourceXmlFile == null)
+					{
+						throw new InvalidOperationException(string.Format(
+							"Tactic '{0}' must have source XML metadata before writing.",
+							tactic.Name));
+					}
 				}
 
 				var engine = this.GameEngine;

@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.XML
 {
@@ -15,13 +10,33 @@ namespace KSoft.Phoenix.XML
 		public const IO.TagElementNodeType kSourceElement = IO.TagElementNodeType.Element;
 		public const IO.TagElementNodeType kSourceCursor = IO.TagElementNodeType.Text;
 
+		internal static void ValidateXmlSourceName(string xmlName, IO.TagElementNodeType xmlSource)
+		{
+			if (xmlSource.RequiresName() != (xmlName != kNoXmlName))
+			{
+				throw new System.ArgumentException(
+					"Element and attribute XML sources require a name; text XML sources require no name.",
+					nameof(xmlName));
+			}
+		}
+		internal static void ThrowIfAttributeSource(IO.TagElementNodeType xmlSource)
+		{
+			if (xmlSource == IO.TagElementNodeType.Attribute)
+			{
+				throw new System.ArgumentException("Attribute sources cannot be enumerated as XML nodes.", nameof(xmlSource));
+			}
+		}
+
 		public static void ReadDetermineListSize<TDoc, TCursor, T>(IO.TagElementStream<TDoc, TCursor, string> s, List<T> list)
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(list != null);
-			Contract.Requires(s.IsReading);
+			System.ArgumentNullException.ThrowIfNull(s);
+			System.ArgumentNullException.ThrowIfNull(list);
+			if (!s.IsReading)
+			{
+				throw new System.InvalidOperationException("List size can only be determined while reading XML.");
+			}
 
 			int child_element_count = s.TryGetCursorElementCount();
 			if (list.Capacity < child_element_count)
@@ -34,8 +49,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
-			Contract.Requires(xmlSource != IO.TagElementNodeType.Attribute);
+			System.ArgumentNullException.ThrowIfNull(s);
+			ValidateXmlSourceName(xmlName, xmlSource);
+			ThrowIfAttributeSource(xmlSource);
 
 			return xmlSource == IO.TagElementNodeType.Text
 				? s.ElementsByName(xmlName)
@@ -54,7 +70,7 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XML.XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			string string_value = null;
 			bool was_streamed = true;
@@ -115,7 +131,7 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XML.XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			string string_value = null;
 			bool was_streamed = true;
@@ -174,8 +190,8 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
-			Contract.Requires(protoEnum != null);
+			XML.XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
+			System.ArgumentNullException.ThrowIfNull(protoEnum);
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -195,7 +211,13 @@ namespace KSoft.Phoenix
 				if (was_streamed)
 				{
 					dbid = protoEnum.TryGetMemberId(id_name);
-					Contract.Assert(dbid.IsNotNone(), id_name);
+					if (dbid.IsNone())
+					{
+						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
+							"Failed to resolve proto enum member '{0}' from {1}.",
+							id_name,
+							xmlSource.RequiresName() ? xmlName : "ElementText")));
+					}
 				}
 				//else
 				//	dbid = isOptionalDefaultValue;
@@ -211,7 +233,9 @@ namespace KSoft.Phoenix
 				id_name = protoEnum.TryGetMemberName(dbid);
 				if (id_name.IsNullOrEmpty())
 				{
-					Contract.Assert(!id_name.IsNullOrEmpty(), dbid.ToString());
+					throw new System.InvalidOperationException(string.Format(
+						"Failed to resolve proto enum member name for id {0}.",
+						dbid));
 				}
 
 				if (isOptional)

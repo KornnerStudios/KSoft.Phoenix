@@ -1,11 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Security.Cryptography
 {
@@ -134,10 +129,13 @@ namespace KSoft.Security.Cryptography
 		{
 			const int k_read_block_size = 4096;
 
-			Contract.Requires(inputStream != null);
-			Contract.Requires(inputStream.CanSeek && inputStream.CanRead);
-			Contract.Requires(inputOffset >= 0);
-			Contract.Requires(inputLength > 0);
+			ArgumentNullException.ThrowIfNull(inputStream);
+			if (!inputStream.CanSeek || !inputStream.CanRead)
+			{
+				throw new ArgumentException("Stream must be readable and seekable.", nameof(inputStream));
+			}
+			ArgumentOutOfRangeException.ThrowIfNegative(inputOffset);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(inputLength);
 
 			var scratch_buffer = new byte[k_read_block_size];
 
@@ -272,11 +270,9 @@ namespace KSoft.Security.Cryptography
 
 		public static TigerHashBase CreateHaloWarsTigerHash()
 		{
-			Contract.Ensures(Contract.Result<TigerHashBase>() != null);
-
 			var tiger = TigerHashBase.Create(TigerHash.kAlgorithmName);
 
-			return tiger;
+			return tiger ?? throw new InvalidOperationException("Failed to create Halo Wars Tiger hash.");
 		}
 	};
 }

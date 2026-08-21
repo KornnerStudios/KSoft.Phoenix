@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Engine
 {
@@ -205,7 +200,7 @@ namespace KSoft.Phoenix.Engine
 		public bool TryGetFile(ContentStorage loc, GameDirectory gameDir, string filename, out FileInfo file,
 			string ext = null)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(filename));
+			ArgumentException.ThrowIfNullOrEmpty(filename);
 
 			return loc == ContentStorage.UpdateOrGame
 				? TryGetFileFromUpdateOrGame(gameDir, filename, out file, ext)
@@ -214,7 +209,7 @@ namespace KSoft.Phoenix.Engine
 		public GetXmlOrXmbFileResult TryGetXmlOrXmbFile(ContentStorage loc, GameDirectory gameDir, string filename, out FileInfo file,
 			string ext = null)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(filename));
+			ArgumentException.ThrowIfNullOrEmpty(filename);
 
 			if (TryGetFile(loc, gameDir, filename, out file, ext))
 			{
@@ -242,8 +237,11 @@ namespace KSoft.Phoenix.Engine
 
 		public IEnumerable<string> GetFiles(ContentStorage loc, GameDirectory gameDir, string searchPattern)
 		{
-			Contract.Requires(loc != ContentStorage.UpdateOrGame, "Must iterate storages separately");
-			Contract.Requires(!string.IsNullOrEmpty(searchPattern));
+			if (loc == ContentStorage.UpdateOrGame)
+			{
+				throw new ArgumentException("Must iterate storages separately.", nameof(loc));
+			}
+			ArgumentException.ThrowIfNullOrEmpty(searchPattern);
 
 			string dir = GetAbsoluteDirectory(loc, gameDir);
 

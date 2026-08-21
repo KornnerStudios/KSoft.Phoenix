@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.Security.Cryptography
 {
 	// https://web.archive.org/web/20070930222335/http://www.simonshepherd.supanet.com/tea.htm
@@ -49,7 +43,11 @@ namespace KSoft.Security.Cryptography
 
 		public void InitializeKey(ulong[] key, ulong userKey = 0)
 		{
-			Contract.Assert(key != null && key.Length == kKeySize);
+			ArgumentNullException.ThrowIfNull(key);
+			if (key.Length != kKeySize)
+			{
+				throw new ArgumentException("Key must contain exactly three 64-bit values.", nameof(key));
+			}
 
 			if (userKey == 0)
 			{

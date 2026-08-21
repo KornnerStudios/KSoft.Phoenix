@@ -1,10 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
-
 namespace KSoft.Phoenix.Phx
 {
 	[ProtoDataTypeObjectSourceKind(ProtoDataObjectSourceKind.TacticData)]
@@ -94,8 +88,11 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
-			Contract.Requires(kind != TacticDataObjectKind.None);
+			XML.XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
+			if (kind == TacticDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -116,7 +113,14 @@ namespace KSoft.Phoenix.Phx
 				{
 					IProtoDataObjectDatabaseProvider provider = this;
 					dbid = provider.GetId((int)kind, id_name);
-					Contract.Assert(dbid.IsNotNone());
+					if (dbid.IsNone())
+					{
+						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
+							"Failed to resolve tactic {0} reference '{1}' from {2}.",
+							kind,
+							id_name,
+							xmlName ?? "ElementText")));
+					}
 				}
 				else
 				{
@@ -127,7 +131,13 @@ namespace KSoft.Phoenix.Phx
 			{
 				IProtoDataObjectDatabaseProvider provider = this;
 				id_name = provider.GetName((int)kind, dbid);
-				Contract.Assert(!string.IsNullOrEmpty(id_name));
+				if (string.IsNullOrEmpty(id_name))
+				{
+					throw new InvalidOperationException(string.Format(
+						"Failed to resolve tactic {0} reference name for id {1}.",
+						kind,
+						dbid));
+				}
 
 				if (isOptional)
 				{

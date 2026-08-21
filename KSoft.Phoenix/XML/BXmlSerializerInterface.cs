@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using FA = System.IO.FileAccess;
 
@@ -26,7 +21,7 @@ namespace KSoft.Phoenix.XML
 		};
 		public static BXmlSerializerInterface GetNullInterface(Phx.BDatabaseBase db)
 		{
-			Contract.Requires(db != null);
+			ArgumentNullException.ThrowIfNull(db);
 
 			return new NullInterface(db);
 		}
@@ -54,8 +49,8 @@ namespace KSoft.Phoenix.XML
 			Action<IO.XmlElementStream, TContext> streamProc, TContext ctxt,
 			string ext = null)
 		{
-			Contract.Requires(xfi != null);
-			Contract.Requires(streamProc != null);
+			ArgumentNullException.ThrowIfNull(xfi);
+			ArgumentNullException.ThrowIfNull(streamProc);
 
 			bool result = false;
 
@@ -116,8 +111,8 @@ namespace KSoft.Phoenix.XML
 			Action<IO.XmlElementStream> streamProc,
 			string ext = null)
 		{
-			Contract.Requires(xfi != null);
-			Contract.Requires(streamProc != null);
+			ArgumentNullException.ThrowIfNull(xfi);
+			ArgumentNullException.ThrowIfNull(streamProc);
 
 			bool result = false;
 
@@ -178,7 +173,8 @@ namespace KSoft.Phoenix.XML
 			Action<IO.XmlElementStream> streamProc,
 			out ParallelLoopResult result)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(searchPattern));
+			ArgumentException.ThrowIfNullOrEmpty(searchPattern);
+			ArgumentNullException.ThrowIfNull(streamProc);
 
 			result = Parallel.ForEach(GameEngine.Directories.GetFiles(loc, gameDir, searchPattern), (filename) =>
 			{
@@ -198,7 +194,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			bool was_streamed = false;
 
@@ -234,7 +230,11 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Assert(s.IsReading);
+			ArgumentNullException.ThrowIfNull(s);
+			if (!s.IsReading)
+			{
+				throw new InvalidOperationException("Undefined handles can only be traced while reading XML.");
+			}
 
 			var line_info = Text.TextLineInfo.Empty;
 			var cursor_name = "<unknown element>";
@@ -251,6 +251,24 @@ namespace KSoft.Phoenix.XML
 				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString());
 		}
 
+		static void ThrowUnresolvedReferenceId<TDoc, TCursor>(
+			IO.TagElementStream<TDoc, TCursor, string> s, string xmlName, string idName, string kind)
+			where TDoc : class
+			where TCursor : class
+		{
+			s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
+				"Failed to resolve {0} reference '{1}' from {2}.",
+				kind,
+				idName,
+				xmlName ?? "ElementText")));
+		}
+		static void ThrowUnresolvedReferenceName(int dbid, string kind)
+		{
+			throw new InvalidOperationException(string.Format(
+				"Failed to resolve {0} reference name for id {1}.",
+				kind,
+				dbid));
+		}
 
 		protected static bool ToLowerName(Phx.DatabaseObjectKind kind)
 		{
@@ -275,7 +293,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -295,7 +313,10 @@ namespace KSoft.Phoenix.XML
 				if (was_streamed)
 				{
 					dbid = Database.GetId(kind, id_name);
-					Contract.Assert(dbid.IsNotNone());
+					if (dbid.IsNone())
+					{
+						ThrowUnresolvedReferenceId(s, xmlName, id_name, kind.ToString());
+					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
 						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
@@ -315,7 +336,10 @@ namespace KSoft.Phoenix.XML
 				}
 
 				id_name = Database.GetName(kind, dbid);
-				Contract.Assert(!string.IsNullOrEmpty(id_name));
+				if (string.IsNullOrEmpty(id_name))
+				{
+					ThrowUnresolvedReferenceName(dbid, kind.ToString());
+				}
 
 				if (isOptional)
 				{
@@ -336,7 +360,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -356,7 +380,10 @@ namespace KSoft.Phoenix.XML
 				if (was_streamed)
 				{
 					dbid = Database.GetId(kind, id_name);
-					Contract.Assert(dbid.IsNotNone());
+					if (dbid.IsNone())
+					{
+						ThrowUnresolvedReferenceId(s, xmlName, id_name, kind.ToString());
+					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
 						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
@@ -376,7 +403,10 @@ namespace KSoft.Phoenix.XML
 				}
 
 				id_name = Database.GetName(kind, dbid);
-				Contract.Assert(!string.IsNullOrEmpty(id_name));
+				if (string.IsNullOrEmpty(id_name))
+				{
+					ThrowUnresolvedReferenceName(dbid, kind.ToString());
+				}
 
 				if (isOptional)
 				{
@@ -397,7 +427,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -417,7 +447,10 @@ namespace KSoft.Phoenix.XML
 				if (was_streamed)
 				{
 					dbid = Database.GetId(kind, id_name);
-					Contract.Assert(dbid.IsNotNone());
+					if (dbid.IsNone())
+					{
+						ThrowUnresolvedReferenceId(s, xmlName, id_name, kind.ToString());
+					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
 						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
@@ -437,7 +470,10 @@ namespace KSoft.Phoenix.XML
 				}
 
 				id_name = Database.GetName(kind, dbid);
-				Contract.Assert(!string.IsNullOrEmpty(id_name));
+				if (string.IsNullOrEmpty(id_name))
+				{
+					ThrowUnresolvedReferenceName(dbid, kind.ToString());
+				}
 
 				if (isOptional)
 				{
@@ -459,8 +495,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
-			Contract.Requires(xmlSource != IO.TagElementNodeType.Attribute);
+			ArgumentNullException.ThrowIfNull(dbidList);
+			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
+			XmlUtil.ThrowIfAttributeSource(xmlSource);
 
 			bool was_streamed = false;
 
@@ -507,7 +544,7 @@ namespace KSoft.Phoenix.XML
 		{
 			const Phx.DatabaseObjectKind kDbKind = Phx.DatabaseObjectKind.Tactic;
 
-			Contract.Requires(xmlSource.RequiresName() == (xmlName != XML.XmlUtil.kNoXmlName));
+			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
 			string id_name = null;
 			bool was_streamed = true;
@@ -522,7 +559,10 @@ namespace KSoft.Phoenix.XML
 					id_name = System.IO.Path.GetFileNameWithoutExtension(id_name);
 
 					dbid = Database.GetId(kDbKind, id_name);
-					Contract.Assert(dbid.IsNotNone(), id_name);
+					if (dbid.IsNone())
+					{
+						ThrowUnresolvedReferenceId(s, xmlName, id_name, kDbKind.ToString());
+					}
 
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
@@ -539,7 +579,10 @@ namespace KSoft.Phoenix.XML
 				}
 
 				id_name = Database.GetName(kDbKind, dbid);
-				Contract.Assert(!string.IsNullOrEmpty(id_name));
+				if (string.IsNullOrEmpty(id_name))
+				{
+					ThrowUnresolvedReferenceName(dbid, kDbKind.ToString());
+				}
 
 				id_name += Phx.BTacticData.kFileExt;
 				s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
