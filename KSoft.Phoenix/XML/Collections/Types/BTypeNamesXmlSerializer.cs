@@ -45,8 +45,8 @@ namespace KSoft.Phoenix.XML
 
 		public BTypeNamesXmlSerializer(BListXmlParams @params, Collections.BTypeNames list)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
-			Contract.Requires<ArgumentNullException>(list != null);
+			ArgumentNullException.ThrowIfNull(@params);
+			ArgumentNullException.ThrowIfNull(list);
 
 			mParams = @params;
 			mList = list;

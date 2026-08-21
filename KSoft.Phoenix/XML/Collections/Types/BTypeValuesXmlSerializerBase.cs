@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.XML
 {
@@ -16,8 +11,8 @@ namespace KSoft.Phoenix.XML
 
 		protected BTypeValuesXmlSerializerBase(BTypeValuesXmlParams<T> @params, Collections.BTypeValuesBase<T> list) : base(@params)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
-			Contract.Requires<ArgumentNullException>(list != null);
+			ArgumentNullException.ThrowIfNull(@params);
+			ArgumentNullException.ThrowIfNull(list);
 
 			mList = list;
 		}

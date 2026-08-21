@@ -35,8 +35,8 @@ namespace KSoft.Phoenix.XML
 	{
 		public BTypeValuesSingleXmlSerializer(BTypeValuesXmlParams<float> @params, Collections.BTypeValuesSingle list) : base(@params, list)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
-			Contract.Requires<ArgumentNullException>(list != null);
+			ArgumentNullException.ThrowIfNull(@params);
+			ArgumentNullException.ThrowIfNull(list);
 		}
 
 		#region IXmlElementStreamable Members

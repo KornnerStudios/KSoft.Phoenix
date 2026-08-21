@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -18,7 +13,7 @@ namespace KSoft.Collections
 
 		protected BListExplicitIndexBase(BListExplicitIndexParams<T> @params) : base(@params)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
+			ArgumentNullException.ThrowIfNull(@params);
 		}
 
 		/// <summary>
@@ -29,8 +24,10 @@ namespace KSoft.Collections
 		/// <exception cref="ArgumentOutOfRangeException"><paramref name="newCount"/> is less than <see cref="Count"/></exception>
 		internal void ResizeCount(int newCount)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(newCount >= Count,
-				"For resizing to a smaller Count, use Capacity.");
+			if (newCount < Count)
+			{
+				throw new ArgumentOutOfRangeException(nameof(newCount), "For resizing to a smaller Count, use Capacity.");
+			}
 
 			var eip = ExplicitIndexParams;
 
@@ -50,7 +47,7 @@ namespace KSoft.Collections
 
 		internal void InitializeItem(int index)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
 			var eip = ExplicitIndexParams;
 

@@ -38,8 +38,8 @@ namespace KSoft.Phoenix.XML
 
 		public BListArrayXmlSerializer(BListXmlParams @params, Collections.BListArray<T> list)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
-			Contract.Requires<ArgumentNullException>(list != null);
+			ArgumentNullException.ThrowIfNull(@params);
+			ArgumentNullException.ThrowIfNull(list);
 
 			mParams = @params;
 			mList = list;

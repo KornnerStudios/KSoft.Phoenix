@@ -173,11 +173,16 @@ namespace KSoft.Security.Cryptography
 
 		// #TODO_PHOENIX rename and move this into PhxTEA
 		public const int kResultSize = 0x18;
+		static void ValidateSha1HashResult(byte[] result)
+		{
+			ArgumentNullException.ThrowIfNull(result);
+			ArgumentOutOfRangeException.ThrowIfLessThan(result.Length, kResultSize, nameof(result));
+		}
+
 		public static void Sha1Hash(string str, byte[] result)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(str));
-			Contract.Requires<ArgumentNullException>(result != null);
-			Contract.Requires(result.Length >= kResultSize);
+			ArgumentException.ThrowIfNullOrEmpty(str);
+			ValidateSha1HashResult(result);
 
 			Array.Clear(result, 0, result.Length);
 
@@ -232,9 +237,8 @@ namespace KSoft.Security.Cryptography
 
 		public static bool Sha1HashFile(string fileName, byte[] result, out long fileLength)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(fileName));
-			Contract.Requires<ArgumentNullException>(result != null);
-			Contract.Requires(result.Length >= kResultSize);
+			ArgumentException.ThrowIfNullOrEmpty(fileName);
+			ValidateSha1HashResult(result);
 
 			fileLength = -1;
 

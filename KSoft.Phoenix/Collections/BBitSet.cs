@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Collections
 {
@@ -27,7 +22,7 @@ namespace KSoft.Collections
 
 		public BBitSet(BBitSetParams @params, Phx.BDatabaseBase db = null)
 		{
-			Contract.Requires<ArgumentNullException>(@params != null);
+			ArgumentNullException.ThrowIfNull(@params);
 
 			Params = @params;
 
