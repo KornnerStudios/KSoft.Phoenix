@@ -1,8 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Phoenix.Phx
@@ -148,72 +144,68 @@ namespace KSoft.Phoenix.Phx
 		#region ID variants
 		[Meta.BWeaponTypeReference]
 		public int WeaponTypeID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.DamageModifier);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.DamageModifier);
 			return mDU.DmgMod_WeapType;
 		} }
 		[Meta.BDamageTypeReference]
 		public int DamageTypeID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.DamageModifier);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.DamageModifier);
 			return mDU.DmgMod_DmgType;
 		} }
 
 		[Meta.RateReference]
 		public int RateID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.RateAmount || SubType == BObjectDataType.RateMultiplier);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.RateAmount, BObjectDataType.RateMultiplier);
 			return mDU.ID;
 		} }
 
 		[Meta.PopulationReference]
 		public int PopID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.PopCap || SubType == BObjectDataType.PopMax);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.PopCap, BObjectDataType.PopMax);
 			return mDU.ID;
 		} }
 
 		[Meta.BProtoPowerReference]
 		public int PowerID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.PowerRechargeTime || SubType == BObjectDataType.PowerUseLimit || SubType == BObjectDataType.PowerLevel);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.PowerRechargeTime, BObjectDataType.PowerUseLimit,
+				BObjectDataType.PowerLevel);
 			return mDU.ID;
 		} }
 
 		public int TransformUnitID { get {
-			Contract.Requires(Type == BProtoTechEffectType.TransformUnit);
+			ThrowIfTypeIsNot(BProtoTechEffectType.TransformUnit);
 			return mDU.ToTypeID;
 		} }
 		public int TransformProtoFromID { get {
-			Contract.Requires(Type == BProtoTechEffectType.TransformProtoUnit || Type == BProtoTechEffectType.TransformProtoSquad);
+			ThrowIfTypeIsNot(BProtoTechEffectType.TransformProtoUnit, BProtoTechEffectType.TransformProtoSquad);
 			return mDU.FromTypeID;
 		} }
 		public int TransformProtoToID { get {
-			Contract.Requires(Type == BProtoTechEffectType.TransformProtoUnit || Type == BProtoTechEffectType.TransformProtoSquad);
+			ThrowIfTypeIsNot(BProtoTechEffectType.TransformProtoUnit, BProtoTechEffectType.TransformProtoSquad);
 			return mDU.ToTypeID;
 		} }
 		[Meta.BProtoObjectReference]
 		public int BuildObjectID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Build);
+			ThrowIfTypeIsNot(BProtoTechEffectType.Build);
 			return mDU.ToTypeID;
 		} }
 		[Meta.BProtoPowerReference]
 		public int GodPowerID { get {
-			Contract.Requires(Type == BProtoTechEffectType.GodPower);
+			ThrowIfTypeIsNot(BProtoTechEffectType.GodPower);
 			return mDU.ID;
 		} }
 		[Meta.BProtoTechReference]
 		public int TechStatusTechID { get {
-			Contract.Requires(Type == BProtoTechEffectType.TechStatus);
+			ThrowIfTypeIsNot(BProtoTechEffectType.TechStatus);
 			return mDU.ID;
 		} }
 		[Meta.BAbilityReference]
 		public int AbilityID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Ability);
+			ThrowIfTypeIsNot(BProtoTechEffectType.Ability);
 			return mDU.ID;
 		} }
 		public int AttachSquadTypeObjectID { get {
-			Contract.Requires(Type == BProtoTechEffectType.AttachSquad);
+			ThrowIfTypeIsNot(BProtoTechEffectType.AttachSquad);
 			return mDU.ID;
 		} }
 		#endregion

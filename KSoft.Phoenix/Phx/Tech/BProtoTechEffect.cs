@@ -1,8 +1,4 @@
-﻿#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -22,6 +18,64 @@ namespace KSoft.Phoenix.Phx
 
 		DataUnion mDU;
 
+		void ThrowIfTypeIsNot(BProtoTechEffectType expected)
+		{
+			if (Type != expected)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Expected tech effect type {0}, got {1}.",
+					expected,
+					Type));
+			}
+		}
+		void ThrowIfTypeIsNot(BProtoTechEffectType expected1, BProtoTechEffectType expected2)
+		{
+			if (Type != expected1 && Type != expected2)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Expected tech effect type {0} or {1}, got {2}.",
+					expected1,
+					expected2,
+					Type));
+			}
+		}
+		void ThrowIfDataSubtypeIsNot(BObjectDataType expected)
+		{
+			ThrowIfTypeIsNot(BProtoTechEffectType.Data);
+			if (SubType != expected)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Expected tech effect subtype {0}, got {1}.",
+					expected,
+					SubType));
+			}
+		}
+		void ThrowIfDataSubtypeIsNot(BObjectDataType expected1, BObjectDataType expected2)
+		{
+			ThrowIfTypeIsNot(BProtoTechEffectType.Data);
+			if (SubType != expected1 && SubType != expected2)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Expected tech effect subtype {0} or {1}, got {2}.",
+					expected1,
+					expected2,
+					SubType));
+			}
+		}
+		void ThrowIfDataSubtypeIsNot(BObjectDataType expected1, BObjectDataType expected2, BObjectDataType expected3)
+		{
+			ThrowIfTypeIsNot(BProtoTechEffectType.Data);
+			if (SubType != expected1 && SubType != expected2 && SubType != expected3)
+			{
+				throw new InvalidOperationException(string.Format(
+					"Expected tech effect subtype {0}, {1}, or {2}, got {3}.",
+					expected1,
+					expected2,
+					expected3,
+					SubType));
+			}
+		}
+
 		#region ObjectData
 		bool mAllActions;
 
@@ -36,25 +90,21 @@ namespace KSoft.Phoenix.Phx
 
 		#region Command
 		public BProtoObjectCommandType CommandType { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.CommandEnable || SubType == BObjectDataType.CommandSelectable);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.CommandEnable, BObjectDataType.CommandSelectable);
 			return mDU.CommandType;
 		} }
 
 		public int CommandDataID { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.CommandEnable || SubType == BObjectDataType.CommandSelectable);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.CommandEnable, BObjectDataType.CommandSelectable);
 			return mDU.CommandData;
 		} }
 		public BSquadMode CommandDataSquadMode { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.CommandEnable || SubType == BObjectDataType.CommandSelectable);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.CommandEnable, BObjectDataType.CommandSelectable);
 			return mDU.CommandDataSM;
 		} }
 
 		public DatabaseObjectKind CommandDataObjectKind { get {
-			Contract.Requires(Type == BProtoTechEffectType.Data);
-			Contract.Requires(SubType == BObjectDataType.CommandEnable || SubType == BObjectDataType.CommandSelectable);
+			ThrowIfDataSubtypeIsNot(BObjectDataType.CommandEnable, BObjectDataType.CommandSelectable);
 			return mDU.CommandType switch
 			{
 				BProtoObjectCommandType.Research		=> DatabaseObjectKind.Tech,

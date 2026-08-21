@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Phx
 {
@@ -39,6 +34,16 @@ namespace KSoft.Phoenix.Phx
 			kNumberOf
 		};
 		private Collections.BitVector32 mFlags;
+
+		static void ThrowIfTextFlagUnset(bool hasFlag, string propertyName)
+		{
+			if (!hasFlag)
+			{
+				throw new InvalidOperationException(string.Format(
+					"{0} cannot be set because its matching Has* flag is false.",
+					propertyName));
+			}
+		}
 
 		public bool HasNameID
 		{
@@ -138,7 +143,7 @@ namespace KSoft.Phoenix.Phx
 				return mNameID;
 			}
 			set {
-				Contract.Requires(HasNameID);
+				ThrowIfTextFlagUnset(HasNameID, nameof(NameID));
 				mNameID = value;
 			}
 		}
@@ -158,7 +163,7 @@ namespace KSoft.Phoenix.Phx
 				return mDisplayNameID;
 			}
 			set {
-				Contract.Requires(HasDisplayNameID);
+				ThrowIfTextFlagUnset(HasDisplayNameID, nameof(DisplayNameID));
 				mDisplayNameID = value;
 			}
 		}
@@ -179,7 +184,7 @@ namespace KSoft.Phoenix.Phx
 				return mDisplayName2ID;
 			}
 			set {
-				Contract.Requires(HasDisplayName2ID);
+				ThrowIfTextFlagUnset(HasDisplayName2ID, nameof(DisplayName2ID));
 				mDisplayName2ID = value;
 			}
 		}
@@ -199,7 +204,7 @@ namespace KSoft.Phoenix.Phx
 				return mDescriptionID;
 			}
 			set {
-				Contract.Requires(HasDescriptionID);
+				ThrowIfTextFlagUnset(HasDescriptionID, nameof(DescriptionID));
 				mDescriptionID = value;
 			}
 		}
@@ -219,7 +224,7 @@ namespace KSoft.Phoenix.Phx
 				return mLongDescriptionID;
 			}
 			set {
-				Contract.Requires(HasLongDescriptionID);
+				ThrowIfTextFlagUnset(HasLongDescriptionID, nameof(LongDescriptionID));
 				mLongDescriptionID = value;
 			}
 		}
@@ -239,7 +244,7 @@ namespace KSoft.Phoenix.Phx
 				return mPrereqTextID;
 			}
 			set {
-				Contract.Requires(HasPrereqTextID);
+				ThrowIfTextFlagUnset(HasPrereqTextID, nameof(PrereqTextID));
 				mPrereqTextID = value;
 			}
 		}
@@ -259,7 +264,7 @@ namespace KSoft.Phoenix.Phx
 				return mStatsNameID;
 			}
 			set {
-				Contract.Requires(HasStatsNameID);
+				ThrowIfTextFlagUnset(HasStatsNameID, nameof(StatsNameID));
 				mStatsNameID = value;
 			}
 		}
@@ -279,7 +284,7 @@ namespace KSoft.Phoenix.Phx
 				return mRoleTextID;
 			}
 			set {
-				Contract.Requires(HasRoleTextID);
+				ThrowIfTextFlagUnset(HasRoleTextID, nameof(RoleTextID));
 				mRoleTextID = value;
 			}
 		}
@@ -299,7 +304,7 @@ namespace KSoft.Phoenix.Phx
 				return mRolloverTextID;
 			}
 			set {
-				Contract.Requires(HasRolloverTextID);
+				ThrowIfTextFlagUnset(HasRolloverTextID, nameof(RolloverTextID));
 				mRolloverTextID = value;
 			}
 		}
@@ -319,7 +324,7 @@ namespace KSoft.Phoenix.Phx
 				return mEnemyRolloverTextID;
 			}
 			set {
-				Contract.Requires(HasEnemyRolloverTextID);
+				ThrowIfTextFlagUnset(HasEnemyRolloverTextID, nameof(EnemyRolloverTextID));
 				mEnemyRolloverTextID = value;
 			}
 		}
@@ -341,7 +346,7 @@ namespace KSoft.Phoenix.Phx
 				return mChooseTextID;
 			}
 			set {
-				Contract.Requires(HasChooseTextID);
+				ThrowIfTextFlagUnset(HasChooseTextID, nameof(ChooseTextID));
 				mChooseTextID = value;
 			}
 		}

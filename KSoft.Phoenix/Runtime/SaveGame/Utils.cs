@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -30,6 +25,30 @@ namespace KSoft.Phoenix.Runtime
 	};
 	partial class BSaveGame
 	{
+		static bool IsReading(IO.EndianStream s)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+			return s.IsReading;
+		}
+		static void ThrowIfWritingNullArray<T>(IO.EndianStream s, T[] array)
+		{
+			ArgumentNullException.ThrowIfNull(s);
+			if (s.IsWriting && array == null)
+			{
+				throw new ArgumentNullException(nameof(array));
+			}
+		}
+		static void ThrowIfReadCountExceedsMax(int count, int maxCount)
+		{
+			if (count > maxCount)
+			{
+				throw new System.IO.InvalidDataException(string.Format(
+					"Read array count {0} exceeds maximum {1}.",
+					count,
+					maxCount));
+			}
+		}
+
 		#region Collection
 		/// <summary>Stream the elements of an object collection, using a 32-bit length prefix</summary>
 		/// <typeparam name="T">Object type</typeparam>
@@ -42,9 +61,9 @@ namespace KSoft.Phoenix.Runtime
 			bool isIterated = false)
 			where T : IO.IEndianStreamSerializable, new()
 		{
-			Contract.Requires(c != null);
+			ArgumentNullException.ThrowIfNull(c);
 
-			bool reading = s.IsReading;
+			bool reading = IsReading(s);
 
 			int count = c.Count;
 			s.Stream(ref count);
@@ -78,9 +97,9 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamCollection(IO.EndianStream s, List<int> c)
 		{
-			Contract.Requires(c != null);
+			ArgumentNullException.ThrowIfNull(c);
 
-			bool reading = s.IsReading;
+			bool reading = IsReading(s);
 
 			int count = c.Count;
 			s.Stream(ref count);
@@ -108,9 +127,9 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamCollection(IO.EndianStream s, List<string> c)
 		{
-			Contract.Requires(c != null);
+			ArgumentNullException.ThrowIfNull(c);
 
-			bool reading = s.IsReading;
+			bool reading = IsReading(s);
 
 			int count = c.Count;
 			s.Stream(ref count);
@@ -145,7 +164,7 @@ namespace KSoft.Phoenix.Runtime
 			int maxCount = byte.MaxValue)
 			where T : IO.IEndianStreamSerializable, new()
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -153,7 +172,7 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref count);
 			if (reading)
 			{
-				Contract.Assert(count <= maxCount);
+				ThrowIfReadCountExceedsMax(count, maxCount);
 				array = new T[count];
 			}
 
@@ -176,7 +195,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamArray(IO.EndianStream s, ref bool[] array)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -200,7 +219,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamArray(IO.EndianStream s, ref byte[] array)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -224,7 +243,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamArray(IO.EndianStream s, ref int[] array)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -248,7 +267,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamArray(IO.EndianStream s, ref ulong[] array)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -272,7 +291,7 @@ namespace KSoft.Phoenix.Runtime
 		/// <returns></returns>
 		public static IO.EndianStream StreamArray(IO.EndianStream s, ref string[] array)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -298,7 +317,7 @@ namespace KSoft.Phoenix.Runtime
 		public static IO.EndianStream StreamVectorArray(IO.EndianStream s, ref BVector[] array,
 			int maxCount = byte.MaxValue)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -306,7 +325,7 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref count);
 			if (reading)
 			{
-				Contract.Assert(count <= maxCount);
+				ThrowIfReadCountExceedsMax(count, maxCount);
 				array = new BVector[count];
 			}
 
@@ -337,7 +356,7 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref count);
 			if (reading)
 			{
-				Contract.Assert(count <= maxCount);
+				ThrowIfReadCountExceedsMax(count, maxCount);
 				array = new T[count];
 			}
 
@@ -411,7 +430,7 @@ namespace KSoft.Phoenix.Runtime
 		public static IO.EndianStream StreamArray16(IO.EndianStream s, ref ulong[] array,
 			int maxCount = ushort.MaxValue)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -419,7 +438,7 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref count);
 			if (reading)
 			{
-				Contract.Assert(count <= maxCount);
+				ThrowIfReadCountExceedsMax(count, maxCount);
 				array = new ulong[count];
 			}
 
@@ -460,7 +479,7 @@ namespace KSoft.Phoenix.Runtime
 		public static IO.EndianStream StreamVectorArray16(IO.EndianStream s, ref BVector[] array,
 			int maxCount = ushort.MaxValue)
 		{
-			Contract.Requires(s.IsReading || array != null);
+			ThrowIfWritingNullArray(s, array);
 
 			bool reading = s.IsReading;
 
@@ -468,7 +487,7 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref count);
 			if (reading)
 			{
-				Contract.Assert(count <= maxCount);
+				ThrowIfReadCountExceedsMax(count, maxCount);
 				array = new BVector[count];
 			}
 
@@ -536,9 +555,9 @@ namespace KSoft.Phoenix.Runtime
 			int invalidId = TypeExtensions.kNone)
 			where T : class
 		{
-			Contract.Requires(initializer != null);
-			Contract.Requires(getId != null);
-			Contract.Requires(setId != null);
+			ArgumentNullException.ThrowIfNull(initializer);
+			ArgumentNullException.ThrowIfNull(getId);
+			ArgumentNullException.ThrowIfNull(setId);
 
 			int id = invalidId;
 
@@ -562,8 +581,8 @@ namespace KSoft.Phoenix.Runtime
 			else if (s.IsWriting)
 			{
 				id = obj != null
-					? invalidId
-					: getId(obj);
+					? getId(obj)
+					: invalidId;
 
 				s.Writer.Write(id);
 			}
