@@ -207,19 +207,28 @@ namespace KSoft.Phoenix.Phx
 
 		public Collections.IBTypeNames GetNamesInterface(GameDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+			if (kind == GameDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return GameData.GetNamesInterface(kind);
 		}
 		public Collections.IBTypeNames GetNamesInterface(HPBarDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
+			if (kind == HPBarDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return HPBars.GetNamesInterface(kind);
 		}
 		public Collections.IBTypeNames GetNamesInterface(DatabaseObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != DatabaseObjectKind.None);
+			if (kind == DatabaseObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			// #NOTE place new DatabaseObjectKind code here
 
@@ -246,21 +255,30 @@ namespace KSoft.Phoenix.Phx
 
 		public int GetId(GameDataObjectKind kind, string name)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+			if (kind == GameDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			var dbi = GameData.GetMembersInterface(kind);
 			return dbi.TryGetIdWithUndefined(name);
 		}
 		public int GetId(HPBarDataObjectKind kind, string name)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
+			if (kind == HPBarDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			var dbi = HPBars.GetMembersInterface(kind);
 			return dbi.TryGetIdWithUndefined(name);
 		}
 		public int GetId(DatabaseObjectKind kind, string name)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != DatabaseObjectKind.None);
+			if (kind == DatabaseObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			// #NOTE place new DatabaseObjectKind code here
 
@@ -287,21 +305,30 @@ namespace KSoft.Phoenix.Phx
 		}
 		public string GetName(GameDataObjectKind kind, int id)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+			if (kind == GameDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			IProtoDataObjectDatabaseProvider provider = GameData;
 			return provider.GetName((int)kind, id);
 		}
 		public string GetName(HPBarDataObjectKind kind, int id)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
+			if (kind == HPBarDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			IProtoDataObjectDatabaseProvider provider = HPBars;
 			return provider.GetName((int)kind, id);
 		}
 		public string GetName(DatabaseObjectKind kind, int id)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != DatabaseObjectKind.None);
+			if (kind == DatabaseObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			// #NOTE place new DatabaseObjectKind code here
 

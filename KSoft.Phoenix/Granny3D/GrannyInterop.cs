@@ -39,17 +39,24 @@ namespace KSoft.Granny3D
 		{
 			Address = address;
 		}
+		readonly void ThrowIfNull()
+		{
+			if (IsNull)
+			{
+				throw new NullReferenceException();
+			}
+		}
 
 		public readonly T ToStruct()
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
+			ThrowIfNull();
 
 			return Marshal.PtrToStructure<T>(Address);
 		}
 		public readonly T ToStruct(int index)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires(index >= 0);
+			ThrowIfNull();
+			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
 			int offset = Marshal.SizeOf<T>();
 			offset += index;
@@ -59,14 +66,14 @@ namespace KSoft.Granny3D
 
 		public readonly void CopyStruct(ref T s)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
+			ThrowIfNull();
 
 			Marshal.StructureToPtr(s, Address, fDeleteOld: false);
 		}
 		public readonly void CopyStruct(int toIndex, ref T s)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires(toIndex >= 0);
+			ThrowIfNull();
+			ArgumentOutOfRangeException.ThrowIfNegative(toIndex);
 
 			int offset = Marshal.SizeOf<T>();
 			offset += toIndex;
@@ -83,11 +90,21 @@ namespace KSoft.Granny3D
 
 		public readonly bool IsNull => Count == 0 || Array == IntPtr.Zero;
 		public readonly bool IsNotNull => Count > 0 && Array != IntPtr.Zero;
+		readonly void ThrowIfNull()
+		{
+			if (IsNull)
+			{
+				throw new NullReferenceException();
+			}
+		}
 
 		public readonly IntPtr ToStructPtr(int index, int structSize)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
+			ThrowIfNull();
+			if (index < 0 || index >= Count)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
 			Contract.Requires(structSize > 0);
 
 			int offset = structSize;
@@ -104,11 +121,21 @@ namespace KSoft.Granny3D
 
 		public readonly bool IsNull => Count == 0 || Array.IsNull;
 		public readonly bool IsNotNull => Count > 0 && Array.IsNotNull;
+		readonly void ThrowIfNull()
+		{
+			if (IsNull)
+			{
+				throw new NullReferenceException();
+			}
+		}
 
 		public readonly CharPtr ToStruct(int index)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
+			ThrowIfNull();
+			if (index < 0 || index >= Count)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
 
 			return Array.ToStruct(index);
 		}
@@ -121,19 +148,32 @@ namespace KSoft.Granny3D
 
 		public readonly bool IsNull => Count == 0 || Array.IsNull;
 		public readonly bool IsNotNull => Count > 0 && Array.IsNotNull;
+		readonly void ThrowIfNull()
+		{
+			if (IsNull)
+			{
+				throw new NullReferenceException();
+			}
+		}
 
 		public readonly T ToStruct(int index)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
+			ThrowIfNull();
+			if (index < 0 || index >= Count)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
 
 			return Array.ToStruct(index);
 		}
 
 		public readonly void CopyStruct(int toIndex, ref T s)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires<ArgumentOutOfRangeException>(toIndex >= 0 && toIndex < Count);
+			ThrowIfNull();
+			if (toIndex < 0 || toIndex >= Count)
+			{
+				throw new ArgumentOutOfRangeException(nameof(toIndex));
+			}
 
 			Array.CopyStruct(toIndex, ref s);
 		}
@@ -146,11 +186,21 @@ namespace KSoft.Granny3D
 
 		public readonly bool IsNull => Count == 0 || Array == IntPtr.Zero;
 		public readonly bool IsNotNull => Count > 0 && Array != IntPtr.Zero;
+		readonly void ThrowIfNull()
+		{
+			if (IsNull)
+			{
+				throw new NullReferenceException();
+			}
+		}
 
 		public readonly TPtr<T> ToStructPtr(int index)
 		{
-			Contract.Requires<NullReferenceException>(IsNotNull);
-			Contract.Requires<ArgumentOutOfRangeException>(index >= 0 && index < Count);
+			ThrowIfNull();
+			if (index < 0 || index >= Count)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index));
+			}
 
 			int offset = IntPtr.Size;
 			offset += index;

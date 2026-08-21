@@ -164,7 +164,10 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public void UpdateHeader(ref EcfHeader header)
 		{
-			Contract.Requires<InvalidOperationException>(HeaderId != 0);
+			if (HeaderId == 0)
+			{
+				throw new InvalidOperationException("Header ID must be initialized before updating the header.");
+			}
 
 			header.InitializeChunkInfo(HeaderId, ChunkExtraDataSize);
 		}

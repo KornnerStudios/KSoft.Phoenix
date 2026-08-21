@@ -1020,7 +1020,10 @@ namespace KSoft.Phoenix.Phx
 		#region Database interfaces
 		internal Collections.IBTypeNames GetNamesInterface(GameDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+			if (kind == GameDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return kind switch
 			{
@@ -1033,7 +1036,10 @@ namespace KSoft.Phoenix.Phx
 
 		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(GameDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != GameDataObjectKind.None);
+			if (kind == GameDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return kind switch
 			{

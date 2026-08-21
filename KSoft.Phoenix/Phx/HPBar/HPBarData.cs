@@ -65,7 +65,10 @@ namespace KSoft.Phoenix.Phx
 
 		internal Collections.IBTypeNames GetNamesInterface(HPBarDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
+			if (kind == HPBarDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return kind switch
 			{
@@ -81,7 +84,10 @@ namespace KSoft.Phoenix.Phx
 
 		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(HPBarDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != HPBarDataObjectKind.None);
+			if (kind == HPBarDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return kind switch
 			{

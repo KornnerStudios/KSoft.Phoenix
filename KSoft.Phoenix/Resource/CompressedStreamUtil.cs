@@ -48,8 +48,8 @@ namespace KSoft.Phoenix.Resource
 		public static void CompressFromStream(IO.EndianWriter blockStream, System.IO.Stream source,
 			out uint streamAdler, out int streamSize)
 		{
-			Contract.Requires<ArgumentNullException>(blockStream != null);
-			Contract.Requires<ArgumentNullException>(source != null);
+			ArgumentNullException.ThrowIfNull(blockStream);
+			ArgumentNullException.ThrowIfNull(source);
 
 			using (var ms = new System.IO.MemoryStream((int)source.Length + Header.kSizeOf))
 			using (var s = new IO.EndianStream(ms, Shell.EndianFormat.Big, permissions: FA.Write))
@@ -71,7 +71,7 @@ namespace KSoft.Phoenix.Resource
 		}
 		public static byte[] DecompressFromStream(IO.EndianStream blockStream)
 		{
-			Contract.Requires<ArgumentNullException>(blockStream != null);
+			ArgumentNullException.ThrowIfNull(blockStream);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] buffer;

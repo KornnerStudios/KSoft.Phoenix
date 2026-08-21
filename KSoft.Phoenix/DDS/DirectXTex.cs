@@ -98,10 +98,13 @@ namespace KSoft.DDS
 			, DirectXTexFileType fileType
 			, uint flags = 0)
 		{
-			Contract.Requires<ArgumentNullException>(buffer != null);
-			Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>((startIndex+length) <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
+			if (startIndex > buffer.Length - length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(length));
+			}
 
 			var result = TexMetadata.Empty;
 

@@ -72,10 +72,19 @@ namespace KSoft.Phoenix.Resource
 
 		public void SetTitleMemoryOffsets(Stream gpdBaseStream, long tm0, long tm1)
 		{
-			Contract.Requires<ArgumentNullException>(gpdBaseStream != null);
-			Contract.Requires<ArgumentException>(gpdBaseStream.CanSeek);
-			Contract.Requires<ArgumentOutOfRangeException>(tm0 >= 0 && tm0 < gpdBaseStream.Length);
-			Contract.Requires<ArgumentOutOfRangeException>(tm1 >= 0 && tm1 < gpdBaseStream.Length);
+			ArgumentNullException.ThrowIfNull(gpdBaseStream);
+			if (!gpdBaseStream.CanSeek)
+			{
+				throw new ArgumentException("Stream must support seeking.", nameof(gpdBaseStream));
+			}
+			if (tm0 < 0 || tm0 >= gpdBaseStream.Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(tm0));
+			}
+			if (tm1 < 0 || tm1 >= gpdBaseStream.Length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(tm1));
+			}
 
 			mMemoryOffset0 = tm0;
 			mMemoryOffset1 = tm1;
@@ -112,15 +121,21 @@ namespace KSoft.Phoenix.Resource
 		}
 		public void SerializeTitleMemory0(IO.EndianStream gpdStream)
 		{
-			Contract.Requires<ArgumentNullException>(gpdStream != null);
-			Contract.Requires<ArgumentException>(gpdStream.BaseStream.CanSeek);
+			ArgumentNullException.ThrowIfNull(gpdStream);
+			if (!gpdStream.BaseStream.CanSeek)
+			{
+				throw new ArgumentException("Stream must support seeking.", nameof(gpdStream));
+			}
 
 			SerializeTitleMemory(gpdStream, mMemoryOffset0, mMemory0);
 		}
 		public void SerializeTitleMemory1(IO.EndianStream gpdStream)
 		{
-			Contract.Requires<ArgumentNullException>(gpdStream != null);
-			Contract.Requires<ArgumentException>(gpdStream.BaseStream.CanSeek);
+			ArgumentNullException.ThrowIfNull(gpdStream);
+			if (!gpdStream.BaseStream.CanSeek)
+			{
+				throw new ArgumentException("Stream must support seeking.", nameof(gpdStream));
+			}
 
 			SerializeTitleMemory(gpdStream, mMemoryOffset1, mMemory1);
 		}

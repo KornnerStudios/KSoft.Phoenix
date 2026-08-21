@@ -124,7 +124,10 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public EcfChunk GetChunk(int chunkIndex)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(chunkIndex >= 0 && chunkIndex < ChunksCount);
+			if (chunkIndex < 0 || chunkIndex >= ChunksCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(chunkIndex));
+			}
 
 			return mChunks[chunkIndex];
 		}

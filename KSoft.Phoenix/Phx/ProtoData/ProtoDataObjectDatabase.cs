@@ -80,7 +80,10 @@ namespace KSoft.Phoenix
 			, int objectKind, string name)
 		{
 			Contract.Requires(provider != null);
-			Contract.Requires<ArgumentOutOfRangeException>(objectKind != PhxUtil.kObjectKindNone);
+			if (objectKind == PhxUtil.kObjectKindNone)
+			{
+				throw new ArgumentOutOfRangeException(nameof(objectKind));
+			}
 
 			var dbi = provider.GetNamesInterface(objectKind);
 			return dbi.TryGetIdWithUndefined(name);
@@ -90,7 +93,10 @@ namespace KSoft.Phoenix
 			, int objectKind, int id)
 		{
 			Contract.Requires(provider != null);
-			Contract.Requires<ArgumentOutOfRangeException>(objectKind != PhxUtil.kObjectKindNone);
+			if (objectKind == PhxUtil.kObjectKindNone)
+			{
+				throw new ArgumentOutOfRangeException(nameof(objectKind));
+			}
 
 			var dbi = provider.GetMembersInterface(objectKind);
 			return dbi.TryGetNameWithUndefined(id);
@@ -100,7 +106,10 @@ namespace KSoft.Phoenix
 			, int objectKind, int id)
 		{
 			Contract.Requires(provider != null);
-			Contract.Requires<ArgumentOutOfRangeException>(objectKind != PhxUtil.kObjectKindNone);
+			if (objectKind == PhxUtil.kObjectKindNone)
+			{
+				throw new ArgumentOutOfRangeException(nameof(objectKind));
+			}
 
 			var dbi = provider.GetNamesInterface(objectKind);
 			return dbi.GetObject(id);

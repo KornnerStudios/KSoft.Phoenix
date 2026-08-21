@@ -56,7 +56,10 @@ namespace KSoft.Phoenix.Phx
 
 		internal Collections.IBTypeNames GetNamesInterface(TacticDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != TacticDataObjectKind.None);
+			if (kind == TacticDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return kind switch
 			{
@@ -69,7 +72,10 @@ namespace KSoft.Phoenix.Phx
 
 		internal Collections.IHasUndefinedProtoMemberInterface GetMembersInterface(TacticDataObjectKind kind)
 		{
-			Contract.Requires<ArgumentOutOfRangeException>(kind != TacticDataObjectKind.None);
+			if (kind == TacticDataObjectKind.None)
+			{
+				throw new ArgumentOutOfRangeException(nameof(kind));
+			}
 
 			return kind switch
 			{

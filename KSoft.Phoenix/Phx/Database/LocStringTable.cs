@@ -313,8 +313,12 @@ namespace KSoft.Phoenix.Phx
 		}
 		private void RefreshUsedIndicesForReplace(IList newList, IList oldList)
 		{
-			Contract.Requires<ArgumentNullException>(newList != null && oldList != null);
-			Contract.Requires<ArgumentOutOfRangeException>(newList.Count == oldList.Count);
+			ArgumentNullException.ThrowIfNull(newList);
+			ArgumentNullException.ThrowIfNull(oldList);
+			if (newList.Count != oldList.Count)
+			{
+				throw new ArgumentException("Replacement lists must have the same count.", nameof(newList));
+			}
 
 			mDoNotUpdateUsedIndices = true;
 			for (int x = 0; x < newList.Count; x++)

@@ -131,8 +131,15 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			const int k_sizeof_signature = sizeof(uint);
 
-			Contract.Requires<InvalidOperationException>(s.BaseStream.CanRead);
-			Contract.Requires<InvalidOperationException>(s.BaseStream.CanSeek);
+			ArgumentNullException.ThrowIfNull(s);
+			if (!s.BaseStream.CanRead)
+			{
+				throw new InvalidOperationException("Stream is not readable.");
+			}
+			if (!s.BaseStream.CanSeek)
+			{
+				throw new InvalidOperationException("Stream must support seeking.");
+			}
 
 			var base_stream = s.BaseStream;
 			if ((base_stream.Length - base_stream.Position) < k_sizeof_signature)

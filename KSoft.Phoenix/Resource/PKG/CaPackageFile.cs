@@ -157,7 +157,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		public byte[] ReadEntryBytes(IO.EndianStream s, CaPackageEntry entry)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			if (entry.Offset < 0 || entry.Offset > s.BaseStream.Length)
 			{
@@ -183,8 +183,8 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		public void WriteEntryBytes(IO.EndianStream s, ref CaPackageEntry entry, Stream entryStream)
 		{
-			Contract.Requires<ArgumentNullException>(s != null);
-			Contract.Requires<ArgumentNullException>(entryStream != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(entryStream);
 			Contract.Assume(entry.Name.IsNotNullOrEmpty());
 			Contract.Assume(entry.Offset == 0);
 			Contract.Assume(entry.Size == 0);
@@ -211,8 +211,15 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		public static bool VerifyIsPkg(IO.EndianReader s)
 		{
-			Contract.Requires<InvalidOperationException>(s.BaseStream.CanRead);
-			Contract.Requires<InvalidOperationException>(s.BaseStream.CanSeek);
+			ArgumentNullException.ThrowIfNull(s);
+			if (!s.BaseStream.CanRead)
+			{
+				throw new InvalidOperationException("Stream is not readable.");
+			}
+			if (!s.BaseStream.CanSeek)
+			{
+				throw new InvalidOperationException("Stream must support seeking.");
+			}
 
 			var base_stream = s.BaseStream;
 			if ((base_stream.Length - base_stream.Position) < kHeaderLength)
@@ -232,4 +239,3 @@ namespace KSoft.Phoenix.Resource.PKG
 		}
 	};
 }
-
