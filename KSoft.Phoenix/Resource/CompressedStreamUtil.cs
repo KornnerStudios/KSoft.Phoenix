@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using FA = System.IO.FileAccess;
 
@@ -72,7 +67,6 @@ namespace KSoft.Phoenix.Resource
 		public static byte[] DecompressFromStream(IO.EndianStream blockStream)
 		{
 			ArgumentNullException.ThrowIfNull(blockStream);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] buffer;
 			using (var cs = new CompressedStream())
@@ -82,7 +76,7 @@ namespace KSoft.Phoenix.Resource
 				buffer = cs.UncompressedData;
 			}
 
-			return buffer;
+			return buffer ?? throw new InvalidOperationException("Compressed stream did not produce decompressed data.");
 		}
 	};
 }

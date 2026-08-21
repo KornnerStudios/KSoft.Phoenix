@@ -1,11 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix
 {
@@ -74,7 +69,7 @@ namespace KSoft.Phoenix
 
 		public static bool StreamPointerizedCString(IO.EndianStream s, ref Values.PtrHandle pointer, ref string value)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			bool streamed = false;
 
@@ -231,7 +226,7 @@ namespace KSoft.Phoenix
 		/// <returns></returns>
 		public static int NextToken(string src, string tokens, int srcIndex, ref int distance)
 		{
-			Contract.Requires(!tokens.IsNullOrEmpty());
+			ArgumentException.ThrowIfNullOrEmpty(tokens);
 
 			if (src.IsNullOrEmpty())
 			{
@@ -465,15 +460,19 @@ namespace KSoft.Phoenix
 		}
 		public static uint SuperFastHash(byte[] buffer, uint initialValue = 0)
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
 			return SuperFastHash(buffer, 0, buffer.Length, initialValue);
 		}
 		public static uint SuperFastHash(byte[] buffer, int startIndex, int length, uint initialValue = 0)
 		{
-			Contract.Requires(buffer != null);
-			Contract.Requires(startIndex >= 0 && length >= 0);
-			Contract.Requires(startIndex+length <= buffer.Length);
+			ArgumentNullException.ThrowIfNull(buffer);
+			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+			ArgumentOutOfRangeException.ThrowIfNegative(length);
+			if (startIndex > buffer.Length || length > buffer.Length - startIndex)
+			{
+				throw new ArgumentException("Range must fit within the buffer.");
+			}
 
 			// Based on code by Paul Hsieh
 			// http://www.azillionmonkeys.com/qed/hash.html

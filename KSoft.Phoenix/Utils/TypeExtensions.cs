@@ -1,10 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 using Exprs = System.Linq.Expressions;
 
 namespace KSoft.Phoenix
@@ -95,7 +90,11 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Assert(s.Owner == null || s.Owner is XML.BXmlSerializerInterface);
+			ArgumentNullException.ThrowIfNull(s);
+			if (s.Owner != null && s.Owner is not XML.BXmlSerializerInterface)
+			{
+				throw new InvalidOperationException("Tag element stream owner is not a Phoenix XML serializer interface.");
+			}
 
 			return (XML.BXmlSerializerInterface)s.Owner;
 		}
@@ -104,9 +103,13 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
+			ArgumentNullException.ThrowIfNull(s);
 			if (xsi != null)
 			{
-				Contract.Assert(s.Owner == null || s.Owner is not XML.BXmlSerializerInterface);
+				if (s.Owner != null && s.Owner is XML.BXmlSerializerInterface)
+				{
+					throw new InvalidOperationException("Tag element stream already has a Phoenix XML serializer interface.");
+				}
 			}
 
 			s.Owner = xsi;
@@ -137,7 +140,7 @@ namespace KSoft.Phoenix
 			where TDoc : class
 			where TCursor : class
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 
 			bool executed = false;
 

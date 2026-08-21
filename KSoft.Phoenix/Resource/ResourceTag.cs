@@ -1,10 +1,5 @@
-﻿using System;
+using System;
 using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource
 {
@@ -83,7 +78,8 @@ namespace KSoft.Phoenix.Resource
 
 		public void SetCreatorToolInfo(int version, string cmdLine)
 		{
-			Contract.Requires(version >= 0 && version <= byte.MaxValue);
+			ArgumentOutOfRangeException.ThrowIfNegative(version);
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(version, byte.MaxValue);
 
 			CreatorToolVersion = version;
 			CreatorToolCommandLine = cmdLine;
@@ -104,9 +100,12 @@ namespace KSoft.Phoenix.Resource
 
 		public void PopulateFromStream(IO.EndianStream s, ResourceTagHeader header)
 		{
-			Contract.Requires(s != null);
-			Contract.Requires(s.IsReading);
-			Contract.Requires(header != null);
+			ArgumentNullException.ThrowIfNull(s);
+			ArgumentNullException.ThrowIfNull(header);
+			if (!s.IsReading)
+			{
+				throw new InvalidOperationException("Resource tag metadata can only be populated while reading.");
+			}
 
 			string streamedString = null;
 

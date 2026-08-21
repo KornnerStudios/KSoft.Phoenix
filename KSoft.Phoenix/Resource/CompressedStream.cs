@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Resource
 {
@@ -157,18 +152,27 @@ namespace KSoft.Phoenix.Resource
 
 			if (!mUseBufferedStreaming)
 			{
-				Contract.Assert(!writing || mHeader.StreamMode == (uint)Mode.Streaming);
+				if (writing && mHeader.StreamMode != (uint)Mode.Streaming)
+				{
+					throw new InvalidOperationException("Unbuffered compressed streams must use streaming mode.");
+				}
 
 				StreamCompressedData(s);
 			}
 			else
 			{
-				Contract.Assert(!writing || mHeader.StreamMode == (uint)Mode.Buffered);
+				if (writing && mHeader.StreamMode != (uint)Mode.Buffered)
+				{
+					throw new InvalidOperationException("Buffered compressed streams must use buffered mode.");
+				}
 
 				StreamCompressedDataInChunks(s);
 				s.Stream(ref mHeader); // actual header appears after the chunks
 
-				Contract.Assert(!writing || mHeader.StreamMode == (uint)Mode.BufferedEnd);
+				if (writing && mHeader.StreamMode != (uint)Mode.BufferedEnd)
+				{
+					throw new InvalidOperationException("Buffered compressed stream footer must use buffered-end mode.");
+				}
 			}
 		}
 		#endregion
@@ -186,7 +190,11 @@ namespace KSoft.Phoenix.Resource
 		}
 		public void InitializeFromStream(System.IO.Stream source)
 		{
-			Contract.Requires(source.CanRead);
+			ArgumentNullException.ThrowIfNull(source);
+			if (!source.CanRead)
+			{
+				throw new ArgumentException("Stream must be readable.", nameof(source));
+			}
 
 			mHeader.UncompressedSize = (ulong)source.Length;
 			ReadData(source);
@@ -194,8 +202,10 @@ namespace KSoft.Phoenix.Resource
 
 		public void Compress(int level = 5)
 		{
-			Contract.Requires(level.IsNone() ||
-				(level >= IO.Compression.ZLib.kNoCompression && level <= IO.Compression.ZLib.kBestCompression));
+			if (!level.IsNone() && (level < IO.Compression.ZLib.kNoCompression || level > IO.Compression.ZLib.kBestCompression))
+			{
+				throw new ArgumentOutOfRangeException(nameof(level));
+			}
 
 			// Assume the compressed data will be at most the same size as the uncompressed data
 			if (CompressedData == null || CompressedData.Length < (int)mHeader.UncompressedSize)
