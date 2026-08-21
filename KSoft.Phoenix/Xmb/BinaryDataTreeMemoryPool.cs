@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 using Vector2f = System.Numerics.Vector2;
 using Vector3f = System.Numerics.Vector3;
@@ -42,7 +37,7 @@ namespace KSoft.Phoenix.Xmb
 		public BinaryDataTreeMemoryPool(byte[] buffer, Shell.EndianFormat byteOrder = Shell.EndianFormat.Big)
 			: this()
 		{
-			Contract.Requires(buffer != null);
+			ArgumentNullException.ThrowIfNull(buffer);
 
 			mPoolSize = (uint)buffer.Length;
 			var ms = new System.IO.MemoryStream(buffer, false);

@@ -1,9 +1,5 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+using System.IO;
 using Interop = System.Runtime.InteropServices;
 
 namespace KSoft.Phoenix.Xmb
@@ -198,7 +194,13 @@ namespace KSoft.Phoenix.Xmb
 			if (SizeIsIndirect)
 			{
 				size = pool.GetUInt32(Offset-sizeof(uint));
-				Contract.Assert(size > Constants.kSizeBitField.Bitmask32);
+				if (size <= Constants.kSizeBitField.Bitmask32)
+				{
+					throw new InvalidDataException(string.Format(
+						"Indirect binary data tree size is {0}, expected greater than {1}.",
+						size,
+						Constants.kSizeBitField.Bitmask32));
+				}
 			}
 
 			return size;
@@ -280,13 +282,13 @@ namespace KSoft.Phoenix.Xmb
 		#region RequiresIndirectStorage
 		public static bool SizeValueRequiresIndirectStorage(int size)
 		{
-			Contract.Requires(size >= 0);
+			ArgumentOutOfRangeException.ThrowIfNegative(size);
 
 			return (uint)size >= Constants.kSizeBitField.Bitmask32;
 		}
 		public static bool StringRequiresIndirectStorage(string s, bool isUnicode)
 		{
-			Contract.Requires(s != null);
+			ArgumentNullException.ThrowIfNull(s);
 #if false
 			return s.Length > kMaxDirectEncodedStringLength || isUnicode;
 #else

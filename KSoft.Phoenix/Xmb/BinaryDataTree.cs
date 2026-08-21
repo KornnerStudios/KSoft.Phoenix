@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Xmb
 {
@@ -346,7 +341,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public void ToXml(string file)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(file));
+			ArgumentException.ThrowIfNullOrEmpty(file);
 
 			using (var fs = File.Create(file))
 			{
@@ -355,7 +350,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public void ToXml(Stream stream)
 		{
-			Contract.Requires(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 
 			var doc = ToXmlDocument();
 
@@ -495,14 +490,18 @@ namespace KSoft.Phoenix.Xmb
 
 		public XmlDocument ToXmlDocument(BinaryDataTree tree)
 		{
-			Contract.Requires(RootNode != null);
-			Contract.Ensures(Contract.Result<XmlDocument>() != null);
+			if (RootNode == null)
+			{
+				throw new InvalidOperationException("Root node must be initialized before converting binary data tree to XML.");
+			}
 
 			string root_name = RootNode.NodeName;
 			var s = IO.XmlElementStream.CreateForWrite(root_name);
 			RootNode.ToXml(tree, s);
 
-			return s.Document;
+			XmlDocument result = s.Document;
+			System.Diagnostics.Debug.Assert(result != null);
+			return result;
 		}
 	};
 }

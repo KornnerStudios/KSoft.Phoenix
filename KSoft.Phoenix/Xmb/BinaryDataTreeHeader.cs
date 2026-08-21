@@ -1,9 +1,5 @@
-﻿using System.IO;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
+﻿using System;
+using System.IO;
 
 namespace KSoft.Phoenix.Xmb
 {
@@ -161,7 +157,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public static BinaryDataTreeHeaderSignature PeekSignature(BinaryReader reader)
 		{
-			Contract.Requires(reader != null);
+			ArgumentNullException.ThrowIfNull(reader);
 
 			var peek = reader.PeekByte();
 
@@ -176,7 +172,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public static Shell.EndianFormat PeekSignatureAsEndianFormat(BinaryReader reader)
 		{
-			Contract.Requires(reader != null);
+			ArgumentNullException.ThrowIfNull(reader);
 
 			var signature = PeekSignature(reader);
 

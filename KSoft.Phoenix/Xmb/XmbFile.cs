@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Xmb
 {
@@ -190,26 +185,27 @@ namespace KSoft.Phoenix.Xmb
 
 		public XmlDocument ToXmlDocument()
 		{
-			Contract.Ensures(Contract.Result<XmlDocument>() != null);
-
 			var doc = new XmlDocument();
+			XmlDocument result = ToXmlDocument(doc);
 
-			return ToXmlDocument(doc);
+			System.Diagnostics.Debug.Assert(result != null);
+			return result;
 		}
 
 		public XmlDocument ToXmlDocument(XmlDocument doc)
 		{
-			Contract.Ensures(doc == null || Contract.Result<XmlDocument>() != null);
+			XmlDocument result = doc;
 
-			if (doc != null && mElements != null && mElements.Count > 1)
+			if (result != null && mElements != null && mElements.Count > 1)
 			{
 				XmbFile.Element root = mElements[0];
-				var root_e = root.ToXml(this, doc, null);
+				var root_e = root.ToXml(this, result, null);
 
-				doc.AppendChild(root_e);
+				result.AppendChild(root_e);
 			}
 
-			return doc;
+			System.Diagnostics.Debug.Assert(doc == null || result != null);
+			return result;
 		}
 
 		#region FromXml
@@ -223,7 +219,7 @@ namespace KSoft.Phoenix.Xmb
 		#region ToXml
 		public void ToXml(string file)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(file));
+			ArgumentException.ThrowIfNullOrEmpty(file);
 
 			using (var fs = System.IO.File.Create(file))
 			{
@@ -232,7 +228,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public void ToXml(System.IO.Stream stream)
 		{
-			Contract.Requires(stream != null);
+			ArgumentNullException.ThrowIfNull(stream);
 
 			var doc = ToXmlDocument();
 

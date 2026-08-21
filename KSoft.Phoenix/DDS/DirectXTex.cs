@@ -1,11 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.DDS
 {
@@ -28,7 +23,7 @@ namespace KSoft.DDS
 
 		public static DirectXTexFileType FileTypeFromFileExtension(string file)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(file));
+			ArgumentException.ThrowIfNullOrEmpty(file);
 
 			string ext = Path.GetExtension(file);
 			ext = ext.ToLowerInvariant();
@@ -56,7 +51,7 @@ namespace KSoft.DDS
 			, DirectXTexFileType fileType = DirectXTexFileType.Unknown
 			, uint flags = 0)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(file));
+			ArgumentException.ThrowIfNullOrEmpty(file);
 
 			if (!File.Exists(file))
 			{

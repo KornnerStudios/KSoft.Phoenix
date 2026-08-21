@@ -1,9 +1,4 @@
 ﻿using System;
-#if CONTRACTS_FULL_SHIM
-using Contract = System.Diagnostics.ContractsShim.Contract;
-#else
-using Contract = System.Diagnostics.Contracts.Contract; // SHIM'D
-#endif
 
 namespace KSoft.Phoenix.Xmb
 {
@@ -144,7 +139,10 @@ namespace KSoft.Phoenix.Xmb
 
 		static RawVariantLength RawLengthFromByte(byte length)
 		{
-			Contract.Requires(length > 0 && length <= 4);
+			if (length == 0 || length > 4)
+			{
+				throw new ArgumentOutOfRangeException(nameof(length), length, "Length must be between 1 and 4.");
+			}
 
 			RawVariantLength l = (RawVariantLength)(--length);
 
