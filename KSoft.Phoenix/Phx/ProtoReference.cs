@@ -1,5 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Phoenix.Phx.Meta
 {
@@ -340,7 +339,6 @@ namespace KSoft.Phoenix
 {
 	partial class TypeExtensionsPhx
 	{
-		[Contracts.Pure]
 		public static string GetExportContractName(this Phx.Meta.IProtoDataReferenceAttribute attr)
 		{
 			if (attr == null)

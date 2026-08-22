@@ -1,6 +1,4 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-
-namespace KSoft.Phoenix.XML
+﻿namespace KSoft.Phoenix.XML
 {
 	public abstract class BCollectionXmlParams
 	{
@@ -15,7 +13,6 @@ namespace KSoft.Phoenix.XML
 		#region Flags
 		public /*readonly*/ BCollectionXmlParamsFlags Flags;
 
-		[Contracts.Pure]
 		protected bool HasFlag(BCollectionXmlParamsFlags flag) { return (Flags & flag) == flag; }
 
 		public void SetForceNoRootElementStreaming(bool isSet)

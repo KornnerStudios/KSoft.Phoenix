@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Phoenix.Resource.ECF
 {
@@ -246,7 +245,6 @@ namespace KSoft.Phoenix.Resource.ECF
 		#endregion
 
 		#region Hash Utils
-		[Contracts.Pure]
 		public uint ComputeAdler32(IO.EndianStream blockStream)
 		{
 			ArgumentNullException.ThrowIfNull(blockStream);
@@ -256,7 +254,6 @@ namespace KSoft.Phoenix.Resource.ECF
 			return adler;
 		}
 
-		[Contracts.Pure]
 		public void ComputeHash(IO.EndianStream blockStream, Security.Cryptography.TigerHashBase hasher)
 		{
 			ArgumentNullException.ThrowIfNull(blockStream);

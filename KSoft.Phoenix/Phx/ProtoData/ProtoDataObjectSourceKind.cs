@@ -1,5 +1,4 @@
 ﻿using System;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -34,7 +33,6 @@ namespace KSoft.Phoenix
 {
 	partial class TypeExtensionsPhx
 	{
-		[Contracts.Pure]
 		public static bool RequiresFileReference(this Phx.ProtoDataObjectSourceKind kind)
 		{
 			return kind switch

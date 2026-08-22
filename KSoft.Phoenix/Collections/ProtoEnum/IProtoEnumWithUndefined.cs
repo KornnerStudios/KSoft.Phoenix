@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using Contracts = System.Diagnostics.Contracts;
 
 namespace KSoft.Collections
 {
@@ -9,13 +8,10 @@ namespace KSoft.Collections
 	{
 		int TryGetMemberIdOrUndefined(string memberName);
 
-		[Contracts.Pure]
 		int GetMemberIdOrUndefined(string memberName);
-		[Contracts.Pure]
 		string GetMemberNameOrUndefined(int memberId);
 
 		/// <summary>Number of members that are undefined</summary>
-		[Contracts.Pure]
 		int MemberUndefinedCount { get; }
 
 		ObservableCollection<string> UndefinedMembers { get; }

@@ -1,26 +1,17 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-
-namespace KSoft.Collections
+﻿namespace KSoft.Collections
 {
 	public interface IProtoEnum
 	{
-		[Contracts.Pure]
 		int TryGetMemberId(string memberName);
-		[Contracts.Pure]
 		string TryGetMemberName(int memberId);
 
-		[Contracts.Pure]
 		bool IsValidMemberId(int memberId);
-		[Contracts.Pure]
 		bool IsValidMemberName(string memberName);
 
-		[Contracts.Pure]
 		int GetMemberId(string memberName);
-		[Contracts.Pure]
 		string GetMemberName(int memberId);
 
 		/// <summary>Number of members</summary>
-		[Contracts.Pure]
 		int MemberCount { get; }
 	};
 }

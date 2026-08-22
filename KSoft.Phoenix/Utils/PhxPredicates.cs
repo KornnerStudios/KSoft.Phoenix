@@ -1,11 +1,9 @@
-﻿using Contracts = System.Diagnostics.Contracts;
-
-namespace KSoft.Phoenix
+﻿namespace KSoft.Phoenix
 {
 	static class PhxPredicates
 	{
-		[Contracts.Pure] public static bool IsNotInvalid(float x)		=> x > PhxUtil.kInvalidSingle;
-		[Contracts.Pure] public static bool IsNotInvalidNaN(float x)	=> !float.IsNaN(x);
+		public static bool IsNotInvalid(float x)		=> x > PhxUtil.kInvalidSingle;
+		public static bool IsNotInvalidNaN(float x)	=> !float.IsNaN(x);
 
 		public static bool IsNotOne(float x)	=> x != 1.0f;
 		public static bool IsNotOne(uint x)		=> x != 1;
