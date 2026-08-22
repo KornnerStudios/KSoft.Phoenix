@@ -4,7 +4,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Test.KSoft.Phoenix</RootNamespace>
     <AssemblyName>Test.KSoft.Phoenix</AssemblyName>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <RunSettingsFilePath
       >$(MSBuildProjectDirectory)\.runsettings</RunSettingsFilePath>
     <RunSettingsFilePath Condition="Exists('$(MSBuildProjectDirectory)\user.runsettings')"
