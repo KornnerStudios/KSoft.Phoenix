@@ -77,10 +77,7 @@ namespace KSoft.Phoenix
 			, int objectKind, string name)
 		{
 			ArgumentNullException.ThrowIfNull(provider);
-			if (objectKind == PhxUtil.kObjectKindNone)
-			{
-				throw new ArgumentOutOfRangeException(nameof(objectKind));
-			}
+			ArgumentOutOfRangeException.ThrowIfEqual(objectKind, PhxUtil.kObjectKindNone);
 
 			var dbi = provider.GetNamesInterface(objectKind);
 			return dbi.TryGetIdWithUndefined(name);
@@ -90,10 +87,7 @@ namespace KSoft.Phoenix
 			, int objectKind, int id)
 		{
 			ArgumentNullException.ThrowIfNull(provider);
-			if (objectKind == PhxUtil.kObjectKindNone)
-			{
-				throw new ArgumentOutOfRangeException(nameof(objectKind));
-			}
+			ArgumentOutOfRangeException.ThrowIfEqual(objectKind, PhxUtil.kObjectKindNone);
 
 			var dbi = provider.GetMembersInterface(objectKind);
 			return dbi.TryGetNameWithUndefined(id);
@@ -103,10 +97,7 @@ namespace KSoft.Phoenix
 			, int objectKind, int id)
 		{
 			ArgumentNullException.ThrowIfNull(provider);
-			if (objectKind == PhxUtil.kObjectKindNone)
-			{
-				throw new ArgumentOutOfRangeException(nameof(objectKind));
-			}
+			ArgumentOutOfRangeException.ThrowIfEqual(objectKind, PhxUtil.kObjectKindNone);
 
 			var dbi = provider.GetNamesInterface(objectKind);
 			return dbi.GetObject(id);

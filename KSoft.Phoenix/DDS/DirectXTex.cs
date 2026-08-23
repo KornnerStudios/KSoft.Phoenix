@@ -96,10 +96,7 @@ namespace KSoft.DDS
 			ArgumentNullException.ThrowIfNull(buffer);
 			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 			ArgumentOutOfRangeException.ThrowIfNegative(length);
-			if (startIndex > buffer.Length - length)
-			{
-				throw new ArgumentOutOfRangeException(nameof(length));
-			}
+			ArgumentOutOfRangeException.ThrowIfGreaterThan(length, buffer.Length - startIndex);
 
 			var result = TexMetadata.Empty;
 
