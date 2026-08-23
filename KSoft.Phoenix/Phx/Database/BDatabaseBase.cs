@@ -137,6 +137,7 @@ namespace KSoft.Phoenix.Phx
 			Justification = "Not expecting any derived classes to have Finalizers")]
 		public virtual void Dispose()
 		{
+			Util.DisposeAndNull(ref mXmlSerializer);
 			Util.DisposeAndNull(ref mTriggerSerializer);
 		}
 		#endregion
@@ -406,6 +407,8 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		protected abstract XML.BDatabaseXmlSerializerBase NewXmlSerializer();
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed",
+			Justification = "Disposed and nulled with DisposeAndNull in Dispose.")]
 		private XML.BDatabaseXmlSerializerBase? mXmlSerializer;
 
 		public bool Preload()

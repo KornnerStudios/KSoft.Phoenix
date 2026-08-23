@@ -17,6 +17,8 @@ namespace KSoft.Phoenix.Resource.ECF
 		: IDisposable
 	{
 		public EcfFileDefinition EcfDefinition { get; private set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed",
+			Justification = "Base Dispose uses DisposeAndNull.")]
 		internal EcfFile? mEcfFile;
 		protected string? mSourceFile; // filename of the source file which the util stems from
 		public TextWriter? ProgressOutput { get; set; }

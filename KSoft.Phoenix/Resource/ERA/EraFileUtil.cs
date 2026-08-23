@@ -26,6 +26,8 @@ namespace KSoft.Phoenix.Resource
 		/// <summary>DO NOT USE UNLESS YOU ARE KSoft.Phoenix</summary>
 		public const string kExtensionDecrypted = EraFile.kExtensionDecrypted;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed",
+			Justification = "Base Dispose uses DisposeAndNull.")]
 		/*protected*/ internal EraFile? mEraFile;
 		protected string? mSourceFile; // filename of the source file which the util stems from (.era, .xml)
 		public System.IO.TextWriter? ProgressOutput { get; set; }

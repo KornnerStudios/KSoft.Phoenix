@@ -5,6 +5,8 @@ namespace KSoft.Phoenix.XML
 		: BXmlSerializerInterface
 		, IO.ITagElementStringNameStreamable
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed",
+			Justification = "Disposed and nulled by AutoIdSerializersDispose.")]
 		XML.IBListAutoIdXmlSerializer? mDamageTypesSerializer
 			, mImpactEffectsSerializer
 			, mWeaponTypesSerializer
