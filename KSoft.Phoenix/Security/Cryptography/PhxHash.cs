@@ -25,6 +25,12 @@ namespace KSoft.Security.Cryptography
 			}
 		}
 
+		static byte[] GetHashResult(SHA1 sha)
+		{
+			ArgumentNullException.ThrowIfNull(sha);
+			return sha.Hash ?? throw new CryptographicException("SHA-1 did not produce a hash result.");
+		}
+
 		public static void UInt8(SHA1 sha, uint word, bool isFinal = false)
 		{
 			gUInt64Buffer[0] = (byte)(word >> 0);
@@ -196,7 +202,7 @@ namespace KSoft.Security.Cryptography
 				sha.TransformBlock(str_bytes, 0, str_bytes.Length, null, 0);
 				PhxHash.UInt32(sha, 0x5AF4A9F1);
 				PhxHash.UInt32(sha, 0xCA6884EC, true);
-				hash1 = sha.Hash;
+				hash1 = GetHashResult(sha);
 #if DEBUG
 				if (TraceSha1Hash && System.Diagnostics.Debugger.IsAttached)
 				{
@@ -208,7 +214,7 @@ namespace KSoft.Security.Cryptography
 				PhxHash.UInt32(sha, 0xCB92EAEB);
 				sha.TransformBlock(hash1, 0, hash1.Length, null, 0);
 				PhxHash.UInt32(sha, 0x1D919BF8, true);
-				hash2 = sha.Hash;
+				hash2 = GetHashResult(sha);
 #if DEBUG
 				if (TraceSha1Hash && System.Diagnostics.Debugger.IsAttached)
 				{

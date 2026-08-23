@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.XML
 				return;
 			}
 
-			foreach (string tactic_filename in GameEngine.Directories.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
+			foreach (string tactic_filename in GameEngine.Directories!.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
 				"*" + Phx.BTacticData.kFileExt))
 			{
 				string tactic_name = System.IO.Path.GetFileNameWithoutExtension(tactic_filename);
@@ -41,7 +41,7 @@ namespace KSoft.Phoenix.XML
 				Database.Tactics.DynamicAdd(td, tactic_name);
 			}
 
-			foreach (string tactic_filename in GameEngine.Directories.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
+			foreach (string tactic_filename in GameEngine.Directories!.GetFiles(Engine.ContentStorage.Game, Engine.GameDirectory.Tactics,
 				"*" + Phx.BTacticData.kFileExt + Xmb.XmbFile.kFileExt))
 			{
 				// get rid of .xmb, then .tactics
@@ -100,17 +100,17 @@ namespace KSoft.Phoenix.XML
 
 		void PreloadDamageTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mDamageTypesSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mDamageTypesSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from damagetypes.xml</remarks>
 		void StreamXmlDamageTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, mDamageTypesSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mDamageTypesSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from impacteffects.xml</remarks>
 		void StreamXmlImpactEffects(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, mImpactEffectsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mImpactEffectsSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from terraintiletypes.xml</remarks>
 		void StreamXmlTerrainTileTypes(IO.XmlElementStream s)
@@ -119,7 +119,7 @@ namespace KSoft.Phoenix.XML
 		}
 		void PreloadWeaponTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mWeaponTypesSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mWeaponTypesSerializer!, ForceNoRootElementStreaming);
 
 			// We perform FixWeaponTypes in preload, as it currently only dynamically adds missing weapon types
 			// If fixing required changing values, this would need to be reworked so preload and stream
@@ -132,7 +132,7 @@ namespace KSoft.Phoenix.XML
 		/// <remarks>For streaming directly from weapontypes.xml</remarks>
 		void StreamXmlWeaponTypes(IO.XmlElementStream s)
 		{
-			XmlUtil.Serialize(s, mWeaponTypesSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mWeaponTypesSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from UserClasses.xml</remarks>
 		void StreamXmlUserClasses(IO.XmlElementStream s)
@@ -152,7 +152,7 @@ namespace KSoft.Phoenix.XML
 
 		void PreloadObjects(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mObjectsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mObjectsSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from objects.xml</remarks>
 		void StreamXmlObjects(IO.XmlElementStream s)
@@ -162,12 +162,12 @@ namespace KSoft.Phoenix.XML
 				FixObjectsXml(s);
 			}
 
-			XmlUtil.Serialize(s, mObjectsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mObjectsSerializer!, ForceNoRootElementStreaming);
 		}
 
 		void PreloadSquads(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mSquadsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mSquadsSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from squads.xml</remarks>
 		void StreamXmlSquads(IO.XmlElementStream s)
@@ -177,7 +177,7 @@ namespace KSoft.Phoenix.XML
 				FixSquadsXml(s);
 			}
 
-			XmlUtil.Serialize(s, mSquadsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mSquadsSerializer!, ForceNoRootElementStreaming);
 
 			XML.XmlUtil.Serialize(s, Database.MergedSquads, Phx.BProtoMergedSquads.kBListXmlParams);
 			Database.ShieldBubbleTypes.Serialize(s);
@@ -185,7 +185,7 @@ namespace KSoft.Phoenix.XML
 
 		void PreloadPowers(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mPowersSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mPowersSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from powers.xml</remarks>
 		void StreamXmlPowers(IO.XmlElementStream s)
@@ -195,12 +195,12 @@ namespace KSoft.Phoenix.XML
 				FixPowersXml(s);
 			}
 
-			XmlUtil.Serialize(s, mPowersSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mPowersSerializer!, ForceNoRootElementStreaming);
 		}
 
 		void PreloadTechs(IO.XmlElementStream s)
 		{
-			XmlUtil.SerializePreload(s, mTechsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializePreload(s, mTechsSerializer!, ForceNoRootElementStreaming);
 		}
 		/// <remarks>For streaming directly from techs.xml</remarks>
 		void StreamXmlTechs(IO.XmlElementStream s)
@@ -210,7 +210,7 @@ namespace KSoft.Phoenix.XML
 				FixTechsXml(s);
 			}
 
-			XmlUtil.Serialize(s, mTechsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.Serialize(s, mTechsSerializer!, ForceNoRootElementStreaming);
 		}
 
 		/// <remarks>For streaming directly from civs.xml</remarks>
@@ -229,14 +229,14 @@ namespace KSoft.Phoenix.XML
 		void StreamXmlObjectsUpdate(IO.XmlElementStream s)
 		{
 			//if(s.IsReading) FixObjectsXml(s);
-			XmlUtil.SerializeUpdate(s, mObjectsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializeUpdate(s, mObjectsSerializer!, ForceNoRootElementStreaming);
 		}
 
 		/// <remarks>For streaming directly from squads_update.xml</remarks>
 		void StreamXmlSquadsUpdate(IO.XmlElementStream s)
 		{
 			//if (s.IsReading) FixSquadsXml(s);
-			XmlUtil.SerializeUpdate(s, mSquadsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializeUpdate(s, mSquadsSerializer!, ForceNoRootElementStreaming);
 		}
 
 		/// <remarks>For streaming directly from techs_update.xml</remarks>
@@ -247,7 +247,7 @@ namespace KSoft.Phoenix.XML
 				FixTechsXml(s);
 			}
 
-			XmlUtil.SerializeUpdate(s, mTechsSerializer, ForceNoRootElementStreaming);
+			XmlUtil.SerializeUpdate(s, mTechsSerializer!, ForceNoRootElementStreaming);
 		}
 		#endregion
 		#endregion

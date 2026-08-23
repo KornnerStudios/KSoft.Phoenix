@@ -18,8 +18,8 @@ namespace KSoft.Phoenix.Resource.ECF
 	public sealed class EcfFileExpander
 		: EcfFileUtil
 	{
-		Stream mEcfBaseStream;
-		IO.EndianStream mEcfStream;
+		Stream? mEcfBaseStream;
+		IO.EndianStream? mEcfStream;
 
 		/// <see cref="EcfFileExpanderOptions"/>
 		public Collections.BitVector32 ExpanderOptions;
@@ -59,16 +59,16 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			if (ExpanderOptions.Test(EcfFileExpanderOptions.DontLoadEntireEcfIntoMemory))
 			{
-				mEcfBaseStream = File.OpenRead(mSourceFile);
+				mEcfBaseStream = File.OpenRead(mSourceFile!);
 			}
 			else
 			{
-				byte[] ecf_bytes = File.ReadAllBytes(mSourceFile);
+				byte[] ecf_bytes = File.ReadAllBytes(mSourceFile!);
 
 				mEcfBaseStream = new MemoryStream(ecf_bytes, writable: false);
 			}
 
-			mEcfStream = new(mEcfBaseStream, Shell.EndianFormat.Big, this, permissions: FileAccess.Read)
+			mEcfStream = new(mEcfBaseStream!, Shell.EndianFormat.Big, this, permissions: FileAccess.Read)
 			{
 				StreamMode = FileAccess.Read
 			};
@@ -80,7 +80,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			bool result;
 
-			result = EcfHeader.VerifyIsEcf(mEcfStream.Reader);
+			result = EcfHeader.VerifyIsEcf(mEcfStream!.Reader);
 			if (!result)
 			{
 				VerboseOutput?.WriteLine("\tFailed: File is either not even an ECF-based file, or corrupt");
@@ -88,7 +88,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			else
 			{
 				mEcfFile = new EcfFile();
-				mEcfFile.Serialize(mEcfStream);
+				mEcfFile.Serialize(mEcfStream!);
 			}
 
 			return result;
@@ -142,7 +142,7 @@ namespace KSoft.Phoenix.Resource.ECF
 				ProgressOutput?.WriteLine("Done");
 			}
 
-			mEcfStream.Close();
+			mEcfStream!.Close();
 
 			return result;
 		}
@@ -165,12 +165,12 @@ namespace KSoft.Phoenix.Resource.ECF
 		void PopulateEcfDefinitionFromEcfFile(string workPath)
 		{
 			EcfDefinition.WorkingDirectory = workPath;
-			EcfDefinition.Initialize(mSourceFile);
+			EcfDefinition.Initialize(mSourceFile!);
 
-			mEcfFile.CopyHeaderDataTo(EcfDefinition);
+			mEcfFile!.CopyHeaderDataTo(EcfDefinition);
 
 			int raw_chunk_index = 0;
-			foreach (EcfChunk rawChunk in mEcfFile)
+			foreach (EcfChunk rawChunk in mEcfFile!)
 			{
 				EcfFileChunkDefinition chunk = EcfDefinition.Add(rawChunk, raw_chunk_index++);
 
@@ -190,18 +190,18 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			foreach (EcfFileChunkDefinition chunk in EcfDefinition.Chunks)
 			{
-				EcfChunk raw_chunk = mEcfFile.GetChunk(chunk.RawChunkIndex);
+				EcfChunk raw_chunk = mEcfFile!.GetChunk(chunk.RawChunkIndex);
 
 				try
 				{
-					byte[] chunk_bytes = raw_chunk.GetBuffer(mEcfStream);
+					byte[] chunk_bytes = raw_chunk.GetBuffer(mEcfStream!);
 					chunk.SetFileBytes(chunk_bytes);
 				}
 				catch (Exception e)
 				{
 					throw new Exception(string.Format(
 						"ReadEcfChunksToDefinitionBytes failed on chunk {0} in {1}",
-						chunk.Id.ToString("X8"), mEcfStream.StreamName
+						chunk.Id.ToString("X8"), mEcfStream!.StreamName
 					), e);
 				}
 			}
@@ -211,7 +211,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			foreach (EcfFileChunkDefinition chunk in EcfDefinition.Chunks)
 			{
-				EcfChunk raw_chunk = mEcfFile.GetChunk(chunk.RawChunkIndex);
+				EcfChunk raw_chunk = mEcfFile!.GetChunk(chunk.RawChunkIndex);
 
 				try
 				{
@@ -221,7 +221,7 @@ namespace KSoft.Phoenix.Resource.ECF
 				{
 					throw new Exception(string.Format(
 						"ExpandChunksToFiles failed on chunk {0} in {1}",
-						chunk.Id.ToString("X8"), mEcfStream.StreamName
+						chunk.Id.ToString("X8"), mEcfStream!.StreamName
 					), e);
 				}
 			}
@@ -243,7 +243,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			using (var fs = File.OpenWrite(file_path))
 			{
-				byte[] chunk_bytes = rawChunk.GetBuffer(mEcfStream);
+				byte[] chunk_bytes = rawChunk.GetBuffer(mEcfStream!);
 				fs.Write(chunk_bytes, 0, chunk_bytes.Length);
 			}
 		}

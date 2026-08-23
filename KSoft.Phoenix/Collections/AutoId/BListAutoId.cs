@@ -23,7 +23,7 @@ namespace KSoft.Collections
 		{
 			return string.Format("Unregistered {0}!", typeof(T).Name);
 		}
-		public BListAutoId(BListAutoIdParams @params = null) : base(@params)
+		public BListAutoId(BListAutoIdParams? @params = null) : base(@params)
 		{
 			kUnregisteredMessage = BuildUnRegisteredMsg();
 			mUndefinedInterface = new ProtoEnumWithUndefinedImpl(this);
@@ -74,7 +74,7 @@ namespace KSoft.Collections
 
 				if (Params != null && Params.ToLowerDataNames)
 				{
-					string lower_name = Phoenix.PhxUtil.ToLowerIfContainsUppercase(item.Data);
+					string lower_name = Phoenix.PhxUtil.ToLowerIfContainsUppercase(item.Data!)!;
 					if (!object.ReferenceEquals(lower_name, item.Data))
 					{
 						mDBI.Add(lower_name, item);
@@ -86,7 +86,7 @@ namespace KSoft.Collections
 			return item.AutoId;
 		}
 
-		Dictionary<string, T> mDBI;
+		Dictionary<string, T>? mDBI;
 		internal void SetupDatabaseInterface()
 		{
 			mDBI = new Dictionary<string, T>(Params != null ? Params.InitialCapacity : BCollectionParams.kDefaultCapacity);
@@ -100,7 +100,7 @@ namespace KSoft.Collections
 				return id;
 			}
 
-			if (mDBI.TryGetValue(name, out T obj))
+			if (mDBI.TryGetValue(name, out T? obj))
 			{
 				id = obj.AutoId;
 			}
@@ -120,9 +120,14 @@ namespace KSoft.Collections
 		{
 			return mList.FindIndex(n => PhxUtil.StrEqualsIgnoreCase(n.Data, memberName));
 		}
-		public string TryGetMemberName(int memberId)
+		public string? TryGetMemberName(int memberId)
 		{
 			return IsValidMemberId(memberId) ? GetMemberName(memberId) : null;
+		}
+
+		string IProtoEnum.TryGetMemberName(int memberId)
+		{
+			return TryGetMemberName(memberId)!;
 		}
 		public bool IsValidMemberId(int memberId)
 		{
@@ -168,7 +173,7 @@ namespace KSoft.Collections
 		public int MemberCount => Count;
 		#endregion
 
-		public override object GetObject(int id)
+		public override object? GetObject(int id)
 		{
 			if (id.IsNone())
 			{
@@ -193,7 +198,7 @@ namespace KSoft.Phoenix
 {
 	partial class TypeExtensionsPhx
 	{
-		internal static string TryGetName<T>(this Collections.BListAutoId<T> dbi, int id)
+		internal static string? TryGetName<T>(this Collections.BListAutoId<T> dbi, int id)
 			where T : class, Collections.IListAutoIdObject, new()
 		{
 			if (dbi == null)

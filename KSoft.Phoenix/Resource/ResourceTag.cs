@@ -7,16 +7,16 @@ namespace KSoft.Phoenix.Resource
 	{
 		public DateTime TimeStamp { get; set; }
 		public Values.KGuid Guid { get; set; }
-		public string MachineName { get; set; }
-		public string UserName { get; set; }
+		public string? MachineName { get; set; }
+		public string? UserName { get; set; }
 
-		public string SourceFileName { get; private set; }
+		public string? SourceFileName { get; private set; }
 		public byte[] SourceDigest { get; private set; }
 		public long SourceFileSize { get; private set; }
 		public DateTime SourceFileTimeStamp { get; private set; }
 
 		public int CreatorToolVersion { get; set; }
-		public string CreatorToolCommandLine { get; set; }
+		public string? CreatorToolCommandLine { get; set; }
 
 		public ResourceTagPlatformId PlatformId { get; set; }
 
@@ -61,7 +61,13 @@ namespace KSoft.Phoenix.Resource
 			bool result;
 			try
 			{
-				result = Security.Cryptography.PhxHash.Sha1HashFile(SourceFileName, SourceDigest, out long fileLength);
+				var sourceFileName = SourceFileName;
+				if (sourceFileName is null)
+				{
+					return false;
+				}
+
+				result = Security.Cryptography.PhxHash.Sha1HashFile(sourceFileName, SourceDigest, out long fileLength);
 
 				if (result)
 				{
@@ -76,7 +82,7 @@ namespace KSoft.Phoenix.Resource
 			return result;
 		}
 
-		public void SetCreatorToolInfo(int version, string cmdLine)
+		public void SetCreatorToolInfo(int version, string? cmdLine)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(version);
 			ArgumentOutOfRangeException.ThrowIfGreaterThan(version, byte.MaxValue);
@@ -107,7 +113,7 @@ namespace KSoft.Phoenix.Resource
 				throw new InvalidOperationException("Resource tag metadata can only be populated while reading.");
 			}
 
-			string streamedString = null;
+			string streamedString = string.Empty;
 
 			this.TimeStamp = DateTime.FromFileTimeUtc((long)header.TagTimeStamp);
 			this.Guid = header.TagGuid;

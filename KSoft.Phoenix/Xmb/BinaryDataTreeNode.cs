@@ -32,18 +32,23 @@ namespace KSoft.Phoenix.Xmb
 
 	public sealed class BinaryDataTreeBuildNode
 	{
-		public BinaryDataTreeBuildNode Parent;
-		public List<BinaryDataTreeBuildNode> Children;
+		public BinaryDataTreeBuildNode? Parent;
+		public List<BinaryDataTreeBuildNode>? Children;
 		// First entry should be the element's name and text
 		// Remaining entries are the attribute names and values
-		public List<BinaryDataTreeBuildNameValue> NameValues;
+		public List<BinaryDataTreeBuildNameValue>? NameValues;
+
+		List<BinaryDataTreeBuildNameValue> GetNameValues()
+		{
+			return NameValues ?? throw new System.InvalidOperationException("Name values must be initialized before they are accessed.");
+		}
 
 		public string NodeName { get {
-			var name_value = NameValues[0];
+			var name_value = GetNameValues()[0];
 			return name_value.Name;
 		} }
 		public BinaryDataTreeVariantData NodeVariant { get {
-			var name_value = NameValues[0];
+			var name_value = GetNameValues()[0];
 			return name_value.Variant;
 		} }
 
@@ -56,21 +61,25 @@ namespace KSoft.Phoenix.Xmb
 			}
 			else
 			{
-				Parent = decompiler.Nodes[packedNode.ParentIndex];
+				var nodes = decompiler.Nodes ?? throw new System.InvalidOperationException();
+				Parent = nodes[packedNode.ParentIndex];
 			}
 		}
 
 		internal void SetChildren(BinaryDataTreeDecompiler decompiler, BinaryDataTreePackedNode packedNode, int numChildNodes)
 		{
+			var nodes = decompiler.Nodes ?? throw new System.InvalidOperationException();
 			Children = new List<BinaryDataTreeBuildNode>(numChildNodes);
 			for (int x = 0; x < numChildNodes; x++)
 			{
-				Children.Add(decompiler.Nodes[packedNode.ChildNodeIndex + x]);
+				Children.Add(nodes[packedNode.ChildNodeIndex + x]);
 			}
 		}
 
 		internal void SetNameValues(BinaryDataTreeDecompiler decompiler, BinaryDataTreePackedNode packedNode, int numNameValues)
 		{
+			var decompilerNameValues = decompiler.NameValues ?? throw new System.InvalidOperationException();
+			var valueDataPool = decompiler.ValueDataPool ?? throw new System.InvalidOperationException();
 			NameValues = new List<BinaryDataTreeBuildNameValue>(numNameValues);
 			for (int y = 0; y < numNameValues; y++)
 			{
@@ -80,7 +89,7 @@ namespace KSoft.Phoenix.Xmb
 			for (int x = 0; x < NameValues.Count; x++)
 			{
 				int packed_name_value_index = packedNode.NameValueOffset + x;
-				var packed_name_value = decompiler.NameValues[packed_name_value_index];
+				var packed_name_value = decompilerNameValues[packed_name_value_index];
 				var build_name_value = NameValues[x];
 
 				if (x == (NameValues.Count-1))
@@ -92,7 +101,7 @@ namespace KSoft.Phoenix.Xmb
 				}
 
 				build_name_value.Name = decompiler.ReadName(packed_name_value.NameOffset);
-				build_name_value.Variant.Read(decompiler.ValueDataPool, packed_name_value);
+				build_name_value.Variant.Read(valueDataPool, packed_name_value);
 
 				if (packed_name_value.HasUnicodeData)
 				{

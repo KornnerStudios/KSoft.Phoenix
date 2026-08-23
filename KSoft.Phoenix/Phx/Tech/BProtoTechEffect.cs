@@ -2,6 +2,76 @@
 
 namespace KSoft.Phoenix.Phx
 {
+
+	static class BXmlCursorDatabaseId
+	{
+		[System.Diagnostics.Conditional("TRACE")]
+		static void TraceUndefinedHandle<TDoc, TCursor>(
+			IO.TagElementStream<TDoc, TCursor, string> s, string name, int id, string kind)
+			where TDoc : class
+			where TCursor : class
+		{
+			var line_info = Text.TextLineInfo.Empty;
+			var cursor_name = "<unknown element>";
+			if (s is IO.TagElementTextStream<TDoc, TCursor> text_stream)
+			{
+				cursor_name = text_stream.CursorName;
+				line_info = text_stream.TryGetLastReadLineInfo();
+			}
+
+			Debug.Trace.XML.TraceEvent(System.Diagnostics.TraceEventType.Warning, TypeExtensions.kNone,
+				"{0} ({1}): Generated UndefinedHandle for '{2}.{3}' ({4}). {5}={6}",
+				s.StreamName, Text.TextLineInfo.ToString(line_info, verboseString: true),
+				cursor_name, "InnerText",
+				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString());
+		}
+
+		internal static bool Stream<TDoc, TCursor>(
+			IO.TagElementStream<TDoc, TCursor, string> s, XML.BXmlSerializerInterface xs,
+			ref int dbid, DatabaseObjectKind kind)
+			where TDoc : class
+			where TCursor : class
+		{
+			if (s.IsReading)
+			{
+				string id_name = string.Empty;
+				s.StreamCursor(ref id_name);
+				id_name = string.Intern(id_name);
+
+				dbid = xs.Database.GetId(kind, id_name);
+				if (dbid.IsNone())
+				{
+					s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
+						"Failed to resolve {0} reference '{1}' from {2}.",
+						kind, id_name, "ElementText")));
+				}
+				if (PhxUtil.IsUndefinedReferenceHandle(dbid))
+				{
+					TraceUndefinedHandle(s, id_name, dbid, kind.ToString());
+				}
+			}
+			else if (s.IsWriting)
+			{
+				if (dbid.IsNone())
+				{
+					return false;
+				}
+
+				string? id_name = xs.Database.GetName(kind, dbid);
+				if (string.IsNullOrEmpty(id_name))
+				{
+					throw new InvalidOperationException(string.Format(
+						"Failed to resolve {0} reference name for id {1}.", kind, dbid));
+				}
+
+				string required_id_name = id_name;
+				s.StreamCursor(ref required_id_name);
+			}
+
+			return true;
+		}
+	};
+
 	// internal engine structure is only 0x34 bytes...
 	public sealed partial class BProtoTechEffect
 		: IO.ITagElementStringNameStreamable
@@ -79,7 +149,7 @@ namespace KSoft.Phoenix.Phx
 		#region ObjectData
 		bool mAllActions;
 
-		string mAction;
+		string? mAction;
 
 		public BObjectDataType SubType { get { return mDU.SubType; } }
 
@@ -209,7 +279,12 @@ namespace KSoft.Phoenix.Phx
 				case BObjectDataType.TurretYawRate:
 				case BObjectDataType.TurretPitchRate:
 					// #TODO need to validate this type so that Targets.Count==1, TargetType=ProtoUnit, and resolve the Hardpoint name
-					s.StreamStringOpt("Hardpoint", ref mDU.TurretRate_HardpointName, false);
+					string? hardpoint_name = mDU.TurretRate_HardpointName;
+					s.StreamStringOpt("Hardpoint", ref hardpoint_name, false);
+					if (hardpoint_name is not null)
+					{
+						mDU.TurretRate_HardpointName = hardpoint_name;
+					}
 					break;
 
 				case BObjectDataType.AbilityRecoverTime:
@@ -218,7 +293,12 @@ namespace KSoft.Phoenix.Phx
 
 				case BObjectDataType.HPBar:
 					// #TODO need to make an BProtoHPBar reference
-					s.StreamStringOpt("hpbar", ref mDU.HPBar_Name, false);
+					string? hpbar_name = mDU.HPBar_Name;
+					s.StreamStringOpt("hpbar", ref hpbar_name, false);
+					if (hpbar_name is not null)
+					{
+						mDU.HPBar_Name = hpbar_name;
+					}
 					break;
 
 				#region Unused
@@ -317,7 +397,7 @@ namespace KSoft.Phoenix.Phx
 					break;
 				case BProtoTechEffectType.TransformUnit:
 				case BProtoTechEffectType.Build:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDU.ToTypeID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
+					BXmlCursorDatabaseId.Stream(s, xs, ref mDU.ToTypeID, DatabaseObjectKind.Object);
 					break;
 				case BProtoTechEffectType.TransformProtoUnit:
 				case BProtoTechEffectType.TransformProtoSquad:
@@ -330,15 +410,15 @@ namespace KSoft.Phoenix.Phx
 					break;
 				#endregion
 				case BProtoTechEffectType.GodPower:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDU.ID, DatabaseObjectKind.Power, false, XML.XmlUtil.kSourceCursor);
+					BXmlCursorDatabaseId.Stream(s, xs, ref mDU.ID, DatabaseObjectKind.Power);
 					s.StreamAttribute("amount", ref mAmount);
 					break;
 				#region Unused
 				case BProtoTechEffectType.TechStatus:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDU.ID, DatabaseObjectKind.Tech, false, XML.XmlUtil.kSourceCursor);
+					BXmlCursorDatabaseId.Stream(s, xs, ref mDU.ID, DatabaseObjectKind.Tech);
 					break;
 				case BProtoTechEffectType.Ability:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDU.ID, DatabaseObjectKind.Ability, false, XML.XmlUtil.kSourceCursor);
+					BXmlCursorDatabaseId.Stream(s, xs, ref mDU.ID, DatabaseObjectKind.Ability);
 					break;
 				case BProtoTechEffectType.SharedLOS: // no extra parsed data
 					break;

@@ -30,8 +30,8 @@ namespace KSoft.Phoenix.Phx
 		BTriggerParamType mType = BTriggerParamType.Invalid;
 		public BTriggerParamType Type { get { return mType; } }
 
-		string mName;
-		public string Name { get { return mName; } }
+		string? mName;
+		public string? Name { get { return mName; } }
 
 		int mSigID = TypeExtensions.kNone;
 		public int SigID { get { return mSigID; } }
@@ -51,25 +51,30 @@ namespace KSoft.Phoenix.Phx
 			//if (s.IsReading) s.ReadCursorName(ref mType);
 			s.StreamAttributeEnum(kXmlAttrType, ref mType);
 			s.StreamAttribute(kXmlAttrSigId, ref mSigID);
-			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref mName);
+			string stream_name = mName ?? string.Empty;
+			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref stream_name);
+			if (s.IsReading)
+			{
+				mName = stream_name;
+			}
 			s.StreamAttributeOpt(kXmlAttrOptional, ref mOptional, Predicates.IsTrue);
 			s.StreamCursorEnum(ref mVarType);
 		}
 		#endregion
 
 		#region IComparable<BTriggerParam> Members
-		public int CompareTo(BTriggerParam other)
+		public int CompareTo(BTriggerParam? other)
 		{
-			return this.mSigID - other.mSigID;
+			return other is null ? 1 : this.mSigID - other.mSigID;
 		}
 		#endregion
 
 		#region IEquatable<BTriggerParam> Members
-		public bool Equals(BTriggerParam other)
-			=> other != null
+		public bool Equals(BTriggerParam? other)
+			=> other is not null
 				&& this.mSigID == other.mSigID;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BTriggerParam);
 
 		public override int GetHashCode()
@@ -77,9 +82,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEqualityComparer<BTriggerParam> Members
-		public bool Equals(BTriggerParam x, BTriggerParam y)
+		public bool Equals(BTriggerParam? x, BTriggerParam? y)
 		{
-			return x.Equals(y);
+			return ReferenceEquals(x, y) || (x is not null && x.Equals(y));
 		}
 
 		public int GetHashCode(BTriggerParam obj)

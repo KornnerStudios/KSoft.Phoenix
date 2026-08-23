@@ -25,7 +25,7 @@ namespace KSoft.Phoenix.Resource
 		public uint FileNameOffset;
 		#endregion
 
-		public string FileName;
+		public string? FileName;
 		public System.DateTime FileDateTime
 		{
 			get { return DateTime.FromFileTimeUtc((long)mFileTimeBits); }
@@ -35,7 +35,7 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil? eraUtil);
 			long position = s.BaseStream.Position;
 
 			base.Serialize(s);
@@ -96,12 +96,12 @@ namespace KSoft.Phoenix.Resource
 			base.WriteFields(s, includeFileData);
 
 			// When we extract, we decode xmbs
-			string fn = FileName;
+			string fn = FileName!;
 			if (ResourceUtils.IsXmbFile(fn))
 			{
 				bool remove_xmb_ext = true;
 
-				KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileExpander expander);
+				KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileExpander? expander);
 
 				if (expander != null && expander.ExpanderOptions.Test(EraFileExpanderOptions.DontTranslateXmbFiles))
 				{
@@ -138,15 +138,15 @@ namespace KSoft.Phoenix.Resource
 
 			s.ReadAttributeOpt("fileTime", ref mFileTimeBits, NumeralBase.Hex);
 
-			s.ReadAttribute("name", ref FileName);
+			s.ReadAttribute("name", ref FileName!);
 
 			s.ReadAttributeOpt("fullSize", ref DataUncompressedSize, NumeralBase.Hex);
 			s.ReadAttributeOpt("nameOffset", ref FileNameOffset, NumeralBase.Hex);
 
-			string hashString = null;
+			string? hashString = null;
 			if (s.ReadAttributeOpt("compressedDataHash", ref hashString))
 			{
-				CompressedDataTiger128 = Text.Util.ByteStringToArray(hashString);
+				CompressedDataTiger128 = Text.Util.ByteStringToArray(hashString!);
 			}
 		}
 		#endregion
@@ -163,7 +163,7 @@ namespace KSoft.Phoenix.Resource
 			base.BuildBuffer(blockStream, sourceFile, hasher);
 
 			ComputeHash(blockStream, hasher);
-			Array.Copy(hasher.Hash, 0, CompressedDataTiger128, 0, CompressedDataTiger128.Length);
+			Array.Copy(hasher.Hash!, 0, CompressedDataTiger128, 0, CompressedDataTiger128.Length);
 		}
 
 		protected override void CompressSourceToStream(IO.EndianWriter blockStream, System.IO.Stream sourceFile)

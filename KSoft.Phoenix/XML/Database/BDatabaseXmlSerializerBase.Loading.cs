@@ -27,9 +27,9 @@ namespace KSoft.Phoenix.XML
 			public Engine.ProtoDataXmlFileInfo ProtoFileInfo;
 			public Engine.XmlFileInfo FileInfo { get { return ProtoFileInfo.FileInfo; } }
 			public Engine.XmlFileInfo FileInfoWithUpdates { get { return ProtoFileInfo.FileInfoWithUpdates; } }
-			public Action<IO.XmlElementStream> Preload;
-			public Action<IO.XmlElementStream> Stream;
-			public Action<IO.XmlElementStream> StreamUpdates;
+			public Action<IO.XmlElementStream>? Preload;
+			public Action<IO.XmlElementStream>? Stream;
+			public Action<IO.XmlElementStream>? StreamUpdates;
 
 			public StreamXmlContextData(Engine.ProtoDataXmlFileInfo protoFileInfo)
 			{
@@ -166,8 +166,6 @@ namespace KSoft.Phoenix.XML
 				FirstPriority = firstPriority;
 				LastPriorityPlusOne = lastPriorityPlusOne;
 
-				Tasks = null;
-				TaskExceptions = null;
 				Tasks = new List<Task<bool>>();
 				TaskExceptions = new List<Exception>();
 			}
@@ -310,14 +308,14 @@ namespace KSoft.Phoenix.XML
 				var engine = this.GameEngine;
 				if (mode == FA.Read)
 				{
-					engine.UpdateFileLoadStatus(tactic.SourceXmlFile, Engine.XmlFileLoadState.Loading);
+					engine.UpdateFileLoadStatus(tactic.SourceXmlFile!, Engine.XmlFileLoadState.Loading);
 				}
 
 				var arg = tactic;
 				var task = Task<bool>.Factory.StartNew((state) =>
 				{
 					var _tactic = state as Phx.BTacticData;
-					return TryStreamData(_tactic.SourceXmlFile, mode, StreamTactic, _tactic, Phx.BTacticData.kFileExt);
+					return TryStreamData(_tactic!.SourceXmlFile!, mode, StreamTactic, _tactic, Phx.BTacticData.kFileExt);
 				}, arg);
 				tasks.Add(task);
 			}

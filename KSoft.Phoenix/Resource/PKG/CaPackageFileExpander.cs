@@ -17,8 +17,8 @@ namespace KSoft.Phoenix.Resource.PKG
 	public sealed class CaPackageFileExpander
 		: CaPackageFileUtil
 	{
-		Stream mPkgBaseStream;
-		IO.EndianStream mPkgStream;
+		Stream? mPkgBaseStream;
+		IO.EndianStream? mPkgStream;
 
 		/// <see cref="CaPackageFileExpanderOptions"/>
 		public Collections.BitVector32 ExpanderOptions;
@@ -58,16 +58,16 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			if (ExpanderOptions.Test(CaPackageFileExpanderOptions.DontLoadEntirePkgIntoMemory))
 			{
-				mPkgBaseStream = File.OpenRead(mSourceFile);
+				mPkgBaseStream = File.OpenRead(mSourceFile!);
 			}
 			else
 			{
-				byte[] ecf_bytes = File.ReadAllBytes(mSourceFile);
+				byte[] ecf_bytes = File.ReadAllBytes(mSourceFile!);
 
 				mPkgBaseStream = new MemoryStream(ecf_bytes, writable: false);
 			}
 
-			mPkgStream = new IO.EndianStream(mPkgBaseStream, Shell.EndianFormat.Little, this, permissions: FileAccess.Read)
+			mPkgStream = new IO.EndianStream(mPkgBaseStream!, Shell.EndianFormat.Little, this, permissions: FileAccess.Read)
 			{
 				StreamMode = FileAccess.Read
 			};
@@ -79,7 +79,7 @@ namespace KSoft.Phoenix.Resource.PKG
 		{
 			bool result;
 
-			result = CaPackageFile.VerifyIsPkg(mPkgStream.Reader);
+			result = CaPackageFile.VerifyIsPkg(mPkgStream!.Reader);
 			if (!result)
 			{
 				VerboseOutput?.WriteLine("\tFailed: File is either not even an PKG file, or corrupt");
@@ -87,7 +87,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			else
 			{
 				mPkgFile = new CaPackageFile();
-				mPkgFile.Serialize(mPkgStream);
+				mPkgFile.Serialize(mPkgStream!);
 			}
 
 			return result;
@@ -139,7 +139,7 @@ namespace KSoft.Phoenix.Resource.PKG
 				ProgressOutput?.WriteLine("Done");
 			}
 
-			mPkgStream.Close();
+			mPkgStream!.Close();
 
 			return result;
 		}
@@ -163,7 +163,7 @@ namespace KSoft.Phoenix.Resource.PKG
 		{
 			KSoft.Util.MarkUnusedVariable(ref workPath);
 
-			foreach (var entry in mPkgFile.FileEntries)
+			foreach (var entry in mPkgFile!.FileEntries)
 			{
 				PkgDefinition.FileNames.Add(entry.Name);
 			}
@@ -171,7 +171,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		void ExpandEntriesToFiles(string workPath)
 		{
-			foreach (var entry in mPkgFile.FileEntries)
+			foreach (var entry in mPkgFile!.FileEntries)
 			{
 				try
 				{
@@ -181,7 +181,7 @@ namespace KSoft.Phoenix.Resource.PKG
 				{
 					throw new Exception(string.Format(
 						"ExpandEntriesToFiles failed on {0} in {1}",
-						entry.Name, mPkgStream.StreamName
+						entry.Name, mPkgStream!.StreamName
 					), e);
 				}
 			}
@@ -203,7 +203,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			using (var fs = File.OpenWrite(file_path))
 			{
-				var entry_bytes = mPkgFile.ReadEntryBytes(mPkgStream, entry);
+				var entry_bytes = mPkgFile!.ReadEntryBytes(mPkgStream!, entry);
 				fs.Write(entry_bytes, 0, entry_bytes.Length);
 			}
 		}

@@ -7,14 +7,22 @@ namespace KSoft.Phoenix.Runtime
 		public sealed class BInterpTable
 			: IO.IEndianStreamSerializable
 		{
-			public float[] Keys;
-			public uint[] Values; // Type
+			public float[]? Keys;
+			public uint[]? Values; // Type
 
 			#region IEndianStreamSerializable Members
 			public void Serialize(IO.EndianStream s)
 			{
-				BSaveGame.StreamArray16(s, ref Keys);
-				BSaveGame.StreamArray16(s, ref Values);
+				float[] keys = s.IsReading
+					? System.Array.Empty<float>()
+					: Keys ?? throw new System.InvalidOperationException("Interpolation keys must be initialized before writing.");
+				uint[] values = s.IsReading
+					? System.Array.Empty<uint>()
+					: Values ?? throw new System.InvalidOperationException("Interpolation values must be initialized before writing.");
+				BSaveGame.StreamArray16(s, ref keys);
+				BSaveGame.StreamArray16(s, ref values);
+				Keys = keys;
+				Values = values;
 			}
 			#endregion
 		};
@@ -22,7 +30,7 @@ namespace KSoft.Phoenix.Runtime
 		public sealed class BCameraEffectData
 			: IO.IEndianStreamSerializable
 		{
-			public string Name;
+			public string? Name;
 			public BInterpTable ColorTransformRTable = new(), ColorTransformGTable = new(),
 				ColorTransformBTable = new();
 			public BInterpTable ColorTransformFactorTable = new(),
@@ -35,7 +43,11 @@ namespace KSoft.Phoenix.Runtime
 			#region IEndianStreamSerializable Members
 			public void Serialize(IO.EndianStream s)
 			{
-				s.StreamPascalString32(ref Name);
+				string name = s.IsReading
+					? string.Empty
+					: Name ?? throw new System.InvalidOperationException("Camera effect name must be initialized before writing.");
+				s.StreamPascalString32(ref name);
+				Name = name;
 				s.Stream(ColorTransformRTable); s.Stream(ColorTransformGTable); s.Stream(ColorTransformBTable);
 				s.Stream(ColorTransformFactorTable);
 				s.Stream(BlurFactorTable); s.Stream(BlurFactorTable); s.Stream(BlurFactorTable); // yes, 3x
@@ -54,7 +66,7 @@ namespace KSoft.Phoenix.Runtime
 		public BCueIndex AttackSound;
 		public BParametricSplineCurve JumpSplineCurve = new();
 		public BCameraEffectData CameraEffectData = new();
-		public BCostDatum[] CostPerTick, CostPerTickAttacking, CostPerJump;
+		public BCostDatum[]? CostPerTick, CostPerTickAttacking, CostPerJump;
 		public float TickLength, DamageMultiplier, DamageTakenMultiplier,
 			SpeedMultiplier, NudgeMultiplier, ScanRadius;
 		public BProtoObjectID ProjectileObject, HandAttachObject, TeleportAttachObject;
@@ -64,7 +76,7 @@ namespace KSoft.Phoenix.Runtime
 			DistanceVsAngleWeight, HealPerKillCombatValue, AuraRadius, AuraDamageBonus;
 		public BProtoObjectID AuraAttachObjectSmall, AuraAttachObjectMedium, AuraAttachObjectLarge,
 			HealAttachObject;
-		public BEntityID[] SquadsInAura;
+		public BEntityID[]? SquadsInAura;
 		public BObjectTypeID FilterTypeID;
 		public bool CompletedInitialization, HasSuccessfullyAttacked, UsePather;
 
@@ -72,7 +84,9 @@ namespace KSoft.Phoenix.Runtime
 		public override void Serialize(IO.EndianStream s)
 		{
 			base.Serialize(s);
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var owner = s.Owner;
+			System.ArgumentNullException.ThrowIfNull(owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(owner);
 
 			s.Stream(ref NextTickTime);
 			s.Stream(ref TargettedSquad);
@@ -81,7 +95,19 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref AttackSound);
 			s.Stream(JumpSplineCurve);
 			s.Stream(CameraEffectData);
-			sg.StreamBCost(s, ref CostPerTick); sg.StreamBCost(s, ref CostPerTickAttacking); sg.StreamBCost(s, ref CostPerJump);
+			BCostDatum[] cost_per_tick = s.IsReading
+				? System.Array.Empty<BCostDatum>()
+				: CostPerTick ?? throw new System.InvalidOperationException("Per-tick cost must be initialized before writing.");
+			BCostDatum[] cost_per_tick_attacking = s.IsReading
+				? System.Array.Empty<BCostDatum>()
+				: CostPerTickAttacking ?? throw new System.InvalidOperationException("Attacking per-tick cost must be initialized before writing.");
+			BCostDatum[] cost_per_jump = s.IsReading
+				? System.Array.Empty<BCostDatum>()
+				: CostPerJump ?? throw new System.InvalidOperationException("Jump cost must be initialized before writing.");
+			sg.StreamBCost(s, ref cost_per_tick); sg.StreamBCost(s, ref cost_per_tick_attacking); sg.StreamBCost(s, ref cost_per_jump);
+			CostPerTick = cost_per_tick;
+			CostPerTickAttacking = cost_per_tick_attacking;
+			CostPerJump = cost_per_jump;
 			s.Stream(ref TickLength); s.Stream(ref DamageMultiplier); s.Stream(ref DamageTakenMultiplier);
 			s.Stream(ref SpeedMultiplier); s.Stream(ref NudgeMultiplier); s.Stream(ref ScanRadius);
 			s.Stream(ref ProjectileObject); s.Stream(ref HandAttachObject); s.Stream(ref TeleportAttachObject);
@@ -91,7 +117,11 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref DistanceVsAngleWeight); s.Stream(ref HealPerKillCombatValue); s.Stream(ref AuraRadius); s.Stream(ref AuraDamageBonus);
 			s.Stream(ref AuraAttachObjectSmall); s.Stream(ref AuraAttachObjectMedium); s.Stream(ref AuraAttachObjectLarge);
 			s.Stream(ref HealAttachObject);
-			BSaveGame.StreamArray(s, ref SquadsInAura);
+			BEntityID[] squads_in_aura = s.IsReading
+				? System.Array.Empty<BEntityID>()
+				: SquadsInAura ?? throw new System.InvalidOperationException("Squads in aura must be initialized before writing.");
+			BSaveGame.StreamArray(s, ref squads_in_aura);
+			SquadsInAura = squads_in_aura;
 			s.Stream(ref FilterTypeID);
 			s.Stream(ref CompletedInitialization); s.Stream(ref HasSuccessfullyAttacked); s.Stream(ref UsePather);
 		}

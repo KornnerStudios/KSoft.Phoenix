@@ -43,11 +43,12 @@ namespace KSoft.Phoenix.Engine
 		const string kTalkingHeadsPath = @"video\talkingheads\";
 
 		/*public*/ string RootDirectory { get; /*private*/ set; }
-		/*public*/ string UpdateDirectory { get; /*private*/ set; }
+		/*public*/ string? UpdateDirectory { get; /*private*/ set; }
+		[System.Diagnostics.CodeAnalysis.MemberNotNullWhen(true, nameof(UpdateDirectory))]
 		bool UpdateDirectoryIsValid => UpdateDirectory != null;
 		public bool UseTitleUpdates { get; set; }
 
-		public GameDirectories(string root, string updateRoot = null)
+		public GameDirectories(string root, string? updateRoot = null)
 		{
 			RootDirectory = root;
 			UpdateDirectory = updateRoot;
@@ -148,7 +149,7 @@ namespace KSoft.Phoenix.Engine
 		}
 
 		bool TryGetFileImpl(ContentStorage loc, GameDirectory gameDir, string filename, out FileInfo file,
-			string ext = null)
+			string? ext = null)
 		{
 			string root = GetContentLocation(loc);
 			string dir = GetDirectory(gameDir);
@@ -161,10 +162,8 @@ namespace KSoft.Phoenix.Engine
 			return (file = new FileInfo(file_path)).Exists;
 		}
 		bool TryGetFileFromUpdateOrGame(GameDirectory gameDir, string filename, out FileInfo file,
-			string ext = null)
+			string? ext = null)
 		{
-			file = null;
-
 			if (!UseTitleUpdates)
 			{
 				return TryGetFileImpl(ContentStorage.Game, gameDir, filename, out file, ext);
@@ -179,26 +178,25 @@ namespace KSoft.Phoenix.Engine
 				file_path += ext;
 			}
 
-			string full_path;
-
+			FileInfo? update_file = null;
 			if (UpdateDirectoryIsValid)
 			{
-				full_path = Path.Combine(UpdateDirectory, file_path);
-				file = new FileInfo(full_path);
+				update_file = new FileInfo(Path.Combine(UpdateDirectory, file_path));
 			}
 
 			//////////////////////////////////////////////////////////////////////////
 			// No update file exists, fall back to regular game storage
-			if (file == null || !file.Exists)
+			if (update_file == null || !update_file.Exists)
 			{
-				full_path = Path.Combine(RootDirectory, file_path);
-				file = new FileInfo(full_path);
+				file = new FileInfo(Path.Combine(RootDirectory, file_path));
 				return file.Exists;
 			}
+
+			file = update_file;
 			return true;
 		}
 		public bool TryGetFile(ContentStorage loc, GameDirectory gameDir, string filename, out FileInfo file,
-			string ext = null)
+			string? ext = null)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(filename);
 
@@ -207,7 +205,7 @@ namespace KSoft.Phoenix.Engine
 				: TryGetFileImpl(loc, gameDir, filename, out file, ext);
 		}
 		public GetXmlOrXmbFileResult TryGetXmlOrXmbFile(ContentStorage loc, GameDirectory gameDir, string filename, out FileInfo file,
-			string ext = null)
+			string? ext = null)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(filename);
 
@@ -216,7 +214,7 @@ namespace KSoft.Phoenix.Engine
 				return GetXmlOrXmbFileResult.Xml;
 			}
 
-			if (ext.IsNotNullOrEmpty())
+			if (ext is { Length: > 0 })
 			{
 				filename += ext;
 			}

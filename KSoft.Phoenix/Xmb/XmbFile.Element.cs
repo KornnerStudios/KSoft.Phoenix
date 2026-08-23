@@ -14,8 +14,8 @@ namespace KSoft.Phoenix.Xmb
 			public int RootElementIndex = TypeExtensions.kNone;
 			public XmbVariant NameVariant;
 			public XmbVariant InnerTextVariant;
-			List<KeyValuePair<XmbVariant, XmbVariant>> Attributes;
-			List<int> ChildrenIndices;
+			List<KeyValuePair<XmbVariant, XmbVariant>>? Attributes;
+			List<int>? ChildrenIndices;
 
 			#region IEndianStreamable Members
 			public void ReadAttributes(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
@@ -26,13 +26,14 @@ namespace KSoft.Phoenix.Xmb
 				}
 
 				s.Seek((long)mAttributesOffset);
-				for (int x = 0; x < Attributes.Capacity; x++)
+				var attributes = Attributes ?? throw new System.InvalidOperationException("Attributes must be initialized before reading.");
+				for (int x = 0; x < attributes.Capacity; x++)
 				{
 					uint keyRawData = XmbVariantSerialization.Read(s, out XmbVariant k);
 					uint valueRawData = XmbVariantSerialization.Read(s, out XmbVariant v);
 
 					var kv = new KeyValuePair<XmbVariant, XmbVariant>(k, v);
-					Attributes.Add(kv);
+					attributes.Add(kv);
 
 					if (k.HasUnicodeData || v.HasUnicodeData)
 					{
@@ -57,9 +58,10 @@ namespace KSoft.Phoenix.Xmb
 				}
 
 				s.Seek((long)mChildrenOffset);
-				for (int x = 0; x < ChildrenIndices.Capacity; x++)
+				var childrenIndices = ChildrenIndices ?? throw new System.InvalidOperationException("Children indices must be initialized before reading.");
+				for (int x = 0; x < childrenIndices.Capacity; x++)
 				{
-					ChildrenIndices.Add(s.ReadInt32());
+					childrenIndices.Add(s.ReadInt32());
 				}
 			}
 			public void Read(XmbFile xmb, XmbFileContext xmbContext, IO.EndianReader s)
@@ -106,13 +108,14 @@ namespace KSoft.Phoenix.Xmb
 
 			public void WriteAttributes(IO.EndianWriter s)
 			{
-				if (Attributes.Count == 0)
+				var attributes = Attributes;
+				if (attributes is not { Count: > 0 })
 				{
 					return;
 				}
 
 				mAttributesOffset = s.PositionPtr;
-				foreach (var kv in Attributes)
+				foreach (var kv in attributes)
 				{
 					XmbVariantSerialization.Write(s, kv.Key);
 					XmbVariantSerialization.Write(s, kv.Value);
@@ -126,13 +129,14 @@ namespace KSoft.Phoenix.Xmb
 			}
 			public void WriteChildren(IO.EndianWriter s)
 			{
-				if (ChildrenIndices.Count == 0)
+				var childrenIndices = ChildrenIndices;
+				if (childrenIndices is not { Count: > 0 })
 				{
 					return;
 				}
 
 				mChildrenOffset = s.PositionPtr;
-				foreach (int ci in ChildrenIndices)
+				foreach (int ci in childrenIndices)
 				{
 					s.Write(ci);
 				}
@@ -145,7 +149,9 @@ namespace KSoft.Phoenix.Xmb
 			}
 			public void Write(IO.EndianWriter s)
 			{
-				var xmbContext = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(s.UserData);
+				var userData = s.UserData;
+				System.ArgumentNullException.ThrowIfNull(userData);
+				var xmbContext = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(userData);
 
 				s.Write(RootElementIndex);
 				XmbVariantSerialization.Write(s, NameVariant);
@@ -156,7 +162,7 @@ namespace KSoft.Phoenix.Xmb
 				}
 
 				#region Attributes header
-				s.Write(Attributes.Count);
+				s.Write(Attributes?.Count ?? 0);
 				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
 				{
 					s.Pad32();
@@ -166,7 +172,7 @@ namespace KSoft.Phoenix.Xmb
 				#endregion
 
 				#region Children header
-				s.Write(ChildrenIndices.Count);
+				s.Write(ChildrenIndices?.Count ?? 0);
 				if (xmbContext.PointerSize == Shell.ProcessorSize.x64)
 				{
 					s.Pad32();
@@ -205,7 +211,7 @@ namespace KSoft.Phoenix.Xmb
 
 #if DEBUG
 				string name = e.Name;
-				string text = e.Value;
+				string? text = e.Value;
 #endif
 
 				if (e.HasAttributes)
@@ -230,9 +236,10 @@ namespace KSoft.Phoenix.Xmb
 			}
 			void AttributesToXml(XmbFile xmb, XmlDocument doc, XmlElement e)
 			{
-				if (Attributes.Count > 0)
+				var attributes = Attributes;
+				if (attributes is { Count: > 0 })
 				{
-					foreach (var kv in Attributes)
+					foreach (var kv in attributes)
 					{
 						string k = xmb.ToString(kv.Key);
 						string v = xmb.ToString(kv.Value);
@@ -256,11 +263,13 @@ namespace KSoft.Phoenix.Xmb
 			}
 			void ChildrenToXml(XmbFile xmb, XmlDocument doc, XmlElement e)
 			{
-				if (ChildrenIndices.Count > 0)
+				var childrenIndices = ChildrenIndices;
+				if (childrenIndices is { Count: > 0 })
 				{
-					foreach (int x in ChildrenIndices)
+					var elements = xmb.mElements ?? throw new System.InvalidOperationException("Elements must be initialized before converting children to XML.");
+					foreach (int x in childrenIndices)
 					{
-						XmbFile.Element element = xmb.mElements[x];
+						XmbFile.Element element = elements[x];
 
 						element.ToXml(xmb, doc, e);
 					}

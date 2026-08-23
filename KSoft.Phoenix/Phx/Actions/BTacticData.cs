@@ -26,8 +26,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public string SourceFileName { get; set; }
-		public Engine.XmlFileInfo SourceXmlFile { get; set; }
+		public string? SourceFileName { get; set; }
+		public Engine.XmlFileInfo? SourceXmlFile { get; set; }
 		public bool SourceXmlFileIsXmb { get; set; }
 
 		public Collections.BListAutoId<BWeapon> Weapons { get; private set; } = new();
@@ -94,7 +94,7 @@ namespace KSoft.Phoenix.Phx
 				throw new ArgumentOutOfRangeException(nameof(kind));
 			}
 
-			string id_name = null;
+			string? id_name = null;
 			bool was_streamed = true;
 			bool to_lower = false;
 
@@ -106,13 +106,15 @@ namespace KSoft.Phoenix.Phx
 				}
 				else
 				{
-					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = id_name!;
+					s.StreamString(xmlName, ref required_id_name, to_lower, xmlSource, intern: true);
+					id_name = required_id_name;
 				}
 
 				if (was_streamed)
 				{
 					IProtoDataObjectDatabaseProvider provider = this;
-					dbid = provider.GetId((int)kind, id_name);
+					dbid = provider.GetId((int)kind, id_name!);
 					if (dbid.IsNone())
 					{
 						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
@@ -156,14 +158,14 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			td.StreamID(s, XML.XmlUtil.kNoXmlName, ref id, TacticDataObjectKind.Weapon, false, XML.XmlUtil.kSourceCursor);
+			td.StreamID(s, XML.XmlUtil.kNoXmlName!, ref id, TacticDataObjectKind.Weapon, false, XML.XmlUtil.kSourceCursor);
 		}
 		internal static void StreamProtoActionID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BTacticData td,
 			ref int protoActionId)
 			where TDoc : class
 			where TCursor : class
 		{
-			td.StreamID(s, XML.XmlUtil.kNoXmlName, ref protoActionId, TacticDataObjectKind.Action, false, XML.XmlUtil.kSourceCursor);
+			td.StreamID(s, XML.XmlUtil.kNoXmlName!, ref protoActionId, TacticDataObjectKind.Action, false, XML.XmlUtil.kSourceCursor);
 		}
 
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -179,7 +181,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IProtoDataObjectDatabaseProvider members
-		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference => SourceXmlFile;
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference => SourceXmlFile!;
 
 		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
 		{

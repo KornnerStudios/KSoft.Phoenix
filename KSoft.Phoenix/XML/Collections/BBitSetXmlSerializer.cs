@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.XML
 	partial class XmlUtil
 	{
 		[ThreadStatic]
-		private static BBitSetXmlSerializer gBitSetXmlSerializer;
+		private static BBitSetXmlSerializer? gBitSetXmlSerializer;
 
 		public static void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
 			Collections.BBitSet bits, BBitSetXmlParams @params)
@@ -20,12 +20,7 @@ namespace KSoft.Phoenix.XML
 				throw new ArgumentException("Collection only supports element name filtering", nameof(@params));
 			}
 
-			if (gBitSetXmlSerializer == null)
-			{
-				gBitSetXmlSerializer = new BBitSetXmlSerializer();
-			}
-
-			var xs = gBitSetXmlSerializer;
+			var xs = gBitSetXmlSerializer ??= new BBitSetXmlSerializer();
 
 			using (xs.Reset(@params, bits))
 			{
@@ -37,8 +32,11 @@ namespace KSoft.Phoenix.XML
 		: IDisposable
 		, IO.ITagElementStringNameStreamable
 	{
-		public BBitSetXmlParams Params { get; private set; }
-		public Collections.BBitSet Bits { get; private set; }
+		private BBitSetXmlParams? mParams;
+		public BBitSetXmlParams Params => mParams!;
+
+		private Collections.BBitSet? mBits;
+		public Collections.BBitSet Bits => mBits!;
 
 		internal BBitSetXmlSerializer()
 		{
@@ -46,8 +44,8 @@ namespace KSoft.Phoenix.XML
 
 		internal BBitSetXmlSerializer Reset(BBitSetXmlParams @params, Collections.BBitSet bits)
 		{
-			Params = @params;
-			Bits = bits;
+			mParams = @params;
+			mBits = bits;
 
 			return this;
 		}
@@ -75,7 +73,7 @@ namespace KSoft.Phoenix.XML
 				var getDefault = Bits.Params.kGetMemberDefaultValue;
 				foreach (var e in s.Elements)
 				{
-					var element_name = s.GetElementName(e);
+					var element_name = s.GetElementName(e)!;
 					int id = penum.TryGetMemberId(element_name);
 					if (id.IsNone())
 					{
@@ -103,7 +101,7 @@ namespace KSoft.Phoenix.XML
 				{
 					using (s.EnterCursorBookmark(n))
 					{
-						string name = null;
+						string name = null!;
 						Params.StreamDataName(s, ref name);
 
 						int id = penum.GetMemberId(name);
@@ -200,8 +198,8 @@ namespace KSoft.Phoenix.XML
 		#region IDisposable Members
 		public void Dispose()
 		{
-			Params = null;
-			Bits = null;
+			mParams = null;
+			mBits = null;
 		}
 		#endregion
 	};

@@ -47,15 +47,23 @@ namespace KSoft.Phoenix.Runtime
 		{
 			public short Id;
 
-			public int[] Objects; // not sure if BProtoObjectID, etc
-			public int[] TriggeredTeams;
+			public int[]? Objects; // not sure if BProtoObjectID, etc
+			public int[]? TriggeredTeams;
 
 			#region IEndianStreamSerializable Members
 			public void Serialize(IO.EndianStream s)
 			{
 				s.Stream(ref Id);
-				BSaveGame.StreamArray(s, ref Objects);
-				BSaveGame.StreamArray(s, ref TriggeredTeams);
+				int[] objects = s.IsReading
+					? System.Array.Empty<int>()
+					: Objects ?? throw new System.ArgumentNullException(nameof(Objects));
+				int[] triggeredTeams = s.IsReading
+					? System.Array.Empty<int>()
+					: TriggeredTeams ?? throw new System.ArgumentNullException(nameof(TriggeredTeams));
+				BSaveGame.StreamArray(s, ref objects);
+				BSaveGame.StreamArray(s, ref triggeredTeams);
+				Objects = objects;
+				TriggeredTeams = triggeredTeams;
 			}
 			#endregion
 		};
@@ -90,9 +98,9 @@ namespace KSoft.Phoenix.Runtime
 			#endregion
 		};
 
-		ObjectGroup[] NumExplorationGroups;
-		BExplorationGroupTimerEntry[] ActiveExplorationGroups;
-		public BPlayer[] Players;
+		ObjectGroup[]? NumExplorationGroups;
+		BExplorationGroupTimerEntry[]? ActiveExplorationGroups;
+		public BPlayer[]? Players;
 		readonly PlayerColorCategory[,] PlayerColorCategories = new PlayerColorCategory[cMaxPlayerColorCategories, cMaximumSupportedPlayers];
 		readonly List<CondensedListItem16<BSimOrder>> SimOrders = new();
 		readonly List<CondensedListItem16<BUnitOpp>> UnitOpps = new();
@@ -101,21 +109,37 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var owner = s.Owner;
+			System.ArgumentNullException.ThrowIfNull(owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(owner);
 
+			ObjectGroup[] numExplorationGroups = s.IsReading
+				? System.Array.Empty<ObjectGroup>()
+				: NumExplorationGroups ?? throw new System.ArgumentNullException(nameof(NumExplorationGroups));
+			BExplorationGroupTimerEntry[] activeExplorationGroups = s.IsReading
+				? System.Array.Empty<BExplorationGroupTimerEntry>()
+				: ActiveExplorationGroups ?? throw new System.ArgumentNullException(nameof(ActiveExplorationGroups));
+			BPlayer[] players;
 			if (s.IsReading)
 			{
-				Players = new BPlayer[sg.Players.Count];
-				for(int x = 0; x < Players.Length; x++)
+				players = new BPlayer[sg.Players.Count];
+				for(int x = 0; x < players.Length; x++)
 				{
-					Players[x] = new BPlayer();
+					players[x] = new BPlayer();
 				}
 			}
+			else
+			{
+				players = Players ?? throw new System.ArgumentNullException(nameof(Players));
+			}
 
-			BSaveGame.StreamArray16(s, ref NumExplorationGroups, isIterated:true);
-			BSaveGame.StreamArray(s, ref ActiveExplorationGroups);
+			BSaveGame.StreamArray16(s, ref numExplorationGroups, isIterated:true);
+			BSaveGame.StreamArray(s, ref activeExplorationGroups);
+			NumExplorationGroups = numExplorationGroups;
+			ActiveExplorationGroups = activeExplorationGroups;
+			Players = players;
 			s.StreamSignature(cSaveMarker.World1);
-			foreach (var player in Players)
+			foreach (var player in players)
 			{
 				s.Stream(player);
 			}

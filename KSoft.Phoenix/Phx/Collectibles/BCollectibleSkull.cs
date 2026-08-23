@@ -25,9 +25,9 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BListArray<BCollectibleSkullEffect> Effects { get; private set; } = new();
 
 		#region DisplayImageOn
-		string mDisplayImageOn;
+		string? mDisplayImageOn;
 		[Meta.TextureReference]
-		public string DisplayImageOn
+		public string? DisplayImageOn
 		{
 			get { return mDisplayImageOn; }
 			set { mDisplayImageOn = value; }
@@ -35,9 +35,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region DisplayImageOff
-		string mDisplayImageOff;
+		string? mDisplayImageOff;
 		[Meta.TextureReference]
-		public string DisplayImageOff
+		public string? DisplayImageOff
 		{
 			get { return mDisplayImageOff; }
 			set { mDisplayImageOff = value; }
@@ -45,9 +45,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region DisplayImageLocked
-		string mDisplayImageLocked;
+		string? mDisplayImageLocked;
 		[Meta.TextureReference]
-		public string DisplayImageLocked
+		public string? DisplayImageLocked
 		{
 			get { return mDisplayImageLocked; }
 			set { mDisplayImageLocked = value; }

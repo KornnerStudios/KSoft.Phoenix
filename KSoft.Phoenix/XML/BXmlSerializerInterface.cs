@@ -57,7 +57,7 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				result = true;
-				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				var xml_or_xmb = GameEngine.Directories!.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
@@ -69,7 +69,7 @@ namespace KSoft.Phoenix.XML
 				{
 					if (result)
 					{
-						using (var s = GameEngine.OpenXmlOrXmbForRead(xml_or_xmb, file.FullName))
+						using (var s = GameEngine.OpenXmlOrXmbForRead(xml_or_xmb, file.FullName)!)
 					{
 						SetupStream(s, mode, this);
 						streamProc(s, ctxt);
@@ -86,7 +86,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (mode == FA.Write)
 			{
-				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				result = GameEngine.Directories!.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 				{
@@ -119,7 +119,7 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				result = true;
-				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				var xml_or_xmb = GameEngine.Directories!.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
@@ -131,7 +131,7 @@ namespace KSoft.Phoenix.XML
 				{
 					if (result)
 					{
-						using (var s = GameEngine.OpenXmlOrXmbForRead(xml_or_xmb, file.FullName))
+						using (var s = GameEngine.OpenXmlOrXmbForRead(xml_or_xmb, file.FullName)!)
 						{
 							SetupStream(s, mode, this);
 							streamProc(s);
@@ -148,7 +148,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (mode == FA.Write)
 			{
-				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				result = GameEngine.Directories!.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 				{
@@ -176,7 +176,7 @@ namespace KSoft.Phoenix.XML
 			ArgumentException.ThrowIfNullOrEmpty(searchPattern);
 			ArgumentNullException.ThrowIfNull(streamProc);
 
-			result = Parallel.ForEach(GameEngine.Directories.GetFiles(loc, gameDir, searchPattern), (filename) =>
+			result = Parallel.ForEach(GameEngine.Directories!.GetFiles(loc, gameDir, searchPattern), (filename) =>
 			{
 				const FA k_mode = FA.Read;
 
@@ -611,7 +611,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref damangeType, Phx.DatabaseObjectKind.DamageType,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref damangeType, Phx.DatabaseObjectKind.DamageType,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ObjectType</summary>
@@ -620,7 +620,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref objectType, Phx.DatabaseObjectKind.ObjectType,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref objectType, Phx.DatabaseObjectKind.ObjectType,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoObject</summary>
@@ -629,7 +629,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref objectProtoId, Phx.DatabaseObjectKind.Object,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref objectProtoId, Phx.DatabaseObjectKind.Object,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoSquad</summary>
@@ -638,7 +638,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref squadProtoId, Phx.DatabaseObjectKind.Squad,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref squadProtoId, Phx.DatabaseObjectKind.Squad,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoTech</summary>
@@ -647,7 +647,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref techProtoId, Phx.DatabaseObjectKind.Object,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref techProtoId, Phx.DatabaseObjectKind.Object,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoObject or ObjectType</summary>
@@ -656,7 +656,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref unitProtoId, Phx.DatabaseObjectKind.Unit,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref unitProtoId, Phx.DatabaseObjectKind.Unit,
 				false, XmlUtil.kSourceCursor);
 		}
 	};

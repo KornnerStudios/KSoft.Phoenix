@@ -46,11 +46,11 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Scenario
-		string mScenario;
-		public string Scenario
+		string? mScenario;
+		public string? Scenario
 		{
 			get { return mScenario; }
-			set { this.SetFieldObj(ref mScenario, value); }
+			set { this.SetField(ref mScenario, value); }
 		}
 		#endregion
 
@@ -84,20 +84,20 @@ namespace KSoft.Phoenix.Phx
 		#region OriginalID
 		// this is a string because there are cases with "and" in them. eg:
 		// "25045 and 23441"
-		string mOriginalID;
-		public string OriginalID
+		string? mOriginalID;
+		public string? OriginalID
 		{
 			get { return mOriginalID; }
-			set { this.SetFieldObj(ref mOriginalID, value); }
+			set { this.SetField(ref mOriginalID, value); }
 		}
 		#endregion
 
 		#region Text
-		string mText;
-		public string Text
+		string? mText;
+		public string? Text
 		{
 			get { return mText; }
-			set { this.SetFieldObj(ref mText, value); }
+			set { this.SetField(ref mText, value); }
 		}
 		#endregion
 
@@ -122,9 +122,17 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("Update", ref mIsUpdate, Predicates.IsTrue);
 			s.StreamAttributeOpt("_mouseKeyboard", ref mMouseKeyboardID, Predicates.IsNotNone);
 			s.StreamAttributeOpt("originally", ref mOriginalID, Predicates.IsNotNullOrEmpty);
-			if (s.IsReading || mText.IsNotNullOrEmpty())
+			if (s.IsReading)
 			{
-				s.StreamCursor(ref mText);
+				string text = mText ?? string.Empty;
+				s.StreamCursor(ref text);
+				mText = text;
+			}
+			else if (mText is { Length: > 0 })
+			{
+				string text = mText;
+				s.StreamCursor(ref text);
+				mText = text;
 			}
 		}
 		#endregion

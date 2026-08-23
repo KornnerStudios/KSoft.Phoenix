@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Resource.PKG
 		public const string kFileExtension = ".pkgdef";
 
 		/// <summary>This should be the source file's name or a user defined name</summary>
-		public string PkgName { get; private set; }
+		public string? PkgName { get; private set; }
 
 		public long Alignment;
 
@@ -34,9 +34,10 @@ namespace KSoft.Phoenix.Resource.PKG
 		}
 		#endregion
 
-		public static string SanitizeWorkingEnvironmentPath(string workPath)
+		[return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull(nameof(workPath))]
+		public static string? SanitizeWorkingEnvironmentPath(string? workPath)
 		{
-			string result = workPath;
+			string? result = workPath;
 
 			result = Util.ReplaceAltDirectorySeparatorWithNormalChar(result);
 			result = Util.AppendDirectorySeparatorChar(result);
@@ -47,7 +48,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		public bool RedefineForWorkingEnvironment(string workPath
 			, bool alwaysUseXmlOverXmb = false
-			, TextWriter verboseOutput = null)
+			, TextWriter? verboseOutput = null)
 		{
 			bool made_changes = false;
 
@@ -63,7 +64,12 @@ namespace KSoft.Phoenix.Resource.PKG
 				}
 
 				string filepath = Path.Combine(workPath, filename);
-				filepath = filepath.ToLowerIfContainsUppercase();
+				string? normalizedFilePath = filepath.ToLowerIfContainsUppercase();
+				if (normalizedFilePath is null)
+				{
+					throw new System.InvalidOperationException("Normalized file path cannot be null.");
+				}
+				filepath = normalizedFilePath;
 
 				if (!File.Exists(filepath))
 				{
@@ -84,7 +90,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 		private static bool TryToReferenceXmlOverXmbFile(string workPath
 			, ref string fileName
-			, TextWriter verboseOutput)
+			, TextWriter? verboseOutput)
 		{
 			if (!ResourceUtils.IsXmbFile(fileName))
 			{

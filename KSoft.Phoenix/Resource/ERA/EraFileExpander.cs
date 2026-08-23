@@ -29,8 +29,8 @@ namespace KSoft.Phoenix.Resource
 	{
 		public const string kNameExtension = ".era.bin";
 
-		System.IO.Stream mEraBaseStream;
-		IO.EndianStream mEraStream;
+		System.IO.Stream? mEraBaseStream;
+		IO.EndianStream? mEraStream;
 
 		/// <see cref="EraFileExpanderOptions"/>
 		public Collections.BitVector32 ExpanderOptions;
@@ -52,21 +52,21 @@ namespace KSoft.Phoenix.Resource
 		{
 			bool result;
 
-			result = EraFileHeader.VerifyIsEraAndDecrypted(mEraStream.Reader);
+			result = EraFileHeader.VerifyIsEraAndDecrypted(mEraStream!.Reader);
 			if (!result)
 			{
 				VerboseOutput?.WriteLine("\tFailed: File is either not decrypted, corrupt, or not even an ERA");
 			}
 			else
 			{
-				mEraStream.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
+				mEraStream!.VirtualAddressTranslationInitialize(Shell.ProcessorSize.x32);
 
 				mEraFile = new EraFile
 				{
 					FileName = mSourceFile
 				};
-				mEraFile.Serialize(mEraStream);
-				mEraFile.ReadPostprocess(mEraStream);
+				mEraFile.Serialize(mEraStream!);
+				mEraFile.ReadPostprocess(mEraStream!);
 			}
 
 			return result;
@@ -79,11 +79,11 @@ namespace KSoft.Phoenix.Resource
 
 			if (ExpanderOptions.Test(EraFileExpanderOptions.DontLoadEntireEraIntoMemory))
 			{
-				mEraBaseStream = System.IO.File.OpenRead(mSourceFile);
+				mEraBaseStream = System.IO.File.OpenRead(mSourceFile!);
 			}
 			else
 			{
-				byte[] era_bytes = System.IO.File.ReadAllBytes(mSourceFile);
+				byte[] era_bytes = System.IO.File.ReadAllBytes(mSourceFile!);
 				if (ExpanderOptions.Test(EraFileExpanderOptions.Decrypt))
 				{
 					ProgressOutput?.WriteLine("Decrypting...");
@@ -94,7 +94,7 @@ namespace KSoft.Phoenix.Resource
 				mEraBaseStream = new System.IO.MemoryStream(era_bytes, writable: false);
 			}
 
-			mEraStream = new IO.EndianStream(mEraBaseStream, Shell.EndianFormat.Big, this, permissions: FA.Read)
+			mEraStream = new IO.EndianStream(mEraBaseStream!, Shell.EndianFormat.Big, this, permissions: FA.Read)
 			{
 				StreamMode = FA.Read
 			};
@@ -136,14 +136,14 @@ namespace KSoft.Phoenix.Resource
 		{
 			string listing_filename = System.IO.Path.Combine(workPath, listingName);
 
-			mEraFile.WriteLocalScenarioFiles(workPath, this);
+			mEraFile!.WriteLocalScenarioFiles(workPath, this);
 
 			using (var xml = IO.XmlElementStream.CreateForWrite("EraArchive", this))
 			{
 				xml.InitializeAtRootElement();
 				xml.StreamMode = FA.Write;
 
-				mEraFile.WriteDefinition(xml);
+				mEraFile!.WriteDefinition(xml);
 
 				xml.Document.Save(listing_filename + EraFileBuilder.kNameExtension);
 			}
@@ -175,7 +175,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				ProgressOutput?.WriteLine("Expanding archive to {0}...", workPath);
 
-				try { mEraFile.ExpandTo(mEraStream, workPath); }
+				try { mEraFile!.ExpandTo(mEraStream!, workPath); }
 				catch (Exception ex)
 				{
 					VerboseOutput?.WriteLine("\tEncountered an error while expanding archive: {0}", ex);
@@ -185,7 +185,7 @@ namespace KSoft.Phoenix.Resource
 				ProgressOutput?.WriteLine("Done");
 			}
 
-			mEraStream.Close();
+			mEraStream!.Close();
 
 			return result;
 		}

@@ -30,12 +30,12 @@ namespace KSoft.Phoenix.Resource
 		const int kRandomBlockWords = 0xA00;
 
 		FileFlags Flags;
-		internal SHA1 ShaContext { get; set; }
+		internal SHA1? ShaContext { get; set; }
 
 		public MediaHeader Header { get; private set; }
 
-		public byte[] Content { get; set; }
-		byte[] PaddingBytes { get; set; }
+		public byte[]? Content { get; set; }
+		byte[]? PaddingBytes { get; set; }
 
 		public GameFile()
 		{
@@ -47,12 +47,13 @@ namespace KSoft.Phoenix.Resource
 
 		public void GenerateHash()
 		{
-			ShaContext.Initialize();
+			var shaContext = ShaContext ?? throw new ObjectDisposedException(nameof(GameFile));
+			shaContext.Initialize();
 
-			PhxHash.UInt16(ShaContext, (ushort)Flags);
-			PhxHash.UInt16(ShaContext, kVersion);
+			PhxHash.UInt16(shaContext, (ushort)Flags);
+			PhxHash.UInt16(shaContext, kVersion);
 
-			Header.UpdateHash(ShaContext);
+			Header.UpdateHash(shaContext);
 		}
 
 		static uint WriteRandomBlock(IO.EndianWriter s, uint seed = 1)
@@ -76,7 +77,7 @@ namespace KSoft.Phoenix.Resource
 		}
 
 		static void Stream(IO.EndianStream s, bool crypt, IO.IEndianStreamSerializable obj,
-			long size = 0, ulong userKey = 0, Action<IO.EndianStream> streamLeftovers = null)
+			long size = 0, ulong userKey = 0, Action<IO.EndianStream>? streamLeftovers = null)
 		{
 			if (!crypt)
 			{
@@ -119,7 +120,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 		static void Read(IO.EndianReader s, bool decrypt, IO.IEndianStreamable obj,
-			long size = 0, ulong userKey = 0, Action<IO.EndianReader> readLeftovers = null)
+			long size = 0, ulong userKey = 0, Action<IO.EndianReader>? readLeftovers = null)
 		{
 			if (!decrypt)
 			{
@@ -145,7 +146,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 		static void Write(IO.EndianWriter s, bool encrypt, IO.IEndianStreamable obj,
-			long size = 0, ulong userKey = 0, Action<IO.EndianWriter> writeLeftovers = null)
+			long size = 0, ulong userKey = 0, Action<IO.EndianWriter>? writeLeftovers = null)
 		{
 			if (!encrypt)
 			{
@@ -174,18 +175,16 @@ namespace KSoft.Phoenix.Resource
 
 		public void Dispose()
 		{
-			if (ShaContext != null)
-			{
-				ShaContext.Dispose();
-				ShaContext = null;
-			}
+			ShaContext?.Dispose();
+			ShaContext = null;
 		}
 
 		#region IEndianStreamSerializable Members
 		void ReadLeftovers(IO.EndianReader er)
 		{
-			PaddingBytes = new byte[(int)(er.BaseStream.Length - er.BaseStream.Position)];
-			er.Read(PaddingBytes, 0, PaddingBytes.Length);
+			var paddingBytes = new byte[(int)(er.BaseStream.Length - er.BaseStream.Position)];
+			PaddingBytes = paddingBytes;
+			er.Read(paddingBytes, 0, paddingBytes.Length);
 		}
 		void WriteLeftovers(IO.EndianWriter ew)
 		{
@@ -193,8 +192,9 @@ namespace KSoft.Phoenix.Resource
 
 			if (ew.BaseStream.Length < kMaxContentSize)
 			{
-				int padding_bytes_count = System.Math.Min(PaddingBytes.Length, kMaxContentSize - (int)(ew.BaseStream.Length));
-				ew.Write(PaddingBytes, 0, padding_bytes_count);
+				var paddingBytes = PaddingBytes ?? throw new InvalidOperationException("Padding bytes must be initialized before writing.");
+				int padding_bytes_count = System.Math.Min(paddingBytes.Length, kMaxContentSize - (int)(ew.BaseStream.Length));
+				ew.Write(paddingBytes, 0, padding_bytes_count);
 			}
 
 			if (ew.BaseStream.Length < kMaxContentSize)
@@ -228,7 +228,8 @@ namespace KSoft.Phoenix.Resource
 				using (var ms = new System.IO.MemoryStream(kMaxContentSize))
 				using (var sout = new IO.EndianWriter(ms, s.ByteOrder))
 				{
-					sout.Write(Content);
+					var content = Content ?? throw new InvalidOperationException("Content must be initialized before writing.");
+					sout.Write(content);
 					sout.Seek(0);
 
 					cs.InitializeFromStream(ms);
@@ -288,7 +289,8 @@ namespace KSoft.Phoenix.Resource
 				//			...BConfigSettings
 				// then any of the derived types:
 				//		BSaveGame, BRecordGame
-				s.Stream(Content);
+				var content = Content ?? throw new InvalidOperationException("Content must be initialized before writing.");
+				s.Stream(content);
 			}
 		}
 		#endregion

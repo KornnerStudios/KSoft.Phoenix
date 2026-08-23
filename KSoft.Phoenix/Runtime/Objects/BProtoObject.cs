@@ -19,8 +19,8 @@ namespace KSoft.Phoenix.Runtime
 		const int kTrainLimitsMaxCount = 0x64;
 
 		public BProtoObjectID ProtoID;
-		public BProtoObjectTrainLimit[] TrainLimits;
-		public BHardpoint[] Hardpoints;
+		public BProtoObjectTrainLimit[]? TrainLimits;
+		public BHardpoint[]? Hardpoints;
 
 		public int ProtoVisualIndex;
 		public float DesiredVelocity, MaxVelocity;
@@ -29,21 +29,21 @@ namespace KSoft.Phoenix.Runtime
 		public int SimLOS;
 
 		public float Bounty;
-		public BTactic Tactic;
+		public BTactic? Tactic;
 		public float AmmoMax, AmmoRegenRate, RateAmount;
 		public int MaxContained, DisplayNameIndex, CircleMenuIconID;
 		public int DeathSpawnSquad;
-		public byte[] CommandDisabled; // utbitvector; count=4
-		public byte[] CommandSelectable; // utbitvector; count=4
+		public byte[]? CommandDisabled; // utbitvector; count=4
+		public byte[]? CommandSelectable; // utbitvector; count=4
 		public bool AbilityDisabled,
 			AutoCloak, CloakMove, CloakAttack,
 			UniqueInstance;
 
 		public void CommandDisabledNone()
 		{
-			for (int x = 0; x < CommandDisabled.Length; x++)
+			for (int x = 0; x < CommandDisabled!.Length; x++)
 			{
-				CommandDisabled[x] = 0;
+				CommandDisabled![x] = 0;
 			}
 		}
 
@@ -51,23 +51,23 @@ namespace KSoft.Phoenix.Runtime
 		public override void Serialize(IO.EndianStream s)
 		{
 			base.Serialize(s);
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner!);
 
 			s.Stream(ref ProtoID);
-			BSaveGame.StreamArray(s, ref TrainLimits);
-			if (TrainLimits.Length > kTrainLimitsMaxCount)
+			BSaveGame.StreamArray(s, ref TrainLimits!);
+			if (TrainLimits!.Length > kTrainLimitsMaxCount)
 			{
 				throw new System.IO.InvalidDataException(string.Format(
 					"Train-limit count is {0}, maximum is {1}.",
-					TrainLimits.Length,
+					TrainLimits!.Length,
 					kTrainLimitsMaxCount));
 			}
-			BSaveGame.StreamArray(s, ref Hardpoints);
-			if (Hardpoints.Length > BHardpoint.kMaxCount)
+			BSaveGame.StreamArray(s, ref Hardpoints!);
+			if (Hardpoints!.Length > BHardpoint.kMaxCount)
 			{
 				throw new System.IO.InvalidDataException(string.Format(
 					"Hardpoint count is {0}, maximum is {1}.",
-					Hardpoints.Length,
+					Hardpoints!.Length,
 					BHardpoint.kMaxCount));
 			}
 			sg.StreamBCost(s, ref Cost);
@@ -78,12 +78,12 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref SimLOS);
 			s.Stream(ref BuildPoints);
 			s.Stream(ref Bounty);
-			s.StreamNotNull(ref Tactic);
+			s.StreamNotNull(ref Tactic!);
 			s.Stream(ref AmmoMax); s.Stream(ref AmmoRegenRate); s.Stream(ref RateAmount);
 			s.Stream(ref MaxContained); s.Stream(ref DisplayNameIndex); s.Stream(ref CircleMenuIconID);
 			s.Stream(ref DeathSpawnSquad);
-			BSaveGame.StreamArray(s, ref CommandDisabled);
-			BSaveGame.StreamArray(s, ref CommandSelectable);
+			BSaveGame.StreamArray(s, ref CommandDisabled!);
+			BSaveGame.StreamArray(s, ref CommandSelectable!);
 			s.Stream(ref Available); s.Stream(ref Forbid); s.Stream(ref AbilityDisabled);
 			s.Stream(ref AutoCloak); s.Stream(ref CloakMove); s.Stream(ref CloakAttack);
 			s.Stream(ref UniqueInstance);

@@ -6,21 +6,21 @@ namespace KSoft.Collections
 
 	public sealed class BBitSet
 	{
-		Collections.BitSet mBits;
+		Collections.BitSet? mBits;
 
 		/// <summary>Is this bitset void of any ON bits?</summary>
 		public bool IsEmpty => mBits == null || mBits.IsAllClear;
 		/// <summary>Number of bits in the set, both ON and OFF</summary>
-		public int Count =>	IsEmpty ? 0 : mBits.Length;
+		public int Count =>	IsEmpty ? 0 : mBits!.Length;
 		/// <summary>Number of bits in the set which are ON</summary>
-		public int EnabledCount => IsEmpty ? 0 : mBits.Cardinality;
+		public int EnabledCount => IsEmpty ? 0 : mBits!.Cardinality;
 
-		public Collections.BitSet RawBits => mBits;
+		public Collections.BitSet RawBits => mBits!;
 
 		/// <summary>Parameters that dictate the functionality of this list</summary>
 		public BBitSetParams Params { get; private set; }
 
-		public BBitSet(BBitSetParams @params, Phx.BDatabaseBase db = null)
+		public BBitSet(BBitSetParams @params, Phx.BDatabaseBase? db = null)
 		{
 			ArgumentNullException.ThrowIfNull(@params);
 
@@ -57,9 +57,10 @@ namespace KSoft.Collections
 			mBits.Set(bitIndex, value);
 		}
 
-		internal IProtoEnum InitializeFromEnum(Phx.BDatabaseBase db)
+		[return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull(nameof(db))]
+		internal IProtoEnum? InitializeFromEnum(Phx.BDatabaseBase? db)
 		{
-			IProtoEnum penum = null;
+			IProtoEnum? penum = null;
 
 			if (Params.kGetProtoEnum != null)
 			{
@@ -104,19 +105,19 @@ namespace KSoft.Collections
 				bool bitDefault = Params.kGetMemberDefaultValue(x);
 				if (bitDefault)
 				{
-					mBits[x] = true;
+					mBits![x] = true;
 				}
 			}
 		}
 
 		public bool this[int bit_index]
 		{
-			get => IsEmpty ? false : mBits[bit_index];
+			get => IsEmpty ? false : mBits![bit_index];
 			set
 			{
 				if (!IsEmpty)
 				{
-					mBits[bit_index] = value;
+					mBits![bit_index] = value;
 				}
 			}
 		}

@@ -11,7 +11,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		internal int RawChunkIndex = TypeExtensions.kNone;
 
-		public EcfFileDefinition Parent { get; private set; }
+		public EcfFileDefinition? Parent { get; private set; }
 
 		public ulong Id { get; private set; }
 		public byte AlignmentBit { get; private set; }
@@ -20,8 +20,8 @@ namespace KSoft.Phoenix.Resource.ECF
 		public EcfCompressionType CompressionType { get; private set; }
 
 		/// <summary>Should be relative to the Parent's BasePath</summary>
-		public string FilePath { get; private set; }
-		public byte[] FileBytes { get; private set; }
+		public string? FilePath { get; private set; }
+		public byte[]? FileBytes { get; private set; }
 
 		public bool HasPossibleFileData => FilePath.IsNotNullOrEmpty() || FileBytes.IsNotNullOrEmpty();
 
@@ -82,7 +82,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		public void SetFilePathFromParentNameAndId()
 		{
-			bool requiresUniqueChunkFileName = Parent.HasMultipleChunksWithSameId(Id);
+			var parent = Parent ?? throw new System.InvalidOperationException("Parent must be initialized before deriving a chunk file path.");
+			bool requiresUniqueChunkFileName = parent.HasMultipleChunksWithSameId(Id);
 
 			string relativeFilePath;
 			if (requiresUniqueChunkFileName)
@@ -90,12 +91,12 @@ namespace KSoft.Phoenix.Resource.ECF
 				// e.g., blood_gulch.xtt_00002222_00000002.ecf_chunk
 				// XTT can contain >1 TerrainAtlasLinkChunk entries.
 				// Other ECF files may have similar situations, this is to split them out into separate files.
-				relativeFilePath = $"{Parent.EcfName}_{Id:X8}_{RawChunkIndex:X8}{kFileExtension}";
+				relativeFilePath = $"{parent.EcfName}_{Id:X8}_{RawChunkIndex:X8}{kFileExtension}";
 			}
 			else
 			{
 				// e.g., blood_gulch.xtt_00001111.ecf_chunk
-				relativeFilePath = $"{Parent.EcfName}_{Id:X8}{kFileExtension}";
+				relativeFilePath = $"{parent.EcfName}_{Id:X8}{kFileExtension}";
 			}
 
 			FilePath = relativeFilePath;
@@ -113,11 +114,13 @@ namespace KSoft.Phoenix.Resource.ECF
 			where TDoc : class
 			where TCursor : class
 		{
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EcfFileExpander ecf_expander);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EcfFileExpander? ecf_expander);
 
 			if (s.IsReading)
 			{
-				Parent = KSoft.Debug.TypeCheck.CastReference<EcfFileDefinition>(s.UserData);
+				var userData = s.UserData;
+				System.ArgumentNullException.ThrowIfNull(userData);
+				Parent = KSoft.Debug.TypeCheck.CastReference<EcfFileDefinition>(userData);
 			}
 
 			s.StreamAttribute("id", this, obj => Id, NumeralBase.Hex);

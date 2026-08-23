@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.XML
 {
 	sealed class BTriggerScriptSerializer : BXmlSerializerInterface
 	{
-		static Engine.XmlFileInfo GetFileInfo(FA mode, Phx.BTriggerScriptType type, string filename = null)
+		static Engine.XmlFileInfo GetFileInfo(FA mode, Phx.BTriggerScriptType type, string? filename = null)
 		{
 			string root_name = Phx.BTriggerSystem.kXmlRootName;
 			Engine.GameDirectory dir;
@@ -35,7 +35,7 @@ namespace KSoft.Phoenix.XML
 				Directory = dir,
 
 				RootName = root_name,
-				FileName = filename,
+				FileName = filename!,
 
 				Writable = mode == FA.Write,
 			};
@@ -46,14 +46,14 @@ namespace KSoft.Phoenix.XML
 
 		public Phx.TriggerDatabase TriggerDb { get; private set; }
 
-		public Phx.BScenario Scenario { get; private set; }
+		public Phx.BScenario? Scenario { get; private set; }
 
-		public BTriggerScriptSerializer(Engine.PhxEngine phx, Phx.BScenario scnr = null)
+		public BTriggerScriptSerializer(Engine.PhxEngine phx, Phx.BScenario? scnr = null)
 		{
 			System.ArgumentNullException.ThrowIfNull(phx);
 
-			mDatabase = phx.Database;
-			TriggerDb = phx.TriggerDb;
+			mDatabase = phx.Database!;
+			TriggerDb = phx.TriggerDb!;
 			Scenario = scnr;
 		}
 
@@ -65,11 +65,11 @@ namespace KSoft.Phoenix.XML
 
 		public class StreamTriggerScriptContext
 		{
-			public Engine.XmlFileInfo FileInfo { get; set; }
+			public Engine.XmlFileInfo? FileInfo { get; set; }
 
-			public Phx.BTriggerSystem Script { get; set; }
+			public Phx.BTriggerSystem? Script { get; set; }
 
-			public Phx.BTriggerSystem[] Scripts { get; set; }
+			public Phx.BTriggerSystem[]? Scripts { get; set; }
 		};
 		public StreamTriggerScriptContext StreamTriggerScriptGetContext(FA mode, Phx.BTriggerScriptType type, string name)
 		{

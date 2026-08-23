@@ -15,9 +15,9 @@ namespace KSoft.Phoenix.Runtime
 		public BVector DesiredBallPosition;
 		public List<BEntityID> CapturedUnits = new();
 		public float ExplodeCooldownLeft;
-		public BEntityID[] UnitsToPull;
-		public BQueuedObject[] QueuedPickupObjects;
-		public BCostDatum[] CostPerTick;
+		public BEntityID[]? UnitsToPull;
+		public BQueuedObject[]? QueuedPickupObjects;
+		public BCostDatum[]? CostPerTick;
 		public float TickLength;
 		public BProtoObjectID BallProtoID, LightningProtoID, LightningBeamVisualProtoID,
 			DebrisProtoID, ExplodeProtoID, PickupAttachmentProtoID;
@@ -36,7 +36,7 @@ namespace KSoft.Phoenix.Runtime
 		public byte NudgeChancePulling, ThrowPartChancePulling, LightningChancePulling;
 		public BCueIndex ExplodeSound;
 		public float MinDamageBankPercentToThrow;
-		public BTeamID[] RevealedTeamIDs;
+		public BTeamID[]? RevealedTeamIDs;
 		BProtoActionTacticUnion unknown0, unknown1, unknown2;
 		public bool CompletedInitialization, ThrowUnitsOnExplosion;
 
@@ -45,16 +45,30 @@ namespace KSoft.Phoenix.Runtime
 		{
 			base.Serialize(s);
 
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var owner = s.Owner;
+			System.ArgumentNullException.ThrowIfNull(owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(owner);
 
 			s.Stream(ref NextTickTime);
 			s.Stream(ref RealGravityBall);
 			s.StreamV(ref DesiredBallPosition);
 			BSaveGame.StreamCollection(s, CapturedUnits);
 			s.Stream(ref ExplodeCooldownLeft);
-			BSaveGame.StreamArray(s, ref UnitsToPull);
-			BSaveGame.StreamArray(s, ref QueuedPickupObjects);
-			sg.StreamBCost(s, ref CostPerTick);
+			BEntityID[] unitsToPull = s.IsReading
+				? System.Array.Empty<BEntityID>()
+				: UnitsToPull ?? throw new System.ArgumentNullException(nameof(UnitsToPull));
+			BQueuedObject[] queuedPickupObjects = s.IsReading
+				? System.Array.Empty<BQueuedObject>()
+				: QueuedPickupObjects ?? throw new System.ArgumentNullException(nameof(QueuedPickupObjects));
+			BCostDatum[] costPerTick = s.IsReading
+				? System.Array.Empty<BCostDatum>()
+				: CostPerTick ?? throw new System.ArgumentNullException(nameof(CostPerTick));
+			BSaveGame.StreamArray(s, ref unitsToPull);
+			BSaveGame.StreamArray(s, ref queuedPickupObjects);
+			sg.StreamBCost(s, ref costPerTick);
+			UnitsToPull = unitsToPull;
+			QueuedPickupObjects = queuedPickupObjects;
+			CostPerTick = costPerTick;
 			s.Stream(ref TickLength);
 			s.Stream(ref BallProtoID); s.Stream(ref LightningProtoID); s.Stream(ref LightningBeamVisualProtoID);
 			s.Stream(ref DebrisProtoID); s.Stream(ref ExplodeProtoID); s.Stream(ref PickupAttachmentProtoID);
@@ -74,7 +88,11 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref NudgeChancePulling); s.Stream(ref ThrowPartChancePulling); s.Stream(ref LightningChancePulling);
 			s.Stream(ref ExplodeSound);
 			s.Stream(ref MinDamageBankPercentToThrow);
-			BSaveGame.StreamArray(s, ref RevealedTeamIDs);
+			BTeamID[] revealedTeamIDs = s.IsReading
+				? System.Array.Empty<BTeamID>()
+				: RevealedTeamIDs ?? throw new System.ArgumentNullException(nameof(RevealedTeamIDs));
+			BSaveGame.StreamArray(s, ref revealedTeamIDs);
+			RevealedTeamIDs = revealedTeamIDs;
 			s.Stream(ref unknown0); s.Stream(ref unknown1); s.Stream(ref unknown2);
 			s.Stream(ref CompletedInitialization); s.Stream(ref ThrowUnitsOnExplosion);
 		}

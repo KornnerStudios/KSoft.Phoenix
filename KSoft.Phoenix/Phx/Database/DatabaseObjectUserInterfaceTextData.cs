@@ -330,7 +330,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public Collections.BListArray<GaiaRolloverTextData> GaiaRolloverText { get; private set; }
+		public Collections.BListArray<GaiaRolloverTextData>? GaiaRolloverText { get; private set; }
 
 		#region ChooseTextID
 		int mChooseTextID = TypeExtensions.kNone;
@@ -406,7 +406,9 @@ namespace KSoft.Phoenix.Phx
 
 			if (HasGaiaRolloverTextID)
 			{
-				XML.XmlUtil.Serialize(s, GaiaRolloverText, GaiaRolloverTextData.kBListXmlParams);
+				var gaia_rollover_text = GaiaRolloverText
+					?? throw new InvalidOperationException("Gaia rollover text must be initialized when its flag is set.");
+				XML.XmlUtil.Serialize(s, gaia_rollover_text, GaiaRolloverTextData.kBListXmlParams);
 			}
 
 			if (HasStatsNameID)
@@ -466,13 +468,22 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			xs.StreamDBID(s, "civ", ref mCivID, DatabaseObjectKind.Civ, true, XML.XmlUtil.kSourceAttr);
-			xs.StreamStringID(s, XML.XmlUtil.kNoXmlName, ref mTextID, XML.XmlUtil.kSourceCursor);
+			s.StreamCursor(ref mTextID);
+			if (s.IsReading && mTextID.IsNotNone())
+			{
+				xs.Database.AddStringIDReference(mTextID);
+			}
 		}
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(GaiaRolloverTextData other)
+		public int CompareTo(GaiaRolloverTextData? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (CivID != other.CivID)
 			{
 				CivID.CompareTo(other.CivID);
@@ -483,14 +494,14 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(GaiaRolloverTextData other)
+		public bool Equals(GaiaRolloverTextData? other)
 		{
-			return other != null
+			return other is not null
 				&& CivID == other.CivID
 				&& TextID == other.TextID;
 		}
 
-		public override bool Equals(object obj) => Equals(obj as GaiaRolloverTextData);
+		public override bool Equals(object? obj) => Equals(obj as GaiaRolloverTextData);
 
 		public override int GetHashCode()
 			=> HashCode.Combine(CivID, TextID);

@@ -30,9 +30,9 @@ namespace KSoft.Phoenix.Xmb
 
 		// String must come last, because we don't know how big a .NET reference really is (we could be compiling for x64!)
 		[Interop.FieldOffset(16)]
-		public string String;
+		public string? String;
 		[Interop.FieldOffset(16)]
-		public Array OpaqueArrayRef;
+		public Array? OpaqueArrayRef;
 
 		public readonly BinaryDataTreeVariantType Type => TypeDesc.Type;
 		public readonly bool IsUnicode => TypeDesc.IsUnicode;
@@ -98,7 +98,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Bool:
 					if (ArrayLength > 1)
 					{
-						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef);
+						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef!);
 					}
 					else
 					{
@@ -110,7 +110,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Int:
 					if (ArrayLength > 1)
 					{
-						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef);
+						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef!);
 					}
 					else
 					{
@@ -128,7 +128,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Float:
 					if (ArrayLength > 1)
 					{
-						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef);
+						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef!);
 					}
 					else
 					{
@@ -180,7 +180,7 @@ namespace KSoft.Phoenix.Xmb
 
 			if (ArrayLength > 1 && Type != BinaryDataTreeVariantType.String)
 			{
-				var array_str = TypeDesc.ArrayToString(OpaqueArrayRef);
+				var array_str = TypeDesc.ArrayToString(OpaqueArrayRef!)!;
 				s.WriteCursor(array_str);
 				return;
 			}
@@ -210,7 +210,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.String:
 					if (this.String.IsNotNullOrEmpty())
 					{
-						s.WriteCursor(this.String);
+						s.WriteCursor(this.String!);
 					}
 
 					break;
@@ -230,7 +230,7 @@ namespace KSoft.Phoenix.Xmb
 
 			if (ArrayLength > 1 && Type != BinaryDataTreeVariantType.String)
 			{
-				var array_str = TypeDesc.ArrayToString(OpaqueArrayRef);
+				var array_str = TypeDesc.ArrayToString(OpaqueArrayRef!)!;
 				s.WriteAttribute(attributeName, array_str);
 				return;
 			}
@@ -260,7 +260,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.String:
 					if (this.String.IsNotNullOrEmpty())
 					{
-						s.WriteAttribute(attributeName, this.String);
+						s.WriteAttribute(attributeName, this.String!);
 					}
 
 					break;

@@ -34,13 +34,18 @@ namespace KSoft.Phoenix.Engine
 
 		public ContentStorage Location { get; set; }
 		public GameDirectory Directory { get; set; }
-		public string FileName { get; set; }
-		public string RootName { get; set; }
+		public string? FileName { get; set; }
+		public string? RootName { get; set; }
 
 		public bool Writable { get; set; }
 
-		public int CompareTo(XmlFileInfo other)
+		public int CompareTo(XmlFileInfo? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (Location != other.Location)
 			{
 				return ((int)Location).CompareTo((int)other.Location);
@@ -54,9 +59,10 @@ namespace KSoft.Phoenix.Engine
 			return string.CompareOrdinal(FileName, other.FileName);
 		}
 
-		public bool Equals(XmlFileInfo other)
+		public bool Equals(XmlFileInfo? other)
 		{
-			return Location == other.Location
+			return other is not null
+				&& Location == other.Location
 				&& Directory == other.Directory
 				&& FileName == other.FileName
 				//&& RootName == other.RootName
@@ -64,7 +70,7 @@ namespace KSoft.Phoenix.Engine
 				;
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			return obj is XmlFileInfo info && Equals(info);
 		}
@@ -99,11 +105,11 @@ namespace KSoft.Phoenix.Engine
 	{
 		public XmlFilePriority Priority;
 		public XmlFileInfo FileInfo;
-		public XmlFileInfo FileInfoWithUpdates;
+		public XmlFileInfo? FileInfoWithUpdates;
 
 		public ProtoDataXmlFileInfo(XmlFilePriority priority
 			, XmlFileInfo fileInfo
-			, XmlFileInfo fileInfoWithUpdates = null)
+			, XmlFileInfo? fileInfoWithUpdates = null)
 		{
 			Priority = priority;
 			FileInfo = fileInfo;

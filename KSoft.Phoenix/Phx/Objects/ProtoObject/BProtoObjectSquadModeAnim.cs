@@ -24,9 +24,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region AnimType
-		string mAnimType;
+		string? mAnimType;
 		[Meta.BAnimTypeReference]
-		public string AnimType
+		public string? AnimType
 		{
 			get { return mAnimType; }
 			set { mAnimType = value; }
@@ -39,30 +39,39 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			s.StreamAttributeEnum("Mode", ref mMode);
-			s.StreamCursor(ref mAnimType);
+			string animType = s.IsReading
+				? string.Empty
+				: mAnimType ?? throw new InvalidOperationException("Animation type must be initialized before writing.");
+			s.StreamCursor(ref animType);
+			mAnimType = animType;
 		}
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(BProtoObjectSquadModeAnim other)
+		public int CompareTo(BProtoObjectSquadModeAnim? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (Mode != other.Mode)
 			{
 				Mode.CompareTo(other.Mode);
 			}
 
-			return AnimType.CompareTo(other.AnimType);
+			return string.CompareOrdinal(AnimType, other.AnimType);
 		}
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(BProtoObjectSquadModeAnim other)
-			=> other != null
+		public bool Equals(BProtoObjectSquadModeAnim? other)
+			=> other is not null
 				&& Mode == other.Mode
 				&& AnimType == other.AnimType;
 
-		public override bool Equals(object obj)
-			=> Equals(obj as BProtoObjectSquadModeAnim);
+		public override bool Equals(object? obj)
+			=> obj is BProtoObjectSquadModeAnim other && Equals(other);
 
 		public override int GetHashCode()
 			=> HashCode.Combine(Mode, AnimType);

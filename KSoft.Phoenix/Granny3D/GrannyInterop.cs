@@ -11,7 +11,7 @@ namespace KSoft.Granny3D
 		public readonly bool IsNull => Address == IntPtr.Zero;
 		public readonly bool IsNotNull => Address != IntPtr.Zero;
 
-		public override readonly string ToString()
+		public override readonly string? ToString()
 		{
 			if (IsNull)
 			{
@@ -24,6 +24,7 @@ namespace KSoft.Granny3D
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct TPtr<T>
+		where T : struct
 	{
 		public IntPtr Address;
 
@@ -137,6 +138,7 @@ namespace KSoft.Granny3D
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct ArrayPtr<T>
+		where T : struct
 	{
 		public int Count;
 		public TPtr<T> Array;
@@ -175,6 +177,7 @@ namespace KSoft.Granny3D
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
 	public struct ArrayOfRefsPtr<T>
+		where T : struct
 	{
 		public int Count;
 		public IntPtr Array; // T**

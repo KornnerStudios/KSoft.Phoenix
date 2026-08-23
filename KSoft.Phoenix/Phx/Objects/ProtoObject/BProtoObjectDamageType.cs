@@ -49,15 +49,20 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDamageType, DatabaseObjectKind.DamageType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mDamageType, DatabaseObjectKind.DamageType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 			s.StreamAttributeEnum("direction", ref mDirection);
 			s.StreamAttributeEnumOpt("mode", ref mMode, e => e != BSquadMode.Normal);
 		}
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(BProtoObjectDamageType other)
+		public int CompareTo(BProtoObjectDamageType? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (DamageType != other.DamageType)
 			{
 				DamageType.CompareTo(other.DamageType);
@@ -73,14 +78,14 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(BProtoObjectDamageType other)
-			=> other != null
+		public bool Equals(BProtoObjectDamageType? other)
+			=> other is not null
 				&& DamageType == other.DamageType
 				&& Direction == other.Direction
 				&& Mode == other.Mode;
 
-		public override bool Equals(object obj)
-			=> Equals(obj as BProtoObjectDamageType);
+		public override bool Equals(object? obj)
+			=> obj is BProtoObjectDamageType other && Equals(other);
 
 		public override int GetHashCode()
 			=> HashCode.Combine(DamageType, Direction, Mode);

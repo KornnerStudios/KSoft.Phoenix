@@ -56,12 +56,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kType = 2;
 
-		public BEntityID[] EntityList;
+		public BEntityID[]? EntityList;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray(s, ref EntityList);
+			BSaveGame.StreamArray(s, ref EntityList!);
 
 			base.Serialize(s);
 		}
@@ -72,12 +72,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kType = 3;
 
-		public BPlayerID[] Players;
+		public BPlayerID[]? Players;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray(s, ref Players);
+			BSaveGame.StreamArray(s, ref Players!);
 
 			base.Serialize(s);
 		}
@@ -88,12 +88,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kType = 4;
 
-		public BTeamID[] Teams;
+		public BTeamID[]? Teams;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray(s, ref Teams);
+			BSaveGame.StreamArray(s, ref Teams!);
 
 			base.Serialize(s);
 		}
@@ -104,12 +104,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kType = 5;
 
-		public BProtoObjectID[] ProtoObjects;
+		public BProtoObjectID[]? ProtoObjects;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref ProtoObjects);
+			BSaveGame.StreamArray16(s, ref ProtoObjects!);
 
 			base.Serialize(s);
 		}
@@ -120,12 +120,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kType = 6;
 
-		public BProtoSquadID[] ProtoSquads;
+		public BProtoSquadID[]? ProtoSquads;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref ProtoSquads);
+			BSaveGame.StreamArray16(s, ref ProtoSquads!);
 
 			base.Serialize(s);
 		}
@@ -136,12 +136,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kType = 7;
 
-		public BObjectTypeID[] ObjectTypes;
+		public BObjectTypeID[]? ObjectTypes;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref ObjectTypes);
+			BSaveGame.StreamArray16(s, ref ObjectTypes!);
 
 			base.Serialize(s);
 		}
@@ -246,12 +246,12 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const int kMaxCount = 0x3E8;
 
-		public BEntityFilter[] Filters;
+		public BEntityFilter[]? Filters;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref Filters, maxCount:kMaxCount);
+			BSaveGame.StreamArray16(s, ref Filters!, maxCount:kMaxCount);
 		}
 		#endregion
 	};
