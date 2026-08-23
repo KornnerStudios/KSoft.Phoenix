@@ -1,4 +1,0 @@
-[*.cs]
-	# CA1041 "Provide ObsoleteAttribute message": legacy game-format enum values have no uniform
-	# replacement, but their markers preserve compatibility and unavailable-feature information.
-	dotnet_diagnostic.CA1041.severity = none

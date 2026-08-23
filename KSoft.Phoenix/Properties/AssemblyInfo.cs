@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -13,3 +14,9 @@ using System.Runtime.InteropServices;
 [assembly: Guid("1a1f287c-66cc-480c-9fc2-54a4e0f11c47")]
 
 [assembly: InternalsVisibleTo("Test.KSoft.Phoenix")]
+[assembly: SuppressMessage("Design",
+	"CA1033:Interface methods should be callable by child types",
+	Justification = "Explicit interface implementations intentionally preserve collection and database model contracts")]
+[assembly: SuppressMessage("Design",
+	"CA1041:Provide ObsoleteAttribute message",
+	Justification = "Legacy game-format enum values have no uniform replacement")]
