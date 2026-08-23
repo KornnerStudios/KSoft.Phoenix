@@ -6,13 +6,13 @@ namespace KSoft.Collections
 {
 	public interface IBList
 	{
-		BListParams Params { get; }
+		BListParams? Params { get; }
 
 		int Count { get; }
 
 		void Clear();
 
-		object GetObject(int id);
+		object? GetObject(int id);
 		object UnderlyingObjectsCollection { get; }
 
 		bool IsEmpty { get; }
@@ -28,7 +28,7 @@ namespace KSoft.Collections
 		, IEnumerable<T>
 	{
 		#region kValueEqualityComparer
-		private static IEqualityComparer<T> gValueEqualityComparer;
+		private static IEqualityComparer<T>? gValueEqualityComparer;
 		protected static IEqualityComparer<T> kValueEqualityComparer { get {
 			if (gValueEqualityComparer == null)
 			{
@@ -44,8 +44,17 @@ namespace KSoft.Collections
 			: IEqualityComparer<BListBase<T>>
 		{
 			#region IEqualityComparer<BListBase<T>> Members
-			public bool Equals(BListBase<T> x, BListBase<T> y)
+			public bool Equals(BListBase<T>? x, BListBase<T>? y)
 			{
+				if (ReferenceEquals(x, y))
+				{
+					return true;
+				}
+				if (x is null || y is null)
+				{
+					return false;
+				}
+
 				bool equals = x.Count == y.Count;
 				if (equals)
 				{
@@ -65,14 +74,17 @@ namespace KSoft.Collections
 				var comparer = kValueEqualityComparer;
 				foreach (var o in obj)
 				{
-					hash ^= comparer.GetHashCode(o);
+					if (o is not null)
+					{
+						hash ^= comparer.GetHashCode(o);
+					}
 				}
 
 				return hash;
 			}
 			#endregion
 		};
-		private static EqualityComparerImpl gEqualityComparer;
+		private static EqualityComparerImpl? gEqualityComparer;
 		protected static EqualityComparerImpl kEqualityComparer { get {
 			if (gEqualityComparer == null)
 			{
@@ -86,18 +98,19 @@ namespace KSoft.Collections
 		protected ObservableCollection<T> mList;
 		protected List<T> RawList { get {
 			var list = ObjectModel.Util.GetUnderlyingItemsAsList(mList);
+			ArgumentNullException.ThrowIfNull(list);
 			return list;
 		} }
 
 		/// <summary>Parameters that dictate the functionality of this list</summary>
-		public BListParams Params { get; private set; }
+		public BListParams? Params { get; private set; }
 
 		protected BListBase(int capacity = BCollectionParams.kDefaultCapacity)
 		{
 			mList = new ObservableCollection<T>(/*capacity*/);
 			Capacity = capacity;
 		}
-		protected BListBase(BListParams @params)
+		protected BListBase(BListParams? @params)
 			: this(@params != null ? @params.InitialCapacity : BCollectionParams.kDefaultCapacity)
 		{
 			Params = @params;
@@ -146,7 +159,7 @@ namespace KSoft.Collections
 		#endregion
 		#endregion
 
-		public virtual object GetObject(int id)
+		public virtual object? GetObject(int id)
 		{
 			return this[id];
 		}
@@ -162,7 +175,7 @@ namespace KSoft.Collections
 		}
 
 		#region IEqualityComparer<BListBase<T>> Members
-		public bool Equals(BListBase<T> x, BListBase<T> y)
+		public bool Equals(BListBase<T>? x, BListBase<T>? y)
 		{
 			return kEqualityComparer.Equals(x, y);
 		}

@@ -20,7 +20,7 @@ namespace KSoft.Phoenix.Phx
 				| XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
 				| XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
-		public static readonly Collections.BListAutoIdParams kBListParams
+		public static readonly Collections.BListAutoIdParams? kBListParams
 #if SQUAD_NEEDS_ToLowerDataNames
 			= new()
 		{
@@ -65,16 +65,16 @@ namespace KSoft.Phoenix.Phx
 		public bool Update { get { return mUpdate; } }
 
 		#region PortraitIcon
-		string mPortraitIcon;
-		public string PortraitIcon
+		string? mPortraitIcon;
+		public string? PortraitIcon
 		{
 			get { return mPortraitIcon; }
 			set { mPortraitIcon = value; }
 		}
 		#endregion
 		#region AltIcon
-		string mAltIcon;
-		public string AltIcon
+		string? mAltIcon;
+		public string? AltIcon
 		{
 			get { return mAltIcon; }
 			set { mAltIcon = value; }
@@ -89,9 +89,9 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region TrainAnim
-		string mTrainAnim;
+		string? mTrainAnim;
 		[Meta.BAnimTypeReference]
-		public string TrainAnim
+		public string? TrainAnim
 		{
 			get { return mTrainAnim; }
 			set { mTrainAnim = value; }
@@ -285,55 +285,55 @@ namespace KSoft.Phoenix.Phx
 			set { mBirthType = value; }
 		}
 
-		string mBirthBone;
-		public string BirthBone
+		string? mBirthBone;
+		public string? BirthBone
 		{
 			get { return mBirthBone; }
 			set { mBirthBone = value; }
 		}
 
-		string mBirthEndBone;
-		public string BirthEndBone
+		string? mBirthEndBone;
+		public string? BirthEndBone
 		{
 			get { return mBirthEndBone; }
 			set { mBirthEndBone = value; }
 		}
 
-		string mBirthAnim0;
+		string? mBirthAnim0;
 		[Meta.BAnimTypeReference]
-		public string BirthAnim0
+		public string? BirthAnim0
 		{
 			get { return mBirthAnim0; }
 			set { mBirthAnim0 = value; }
 		}
 
-		string mBirthAnim1;
+		string? mBirthAnim1;
 		[Meta.BAnimTypeReference]
-		public string BirthAnim1
+		public string? BirthAnim1
 		{
 			get { return mBirthAnim1; }
 			set { mBirthAnim1 = value; }
 		}
 
-		string mBirthAnim2;
+		string? mBirthAnim2;
 		[Meta.BAnimTypeReference]
-		public string BirthAnim2
+		public string? BirthAnim2
 		{
 			get { return mBirthAnim2; }
 			set { mBirthAnim2 = value; }
 		}
 
-		string mBirthAnim3;
+		string? mBirthAnim3;
 		[Meta.BAnimTypeReference]
-		public string BirthAnim3
+		public string? BirthAnim3
 		{
 			get { return mBirthAnim3; }
 			set { mBirthAnim3 = value; }
 		}
 
-		string mBirthTrainerAnim;
+		string? mBirthTrainerAnim;
 		[Meta.BAnimTypeReference]
-		public string BirthTrainerAnim
+		public string? BirthTrainerAnim
 		{
 			get { return mBirthTrainerAnim; }
 			set { mBirthTrainerAnim = value; }

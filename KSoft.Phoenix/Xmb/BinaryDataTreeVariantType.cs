@@ -78,7 +78,7 @@ namespace KSoft.Phoenix.Xmb
 				|| lhs.Flags != rhs.Flags;
 		}
 
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 		{
 			if (obj is BinaryDataTreeVariantTypeDesc desc)
 			{
@@ -116,7 +116,7 @@ namespace KSoft.Phoenix.Xmb
 		#endregion
 
 		#region Array utils
-		public readonly Array MakeArray(int length)
+		public readonly Array? MakeArray(int length)
 		{
 			if (length <= 1)
 			{
@@ -172,7 +172,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public readonly Array ReadArray(IO.EndianReader reader, Array array)
+		public readonly Array? ReadArray(IO.EndianReader reader, Array array)
 		{
 			switch (Type)
 			{
@@ -223,7 +223,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public readonly Array WriteArray(IO.EndianWriter writer, Array array)
+		public readonly Array? WriteArray(IO.EndianWriter writer, Array array)
 		{
 			switch (Type)
 			{
@@ -274,7 +274,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public readonly string ArrayToString(Array array)
+		public readonly string? ArrayToString(Array array)
 		{
 			switch (Type)
 			{
@@ -304,7 +304,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		public readonly Array ArrayFromString(string str)
+		public readonly Array? ArrayFromString(string? str)
 		{
 			if (str.IsNullOrEmpty() || Type == EType.Null)
 			{
@@ -388,7 +388,7 @@ namespace KSoft.Phoenix.Xmb
 				_ => throw new KSoft.Debug.UnreachableException(this.ToString()),
 			};
 		}
-		static BinaryDataTreeVariantTypeDesc GuessTypeFromSerializedString(string typeName)
+		static BinaryDataTreeVariantTypeDesc GuessTypeFromSerializedString(string? typeName)
 		{
 			return typeName switch
 			{
@@ -439,7 +439,7 @@ namespace KSoft.Phoenix.Xmb
 		{
 			arrayLength = 0;
 
-			string typeName = null;
+			string? typeName = null;
 			if (!s.ReadAttributeOpt("dataType", ref typeName))
 			{
 				return Null;

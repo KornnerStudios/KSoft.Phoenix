@@ -15,7 +15,7 @@ namespace KSoft.Phoenix.Xmb
 
 		BinaryDataTreeHeader mHeader;
 
-		internal BinaryDataTreeDecompiler Decompiler { get; private set; }
+		internal BinaryDataTreeDecompiler? Decompiler { get; private set; }
 		public bool DecompileAttributesWithTypeData { get; set; }
 
 		public bool ValidateData { get; set; } = true;
@@ -353,8 +353,9 @@ namespace KSoft.Phoenix.Xmb
 			ArgumentNullException.ThrowIfNull(stream);
 
 			var doc = ToXmlDocument();
+			var decompiler = Decompiler ?? throw new InvalidOperationException();
 
-			var encoding = Decompiler.HasUnicodeStrings
+			var encoding = decompiler.HasUnicodeStrings
 				? System.Text.Encoding.UTF8
 				: System.Text.Encoding.ASCII;
 			var xml_writer_settings = new XmlWriterSettings()
@@ -374,37 +375,42 @@ namespace KSoft.Phoenix.Xmb
 
 	sealed class BinaryDataTreeDecompiler
 	{
-		public List<BinaryDataTreeBuildNode> Nodes;
-		public BinaryDataTreeBuildNode RootNode;
+		public List<BinaryDataTreeBuildNode>? Nodes;
+		public BinaryDataTreeBuildNode? RootNode;
 		public bool HasUnicodeStrings;
 
-		public BinaryDataTreePackedNode[] PackedNodes;
-		public BinaryDataTreeNameValue[] NameValues;
-		public byte[] NameData;
-		public byte[] ValueData;
+		public BinaryDataTreePackedNode[]? PackedNodes;
+		public BinaryDataTreeNameValue[]? NameValues;
+		public byte[]? NameData;
+		public byte[]? ValueData;
 
-		public IO.EndianReader NameDataReader;
-		public BinaryDataTreeMemoryPool ValueDataPool;
+		public IO.EndianReader? NameDataReader;
+		public BinaryDataTreeMemoryPool? ValueDataPool;
 
 		public void Decompile()
 		{
+			var nameData = NameData ?? throw new InvalidOperationException();
+			var valueData = ValueData ?? throw new InvalidOperationException();
+			var packedNodes = PackedNodes ?? throw new InvalidOperationException();
+
 			NameDataReader = new IO.EndianReader(
-				new MemoryStream(NameData, writable: false),
+				new MemoryStream(nameData, writable: false),
 				Shell.EndianFormat.Little,
 				name: "NameDataReader");
 
-			ValueDataPool = new BinaryDataTreeMemoryPool(ValueData);
+			ValueDataPool = new BinaryDataTreeMemoryPool(valueData);
 
-			Nodes = new List<BinaryDataTreeBuildNode>(PackedNodes.Length);
-			for (int x = 0; x < PackedNodes.Length; x++)
+			var nodes = new List<BinaryDataTreeBuildNode>(packedNodes.Length);
+			Nodes = nodes;
+			for (int x = 0; x < packedNodes.Length; x++)
 			{
-				Nodes.Add(new BinaryDataTreeBuildNode());
+				nodes.Add(new BinaryDataTreeBuildNode());
 			}
 
-			for (int x = 0; x < PackedNodes.Length; x++)
+			for (int x = 0; x < packedNodes.Length; x++)
 			{
-				var packed_node = PackedNodes[x];
-				var build_node = Nodes[x];
+				var packed_node = packedNodes[x];
+				var build_node = nodes[x];
 
 				build_node.SetParent(this, packed_node);
 
@@ -425,18 +431,22 @@ namespace KSoft.Phoenix.Xmb
 
 		public string ReadName(int nameOffset)
 		{
-			if (NameData == null || nameOffset >= NameData.Length)
+			var nameData = NameData;
+			var nameDataReader = NameDataReader;
+			if (nameData == null || nameOffset >= nameData.Length || nameDataReader == null)
 			{
 				throw new InvalidOperationException(nameOffset.ToString("X8"));
 			}
 
-			NameDataReader.Seek(nameOffset);
-			return NameDataReader.ReadString(Memory.Strings.StringStorage.CStringAscii);
+			nameDataReader.Seek(nameOffset);
+			return nameDataReader.ReadString(Memory.Strings.StringStorage.CStringAscii);
 		}
 
 		private void CalculateChildNodesCount(int nodeIndex, out int numChildNodes)
 		{
-			var packed_node = PackedNodes[nodeIndex];
+			var packedNodes = PackedNodes ?? throw new InvalidOperationException();
+			var nodes = Nodes ?? throw new InvalidOperationException();
+			var packed_node = packedNodes[nodeIndex];
 
 			numChildNodes = packed_node.ChildNodesCount;
 			if (!packed_node.HasChildNodesCountOverflow)
@@ -446,16 +456,16 @@ namespace KSoft.Phoenix.Xmb
 
 			for (int childNodeIndex = packed_node.ChildNodeIndex; ; numChildNodes++)
 			{
-				if ((childNodeIndex + numChildNodes) > Nodes.Count)
+				if ((childNodeIndex + numChildNodes) > nodes.Count)
 				{
 					throw new InvalidDataException();
 				}
-				else if ((childNodeIndex + numChildNodes) == Nodes.Count)
+				else if ((childNodeIndex + numChildNodes) == nodes.Count)
 				{
 					break;
 				}
 
-				var childNode = PackedNodes[childNodeIndex + numChildNodes];
+				var childNode = packedNodes[childNodeIndex + numChildNodes];
 				if (childNode.ParentIndex != nodeIndex)
 				{
 					break;
@@ -465,7 +475,9 @@ namespace KSoft.Phoenix.Xmb
 
 		private void CalculateNameValuesCount(int nodeIndex, out int numNameValues)
 		{
-			var packed_node = PackedNodes[nodeIndex];
+			var packedNodes = PackedNodes ?? throw new InvalidOperationException();
+			var nameValues = NameValues ?? throw new InvalidOperationException();
+			var packed_node = packedNodes[nodeIndex];
 
 			numNameValues = packed_node.NameValuesCount;
 			if (!packed_node.HasNameValuesCountOverflow)
@@ -480,7 +492,7 @@ namespace KSoft.Phoenix.Xmb
 					throw new InvalidDataException();
 				}
 
-				var nameValue = NameValues[nameValueIndex + numNameValues];
+				var nameValue = nameValues[nameValueIndex + numNameValues];
 				if (nameValue.IsLastNameValue)
 				{
 					break;
@@ -490,14 +502,15 @@ namespace KSoft.Phoenix.Xmb
 
 		public XmlDocument ToXmlDocument(BinaryDataTree tree)
 		{
-			if (RootNode == null)
+			var rootNode = RootNode;
+			if (rootNode == null)
 			{
 				throw new InvalidOperationException("Root node must be initialized before converting binary data tree to XML.");
 			}
 
-			string root_name = RootNode.NodeName;
+			string root_name = rootNode.NodeName;
 			var s = IO.XmlElementStream.CreateForWrite(root_name);
-			RootNode.ToXml(tree, s);
+			rootNode.ToXml(tree, s);
 
 			XmlDocument result = s.Document;
 			System.Diagnostics.Debug.Assert(result != null);

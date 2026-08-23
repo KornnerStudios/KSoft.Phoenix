@@ -86,9 +86,9 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BBitSet Flags { get; private set; } = new(kFlagsParams);
 		public Collections.BBitSet Flags2 { get; private set; } = new(kFlags2Params);
 		#region IconTextureName
-		string mIconTextureName;
+		string? mIconTextureName;
 		[Meta.TextureReference]
-		public string IconTextureName
+		public string? IconTextureName
 		{
 			get { return mIconTextureName; }
 			set { mIconTextureName = value; }
@@ -146,18 +146,18 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region CameraEffectIn
-		string mCameraEffectIn;
+		string? mCameraEffectIn;
 		[Meta.CameraEffectReference]
-		public string CameraEffectIn
+		public string? CameraEffectIn
 		{
 			get { return mCameraEffectIn; }
 			set { mCameraEffectIn = value; }
 		}
 		#endregion
 		#region CameraEffectOut
-		string mCameraEffectOut;
+		string? mCameraEffectOut;
 		[Meta.CameraEffectReference]
-		public string CameraEffectOut
+		public string? CameraEffectOut
 		{
 			get { return mCameraEffectOut; }
 			set { mCameraEffectOut = value; }
@@ -204,8 +204,8 @@ namespace KSoft.Phoenix.Phx
 		[Meta.BProtoObjectReference]
 		public List<BProtoObjectID> ChildObjectIDs { get; private set; } = new();
 		#region BaseDataLevel
-		BProtoPowerDataLevel mBaseDataLevel;
-		public BProtoPowerDataLevel BaseDataLevel
+		BProtoPowerDataLevel? mBaseDataLevel;
+		public BProtoPowerDataLevel? BaseDataLevel
 		{
 			get { return mBaseDataLevel; }
 			set { mBaseDataLevel = value; }
@@ -213,18 +213,18 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 		public Collections.BListExplicitIndex<BProtoPowerDataLevel> LevelData { get; private set; } = new(BProtoPowerDataLevel.kBListExplicitIndexParams);
 		#region TriggerScript
-		string mTriggerScript;
+		string? mTriggerScript;
 		[Meta.TriggerScriptReference]
-		public string TriggerScript
+		public string? TriggerScript
 		{
 			get { return mTriggerScript; }
 			set { mTriggerScript = value; }
 		}
 		#endregion
 		#region CommandTriggerScript
-		string mCommandTriggerScript;
+		string? mCommandTriggerScript;
 		[Meta.TriggerScriptReference]
-		public string CommandTriggerScript
+		public string? CommandTriggerScript
 		{
 			get { return mCommandTriggerScript; }
 			set { mCommandTriggerScript = value; }
@@ -300,12 +300,15 @@ namespace KSoft.Phoenix.Phx
 				{
 					if (bm.IsNotNull)
 					{
+						var baseDataLevel = mBaseDataLevel;
 						if (s.IsReading)
 						{
-							mBaseDataLevel = new BProtoPowerDataLevel();
+							baseDataLevel = new BProtoPowerDataLevel();
+							mBaseDataLevel = baseDataLevel;
 						}
 
-						BaseDataLevel.Serialize(s);
+						System.ArgumentNullException.ThrowIfNull(baseDataLevel);
+						baseDataLevel.Serialize(s);
 					}
 				}
 
@@ -428,7 +431,7 @@ namespace KSoft.Phoenix.Phx
 		private sealed class ComparerForDataCount
 			: IComparer<BProtoPowerDataLevel>
 		{
-			public int Compare(BProtoPowerDataLevel x, BProtoPowerDataLevel y)
+			public int Compare(BProtoPowerDataLevel? x, BProtoPowerDataLevel? y)
 			{
 				if (x == null || y == null)
 				{
@@ -463,6 +466,9 @@ namespace KSoft.Phoenix.Phx
 		: IO.ITagElementStringNameStreamable
 	{
 		#region Xml constants
+		// BXmlSerializerInterface requires a null name for text data but cannot express that contract.
+		[System.Diagnostics.CodeAnalysis.AllowNull]
+		static readonly string kNoXmlNameForLegacyDatabaseStream = XML.XmlUtil.kNoXmlName;
 		public static readonly XML.BListXmlParams kBListXmlParams = new()
 		{
 			ElementName = "Data",
@@ -470,8 +476,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Name
-		string mName;
-		public string Name
+		string? mName;
+		public string? Name
 		{
 			get { return mName; }
 			set { mName = value; }
@@ -491,7 +497,7 @@ namespace KSoft.Phoenix.Phx
 		float mDataFloat;
 		int mDataInt = TypeExtensions.kNone;
 		bool mDataBool;
-		string mDataString;
+		string? mDataString;
 
 		public float Float
 		{
@@ -536,19 +542,51 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		[Meta.SoundCueReference]
-		public string SoundCue
+		public string? SoundCue
 		{
 			get { return mDataString; }
 			set { mDataString = value; }
 		}
 		[Meta.TextureReference]
-		public string TextureName
+		public string? TextureName
 		{
 			get { return mDataString; }
 			set { mDataString = value; }
 		}
 		#endregion
 
+		static void StreamRequiredAttribute<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string name, ref string? value)
+			where TDoc : class
+			where TCursor : class
+		{
+			if (s.IsReading)
+			{
+				string streamedValue = string.Empty;
+				s.StreamAttribute(name, ref streamedValue);
+				value = streamedValue;
+			}
+			else if (s.IsWriting)
+			{
+				string streamedValue = value ?? string.Empty;
+				s.StreamAttribute(name, ref streamedValue);
+			}
+		}
+		static void StreamRequiredCursor<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, ref string? value)
+			where TDoc : class
+			where TCursor : class
+		{
+			if (s.IsReading)
+			{
+				string streamedValue = string.Empty;
+				s.StreamCursor(ref streamedValue);
+				value = streamedValue;
+			}
+			else if (s.IsWriting)
+			{
+				string streamedValue = value ?? string.Empty;
+				s.StreamCursor(ref streamedValue);
+			}
+		}
 		#region ITagElementStreamable<string> Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 			where TDoc : class
@@ -557,7 +595,7 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			s.StreamAttributeEnum("type", ref mDataType);
-			s.StreamAttribute("name", ref mName);
+			StreamRequiredAttribute(s, "name", ref mName);
 
 			switch (DataType)
 			{
@@ -569,16 +607,16 @@ namespace KSoft.Phoenix.Phx
 					s.StreamCursor(ref mDataInt);
 					break;
 				case ProtoPowerDataType.ProtoObject:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, kNoXmlNameForLegacyDatabaseStream, ref mDataInt, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					break;
 				case ProtoPowerDataType.ProtoSquad:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Squad, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, kNoXmlNameForLegacyDatabaseStream, ref mDataInt, DatabaseObjectKind.Squad, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					break;
 				case ProtoPowerDataType.Tech:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.Tech, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, kNoXmlNameForLegacyDatabaseStream, ref mDataInt, DatabaseObjectKind.Tech, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					break;
 				case ProtoPowerDataType.ObjectType:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDataInt, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, kNoXmlNameForLegacyDatabaseStream, ref mDataInt, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					break;
 
 				case ProtoPowerDataType.Bool:
@@ -586,10 +624,10 @@ namespace KSoft.Phoenix.Phx
 					break;
 
 				case ProtoPowerDataType.Sound:
-					s.StreamCursor(ref mDataString);
+					StreamRequiredCursor(s, ref mDataString);
 					break;
 				case ProtoPowerDataType.Texture:
-					s.StreamCursor(ref mDataString);
+					StreamRequiredCursor(s, ref mDataString);
 					break;
 			}
 

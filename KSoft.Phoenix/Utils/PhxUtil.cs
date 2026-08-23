@@ -23,32 +23,22 @@ namespace KSoft.Phoenix
 		/// <summary>Sentinel for cases which reference undefined data (eg, an undefined ProtoObject)</summary>
 		public const int kInvalidReference = TypeExtensions.kNone - 1;
 
-		private static Func<int> gGetInvalidInt32;
+		private static Func<int>? gGetInvalidInt32;
 		// #TODO rename with Func suffix
 		public static Func<int> kGetInvalidInt32 { get {
-			if (gGetInvalidInt32 == null)
-			{
-				gGetInvalidInt32 = () => TypeExtensions.kNone;
-			}
-
-			return gGetInvalidInt32;
+			return gGetInvalidInt32 ??= () => TypeExtensions.kNone;
 		} }
 
-		private static Func<float> gGetInvalidSingle;
+		private static Func<float>? gGetInvalidSingle;
 		// #TODO rename with Func suffix
 		public static Func<float> kGetInvalidSingle { get {
-			if (gGetInvalidSingle == null)
-			{
-				gGetInvalidSingle = () => kInvalidSingle;
-			}
-
-			return gGetInvalidSingle;
+			return gGetInvalidSingle ??= () => kInvalidSingle;
 		} }
 
-		public static bool StrEqualsIgnoreCase(string str1, string str2)
+		public static bool StrEqualsIgnoreCase(string? str1, string? str2)
 			=> string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase) == 0;
 
-		public static string ToLowerIfContainsUppercase(this string str)
+		public static string? ToLowerIfContainsUppercase(this string? str)
 		{
 			if (str == null)
 			{
@@ -67,7 +57,7 @@ namespace KSoft.Phoenix
 			return str;
 		}
 
-		public static bool StreamPointerizedCString(IO.EndianStream s, ref Values.PtrHandle pointer, ref string value)
+		public static bool StreamPointerizedCString(IO.EndianStream s, ref Values.PtrHandle pointer, ref string? value)
 		{
 			ArgumentNullException.ThrowIfNull(s);
 
@@ -101,7 +91,7 @@ namespace KSoft.Phoenix
 			return streamed;
 		}
 
-		public static int CalculateHashCodeForDBIDs(IList<int> dbidList)
+		public static int CalculateHashCodeForDBIDs(IList<int>? dbidList)
 		{
 			if (dbidList == null || dbidList.Count == 0)
 			{
@@ -119,8 +109,8 @@ namespace KSoft.Phoenix
 		}
 
 		[ThreadStatic]
-		private static List<string> gParseBVectorStringScratchList;
-		public static BVector? ParseBVectorString(string vectorString)
+		private static List<string>? gParseBVectorStringScratchList;
+		public static BVector? ParseBVectorString(string? vectorString)
 		{
 			var vector = new BVector();
 			if (vectorString.IsNullOrEmpty())
@@ -359,7 +349,7 @@ namespace KSoft.Phoenix
 		private sealed class DummyComparerAlwaysNonZero<T>
 			: IComparer<T>
 		{
-			public int Compare(T x, T y)
+			public int Compare(T? x, T? y)
 			{
 				return -1;
 			}
@@ -370,7 +360,7 @@ namespace KSoft.Phoenix
 			=> new DummyComparerAlwaysNonZero<T>();
 		#endregion
 
-		public static bool UpdateResultWithTaskResults(ref bool r, List<Task<bool>> tasks, List<Exception> exceptions = null)
+		public static bool UpdateResultWithTaskResults(ref bool r, List<Task<bool>> tasks, List<Exception>? exceptions = null)
 		{
 			foreach (var task in tasks)
 			{
@@ -385,7 +375,11 @@ namespace KSoft.Phoenix
 				if (task.IsFaulted)
 				{
 					r = false;
-					exceptions?.Add(task.Exception.GetOnlyExceptionOrAll());
+					var exception = task.Exception.GetOnlyExceptionOrAll();
+					if (exception is not null)
+					{
+						exceptions?.Add(exception);
+					}
 				}
 				else
 				{
@@ -438,19 +432,19 @@ namespace KSoft.Phoenix
 		}
 
 		[ThreadStatic]
-		private static byte[] gSharedBufferForSuperFastHash;
+		private static byte[]? gSharedBufferForSuperFastHash;
 		public static byte[] GetBufferForSuperFastHash(int bufferSize)
 		{
-			if (gSharedBufferForSuperFastHash == null)
+			var buffer = gSharedBufferForSuperFastHash;
+			if (buffer is null)
 			{
-				gSharedBufferForSuperFastHash = new byte[16];
+				buffer = new byte[16];
+				gSharedBufferForSuperFastHash = buffer;
 			}
 			else
 			{
-				gSharedBufferForSuperFastHash.FastClear();
+				buffer.FastClear();
 			}
-
-			var buffer = gSharedBufferForSuperFastHash;
 			if (bufferSize > buffer.Length)
 			{
 				buffer = new byte[bufferSize];

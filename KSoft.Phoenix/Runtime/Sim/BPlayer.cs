@@ -113,33 +113,33 @@ namespace KSoft.Phoenix.Runtime
 		};
 
 		public BVector LookAtPos; // Gaia's values are ints, not floats...
-		public string Name;
+		public string Name = null!;
 		public BRallyPoint RallyPoint; // Gaia's values are ints, not floats...
 		public BStatsManager StatsManager = new();
-		public List<CondensedListItem16<BProtoObject>> ProtoObjects;
-		public List<CondensedListItem16<BProtoSquad>> ProtoSquads;
-		public List<CondensedListItem16<BProtoTech>> ProtoTechs;
-		public BProtoObject[] UniqueProtoObjects;
-		public BProtoSquad[] UniqueProtoSquad;
-		public BPowerEntry[] PowerEntries;
-		public int[] Abilities;
-		public PowerInfo[] Powers;
-		public BCostDatum[] Resources;
-		public RateInfo[] Rates;
-		public BCostDatum[] TotalResources;
-		public BCostDatum[] ResourceTrickleRate;
-		public BPlayerPop[] Populations;
+		public List<CondensedListItem16<BProtoObject>> ProtoObjects = null!;
+		public List<CondensedListItem16<BProtoSquad>> ProtoSquads = null!;
+		public List<CondensedListItem16<BProtoTech>> ProtoTechs = null!;
+		public BProtoObject[] UniqueProtoObjects = null!;
+		public BProtoSquad[] UniqueProtoSquad = null!;
+		public BPowerEntry[] PowerEntries = null!;
+		public int[] Abilities = null!;
+		public PowerInfo[] Powers = null!;
+		public BCostDatum[] Resources = null!;
+		public RateInfo[] Rates = null!;
+		public BCostDatum[] TotalResources = null!;
+		public BCostDatum[] ResourceTrickleRate = null!;
+		public BPlayerPop[] Populations = null!;
 		#endregion
 		#region Player2
-		public BHintEngine HintEngine;
-		public List<CondensedListItemValue16<UnitCountInfo>> GenericObjectCounts, SquadCounts;
+		public BHintEngine HintEngine = null!;
+		public List<CondensedListItemValue16<UnitCountInfo>> GenericObjectCounts = null!, SquadCounts = null!;
 		#endregion
 		#region Player3
 		public uint TotalFutureUnitCounts, TotalDeadUnitCounts;
 		public uint TotalFutureSquadCounts, TotalDeadSquadCounts;
-		public BEntityID[] GotoBases;
-		public List<CondensedListItemValue8<WeaponType>> WeaponTypes;
-		public float[] AbilityRecoverTimes;
+		public BEntityID[] GotoBases = null!;
+		public List<CondensedListItemValue8<WeaponType>> WeaponTypes = null!;
+		public float[] AbilityRecoverTimes = null!;
 		public BTechTree TechTree = new();
 		#endregion
 		#region Player4
@@ -152,7 +152,7 @@ namespace KSoft.Phoenix.Runtime
 		public BEntityID RallyObject;
 		public int Strength;
 		public float TributeCost;
-		public BCostDatum[] RepairCost;
+		public BCostDatum[] RepairCost = null!;
 		public float RepairTime, HandicapMultiplier, ShieldRegenRate;
 		public uint ShieldRegenDelay;
 		public float TotalCombatValue;
@@ -171,7 +171,7 @@ namespace KSoft.Phoenix.Runtime
 		long mPositionMarker;
 		public void Serialize(IO.EndianStream s)
 		{
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner!);
 
 			#region Init
 			if (s.IsReading)

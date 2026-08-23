@@ -16,8 +16,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Name
-		string mName;
-		public string Name
+		string? mName;
+		public string? Name
 		{
 			get { return mName; }
 			set { mName = value; }
@@ -25,9 +25,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region YawAttachment
-		string mYawAttachment;
+		string? mYawAttachment;
 		[Meta.AttachmentTypeReference]
-		public string YawAttachment
+		public string? YawAttachment
 		{
 			get { return mYawAttachment; }
 			set { mYawAttachment = value; }
@@ -35,9 +35,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region PitchAttachment
-		string mPitchAttachment;
+		string? mPitchAttachment;
 		[Meta.AttachmentTypeReference]
-		public string PitchAttachment
+		public string? PitchAttachment
 		{
 			get { return mPitchAttachment; }
 			set { mPitchAttachment = value; }
@@ -176,9 +176,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region StartYawSound
-		string mStartYawSound;
+		string? mStartYawSound;
 		[Meta.SoundCueReference]
-		public string StartYawSound
+		public string? StartYawSound
 		{
 			get { return mStartYawSound; }
 			set { mStartYawSound = value; }
@@ -186,9 +186,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region StopYawSound
-		string mStopYawSound;
+		string? mStopYawSound;
 		[Meta.SoundCueReference]
-		public string StopYawSound
+		public string? StopYawSound
 		{
 			get { return mStopYawSound; }
 			set { mStopYawSound = value; }
@@ -196,9 +196,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region StartPitchSound
-		string mStartPitchSound;
+		string? mStartPitchSound;
 		[Meta.SoundCueReference]
-		public string StartPitchSound
+		public string? StartPitchSound
 		{
 			get { return mStartPitchSound; }
 			set { mStartPitchSound = value; }
@@ -206,9 +206,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region StopPitchSound
-		string mStopPitchSound;
+		string? mStopPitchSound;
 		[Meta.SoundCueReference]
-		public string StopPitchSound
+		public string? StopPitchSound
 		{
 			get { return mStopPitchSound; }
 			set { mStopPitchSound = value; }
@@ -220,7 +220,11 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamAttribute("name", ref mName);
+			string streamedName = s.IsReading
+				? string.Empty
+				: mName ?? throw new System.ArgumentNullException(nameof(mName));
+			s.StreamAttribute("name", ref streamedName);
+			mName = streamedName;
 			s.StreamStringOpt("yawattachment", ref mYawAttachment, toLower: false);
 			s.StreamStringOpt("pitchattachment", ref mPitchAttachment, toLower: false);
 			s.StreamAttributeOpt("autocenter", ref mAutoCenter, Predicates.IsFalse);

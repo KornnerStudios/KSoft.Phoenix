@@ -40,11 +40,11 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public BTriggerSystem Owner { get; private set; }
+		public BTriggerSystem? Owner { get; private set; }
 
-		string mName;
-		public string Name { get { return mName; } }
-		public override string ToString() { return mName; }
+		string? mName;
+		public string? Name { get { return mName; } }
+		public override string ToString() { return mName ?? string.Empty; }
 
 		BTriggerScriptType mType;
 		int mNextTriggerVarID = TypeExtensions.kNone;
@@ -58,12 +58,12 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BListAutoId<BTriggerVar> Vars { get; private set; } = new();
 		public Collections.BListAutoId<BTrigger> Triggers { get; private set; } = new();
 
-		public BTriggerEditorData EditorData { get; private set; }
+		public BTriggerEditorData? EditorData { get; private set; }
 
 		#region Database interfaces
-		Dictionary<int, BTriggerGroup> mDbiGroups;
-		Dictionary<int, BTriggerVar> mDbiVars;
-		Dictionary<int, BTrigger> mDbiTriggers;
+		Dictionary<int, BTriggerGroup>? mDbiGroups;
+		Dictionary<int, BTriggerVar>? mDbiVars;
+		Dictionary<int, BTrigger>? mDbiTriggers;
 
 		static void BuildDictionary<T>(out Dictionary<int, T> dic, Collections.BListAutoId<T> list)
 			where T : TriggerScriptIdObject, new()
@@ -76,11 +76,14 @@ namespace KSoft.Phoenix.Phx
 			}
 		}
 
-		public BTriggerVar GetVar(int var_id)
+		public BTriggerVar? GetVar(int var_id)
 		{
-			mDbiVars.TryGetValue(var_id, out BTriggerVar var);
+			if (mDbiVars is not null && mDbiVars.TryGetValue(var_id, out BTriggerVar? value))
+			{
+				return value;
+			}
 
-			return var;
+			return null;
 		}
 		#endregion
 
@@ -91,7 +94,13 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref mName);
+			string streamName = mName ?? string.Empty;
+			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref streamName);
+			if (s.IsReading)
+			{
+				mName = streamName;
+			}
+
 			s.StreamAttributeEnum(kXmlAttrType, ref mType);
 			s.StreamAttribute(kXmlAttrNextTriggerVar, ref mNextTriggerVarID);
 			s.StreamAttribute(kXmlAttrNextTrigger, ref mNextTriggerID);
@@ -122,7 +131,12 @@ namespace KSoft.Phoenix.Phx
 
 			if (s.IsReading)
 			{
-				(xs as XML.BTriggerScriptSerializer).TriggerDb.UpdateFromGameData(this);
+				if (xs is not XML.BTriggerScriptSerializer triggerScriptSerializer)
+				{
+					throw new System.InvalidOperationException("Trigger systems must be serialized by a trigger-script serializer.");
+				}
+
+				triggerScriptSerializer.TriggerDb.UpdateFromGameData(this);
 			}
 		}
 		#endregion

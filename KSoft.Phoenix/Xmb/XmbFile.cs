@@ -18,24 +18,41 @@ namespace KSoft.Phoenix.Xmb
 		public const string kFileExt = ".xmb";
 		const uint kSignature = 0x71439800;
 
-		List<Element> mElements;
-		XmbVariantMemoryPool mPool;
+		List<Element>? mElements;
+		XmbVariantMemoryPool? mPool;
 		bool mHasUnicodeStrings;
 
 		public bool HasUnicodeStrings => mHasUnicodeStrings;
 
 		/// <summary>#HACK only valid during reading and when asked for</summary>
-		internal Dictionary<uint, XmbVariant> mRawDataToSingle24Hack;
+		internal Dictionary<uint, XmbVariant>? mRawDataToSingle24Hack;
+
+		List<Element> Elements => mElements ?? throw new NullReferenceException();
+		XmbVariantMemoryPool Pool => mPool ?? throw new NullReferenceException();
+
+		// TypeCheck, Element.ToXml, and Single24DumpInfo use null sentinels but cannot express those contracts.
+		[System.Diagnostics.CodeAnalysis.AllowNull]
+		static readonly object kNullContext = null;
+		[System.Diagnostics.CodeAnalysis.AllowNull]
+		static readonly XmlElement kNullRootElement = null;
+		[System.Diagnostics.CodeAnalysis.AllowNull]
+		static readonly string kNullSingle24Description = null;
+
+		static XmbFileContext GetContext(object? userData)
+		{
+			return KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(userData ?? kNullContext);
+		}
 
 		Element NewElement(int rootElementIndex = TypeExtensions.kNone)
 		{
+			var elements = Elements;
 			var e = new Element
 			{
-				Index = mElements.Count,
+				Index = elements.Count,
 				RootElementIndex = rootElementIndex
 			};
 
-			mElements.Add(e);
+			elements.Add(e);
 			return e;
 		}
 
@@ -55,7 +72,7 @@ namespace KSoft.Phoenix.Xmb
 		#region IEndianStreamable Members
 		public void Read(IO.EndianReader s)
 		{
-			var context = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(s.UserData);
+			var context = GetContext(s.UserData);
 
 			using (s.ReadSignatureWithByteSwapSupport(kSignature))
 			{
@@ -109,17 +126,18 @@ namespace KSoft.Phoenix.Xmb
 					s.Pad64();
 				}
 
+				var elements = Elements;
 				s.Seek((long)elements_offset_pos);
-				for (int x = 0; x < mElements.Capacity; x++)
+				for (int x = 0; x < elements.Capacity; x++)
 				{
 					var e = new XmbFile.Element();
-					mElements.Add(e);
+					elements.Add(e);
 
 					e.Index = x;
 					e.Read(this, context, s);
 				}
 
-				foreach (XmbFile.Element e in mElements)
+				foreach (XmbFile.Element e in elements)
 				{
 					e.ReadAttributes(this, context, s);
 					e.ReadChildren(this, context, s);
@@ -129,7 +147,9 @@ namespace KSoft.Phoenix.Xmb
 
 		public void Write(IO.EndianWriter s)
 		{
-			var context = KSoft.Debug.TypeCheck.CastReference<XmbFileContext>(s.UserData);
+			var context = GetContext(s.UserData);
+			var elements = Elements;
+			var pool = Pool;
 
 			s.Write(kSignature);
 			if (context.PointerSize == Shell.ProcessorSize.x64)
@@ -138,7 +158,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			#region Elements header
-			s.Write(mElements.Count);
+			s.Write(elements.Count);
 			if (context.PointerSize == Shell.ProcessorSize.x64)
 			{
 				s.Pad32();
@@ -147,7 +167,7 @@ namespace KSoft.Phoenix.Xmb
 			#endregion
 
 			#region Pool header
-			s.Write(mPool.Size);
+			s.Write(pool.Size);
 			if (context.PointerSize == Shell.ProcessorSize.x64)
 			{
 				s.Pad32();
@@ -161,18 +181,18 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			var elements_offset = s.PositionPtr;
-			foreach (var e in mElements)
+			foreach (var e in elements)
 			{
 				e.Write(s);
 			}
-			foreach (var e in mElements)
+			foreach (var e in elements)
 			{
 				e.WriteAttributes(s);
 				e.WriteChildren(s);
 			}
 
 			var pool_offset = s.PositionPtr;
-			mPool.Write(s);
+			pool.Write(s);
 
 			s.Seek((long)elements_offset_pos);
 			s.WriteVirtualAddress(elements_offset);
@@ -181,7 +201,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		#endregion
 
-		string ToString(XmbVariant v) => v.ToString(mPool);
+		string ToString(XmbVariant v) => v.ToString(Pool);
 
 		public XmlDocument ToXmlDocument()
 		{
@@ -192,14 +212,16 @@ namespace KSoft.Phoenix.Xmb
 			return result;
 		}
 
-		public XmlDocument ToXmlDocument(XmlDocument doc)
+		[return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull(nameof(doc))]
+		public XmlDocument? ToXmlDocument(XmlDocument? doc)
 		{
-			XmlDocument result = doc;
+			XmlDocument? result = doc;
+			var elements = mElements;
 
-			if (result != null && mElements != null && mElements.Count > 1)
+			if (result != null && elements != null && elements.Count > 1)
 			{
-				XmbFile.Element root = mElements[0];
-				var root_e = root.ToXml(this, result, null);
+				XmbFile.Element root = elements[0];
+				var root_e = root.ToXml(this, result, kNullRootElement);
 
 				result.AppendChild(root_e);
 			}
@@ -276,7 +298,7 @@ namespace KSoft.Phoenix.Xmb
 				foreach (KeyValuePair<uint, XmbVariant> kvp in mRawDataToSingle24Hack)
 				{
 					uint rawDataValue = XmbVariantSerialization.GetValueFromRawData(kvp.Key);
-					dumpInfo.AddEntry(rawDataValue, kvp.Value.Single, null);
+					dumpInfo.AddEntry(rawDataValue, kvp.Value.Single, kNullSingle24Description);
 				}
 
 				return true;

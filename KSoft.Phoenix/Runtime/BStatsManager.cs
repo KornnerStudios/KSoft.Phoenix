@@ -12,6 +12,96 @@ namespace KSoft.Phoenix.Runtime
 			;
 	};
 
+	static class BStatsSerialization
+	{
+		public static void StreamArray16<T>(IO.EndianStream s, ref T[]? values, bool isIterated = false)
+			where T : IO.IEndianStreamSerializable, new()
+		{
+			if (s.IsReading)
+			{
+				T[] array = System.Array.Empty<T>();
+				BSaveGame.StreamArray16(s, ref array, isIterated);
+				values = array;
+			}
+			else
+			{
+				T[] array = values ?? throw new System.ArgumentNullException(nameof(values));
+				BSaveGame.StreamArray16(s, ref array, isIterated);
+				values = array;
+			}
+		}
+
+		public static void StreamArray16(IO.EndianStream s, ref int[]? values)
+		{
+			if (s.IsReading)
+			{
+				int[] array = System.Array.Empty<int>();
+				BSaveGame.StreamArray16(s, ref array);
+				values = array;
+			}
+			else
+			{
+				int[] array = values ?? throw new System.ArgumentNullException(nameof(values));
+				BSaveGame.StreamArray16(s, ref array);
+				values = array;
+			}
+		}
+
+		public static void StreamBCost(BSaveGame saveGame, IO.EndianStream s, ref BCostDatum[]? values)
+		{
+			if (s.IsReading)
+			{
+				BCostDatum[] array = System.Array.Empty<BCostDatum>();
+				saveGame.StreamBCost(s, ref array);
+				values = array;
+			}
+			else
+			{
+				BCostDatum[] array = values ?? throw new System.ArgumentNullException(nameof(values));
+				saveGame.StreamBCost(s, ref array);
+				values = array;
+			}
+		}
+
+		public static void StreamNotNull<T>(IO.EndianStream s, ref T? value)
+			where T : class, IO.IEndianStreamSerializable, new()
+		{
+			bool hasValue = value is not null;
+			s.Stream(ref hasValue);
+			if (s.IsReading)
+			{
+				if (hasValue)
+				{
+					var item = new T();
+					s.Stream(item);
+					value = item;
+				}
+			}
+			else if (hasValue)
+			{
+				T item = value ?? throw new System.ArgumentNullException(nameof(value));
+				s.Stream(item);
+			}
+		}
+
+		public static void Stream<T>(IO.EndianStream s, ref T? value, System.Func<T> initializer)
+			where T : class, IO.IEndianStreamSerializable
+		{
+			System.ArgumentNullException.ThrowIfNull(initializer);
+			if (s.IsReading)
+			{
+				T item = initializer();
+				s.Stream(item);
+				value = item;
+			}
+			else
+			{
+				T item = value ?? throw new System.ArgumentNullException(nameof(value));
+				s.Stream(item);
+			}
+		}
+	};
+
 	struct BStatLostDestroyed
 		: IO.IEndianStreamSerializable
 	{
@@ -43,13 +133,13 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 	{
 		public int Index;
-		public BStatLostDestroyedKeyValuePair[] Killers;
+		public BStatLostDestroyedKeyValuePair[]? Killers;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
 			s.Stream(ref Index);
-			BSaveGame.StreamArray16(s, ref Killers);
+			BStatsSerialization.StreamArray16(s, ref Killers);
 		}
 		#endregion
 	};
@@ -59,13 +149,13 @@ namespace KSoft.Phoenix.Runtime
 	{
 		public const ushort DoneIndex = 0x2711;
 
-		public int[] Levels;
+		public int[]? Levels;
 		public float XP;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref Levels);
+			BStatsSerialization.StreamArray16(s, ref Levels);
 			s.Stream(ref XP);
 		}
 		#endregion
@@ -139,14 +229,14 @@ namespace KSoft.Phoenix.Runtime
 	abstract class BStatRecorderBase
 		: IO.IEndianStreamSerializable
 	{
-		public BStatLostDestroyedMap[] Killers;
-		public BStatCombatWithIndex[] Combat;
+		public BStatLostDestroyedMap[]? Killers;
+		public BStatCombatWithIndex[]? Combat;
 
 		#region IEndianStreamSerializable Members
 		public virtual void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref Killers, isIterated:true);
-			BSaveGame.StreamArray16(s, ref Combat);
+			BStatsSerialization.StreamArray16(s, ref Killers, isIterated:true);
+			BStatsSerialization.StreamArray16(s, ref Combat);
 			s.StreamSignature(BStatCombat.DoneIndex);
 		}
 		#endregion
@@ -158,7 +248,7 @@ namespace KSoft.Phoenix.Runtime
 
 		public List<BStatTotalKeyValuePair> Totals { get; private set; } = new();
 		public BStatTotal Total = new();
-		public BStatCombat Combat_;
+		public BStatCombat? Combat_;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
@@ -167,7 +257,7 @@ namespace KSoft.Phoenix.Runtime
 
 			BSaveGame.StreamCollection(s, Totals);
 			s.Stream(Total);
-			s.StreamNotNull(ref Combat_);
+			BStatsSerialization.StreamNotNull(s, ref Combat_);
 		}
 		#endregion
 	};
@@ -177,7 +267,7 @@ namespace KSoft.Phoenix.Runtime
 		public const int kStatType = 2;
 
 		public BStatTotal Total = new();
-		public BStatEvent[] Events;
+		public BStatEvent[]? Events;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
@@ -185,7 +275,7 @@ namespace KSoft.Phoenix.Runtime
 			base.Serialize(s);
 
 			s.Stream(Total);
-			BSaveGame.StreamArray16(s, ref Events);
+			BStatsSerialization.StreamArray16(s, ref Events);
 		}
 		#endregion
 	};
@@ -221,7 +311,7 @@ namespace KSoft.Phoenix.Runtime
 		public short Index;
 
 		public byte StatType;
-		public BStatRecorderBase Stat;
+		public BStatRecorderBase? Stat;
 
 		#region IEndianStreamSerializable Members
 		static BStatRecorderBase FromType(int statType)
@@ -245,7 +335,7 @@ namespace KSoft.Phoenix.Runtime
 		{
 			s.Stream(ref Index);
 			s.Stream(ref StatType);
-			s.Stream(ref Stat,
+			BStatsSerialization.Stream(s, ref Stat,
 				() => FromType(StatType));
 		}
 		#endregion
@@ -283,10 +373,10 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BStatsManager
 		: IO.IEndianStreamSerializable
 	{
-		public BStatsRecorder[] Recorders;
+		public BStatsRecorder[]? Recorders;
 		public List<BStatPowerKeyValuePair> Powers { get; private set; } = new();
 		public List<BStatAbilityKeyValuePair> Abilities { get; private set; } = new();
-		public BCostDatum[] TotalResources, MaxResources,
+		public BCostDatum[]? TotalResources, MaxResources,
 			GatheredResources, TributedResources;
 		public BPlayerID PlayerID;
 		public BTeamID TeamID;
@@ -300,16 +390,18 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var owner = s.Owner;
+			System.ArgumentNullException.ThrowIfNull(owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(owner);
 
-			BSaveGame.StreamArray16(s, ref Recorders, isIterated:true);
+			BStatsSerialization.StreamArray16(s, ref Recorders, isIterated:true);
 			s.StreamSignature(cSaveMarker.StatsRecorders);
 			BSaveGame.StreamCollection(s, Powers);
 			s.StreamSignature(cSaveMarker.StatsPowers);
 			BSaveGame.StreamCollection(s, Abilities);
 			s.StreamSignature(cSaveMarker.StatsAbilities);
-			sg.StreamBCost(s, ref TotalResources); sg.StreamBCost(s, ref MaxResources);
-			sg.StreamBCost(s, ref GatheredResources); sg.StreamBCost(s, ref TributedResources);
+			BStatsSerialization.StreamBCost(sg, s, ref TotalResources); BStatsSerialization.StreamBCost(sg, s, ref MaxResources);
+			BStatsSerialization.StreamBCost(sg, s, ref GatheredResources); BStatsSerialization.StreamBCost(sg, s, ref TributedResources);
 			s.Stream(ref PlayerID);
 			s.Stream(ref TeamID);
 			s.Stream(ref PlayerStateTime);

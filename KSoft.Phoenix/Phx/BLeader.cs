@@ -27,9 +27,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IconName
-		string mIconName;
+		string? mIconName;
 		[Meta.TextureReference]
-		public string IconName
+		public string? IconName
 		{
 			get { return mIconName; }
 			set { mIconName = value; }
@@ -148,9 +148,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region FlashImg
-		string mFlashImg;
+		string? mFlashImg;
 		[Meta.UnusedData]
-		public string FlashImg
+		public string? FlashImg
 		{
 			get { return mFlashImg; }
 			set { mFlashImg = value; }
@@ -158,9 +158,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region FlashPortrait
-		string mFlashPortrait; // img://unknown.ddx
+		string? mFlashPortrait; // img://unknown.ddx
 		[Meta.TextureReference]
-		public string FlashPortrait
+		public string? FlashPortrait
 		{
 			get { return mFlashPortrait; }
 			set { mFlashPortrait = value; }
@@ -225,9 +225,9 @@ namespace KSoft.Phoenix.Phx
 			= new(BResource.kBListTypeValuesParams);
 
 		#region UIControlBackground
-		string mUIControlBackground;
+		string? mUIControlBackground;
 		[Meta.TextureReference]
-		public string UIControlBackground
+		public string? UIControlBackground
 		{
 			get { return mUIControlBackground; }
 			set { mUIControlBackground = value; }
@@ -335,38 +335,38 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(BLeaderSupportPower other)
+		public int CompareTo(BLeaderSupportPower? other)
 		{
-			if (IconLocation != other.IconLocation)
+			if (IconLocation != other!.IconLocation)
 			{
-				IconLocation.CompareTo(other.IconLocation);
+				IconLocation.CompareTo(other!.IconLocation);
 			}
 
-			if (TechPrereqID != other.TechPrereqID)
+			if (TechPrereqID != other!.TechPrereqID)
 			{
-				TechPrereqID.CompareTo(other.TechPrereqID);
+				TechPrereqID.CompareTo(other!.TechPrereqID);
 			}
 
-			if (SupportPowerIDs.Count != other.SupportPowerIDs.Count)
+			if (SupportPowerIDs.Count != other!.SupportPowerIDs.Count)
 			{
-				SupportPowerIDs.Count.CompareTo(other.SupportPowerIDs.Count);
+				SupportPowerIDs.Count.CompareTo(other!.SupportPowerIDs.Count);
 			}
 
 			int a_hash = PhxUtil.CalculateHashCodeForDBIDs(SupportPowerIDs);
-			int b_hash = PhxUtil.CalculateHashCodeForDBIDs(other.SupportPowerIDs);
+			int b_hash = PhxUtil.CalculateHashCodeForDBIDs(other!.SupportPowerIDs);
 			return a_hash.CompareTo(b_hash);
 		}
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(BLeaderSupportPower other)
+		public bool Equals(BLeaderSupportPower? other)
 		{
 			return other != null
 				&& IconLocation == other.IconLocation
 				&& TechPrereqID == other.TechPrereqID
 				&& SupportPowerIDs.EqualsList(other.SupportPowerIDs);
 		}
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BLeaderSupportPower);
 
 		public override int GetHashCode()
@@ -431,24 +431,24 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(BLeaderStartingSquad other)
+		public int CompareTo(BLeaderStartingSquad? other)
 		{
-			if (FlyIn != other.FlyIn)
+			if (FlyIn != other!.FlyIn)
 			{
-				FlyIn.CompareTo(other.FlyIn);
+				FlyIn.CompareTo(other!.FlyIn);
 			}
 
-			if (Offset != other.Offset)
+			if (Offset != other!.Offset)
 			{
-				Offset.CompareTo(other.Offset);
+				Offset.CompareTo(other!.Offset);
 			}
 
-			return SquadID.CompareTo(other.SquadID);
+			return SquadID.CompareTo(other!.SquadID);
 		}
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(BLeaderStartingSquad other)
+		public bool Equals(BLeaderStartingSquad? other)
 		{
 			return other != null
 				&& FlyIn == other.FlyIn
@@ -456,7 +456,7 @@ namespace KSoft.Phoenix.Phx
 				&& SquadID == other.SquadID;
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=>  Equals(obj as BLeaderStartingSquad);
 
 		public override int GetHashCode()
@@ -532,29 +532,29 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(BLeaderStartingUnit other)
+		public int CompareTo(BLeaderStartingUnit? other)
 		{
-			if (DoppleOnStart != other.DoppleOnStart)
+			if (DoppleOnStart != other!.DoppleOnStart)
 			{
-				DoppleOnStart.CompareTo(other.DoppleOnStart);
+				DoppleOnStart.CompareTo(other!.DoppleOnStart);
 			}
 
-			if (Offset != other.Offset)
+			if (Offset != other!.Offset)
 			{
-				Offset.CompareTo(other.Offset);
+				Offset.CompareTo(other!.Offset);
 			}
 
-			if (ObjectTypeID != other.ObjectTypeID)
+			if (ObjectTypeID != other!.ObjectTypeID)
 			{
-				ObjectTypeID.CompareTo(other.ObjectTypeID);
+				ObjectTypeID.CompareTo(other!.ObjectTypeID);
 			}
 
-			return BuildOtherID.CompareTo(other.BuildOtherID);
+			return BuildOtherID.CompareTo(other!.BuildOtherID);
 		}
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(BLeaderStartingUnit other)
+		public bool Equals(BLeaderStartingUnit? other)
 		{
 			return other != null
 				&& DoppleOnStart == other.DoppleOnStart
@@ -562,7 +562,7 @@ namespace KSoft.Phoenix.Phx
 				&& ObjectTypeID == other.ObjectTypeID
 				&& BuildOtherID == other.BuildOtherID;
 		}
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BLeaderStartingUnit);
 
 		public override int GetHashCode()

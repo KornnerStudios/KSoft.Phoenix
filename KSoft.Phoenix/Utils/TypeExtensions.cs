@@ -46,10 +46,10 @@ namespace KSoft.Phoenix
 		}
 		#endregion
 
-		public static IO.EndianStream StreamNotNull<T>(this IO.EndianStream s, ref T obj)
+		public static IO.EndianStream StreamNotNull<T>(this IO.EndianStream s, ref T? obj)
 			where T : class, IO.IEndianStreamSerializable, new()
 		{
-			bool not_null = obj != null;
+			bool not_null = obj is not null;
 
 			s.Stream(ref not_null);
 			if (s.IsReading && not_null)
@@ -59,6 +59,7 @@ namespace KSoft.Phoenix
 
 			if (not_null)
 			{
+				ArgumentNullException.ThrowIfNull(obj);
 				s.Stream(obj);
 			}
 
@@ -91,15 +92,15 @@ namespace KSoft.Phoenix
 			where TCursor : class
 		{
 			ArgumentNullException.ThrowIfNull(s);
-			if (s.Owner != null && s.Owner is not XML.BXmlSerializerInterface)
+			if (s.Owner is not XML.BXmlSerializerInterface xsi)
 			{
 				throw new InvalidOperationException("Tag element stream owner is not a Phoenix XML serializer interface.");
 			}
 
-			return (XML.BXmlSerializerInterface)s.Owner;
+			return xsi;
 		}
 		public static void SetSerializerInterface<TDoc, TCursor>(this IO.TagElementStream<TDoc, TCursor, string> s,
-			XML.BXmlSerializerInterface xsi)
+			XML.BXmlSerializerInterface? xsi)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -115,7 +116,7 @@ namespace KSoft.Phoenix
 			s.Owner = xsi;
 		}
 
-		public static Exception ToAggregateExceptionOrNull(this List<Exception> list)
+		public static Exception? ToAggregateExceptionOrNull(this List<Exception> list)
 		{
 			if (list.IsNullOrEmpty())
 			{
@@ -136,7 +137,7 @@ namespace KSoft.Phoenix
 			return new AggregateException(list);
 		}
 
-		public static bool StreamCursorBytesOpt<TDoc, TCursor, T>(this IO.TagElementStream<TDoc, TCursor, string> s, T obj, Exprs.Expression<Func<T, byte[]>> propExpr)
+		public static bool StreamCursorBytesOpt<TDoc, TCursor, T>(this IO.TagElementStream<TDoc, TCursor, string> s, T obj, Exprs.Expression<Func<T, byte[]?>> propExpr)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -147,7 +148,7 @@ namespace KSoft.Phoenix
 			var property = Reflection.Util.PropertyFromExpr(propExpr);
 			if (s.IsReading)
 			{
-				string str_value = null;
+				string str_value = string.Empty;
 				s.ReadCursor(ref str_value);
 				if (str_value.IsNotNullOrEmpty())
 				{
@@ -161,8 +162,8 @@ namespace KSoft.Phoenix
 			}
 			else if (s.IsWriting)
 			{
-				var value = (byte[])property.GetValue(obj, null);
-				if (value.IsNotNullOrEmpty())
+				var value = property.GetValue(obj, null) as byte[];
+				if (value is { Length: > 0 })
 				{
 					string str_value = Text.Util.ByteArrayToString(value);
 					if (str_value.IsNotNullOrEmpty())

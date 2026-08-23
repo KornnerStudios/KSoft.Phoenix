@@ -19,7 +19,10 @@ namespace KSoft.Phoenix.Phx
 				kTypeGetInvalid = () => kInvalid
 			};
 		public static readonly XML.BListExplicitIndexXmlParams<BTriggerArg> kBListExplicitIndexXmlParams =
-			new(null, kXmlAttrSigId);
+			new()
+			{
+				DataName = kXmlAttrSigId,
+			};
 
 		const string kXmlAttrSigId = "SigID";
 		const string kXmlAttrOptional = "Optional";
@@ -28,8 +31,8 @@ namespace KSoft.Phoenix.Phx
 		BTriggerParamType mType = BTriggerParamType.Invalid; // TODO: temporary!
 		public BTriggerParamType Type { get { return mType; } }
 
-		string mName; // TODO: temporary!
-		public string Name { get { return mName; } }
+		string? mName; // TODO: temporary!
+		public string? Name { get { return mName; } }
 
 		int mSigID = TypeExtensions.kNone;
 		public int SigID { get { return mSigID; } }
@@ -50,25 +53,31 @@ namespace KSoft.Phoenix.Phx
 			}
 
 			s.StreamAttribute(kXmlAttrSigId, ref mSigID);
-			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref mName);
+			string streamName = mName ?? string.Empty;
+			s.StreamAttribute(DatabaseNamedObject.kXmlAttrNameN, ref streamName);
+			if (s.IsReading)
+			{
+				mName = streamName;
+			}
+
 			s.StreamAttribute(kXmlAttrOptional, ref mOptional);
 			s.StreamCursor(ref mVarID);
 		}
 		#endregion
 
 		#region IComparable<BTriggerArg> Members
-		public int CompareTo(BTriggerArg other)
+		public int CompareTo(BTriggerArg? other)
 		{
-			return this.mSigID - other.mSigID;
+			return other is null ? 1 : this.mSigID - other.mSigID;
 		}
 		#endregion
 
 		#region IEquatable<BTriggerArg> Members
-		public bool Equals(BTriggerArg other)
-			=> other != null
+		public bool Equals(BTriggerArg? other)
+			=> other is not null
 				&& this.mSigID == other.mSigID;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BTriggerArg);
 
 		public override int GetHashCode()
@@ -76,9 +85,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEqualityComparer<BTriggerArg> Members
-		public bool Equals(BTriggerArg x, BTriggerArg y)
+		public bool Equals(BTriggerArg? x, BTriggerArg? y)
 		{
-			return x.Equals(y);
+			return ReferenceEquals(x, y) || (x is not null && x.Equals(y));
 		}
 
 		public int GetHashCode(BTriggerArg obj)
@@ -90,7 +99,13 @@ namespace KSoft.Phoenix.Phx
 		public BTriggerVarType GetVarType(BTriggerSystem root)
 		{
 			ArgumentNullException.ThrowIfNull(root);
-			return root.GetVar(mVarID).Type;
+			var triggerVar = root.GetVar(mVarID);
+			if (triggerVar is null)
+			{
+				throw new InvalidOperationException($"Trigger variable with ID {mVarID} was not found.");
+			}
+
+			return triggerVar.Type;
 		}
 	};
 }

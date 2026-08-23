@@ -7,11 +7,11 @@ namespace KSoft.Phoenix.Resource.PKG
 		: IDisposable
 	{
 		public CaPackageFileDefinition PkgDefinition { get; private set; }
-		internal CaPackageFile mPkgFile;
-		protected string mSourceFile; // filename of the source file which the util stems from
-		public TextWriter ProgressOutput { get; set; }
-		public TextWriter VerboseOutput { get; set; }
-		public TextWriter DebugOutput { get; set; }
+		internal CaPackageFile? mPkgFile;
+		protected string? mSourceFile; // filename of the source file which the util stems from
+		public TextWriter? ProgressOutput { get; set; }
+		public TextWriter? VerboseOutput { get; set; }
+		public TextWriter? DebugOutput { get; set; }
 
 		protected CaPackageFileUtil()
 		{

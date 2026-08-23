@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Phx
 				| XML.BCollectionXmlParamsFlags.RequiresDataNamePreloading
 				| XML.BCollectionXmlParamsFlags.SupportsUpdating
 		};
-		public static readonly Collections.BListAutoIdParams kBListParams
+		public static readonly Collections.BListAutoIdParams? kBListParams
 #if TECH_NEEDS_ToLowerDataNames
 			= new()
 		{
@@ -66,9 +66,9 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BBitSet Flags { get; private set; } = new(kFlagsParams);
 
 		#region Icon
-		string mIcon;
+		string? mIcon;
 		[Meta.TextureReference]
-		public string Icon
+		public string? Icon
 		{
 			get { return mIcon; }
 			set { mIcon = value; }
@@ -76,9 +76,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region ResearchCompleteSound
-		string mResearchCompleteSound;
+		string? mResearchCompleteSound;
 		[Meta.SoundCueReference]
-		public string ResearchCompleteSound
+		public string? ResearchCompleteSound
 		{
 			get { return mResearchCompleteSound; }
 			set { mResearchCompleteSound = value; }
@@ -86,9 +86,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region ResearchAnim
-		string mResearchAnim;
+		string? mResearchAnim;
 		[Meta.BAnimTypeReference]
-		public string ResearchAnim
+		public string? ResearchAnim
 		{
 			get { return mResearchAnim; }
 			set { mResearchAnim = value; }
@@ -144,7 +144,7 @@ namespace KSoft.Phoenix.Phx
 				{
 					if (bm.IsNotNull)
 					{
-						string statusValue = null;
+						string statusValue = string.Empty;
 						s.ReadCursor(ref statusValue);
 						if (string.Equals(statusValue, "Unobtainable", System.StringComparison.OrdinalIgnoreCase))
 						{

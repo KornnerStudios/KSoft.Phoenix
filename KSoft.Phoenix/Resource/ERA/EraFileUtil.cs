@@ -26,11 +26,11 @@ namespace KSoft.Phoenix.Resource
 		/// <summary>DO NOT USE UNLESS YOU ARE KSoft.Phoenix</summary>
 		public const string kExtensionDecrypted = EraFile.kExtensionDecrypted;
 
-		/*protected*/ internal EraFile mEraFile;
-		protected string mSourceFile; // filename of the source file which the util stems from (.era, .xml)
-		public System.IO.TextWriter ProgressOutput { get; set; }
-		public System.IO.TextWriter VerboseOutput { get; set; }
-		public System.IO.TextWriter DebugOutput { get; set; }
+		/*protected*/ internal EraFile? mEraFile;
+		protected string? mSourceFile; // filename of the source file which the util stems from (.era, .xml)
+		public System.IO.TextWriter? ProgressOutput { get; set; }
+		public System.IO.TextWriter? VerboseOutput { get; set; }
+		public System.IO.TextWriter? DebugOutput { get; set; }
 
 		/// <see cref="EraFileUtilOptions"/>
 		public Collections.BitVector32 Options = new();
@@ -65,7 +65,7 @@ namespace KSoft.Phoenix.Resource
 		/// <returns>The output file's full path</returns>
 		/// <exception cref="FileNotFoundException">Input ERA file does not exist</exception>
 		public static string Crypt(string path, string eraName, string outputPath, CryptographyTransformType transformType,
-			TextWriter verboseOutput = null)
+			TextWriter? verboseOutput = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{

@@ -104,7 +104,9 @@ namespace KSoft.Phoenix.Phx
 		public Collections.BListAutoId<BProtoObject> Objects { get; private set; }
 			= new(BProtoObject.kBListParams);
 		public Collections.BListAutoId<BProtoSquad> Squads { get; private set; }
-			= new(BProtoSquad.kBListParams);
+			= BProtoSquad.kBListParams is { } squadListParams
+				? new(squadListParams)
+				: new();
 		public Collections.BListAutoId<BProtoPower> Powers { get; private set; } = new();
 		public Collections.BListAutoId<BTacticData> Tactics { get; private set; } = new();
 		public Collections.BListAutoId<BProtoTech> Techs { get; private set; }
@@ -120,6 +122,8 @@ namespace KSoft.Phoenix.Phx
 		protected BDatabaseBase(Engine.PhxEngine engine, Collections.IProtoEnum gameObjectTypes)
 		{
 			Engine = engine;
+			mPoolCosts = new();
+			mPoolVeterancies = new();
 
 			ObjectDatabase = new ProtoDataObjectDatabase(this, typeof(DatabaseObjectKind));
 
@@ -218,7 +222,7 @@ namespace KSoft.Phoenix.Phx
 
 			return HPBars.GetNamesInterface(kind);
 		}
-		public Collections.IBTypeNames GetNamesInterface(DatabaseObjectKind kind)
+		public Collections.IBTypeNames? GetNamesInterface(DatabaseObjectKind kind)
 		{
 			if (kind == DatabaseObjectKind.None)
 			{
@@ -351,49 +355,56 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IProtoDataObjectDatabaseProvider members
-		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference { get { return null; } }
+		Engine.XmlFileInfo IProtoDataObjectDatabaseProvider.SourceFileReference
+		{
+			get { throw new NotSupportedException(); }
+		}
 
 		Collections.IBTypeNames IProtoDataObjectDatabaseProvider.GetNamesInterface(int objectKind)
 		{
 			var kind = (DatabaseObjectKind)objectKind;
-			return GetNamesInterface(kind);
+			return GetNamesInterface(kind)
+				?? throw new ArgumentOutOfRangeException(nameof(objectKind));
 		}
 
 		Collections.IHasUndefinedProtoMemberInterface IProtoDataObjectDatabaseProvider.GetMembersInterface(int objectKind)
 		{
 			var kind = (DatabaseObjectKind)objectKind;
-			return GetNamesInterface/*GetMembersInterface*/(kind);
+			return GetNamesInterface/*GetMembersInterface*/(kind)
+				?? throw new ArgumentOutOfRangeException(nameof(objectKind));
 		}
 		#endregion
 
-		XML.BTriggerScriptSerializer mTriggerSerializer;
+		XML.BTriggerScriptSerializer? mTriggerSerializer;
 		internal void InitializeTriggerScriptSerializer()
 		{
 			mTriggerSerializer = new XML.BTriggerScriptSerializer(Engine);
 		}
-		public BTriggerSystem LoadScript(string scriptName, BTriggerScriptType type = BTriggerScriptType.TriggerScript)
+		public BTriggerSystem? LoadScript(string scriptName, BTriggerScriptType type = BTriggerScriptType.TriggerScript)
 		{
-			var ctxt = mTriggerSerializer.StreamTriggerScriptGetContext(FA.Read, type, scriptName);
-			var task = Task<bool>.Factory.StartNew((state) => {
-				var _ctxt = state as XML.BTriggerScriptSerializer.StreamTriggerScriptContext;
-				return mTriggerSerializer.TryStreamData(_ctxt.FileInfo, FA.Read, mTriggerSerializer.StreamTriggerScript, _ctxt);
-			}, ctxt);
+			var triggerSerializer = mTriggerSerializer;
+			System.ArgumentNullException.ThrowIfNull(triggerSerializer);
+
+			var ctxt = triggerSerializer.StreamTriggerScriptGetContext(FA.Read, type, scriptName);
+			var task = Task<bool>.Factory.StartNew(() =>
+				triggerSerializer.TryStreamData(ctxt.FileInfo, FA.Read, triggerSerializer.StreamTriggerScript, ctxt));
 
 			return task.Result ? ctxt.Script : null;
 		}
 		public bool LoadScenarioScripts(string scnrPath)
 		{
-			var ctxt = mTriggerSerializer.StreamTriggerScriptGetContext(FA.Read, BTriggerScriptType.Scenario, scnrPath);
-			var task = Task<bool>.Factory.StartNew((state) => {
-				var _ctxt = state as XML.BTriggerScriptSerializer.StreamTriggerScriptContext;
-				return mTriggerSerializer.TryStreamData(_ctxt.FileInfo, FA.Read, mTriggerSerializer.LoadScenarioScripts, _ctxt);
-			}, ctxt);
+			var triggerSerializer = mTriggerSerializer;
+			System.ArgumentNullException.ThrowIfNull(triggerSerializer);
+
+			var ctxt = triggerSerializer.StreamTriggerScriptGetContext(FA.Read, BTriggerScriptType.Scenario, scnrPath);
+			var task = Task<bool>.Factory.StartNew(() =>
+				triggerSerializer.TryStreamData(ctxt.FileInfo, FA.Read, triggerSerializer.LoadScenarioScripts, ctxt));
 
 			return task.Result;
 		}
 
 		protected abstract XML.BDatabaseXmlSerializerBase NewXmlSerializer();
-		private XML.BDatabaseXmlSerializerBase mXmlSerializer;
+		private XML.BDatabaseXmlSerializerBase? mXmlSerializer;
 
 		public bool Preload()
 		{
@@ -438,7 +449,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				s.SetSerializerInterface(xs);
 				xs.Serialize(s);
-				s.SetSerializerInterface(null);
+				s.Owner = null;
 			}
 		}
 		#endregion

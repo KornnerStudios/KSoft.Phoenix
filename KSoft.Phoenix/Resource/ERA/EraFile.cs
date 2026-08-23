@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Resource
 		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig =
 			new(Memory.Strings.StringStorage.CStringAscii, false);
 
-		public string FileName { get; set; }
+		public string? FileName { get; set; }
 
 		private readonly EraFileHeader mHeader = new();
 		private readonly List<EraFileEntryChunk> mFiles = new();
@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Resource
 		public DateTime BuildModeDefaultTimestamp { get; set; }
 			= DateTime.Now;
 
-		public Security.Cryptography.TigerHashBase TigerHasher { get; private set; }
+		public Security.Cryptography.TigerHashBase? TigerHasher { get; private set; }
 
 		private int FileChunksFirstIndex { get {
 			// First comes the filenames table in mFiles, then all the files defined in the listing
@@ -90,9 +90,9 @@ namespace KSoft.Phoenix.Resource
 
 		private void ValidateHashes(EraFileEntryChunk fileEntry, IO.EndianStream blockStream)
 		{
-			fileEntry.ComputeHash(blockStream, TigerHasher);
+			fileEntry.ComputeHash(blockStream, TigerHasher!);
 
-			if (!fileEntry.CompressedDataTiger128.EqualsArray(TigerHasher.Hash))
+			if (!fileEntry.CompressedDataTiger128!.EqualsArray(TigerHasher!.Hash!))
 			{
 				string chunk_name = !string.IsNullOrEmpty(fileEntry.FileName)
 					? fileEntry.FileName
@@ -102,14 +102,14 @@ namespace KSoft.Phoenix.Resource
 					"Invalid chunk hash for '{0}' offset={1} size={2} " +
 					"expected {3} but got {4}",
 					chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
-					Text.Util.ByteArrayToString(fileEntry.CompressedDataTiger128),
-					Text.Util.ByteArrayToString(TigerHasher.Hash, 0, EraFileEntryChunk.kCompresssedDataTigerHashSize)
+					Text.Util.ByteArrayToString(fileEntry.CompressedDataTiger128!),
+					Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, EraFileEntryChunk.kCompresssedDataTigerHashSize)
 					));
 			}
 
 			if (fileEntry.CompressionType == ECF.EcfCompressionType.Stored)
 			{
-				TigerHasher.TryGetAsTiger64(out ulong tiger64);
+				TigerHasher!.TryGetAsTiger64(out ulong tiger64);
 
 				if (fileEntry.DecompressedDataTiger64 != tiger64)
 				{
@@ -122,7 +122,7 @@ namespace KSoft.Phoenix.Resource
 						"expected {3} but got {4}",
 						chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
 						fileEntry.DecompressedDataTiger64.ToString("X16"),
-						Text.Util.ByteArrayToString(TigerHasher.Hash, 0, sizeof(ulong))
+						Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, sizeof(ulong))
 						));
 				}
 			}
@@ -133,13 +133,13 @@ namespace KSoft.Phoenix.Resource
 			return fileIndex - 1;
 		}
 
-		private void BuildFileNameMaps(System.IO.TextWriter verboseOutput)
+		private void BuildFileNameMaps(System.IO.TextWriter? verboseOutput)
 		{
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; )
 			{
 				EraFileEntryChunk file = mFiles[x];
 
-				if (mFileNameToChunk.TryGetValue(file.FileName, out EraFileEntryChunk existingFile))
+				if (mFileNameToChunk.TryGetValue(file.FileName, out EraFileEntryChunk? existingFile))
 				{
 					Util.MarkUnusedVariable(ref existingFile);
 
@@ -155,7 +155,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		private void RemoveXmbFilesWhereXmlExists(System.IO.TextWriter verboseOutput)
+		private void RemoveXmbFilesWhereXmlExists(System.IO.TextWriter? verboseOutput)
 		{
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
@@ -167,7 +167,7 @@ namespace KSoft.Phoenix.Resource
 
 				string xml_name = file.FileName;
 				ResourceUtils.RemoveXmbExtension(ref xml_name);
-				if (!mFileNameToChunk.TryGetValue(xml_name, out EraFileEntryChunk xml_file))
+				if (!mFileNameToChunk.TryGetValue(xml_name, out EraFileEntryChunk? xml_file))
 				{
 					continue;
 				}
@@ -182,7 +182,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		private void RemoveXmlFilesWhereXmbExists(System.IO.TextWriter verboseOutput)
+		private void RemoveXmlFilesWhereXmbExists(System.IO.TextWriter? verboseOutput)
 		{
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
@@ -194,7 +194,7 @@ namespace KSoft.Phoenix.Resource
 
 				string xmb_name = file.FileName;
 				xmb_name += Xmb.XmbFile.kFileExt;
-				if (!mFileNameToChunk.TryGetValue(xmb_name, out EraFileEntryChunk xmb_file))
+				if (!mFileNameToChunk.TryGetValue(xmb_name, out EraFileEntryChunk? xmb_file))
 				{
 					continue;
 				}
@@ -209,7 +209,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		public void TryToReferenceXmlOverXmbFies(string workPath, TextWriter verboseOutput)
+		public void TryToReferenceXmlOverXmbFies(string workPath, TextWriter? verboseOutput)
 		{
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
@@ -223,7 +223,7 @@ namespace KSoft.Phoenix.Resource
 				ResourceUtils.RemoveXmbExtension(ref xml_name);
 
 				// if the user already references the XML file too, just skip doing anything
-				if (mFileNameToChunk.TryGetValue(xml_name, out EraFileEntryChunk /*xml_file*/_))
+				if (mFileNameToChunk.TryGetValue(xml_name, out EraFileEntryChunk? /*xml_file*/_))
 				{
 					continue;
 				}
@@ -277,7 +277,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				using (s.EnterCursorBookmark(n))
 				{
-					string file_name = null;
+					string file_name = string.Empty;
 					s.ReadAttribute("name", ref file_name);
 
 					string file_data = "";
@@ -371,7 +371,7 @@ namespace KSoft.Phoenix.Resource
 					blockStream.StreamMode));
 			}
 
-			var eraExpander = KSoft.Debug.TypeCheck.CastReference<EraFileExpander>(blockStream.Owner);
+			var eraExpander = KSoft.Debug.TypeCheck.CastReference<EraFileExpander>(blockStream.Owner!);
 
 			eraExpander.ProgressOutput?.WriteLine("\tUnpacking files...");
 
@@ -601,7 +601,7 @@ namespace KSoft.Phoenix.Resource
 			}
 		}
 
-		private HashSet<string> mDirsThatExistForUnpacking;
+		private HashSet<string>? mDirsThatExistForUnpacking;
 		private void CreatePathForUnpacking(string full_path)
 		{
 			if (mDirsThatExistForUnpacking == null)
@@ -609,7 +609,7 @@ namespace KSoft.Phoenix.Resource
 				mDirsThatExistForUnpacking = new();
 			}
 
-			string folder = System.IO.Path.GetDirectoryName(full_path);
+			string folder = System.IO.Path.GetDirectoryName(full_path)!;
 			// don't bother checking the file system if we've already encountered this folder
 			if (mDirsThatExistForUnpacking.Add(folder))
 			{
@@ -688,7 +688,7 @@ namespace KSoft.Phoenix.Resource
 					blockStream.StreamMode));
 			}
 
-			var builder = KSoft.Debug.TypeCheck.CastReference<EraFileBuilder>(blockStream.Owner);
+			var builder = KSoft.Debug.TypeCheck.CastReference<EraFileBuilder>(blockStream.Owner!);
 
 			long expected_position = CalculateHeaderAndFileChunksSize();
 			if (blockStream.BaseStream.Position != expected_position)
@@ -750,7 +750,7 @@ namespace KSoft.Phoenix.Resource
 
 		private void PackFileData(IO.EndianStream blockStream, System.IO.Stream source, EraFileEntryChunk file)
 		{
-			file.BuildBuffer(blockStream, source, TigerHasher);
+			file.BuildBuffer(blockStream, source, TigerHasher!);
 
 #if false
 			ValidateAdler32(file, blockStream);
@@ -778,7 +778,7 @@ namespace KSoft.Phoenix.Resource
 		private bool TryPackLocalFile(IO.EndianStream blockStream,
 			EraFileEntryChunk file)
 		{
-			if (!mLocalFiles.TryGetValue(file.FileName, out string file_data))
+			if (!mLocalFiles.TryGetValue(file.FileName, out string? file_data))
 			{
 				Debug.Trace.Resource.TraceInformation("Couldn't pack local-file into {0}, local-file does not exist: {1}",
 					FileName, file.FileName);
@@ -834,7 +834,7 @@ namespace KSoft.Phoenix.Resource
 				return;
 			}
 
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileExpander expander);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileExpander? expander);
 			var progressOutput = expander?.ProgressOutput;
 			var verboseOutput = expander?.VerboseOutput;
 
@@ -864,7 +864,7 @@ namespace KSoft.Phoenix.Resource
 
 		void ReadFileNamesChunk(IO.EndianStream s)
 		{
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil? eraUtil);
 
 			EraFileEntryChunk filenames_chunk = mFiles[0];
 
@@ -903,7 +903,7 @@ namespace KSoft.Phoenix.Resource
 
 		void ValidateFileHashes(IO.EndianStream s)
 		{
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil? eraUtil);
 
 			if (eraUtil != null &&
 				eraUtil.Options.Test(EraFileUtilOptions.SkipVerification))
@@ -963,15 +963,15 @@ namespace KSoft.Phoenix.Resource
 			{
 				EraFileEntryChunk file = mFiles[x];
 
-				file.ComputeHash(s, TigerHasher);
-				System.Array.Copy(TigerHasher.Hash,
-					file.CompressedDataTiger128, file.CompressedDataTiger128.Length);
+				file.ComputeHash(s, TigerHasher!);
+				System.Array.Copy(TigerHasher!.Hash!,
+					file.CompressedDataTiger128!, file.CompressedDataTiger128!.Length);
 			}
 		}
 
 		public void Serialize(IO.EndianStream s)
 		{
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil eraUtil);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EraFileUtil? eraUtil);
 
 			if (s.IsWriting)
 			{
@@ -1083,7 +1083,7 @@ namespace KSoft.Phoenix.Resource
 			string version = string.Format("{0}\n{1}\n{2}",
 				assembly.FullName,
 				assembly.GetName().Version,
-				System.Reflection.Assembly.GetEntryAssembly().FullName);
+				System.Reflection.Assembly.GetEntryAssembly()!.FullName);
 			mLocalFiles[file.FileName] = version;
 			mFiles.Add(file);
 		}

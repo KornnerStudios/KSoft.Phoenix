@@ -80,7 +80,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		public Collections.BListArray<BHardpoint> Hardpoints { get; private set; } = new();
-		public List<string> SingleBoneIKs { get; private set; } = new();
+		public List<string?> SingleBoneIKs { get; private set; } = new();
 		public Collections.BListArray<BGroundIKNode> GroundIKs { get; private set; } = new();
 		public Collections.BListArray<BSweetSpotIKNode> SweetSpotIKs { get; private set; } = new();
 
@@ -149,17 +149,17 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region Physics
-		string mPhysicsInfo;
+		string? mPhysicsInfo;
 		[Meta.PhysicsInfoReference]
-		public string PhysicsInfo
+		public string? PhysicsInfo
 		{
 			get { return mPhysicsInfo; }
 			set { mPhysicsInfo = value; }
 		}
 
-		string mPhysicsReplacementInfo;
+		string? mPhysicsReplacementInfo;
 		[Meta.PhysicsInfoReference]
-		public string PhysicsReplacementInfo
+		public string? PhysicsReplacementInfo
 		{
 			get { return mPhysicsReplacementInfo; }
 			set { mPhysicsReplacementInfo = value; }
@@ -462,9 +462,9 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region PlacementRules
-		string mPlacementRules;
+		string? mPlacementRules;
 		/// <summary>PlacementRules file name (sans extension)</summary>
-		public string PlacementRules
+		public string? PlacementRules
 		{
 			get { return mPlacementRules; }
 			set { mPlacementRules = value; }
@@ -487,9 +487,9 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region TrainAnim
-		string mTrainAnim;
+		string? mTrainAnim;
 		[Meta.BAnimTypeReference]
-		public string TrainAnim
+		public string? TrainAnim
 		{
 			get { return mTrainAnim; }
 			set { mTrainAnim = value; }
@@ -522,8 +522,8 @@ namespace KSoft.Phoenix.Phx
 			set { mGroundIKTiltFactor = value; }
 		}
 
-		string mGroundIKTiltBoneName;
-		public string GroundIKTiltBoneName
+		string? mGroundIKTiltBoneName;
+		public string? GroundIKTiltBoneName
 		{
 			get { return mGroundIKTiltBoneName; }
 			set { mGroundIKTiltBoneName = value; }
@@ -581,18 +581,18 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region Visual
-		string mVisual;
+		string? mVisual;
 		[Meta.VisualReference]
-		public string Visual
+		public string? Visual
 		{
 			get { return mVisual; }
 			set { mVisual = value; }
 		}
 		#endregion
 		#region CorpseDeath
-		string mCorpseDeath;
+		string? mCorpseDeath;
 		[Meta.VisualReference]
-		public string CorpseDeath
+		public string? CorpseDeath
 		{
 			get { return mCorpseDeath; }
 			set { mCorpseDeath = value; }
@@ -617,14 +617,14 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		[Meta.TriggerScriptReference]
-		public List<string> AbilityTriggerScripts { get; private set; } = new();
+		public List<string?> AbilityTriggerScripts { get; private set; } = new();
 		public Collections.BListExplicitIndex<BProtoObjectVeterancy> Veterancy { get; private set; }
 			= new(BProtoObjectVeterancy.kBListExplicitIndexParams);
 		public Collections.BTypeValuesSingle AddResource { get; private set; }
 			= new(BResource.kBListTypeValuesParams);
 		#region ExistSoundBoneName
-		string mExistSoundBoneName;
-		public string ExistSoundBoneName
+		string? mExistSoundBoneName;
+		public string? ExistSoundBoneName
 		{
 			get { return mExistSoundBoneName; }
 			set { mExistSoundBoneName = value; }
@@ -693,18 +693,18 @@ namespace KSoft.Phoenix.Phx
 			 = new(kObjectTypesParams);
 		public Collections.BListArray<BProtoObjectDamageType> DamageTypes { get; private set; } = new();
 		public Collections.BListArray<BProtoObjectSound> Sounds { get; private set; } = new();
-		public BTerrainImpactDecalHandle ImpactDecal { get; set; }
+		public BTerrainImpactDecalHandle? ImpactDecal { get; set; }
 		#region ExtendedSoundBank
-		string mExtendedSoundBank;
-		public string ExtendedSoundBank
+		string? mExtendedSoundBank;
+		public string? ExtendedSoundBank
 		{
 			get { return mExtendedSoundBank; }
 			set { mExtendedSoundBank = value; }
 		}
 		#endregion
 		#region PortraitIcon
-		string mPortraitIcon;
-		public string PortraitIcon
+		string? mPortraitIcon;
+		public string? PortraitIcon
 		{
 			get { return mPortraitIcon; }
 			set { mPortraitIcon = value; }
@@ -712,8 +712,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 		#region Minimap
 
-		string mMinimapIcon;
-		public string MinimapIcon
+		string? mMinimapIcon;
+		public string? MinimapIcon
 		{
 			get { return mMinimapIcon; }
 			set { mMinimapIcon = value; }
@@ -815,8 +815,8 @@ namespace KSoft.Phoenix.Phx
 		#region HPBar
 
 		// #TODO this needs to be an actual ID
-		string mHPBarID;
-		public string HPBarID
+		string? mHPBarID;
+		public string? HPBarID
 		{
 			get { return mHPBarID; }
 			set { mHPBarID = value; }
@@ -1004,7 +1004,7 @@ namespace KSoft.Phoenix.Phx
 			set { mRamDodgeFactor = value; }
 		}
 		#endregion
-		public BRumbleEvent HoveringRumble { get; set; }
+		public BRumbleEvent? HoveringRumble { get; set; }
 		#region VisualDisplayPriority
 		BVisualDisplayPriority mVisualDisplayPriority = BVisualDisplayPriority.Normal;
 		public BVisualDisplayPriority VisualDisplayPriority
@@ -1087,8 +1087,8 @@ namespace KSoft.Phoenix.Phx
 		#region BuildingStrengthID
 		// #TODO this needs to be an actual ID
 
-		string mBuildingStrengthID;
-		public string BuildingStrengthID
+		string? mBuildingStrengthID;
+		public string? BuildingStrengthID
 		{
 			get { return mBuildingStrengthID; }
 			set { mBuildingStrengthID = value; }
@@ -1130,8 +1130,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 		#region MinimapIconName (EDITOR ONLY)
-		string mMinimapIconName;
-		public string MinimapIconName
+		string? mMinimapIconName;
+		public string? MinimapIconName
 		{
 			get { return mMinimapIconName; }
 			set { mMinimapIconName = value; }
@@ -1151,6 +1151,32 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		#region ITagElementStreamable<string> Members
+		private static void StreamNullableStringValue<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
+			XML.BXmlSerializerInterface _, ref string? value)
+			where TDoc : class
+			where TCursor : class
+		{
+			string streamValue = value ?? string.Empty;
+			s.StreamCursor(ref streamValue);
+			if (s.IsReading)
+			{
+				value = streamValue;
+			}
+		}
+
+		private static void StreamNullableStringAttribute<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
+			string name, ref string? value)
+			where TDoc : class
+			where TCursor : class
+		{
+			string streamValue = value ?? string.Empty;
+			s.StreamAttribute(name, ref streamValue);
+			if (s.IsReading)
+			{
+				value = streamValue;
+			}
+		}
+
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			base.Serialize(s);
@@ -1161,7 +1187,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("update", ref mUpdate, Predicates.IsTrue);
 			s.StreamElementEnumOpt("MovementType", ref mMovementType, e => e != BProtoObjectMovementType.None);
 			XML.XmlUtil.Serialize(s, Hardpoints, BHardpoint.kBListXmlParams);
-			s.StreamElements("SingleBoneIK", SingleBoneIKs, xs, XML.BDatabaseXmlSerializerBase.StreamStringValue, dummy => (string)null);
+			s.StreamElements("SingleBoneIK", SingleBoneIKs, xs, StreamNullableStringValue, dummy => (string?)null);
 			XML.XmlUtil.Serialize(s, GroundIKs, BGroundIKNode.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, SweetSpotIKs, BSweetSpotIKNode.kBListXmlParams);
 			#region ObstructionRadius
@@ -1277,7 +1303,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					s.StreamCursor(ref mGroundIKTiltBoneName);
+					StreamNullableStringValue(s, xs, ref mGroundIKTiltBoneName);
 					s.StreamAttributeOpt("factor", ref mGroundIKTiltFactor, Predicates.IsNotZero);
 				}
 			}
@@ -1314,7 +1340,7 @@ namespace KSoft.Phoenix.Phx
 			s.StreamElementOpt("CorpseDeath", ref mCorpseDeath, Predicates.IsNotNullOrEmpty);
 			xs.StreamDBID(s, "AbilityCommand", ref mAbilityCommandID, DatabaseObjectKind.Ability);
 			xs.StreamDBID(s, "Power", ref mPowerID, DatabaseObjectKind.Power);
-			s.StreamElements("Ability", AbilityTriggerScripts, xs, XML.BDatabaseXmlSerializerBase.StreamStringValue, dummy => (string)null);
+			s.StreamElements("Ability", AbilityTriggerScripts, xs, StreamNullableStringValue, dummy => (string?)null);
 			XML.XmlUtil.Serialize(s, Veterancy, BProtoObjectVeterancy.kBListExplicitIndexXmlParams);
 			XML.XmlUtil.Serialize(s, AddResource, BResource.kBListTypeValuesXmlParams_AddResource, "Amount");
 			#region ExistSound
@@ -1322,7 +1348,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					s.StreamAttribute("bone", ref mExistSoundBoneName);
+					StreamNullableStringAttribute(s, "bone", ref mExistSoundBoneName);
 				}
 			}
 			#endregion
@@ -1347,7 +1373,7 @@ namespace KSoft.Phoenix.Phx
 						ImpactDecal = new BTerrainImpactDecalHandle();
 					}
 
-					ImpactDecal.Serialize(s);
+					ImpactDecal!.Serialize(s);
 				}
 			}
 			#endregion
@@ -1358,7 +1384,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					s.StreamCursor(ref mMinimapIcon);
+					StreamNullableStringValue(s, xs, ref mMinimapIcon);
 					s.StreamAttributeOpt("size", ref mMiniMapIconSize, PhxPredicates.IsNotOne);
 				}
 			}
@@ -1402,7 +1428,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					s.StreamCursor(ref mHPBarID);
+					StreamNullableStringValue(s, xs, ref mHPBarID);
 					s.StreamAttributeOpt("sizeX", ref mHPBarSize.X, Predicates.IsNotZero);
 					s.StreamAttributeOpt("sizeY", ref mHPBarSize.Y, Predicates.IsNotZero);
 					s.StreamBVector("offset", ref mHPBarOffset, xmlSource: XML.XmlUtil.kSourceAttr);
@@ -1457,7 +1483,7 @@ namespace KSoft.Phoenix.Phx
 						HoveringRumble = new BRumbleEvent();
 					}
 
-					HoveringRumble.Serialize(s);
+					HoveringRumble!.Serialize(s);
 				}
 			}
 			#endregion

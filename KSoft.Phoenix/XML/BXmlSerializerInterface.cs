@@ -47,7 +47,7 @@ namespace KSoft.Phoenix.XML
 		public bool TryStreamData<TContext>(
 			Engine.XmlFileInfo xfi, FA mode,
 			Action<IO.XmlElementStream, TContext> streamProc, TContext ctxt,
-			string ext = null)
+			string? ext = null)
 		{
 			ArgumentNullException.ThrowIfNull(xfi);
 			ArgumentNullException.ThrowIfNull(streamProc);
@@ -57,7 +57,7 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				result = true;
-				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext);
+				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
@@ -86,7 +86,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (mode == FA.Write)
 			{
-				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext);
+				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 				{
@@ -109,7 +109,7 @@ namespace KSoft.Phoenix.XML
 		public bool TryStreamData(
 			Engine.XmlFileInfo xfi, FA mode,
 			Action<IO.XmlElementStream> streamProc,
-			string ext = null)
+			string? ext = null)
 		{
 			ArgumentNullException.ThrowIfNull(xfi);
 			ArgumentNullException.ThrowIfNull(streamProc);
@@ -119,7 +119,7 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				result = true;
-				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext);
+				var xml_or_xmb = GameEngine.Directories.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
@@ -148,7 +148,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (mode == FA.Write)
 			{
-				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext);
+				result = GameEngine.Directories.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
 
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 				{
@@ -295,7 +295,7 @@ namespace KSoft.Phoenix.XML
 		{
 			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
-			string id_name = null;
+			string? id_name = null;
 			bool was_streamed = true;
 			bool to_lower = false;
 
@@ -307,19 +307,21 @@ namespace KSoft.Phoenix.XML
 				}
 				else
 				{
-					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = id_name!;
+					s.StreamString(xmlName, ref required_id_name, to_lower, xmlSource, intern: true);
+					id_name = required_id_name;
 				}
 
 				if (was_streamed)
 				{
-					dbid = Database.GetId(kind, id_name);
+					dbid = Database.GetId(kind, id_name!);
 					if (dbid.IsNone())
 					{
-						ThrowUnresolvedReferenceId(s, xmlName, id_name, kind.ToString());
+						ThrowUnresolvedReferenceId(s, xmlName, id_name!, kind.ToString());
 					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
-						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
+						TraceUndefinedHandle(s, id_name!, xmlName, dbid, kind.ToString());
 					}
 				}
 				else
@@ -362,7 +364,7 @@ namespace KSoft.Phoenix.XML
 		{
 			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
-			string id_name = null;
+			string? id_name = null;
 			bool was_streamed = true;
 			bool to_lower = false;
 
@@ -374,19 +376,21 @@ namespace KSoft.Phoenix.XML
 				}
 				else
 				{
-					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = id_name!;
+					s.StreamString(xmlName, ref required_id_name, to_lower, xmlSource, intern: true);
+					id_name = required_id_name;
 				}
 
 				if (was_streamed)
 				{
-					dbid = Database.GetId(kind, id_name);
+					dbid = Database.GetId(kind, id_name!);
 					if (dbid.IsNone())
 					{
-						ThrowUnresolvedReferenceId(s, xmlName, id_name, kind.ToString());
+						ThrowUnresolvedReferenceId(s, xmlName, id_name!, kind.ToString());
 					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
-						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
+						TraceUndefinedHandle(s, id_name!, xmlName, dbid, kind.ToString());
 					}
 				}
 				else
@@ -429,7 +433,7 @@ namespace KSoft.Phoenix.XML
 		{
 			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
-			string id_name = null;
+			string? id_name = null;
 			bool was_streamed = true;
 			bool to_lower = ToLowerName(kind);
 
@@ -441,19 +445,21 @@ namespace KSoft.Phoenix.XML
 				}
 				else
 				{
-					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = id_name!;
+					s.StreamString(xmlName, ref required_id_name, to_lower, xmlSource, intern: true);
+					id_name = required_id_name;
 				}
 
 				if (was_streamed)
 				{
-					dbid = Database.GetId(kind, id_name);
+					dbid = Database.GetId(kind, id_name!);
 					if (dbid.IsNone())
 					{
-						ThrowUnresolvedReferenceId(s, xmlName, id_name, kind.ToString());
+						ThrowUnresolvedReferenceId(s, xmlName, id_name!, kind.ToString());
 					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
-						TraceUndefinedHandle(s, id_name, xmlName, dbid, kind.ToString());
+						TraceUndefinedHandle(s, id_name!, xmlName, dbid, kind.ToString());
 					}
 				}
 				else
@@ -546,7 +552,7 @@ namespace KSoft.Phoenix.XML
 
 			XmlUtil.ValidateXmlSourceName(xmlName, xmlSource);
 
-			string id_name = null;
+			string? id_name = null;
 			bool was_streamed = true;
 			bool to_lower = false;
 
@@ -556,17 +562,17 @@ namespace KSoft.Phoenix.XML
 
 				if (was_streamed)
 				{
-					id_name = System.IO.Path.GetFileNameWithoutExtension(id_name);
+					id_name = System.IO.Path.GetFileNameWithoutExtension(id_name!);
 
-					dbid = Database.GetId(kDbKind, id_name);
+					dbid = Database.GetId(kDbKind, id_name!);
 					if (dbid.IsNone())
 					{
-						ThrowUnresolvedReferenceId(s, xmlName, id_name, kDbKind.ToString());
+						ThrowUnresolvedReferenceId(s, xmlName, id_name!, kDbKind.ToString());
 					}
 
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
-						TraceUndefinedHandle(s, id_name, xmlName, dbid, kDbKind.ToString());
+						TraceUndefinedHandle(s, id_name!, xmlName, dbid, kDbKind.ToString());
 					}
 				}
 			}
@@ -584,7 +590,7 @@ namespace KSoft.Phoenix.XML
 					ThrowUnresolvedReferenceName(dbid, kDbKind.ToString());
 				}
 
-				id_name += Phx.BTacticData.kFileExt;
+				id_name = id_name! + Phx.BTacticData.kFileExt;
 				s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
 			}
 

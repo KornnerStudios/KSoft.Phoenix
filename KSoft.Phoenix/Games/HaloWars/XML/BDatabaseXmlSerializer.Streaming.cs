@@ -9,14 +9,14 @@ namespace KSoft.Phoenix.HaloWars
 		static bool gRemoveUndefined = false;
 
 		#region Utils
-		static void RemoveAllButTheLastElement(IO.XmlElementStream s, XmlElement node, string elementName)
+		static void RemoveAllButTheLastElement(IO.XmlElementStream s, XmlElement? node, string elementName)
 		{
 			if (node == null)
 			{
 				return;
 			}
 
-			XmlElement prevNode = null;
+			XmlElement? prevNode = null;
 			foreach (XmlNode n in node.ChildNodes)
 			{
 				if (n is not XmlElement || n.Name != elementName)
@@ -46,7 +46,7 @@ namespace KSoft.Phoenix.HaloWars
 			{
 				if (x != 0)
 				{
-					e.ParentNode.RemoveChild(e);
+					e.ParentNode!.RemoveChild(e);
 					removed = true;
 				}
 
@@ -61,14 +61,14 @@ namespace KSoft.Phoenix.HaloWars
 			bool removed = false;
 			foreach (XmlElement e in elements)
 			{
-				e.ParentNode.RemoveChild(e);
+				e.ParentNode!.RemoveChild(e);
 				removed = true;
 			}
 
 			return removed;
 		}
 
-		static bool RemoveFloatText(IO.XmlElementStream s, XmlElement element, string elementName)
+		static bool RemoveFloatText(IO.XmlElementStream s, XmlElement? element, string elementName)
 		{
 			bool removed = false;
 			if (element == null)
@@ -129,12 +129,12 @@ namespace KSoft.Phoenix.HaloWars
 		static void FixGameDataXmlInfectionMapEntryInfected(IO.XmlElementStream s, string infected)
 		{
 			string xpath = string.Format("InfectionMap/InfectionMapEntry[contains(@infected, '{0}')]", infected);
-			var elements = s.Cursor.SelectNodes(xpath);
+			var elements = s.Cursor!.SelectNodes(xpath)!;
 			if (elements.Count > 0)
 			{
 				foreach (XmlElement e in elements)
 			{
-				var attr = e.Attributes["infected"];
+				var attr = e.Attributes["infected"]!;
 				attr.Value = attr.Value.Replace("_Inf", "_inf");
 			}
 			}
@@ -147,12 +147,12 @@ namespace KSoft.Phoenix.HaloWars
 			if (!ToLowerName(Phx.DatabaseObjectKind.Object))
 			{
 				xpath = "InfectionMap/InfectionMapEntry[contains(@base, 'needlergrunt')]";
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var attr = e.Attributes["base"];
+					var attr = e.Attributes["base"]!;
 					attr.Value = attr.Value.Replace("needlergrunt", "needlerGrunt");
 				}
 				}
@@ -165,12 +165,12 @@ namespace KSoft.Phoenix.HaloWars
 			if (!ToLowerName(Phx.DatabaseObjectKind.Squad))
 			{
 				xpath = "InfectionMap/InfectionMapEntry[contains(@infectedSquad, '_Inf')]";
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var attr = e.Attributes["infectedSquad"];
+					var attr = e.Attributes["infectedSquad"]!;
 					attr.Value = attr.Value.Replace("_Inf", "_inf");
 				}
 				}
@@ -180,12 +180,12 @@ namespace KSoft.Phoenix.HaloWars
 			if (build == Engine.PhxEngineBuild.Alpha)
 			{
 				xpath = "InfectionMap/InfectionMapEntry[contains(@base, 'unsc_inf_heavymarine_01')]";
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					e.ParentNode.RemoveChild(e);
+					e.ParentNode!.RemoveChild(e);
 				}
 				}
 			}
@@ -217,7 +217,7 @@ namespace KSoft.Phoenix.HaloWars
 			if (gRemoveUndefined)
 			{
 				xpath = "LeaderPowerChargeResource";
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
@@ -270,7 +270,7 @@ namespace KSoft.Phoenix.HaloWars
 				return;
 			}
 
-			var element = node[Phx.BProtoObject.kXmlElementAttackGradeDPS] as XmlElement;
+			var element = (node[Phx.BProtoObject.kXmlElementAttackGradeDPS] as XmlElement)!;
 
 			string txt = element.InnerText;
 			int idx = txt.IndexOf('.');
@@ -288,8 +288,8 @@ namespace KSoft.Phoenix.HaloWars
 			}
 
 			// <AttackGradeDPS>.</AttackGradeDPS>
-			var element = node[Phx.BProtoObject.kXmlElementAttackGradeDPS] as XmlElement;
-			element.ParentNode.RemoveChild(element);
+			var element = (node[Phx.BProtoObject.kXmlElementAttackGradeDPS] as XmlElement)!;
+			element.ParentNode!.RemoveChild(element);
 		}
 		static void FixObjectsXmlInvalidSingles(Engine.PhxEngineBuild build, IO.XmlElementStream s)
 		{
@@ -315,7 +315,7 @@ namespace KSoft.Phoenix.HaloWars
 			{
 				if (element.Name == "Flag" && element.InnerText == "NonCollidable")
 				{
-					var fc = element.FirstChild;
+					var fc = element.FirstChild!;
 					fc.Value = "NonCollideable";
 				}
 			}
@@ -338,7 +338,7 @@ namespace KSoft.Phoenix.HaloWars
 						continue;
 					}
 
-					var typeAttr = en.GetAttributeNode("Type");
+					var typeAttr = en.GetAttributeNode("Type")!;
 					if (typeAttr.Value != "Birth")
 					{
 						continue;
@@ -381,12 +381,12 @@ namespace KSoft.Phoenix.HaloWars
 				XmlNodeList elements;
 
 				xpath = "./Command[text()='CovUnitMegaTurret']";
-				elements = node.SelectNodes(xpath);
+				elements = node.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 					{
-						var fc = e.FirstChild;
+						var fc = e.FirstChild!;
 						fc.Value = "HookMegaTurret";
 					}
 				}
@@ -401,7 +401,7 @@ namespace KSoft.Phoenix.HaloWars
 				FixObjectXmlInvalidLifeSpan(s.Document, node);
 			}
 		}
-		static void FixObjectXmlInvalidLifeSpan(XmlDocument doc, XmlNode node)
+		static void FixObjectXmlInvalidLifeSpan(XmlDocument doc, XmlNode? node)
 		{
 			if (node == null)
 			{
@@ -423,25 +423,25 @@ namespace KSoft.Phoenix.HaloWars
 			node.ReplaceChild(lifespan, badLifeSpan);
 		}
 
-		static void FixObjectsXml_fld_air_bomber_01(IO.XmlElementStream s, XmlElement node)
+		static void FixObjectsXml_fld_air_bomber_01(IO.XmlElementStream s, XmlElement? node)
 		{
 			// remove duplicate FlightLevel values, preferring the last entry
 			RemoveAllButTheLastElement(s, node, "FlightLevel");
 		}
 
-		static void FixObjectsXml_hook_spawner_FloodRelease(IO.XmlElementStream s, XmlElement node)
+		static void FixObjectsXml_hook_spawner_FloodRelease(IO.XmlElementStream s, XmlElement? node)
 		{
 			// remove duplicate MaxContained values, preferring the last entry
 			RemoveAllButTheLastElement(s, node, "MaxContained");
 		}
 
-		static void FixObjectsXml_for_air_monitor(IO.XmlElementStream s, XmlElement node)
+		static void FixObjectsXml_for_air_monitor(IO.XmlElementStream s, XmlElement? node)
 		{
 			// remove duplicate CombatValue values, preferring the last entry
 			RemoveAllButTheLastElement(s, node, "CombatValue");
 		}
 
-		static void FixObjectsXml_for_air_attractor_01(IO.XmlElementStream s, XmlElement node)
+		static void FixObjectsXml_for_air_attractor_01(IO.XmlElementStream s, XmlElement? node)
 		{
 			// remove duplicate LOS values, preferring the last entry
 			RemoveAllButTheLastElement(s, node, "LOS");
@@ -480,11 +480,11 @@ namespace KSoft.Phoenix.HaloWars
 
 			string xpath = "Squad/Cost[@" + kAttrNameOld + "]";
 
-			var elements = s.Cursor.SelectNodes(xpath);
+			var elements = s.Cursor!.SelectNodes(xpath)!;
 
 			foreach (XmlElement e in elements)
 			{
-				var attr_old = e.Attributes[kAttrNameOld];
+				var attr_old = e.Attributes[kAttrNameOld]!;
 				var attr = s.Document.CreateAttribute(kAttrName);
 				attr.Value = attr_old.Value;
 				e.Attributes.InsertBefore(attr, attr_old);
@@ -499,7 +499,7 @@ namespace KSoft.Phoenix.HaloWars
 #pragma warning disable IDE0031 // Use null propagation
 				if (node != null)
 				{
-					node.ParentNode.RemoveChild(node);
+					node.ParentNode!.RemoveChild(node);
 				}
 #pragma warning restore IDE0031 // Use null propagation
 			}
@@ -527,7 +527,7 @@ namespace KSoft.Phoenix.HaloWars
 			node = XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "cov_veh_ghost_01");
 			FixSquadsXmlSoundsKillEnemy(node);
 		}
-		static void FixSquadsXmlSoundsKillEnemy(XmlNode node)
+		static void FixSquadsXmlSoundsKillEnemy(XmlNode? node)
 		{
 			if (node == null)
 			{
@@ -535,12 +535,12 @@ namespace KSoft.Phoenix.HaloWars
 			}
 
 			var xpath = "./Sound[@Type='KillEnemy']";
-			var elements = node.SelectNodes(xpath);
+			var elements = node.SelectNodes(xpath)!;
 			if (elements.Count > 0)
 			{
 				foreach (XmlElement e in elements)
 				{
-					var typeAttr = e.GetAttributeNode("Type");
+					var typeAttr = e.GetAttributeNode("Type")!;
 					typeAttr.Value = Phx.BSquadSoundType.KilledEnemy.ToString();
 				}
 			}
@@ -588,12 +588,12 @@ namespace KSoft.Phoenix.HaloWars
 				if (build == Engine.PhxEngineBuild.Alpha)
 				{
 					xpath = string.Format(invalid_target_format, "cov_inf_eliteleader_01");
-					elements = s.Cursor.SelectNodes(xpath);
+					elements = s.Cursor!.SelectNodes(xpath)!;
 					if (elements.Count > 0)
 					{
 						foreach (XmlElement e in elements)
 					{
-						var fc = e[k_element_target].FirstChild;
+						var fc = e[k_element_target]!.FirstChild!;
 						fc.Value = "cov_inf_eliteLeader_01";
 					}
 					}
@@ -604,12 +604,12 @@ namespace KSoft.Phoenix.HaloWars
 			if (build == Engine.PhxEngineBuild.Alpha)
 			{
 				xpath = string.Format(invalid_target_format, "cov_inf_elite_leader01");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var fc = e[k_element_target].FirstChild;
+					var fc = e[k_element_target]!.FirstChild!;
 					fc.Value = "cov_inf_eliteLeader_01";
 				}
 				}
@@ -620,66 +620,66 @@ namespace KSoft.Phoenix.HaloWars
 			{
 				#region unsc_MAC_upgrade
 				xpath = string.Format(invalid_command_data_format, "unsc_mac_upgrade1");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 					{
-						e.Attributes[k_attr_command_data].Value = "unsc_MAC_upgrade1";
+						e.Attributes[k_attr_command_data]!.Value = "unsc_MAC_upgrade1";
 					}
 				}
 
 				xpath = string.Format(invalid_command_data_format, "unsc_mac_upgrade2");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 					{
-						e.Attributes[k_attr_command_data].Value = "unsc_MAC_upgrade2";
+						e.Attributes[k_attr_command_data]!.Value = "unsc_MAC_upgrade2";
 					}
 				}
 
 				xpath = string.Format(invalid_command_data_format, "unsc_mac_upgrade3");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 					{
-						e.Attributes[k_attr_command_data].Value = "unsc_MAC_upgrade3";
+						e.Attributes[k_attr_command_data]!.Value = "unsc_MAC_upgrade3";
 					}
 				}
 				#endregion
 
 				#region unsc_flameMarine_upgrade
 				xpath = string.Format(invalid_target_format, "unsc_flamemarine_upgrade1");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var fc = e[k_element_target].FirstChild;
+					var fc = e[k_element_target]!.FirstChild!;
 					fc.Value = "unsc_flameMarine_upgrade1";
 				}
 				}
 
 				xpath = string.Format(invalid_target_format, "unsc_flamemarine_upgrade2");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var fc = e[k_element_target].FirstChild;
+					var fc = e[k_element_target]!.FirstChild!;
 					fc.Value = "unsc_flameMarine_upgrade2";
 				}
 				}
 
 				xpath = string.Format(invalid_target_format, "unsc_flamemarine_upgrade3");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var fc = e[k_element_target].FirstChild;
+					var fc = e[k_element_target]!.FirstChild!;
 					fc.Value = "unsc_flameMarine_upgrade3";
 				}
 				}
@@ -689,23 +689,23 @@ namespace KSoft.Phoenix.HaloWars
 			if (!ToLowerName(Phx.DatabaseObjectKind.Squad))
 			{
 				xpath = string.Format(invalid_target_format, "unsc_inf_flamemarine_01");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var fc = e[k_element_target].FirstChild;
+					var fc = e[k_element_target]!.FirstChild!;
 					fc.Value = "unsc_inf_flameMarine_01";
 				}
 				}
 
 				xpath = string.Format(invalid_target_format, "unsc_inf_Marine_01");
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
 					foreach (XmlElement e in elements)
 				{
-					var fc = e[k_element_target].FirstChild;
+					var fc = e[k_element_target]!.FirstChild!;
 					fc.Value = "unsc_inf_marine_01";
 				}
 				}
@@ -719,11 +719,11 @@ namespace KSoft.Phoenix.HaloWars
 
 			string xpath = "Effects/Effect[@" + kAttrNameOld + "]";
 
-			var elements = n.SelectNodes(xpath);
+			var elements = n.SelectNodes(xpath)!;
 
 			foreach (XmlElement e in elements)
 			{
-				var attr_old = e.Attributes[kAttrNameOld];
+				var attr_old = e.Attributes[kAttrNameOld]!;
 				var attr = doc.CreateAttribute(kAttrName);
 				attr.Value = attr_old.Value;
 				e.Attributes.InsertBefore(attr, attr_old);
@@ -740,7 +740,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			if (build == Engine.PhxEngineBuild.Release)
 			{
-				elements = s.Document.SelectNodes(xpath_target);
+				elements = s.Document.SelectNodes(xpath_target)!;
 
 				foreach (XmlElement e in elements)
 				{
@@ -752,8 +752,8 @@ namespace KSoft.Phoenix.HaloWars
 					FixXmlTraceFixEvent(s, e, "Removing undefined Target from Tech Effect",
 						e.InnerText);
 
-					var p = e.ParentNode;
-					p.ParentNode.RemoveChild(p);
+					var p = e.ParentNode!;
+					p.ParentNode!.RemoveChild(p);
 				}
 			}
 		}
@@ -793,7 +793,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			if (build == Engine.PhxEngineBuild.Release)
 			{
-				elements = s.Document.SelectNodes(xpath_target);
+				elements = s.Document.SelectNodes(xpath_target)!;
 
 				foreach (XmlElement e in elements)
 				{
@@ -810,7 +810,7 @@ namespace KSoft.Phoenix.HaloWars
 					FixXmlTraceFixEvent(s, e, "Removing undefined TechPrereq from Power '{0}'",
 						e.InnerText);
 
-					var p = e.ParentNode;
+					var p = e.ParentNode!;
 					p.RemoveChild(e);
 				}
 			}
@@ -825,12 +825,12 @@ namespace KSoft.Phoenix.HaloWars
 
 			// see: fx_proj_beam_01
 			xpath = "Weapon[WeaponType='ForunnerBeam']";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			if (elements.Count > 0)
 			{
 				foreach (XmlElement e in elements)
 				{
-					var fc = e["WeaponType"].FirstChild;
+					var fc = e["WeaponType"]!.FirstChild!;
 					fc.Value = "Beam";
 				}
 				FixTacticsTraceFixEvent(s, name, xpath);
@@ -839,7 +839,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			// see: pow_gp_orbitalbombardment
 			xpath = "Weapon/DamageRatingOverride[@type='TurretBuilding']";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			if (RemoveAllElements(elements))
 			{
 				FixTacticsTraceFixEvent(s, name, xpath);
@@ -850,7 +850,7 @@ namespace KSoft.Phoenix.HaloWars
 			xpath = "Weapon/DamageRatingOverride[@type='Unarmored']"
 				+ " | Weapon/DamageRatingOverride[@type='Air']"
 				+ " | Weapon/DamageRatingOverride[@type='Vehicle']";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			if (RemoveAllElements(elements))
 			{
 				FixTacticsTraceFixEvent(s, name, xpath);
@@ -864,13 +864,13 @@ namespace KSoft.Phoenix.HaloWars
 
 			// see: fx_proj_rocket_01,02,03
 			xpath = "Action[contains(Weapon, '>')]";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			if (elements.Count > 0)
 			{
 				foreach (XmlElement e in elements)
 				{
-					var fc = e["Weapon"].FirstChild;
-					fc.Value = fc.Value.Substring(1);
+					var fc = e["Weapon"]!.FirstChild!;
+					fc.Value = fc.Value!.Substring(1);
 				}
 				FixTacticsTraceFixEvent(s, name, xpath);
 				return;
@@ -880,7 +880,7 @@ namespace KSoft.Phoenix.HaloWars
 			if (gRemoveUndefined)
 			{
 				xpath = "Action[Weapon='RageShockwave']";
-				elements = s.Cursor.SelectNodes(xpath);
+				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (RemoveAllElements(elements))
 				{
 					FixTacticsTraceFixEvent(s, name, xpath);
@@ -896,7 +896,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			// see: cov_inf_elitecommando_01
 			xpath = "Action[Name='GatherSupplies']";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			// I'm going to assume the first Action supersedes all proceeding Actions with the same name
 			if (RemoveAllButTheFirstElement(elements))
 			{
@@ -906,7 +906,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			// see: cpgn_scn10_warthog_01
 			xpath = "Action[Name='Capture']";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			// I'm going to assume the first Action supersedes all proceeding Actions with the same name
 			if (RemoveAllButTheFirstElement(elements))
 			{
@@ -927,7 +927,7 @@ namespace KSoft.Phoenix.HaloWars
 				+ " | Action[BaseDPSWeapon='InCoverNeedlerAttackAction']"
 				+ " | Action[BaseDPSWeapon='IcCoverPlasmaRifleAttackAction']"
 				+ " | Action[BaseDPSWeapon='PlasmaPistolAttackAction']";
-			elements = s.Cursor.SelectNodes(xpath);
+			elements = s.Cursor!.SelectNodes(xpath)!;
 			if (RemoveAllElements(elements))
 			{
 				FixTacticsTraceFixEvent(s, name, xpath);

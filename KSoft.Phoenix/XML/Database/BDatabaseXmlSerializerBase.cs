@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.XML
 		: BXmlSerializerInterface
 		, IO.ITagElementStringNameStreamable
 	{
-		XML.IBListAutoIdXmlSerializer mDamageTypesSerializer
+		XML.IBListAutoIdXmlSerializer? mDamageTypesSerializer
 			, mImpactEffectsSerializer
 			, mWeaponTypesSerializer
 			, mObjectsSerializer
@@ -16,6 +16,11 @@ namespace KSoft.Phoenix.XML
 
 		protected BDatabaseXmlSerializerBase()
 		{
+			SetupStreamXmlContexts();
+			if (mStreamXmlContexts is null)
+			{
+				throw new System.InvalidOperationException();
+			}
 		}
 
 		#region IDisposable Members

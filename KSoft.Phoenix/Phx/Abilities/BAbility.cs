@@ -117,9 +117,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Icon
-		string mIcon;
+		string? mIcon;
 		[Meta.TextureReference]
-		public string Icon
+		public string? Icon
 		{
 			get { return mIcon; }
 			set { mIcon = value; }
@@ -136,9 +136,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region RecoverAnimAttachment
-		string mRecoverAnimAttachment;
+		string? mRecoverAnimAttachment;
 		[Meta.AttachmentTypeReference]
-		public string RecoverAnimAttachment
+		public string? RecoverAnimAttachment
 		{
 			get { return mRecoverAnimAttachment; }
 			set { mRecoverAnimAttachment = value; }
@@ -146,9 +146,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region RecoverStartAnim
-		string mRecoverStartAnim;
+		string? mRecoverStartAnim;
 		[Meta.BAnimTypeReference]
-		public string RecoverStartAnim
+		public string? RecoverStartAnim
 		{
 			get { return mRecoverStartAnim; }
 			set { mRecoverStartAnim = value; }
@@ -156,9 +156,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region RecoverEndAnim
-		string mRecoverEndAnim;
+		string? mRecoverEndAnim;
 		[Meta.BAnimTypeReference]
-		public string RecoverEndAnim
+		public string? RecoverEndAnim
 		{
 			get { return mRecoverEndAnim; }
 			set { mRecoverEndAnim = value; }

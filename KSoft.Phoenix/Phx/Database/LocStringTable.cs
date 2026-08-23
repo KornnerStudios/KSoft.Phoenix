@@ -8,10 +8,10 @@ namespace KSoft.Phoenix.Phx
 {
 	public sealed class LocStringTableIndexRange
 	{
-		public LocStringTableIndexRange PrevRange { get; private set; }
-		public LocStringTableIndexRange NextRange { get; private set; }
-		public LocStringTableIndexRange Parent { get; private set; }
-		public List<LocStringTableIndexRange> SubRanges { get; private set; }
+		public LocStringTableIndexRange? PrevRange { get; private set; }
+		public LocStringTableIndexRange? NextRange { get; private set; }
+		public LocStringTableIndexRange? Parent { get; private set; }
+		public List<LocStringTableIndexRange>? SubRanges { get; private set; }
 		internal int Depth { get; private set; }
 		public int StartIndex { get; set; }
 		public int Count { get; set; }
@@ -30,7 +30,7 @@ namespace KSoft.Phoenix.Phx
 		{
 		}
 
-		public LocStringTableIndexRange(LocStringTableIndexRange prev, int count, string reservedFor)
+		public LocStringTableIndexRange(LocStringTableIndexRange? prev, int count, string reservedFor)
 		{
 			if (prev != null)
 			{
@@ -48,9 +48,9 @@ namespace KSoft.Phoenix.Phx
 			ReservedFor = reservedFor;
 
 #pragma warning disable IDE0031 // Use null propagation
-			if (Parent != null)
+			if (Parent?.SubRanges is { } subRanges)
 			{
-				Parent.SubRanges.Add(this);
+				subRanges.Add(this);
 			}
 #pragma warning restore IDE0031 // Use null propagation
 		}
@@ -100,7 +100,9 @@ namespace KSoft.Phoenix.Phx
 
 		internal LocStringTableIndexRange EndSubRange()
 		{
-			return Parent;
+			var parent = Parent;
+			ArgumentNullException.ThrowIfNull(parent);
+			return parent;
 		}
 	};
 
@@ -123,7 +125,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IndexRanges
-		private static LocStringTableIndexRange gIndexRanges;
+		private static LocStringTableIndexRange? gIndexRanges;
 		public static LocStringTableIndexRange IndexRanges { get {
 			if (gIndexRanges == null)
 			{
@@ -163,13 +165,13 @@ namespace KSoft.Phoenix.Phx
 			return gIndexRanges;
 		} }
 
-		public static LocStringTableIndexRange FindRangeDefinition(int index)
+		public static LocStringTableIndexRange? FindRangeDefinition(int index)
 		{
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
-			LocStringTableIndexRange found_range = null;
+			LocStringTableIndexRange? found_range = null;
 
-			for (var range = IndexRanges; range != null; )
+			for (LocStringTableIndexRange? range = IndexRanges; range != null; )
 			{
 				if (index >= range.StartIndex && index <= range.EndIndex)
 				{
@@ -191,8 +193,8 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		string mLanguage;
-		public string Language
+		string? mLanguage;
+		public string? Language
 		{
 			get { return mLanguage; }
 			set { mLanguage = value; }
@@ -250,7 +252,7 @@ namespace KSoft.Phoenix.Phx
 		}
 
 		#region UsedIndices updating
-		private void OnStringTableChanged(object sender, NotifyCollectionChangedEventArgs e)
+		private void OnStringTableChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (mDoNotUpdateUsedIndices)
 			{
@@ -280,7 +282,7 @@ namespace KSoft.Phoenix.Phx
 			}
 		}
 
-		private void RefreshUsedIndices(IEnumerable list, bool state = true, bool clearFirst = false)
+		private void RefreshUsedIndices(IEnumerable? list, bool state = true, bool clearFirst = false)
 		{
 			ArgumentNullException.ThrowIfNull(list);
 
@@ -312,7 +314,7 @@ namespace KSoft.Phoenix.Phx
 			}
 			mDoNotUpdateUsedIndices = false;
 		}
-		private void RefreshUsedIndicesForReplace(IList newList, IList oldList)
+		private void RefreshUsedIndicesForReplace(IList? newList, IList? oldList)
 		{
 			ArgumentNullException.ThrowIfNull(newList);
 			ArgumentNullException.ThrowIfNull(oldList);
@@ -324,8 +326,8 @@ namespace KSoft.Phoenix.Phx
 			mDoNotUpdateUsedIndices = true;
 			for (int x = 0; x < newList.Count; x++)
 			{
-				var new_item = (LocString)newList[x];
-				var old_item = (LocString)oldList[x];
+				LocString? new_item = (LocString?)newList[x];
+				LocString? old_item = (LocString?)oldList[x];
 
 				if (new_item == old_item)
 				{
@@ -414,26 +416,35 @@ namespace KSoft.Phoenix.Phx
 
 		public sealed class RangeStatsData
 		{
-			public LocStringTableIndexRange Range { get; set; }
+			public LocStringTableIndexRange? Range { get; set; }
 			public int UsedCount { get; set; }
-			public int FreeCount { get { return Range.Count - UsedCount; } }
+			public int FreeCount { get {
+				var range = Range;
+				if (range is null)
+				{
+					throw new NullReferenceException();
+				}
+
+				return range.Count - UsedCount;
+			} }
 
 			public override string ToString()
 			{
-				if (Range == null)
+				var range = Range;
+				if (range is null)
 				{
-					return base.ToString();
+					return base.ToString() ?? string.Empty;
 				}
 
 				return string.Format("{0}Total={1},Used={2},Free={3}, {4}",
-					new string('\t', Range.Depth),
-					Range.Count, UsedCount, FreeCount, Range.ReservedFor);
+					new string('\t', range.Depth),
+					range.Count, UsedCount, FreeCount, range.ReservedFor);
 			}
 		};
 		public Dictionary<LocStringTableIndexRange, RangeStatsData> RangeStats { get {
 			var result = new Dictionary<LocStringTableIndexRange, RangeStatsData>();
 
-			for (var range = IndexRanges; range != null; )
+			for (LocStringTableIndexRange? range = IndexRanges; range != null; )
 			{
 				int count = CountNumberUsed(range);
 				var data = new RangeStatsData()
@@ -441,11 +452,11 @@ namespace KSoft.Phoenix.Phx
 					Range = range,
 					UsedCount = count,
 				};
-				result.Add(data.Range, data);
+				result.Add(range, data);
 
-				if (range.SubRanges.IsNotNullOrEmpty())
+				if (range.SubRanges is { Count: > 0 } subRanges)
 				{
-					range = range.SubRanges[0];
+					range = subRanges[0];
 					continue;
 				}
 
@@ -485,13 +496,23 @@ namespace KSoft.Phoenix.Phx
 		{
 			using (s.EnterCursorBookmark("Language"))
 			{
-				s.StreamAttribute("name", ref mLanguage);
+				if (s.IsReading)
+				{
+					string language = string.Empty;
+					s.StreamAttribute("name", ref language);
+					mLanguage = language;
+				}
+				else if (s.IsWriting)
+				{
+					string language = mLanguage ?? string.Empty;
+					s.StreamAttribute("name", ref language);
+				}
 
 				if (s.IsReading)
 				{
 					var temp_list = new List<LocString>();
 					bool is_sorted = true;
-					LocString prev_str = null;
+					LocString? prev_str = null;
 					foreach (var n in s.ElementsByName("String"))
 					{
 						using (s.EnterCursorBookmark(n))

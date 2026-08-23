@@ -17,11 +17,11 @@ namespace KSoft.Phoenix.Resource.ECF
 		: IDisposable
 	{
 		public EcfFileDefinition EcfDefinition { get; private set; }
-		internal EcfFile mEcfFile;
-		protected string mSourceFile; // filename of the source file which the util stems from
-		public TextWriter ProgressOutput { get; set; }
-		public TextWriter VerboseOutput { get; set; }
-		public TextWriter DebugOutput { get; set; }
+		internal EcfFile? mEcfFile;
+		protected string? mSourceFile; // filename of the source file which the util stems from
+		public TextWriter? ProgressOutput { get; set; }
+		public TextWriter? VerboseOutput { get; set; }
+		public TextWriter? DebugOutput { get; set; }
 
 		/// <see cref="EcfFileUtilOptions"/>
 		public Collections.BitVector32 Options = new();
