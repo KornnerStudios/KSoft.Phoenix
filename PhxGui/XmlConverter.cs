@@ -23,7 +23,7 @@ namespace PhxGui
 
 			private readonly KSoft.Shell.ProcessorSize mVaSize;
 			private readonly KSoft.Shell.EndianFormat mEndianFormat;
-			private List<string> mInputFiles;
+			private List<string> mInputFiles = null!;
 
 			public XmlConverter(XmlConverterMode mode, MainWindowViewModel viewModel)
 			{
@@ -59,12 +59,12 @@ namespace PhxGui
 
 					case XmlConverterMode.XmlToXmb:
 						xmlFile = inputFile;
-						xmbFile = null; // #TODO
+						xmbFile = null!; // #TODO
 						outputFile = xmbFile;
 						break;
 
 					default:
-						xmlFile = xmbFile = outputFile = null;
+						xmlFile = xmbFile = outputFile = null!;
 						break;
 				}
 			}

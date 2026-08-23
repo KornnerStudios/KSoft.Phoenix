@@ -60,7 +60,7 @@ namespace PhxGui
 		: KSoft.ObjectModel.BasicViewModel
 	{
 		#region Flags
-		private static KSoft.WPF.BitVectorUserInterfaceData gFlagsUserInterfaceSource;
+		private static KSoft.WPF.BitVectorUserInterfaceData? gFlagsUserInterfaceSource;
 		public static KSoft.WPF.BitVectorUserInterfaceData FlagsUserInterfaceSource { get {
 			if (gFlagsUserInterfaceSource == null)
 			{
@@ -78,7 +78,7 @@ namespace PhxGui
 		#endregion
 
 		#region StatusText
-		string mStatusText;
+		string mStatusText = string.Empty;
 		public string StatusText
 		{
 			get { return mStatusText; }
@@ -87,7 +87,7 @@ namespace PhxGui
 		#endregion
 
 		#region ProcessFilesHelpText
-		string mProcessFilesHelpText;
+		string mProcessFilesHelpText = string.Empty;
 		public string ProcessFilesHelpText
 		{
 			get { return mProcessFilesHelpText; }
@@ -96,7 +96,7 @@ namespace PhxGui
 		#endregion
 
 		#region MessagesText
-		string mMessagesText;
+		string mMessagesText = string.Empty;
 		public string MessagesText
 		{
 			get { return mMessagesText; }
@@ -113,7 +113,7 @@ namespace PhxGui
 		}
 		#endregion
 
-		public ICommand DataLoadTest { get; private set; }
+		public ICommand DataLoadTest { get; private set; } = null!;
 
 		public MainWindowViewModel()
 		{
@@ -131,14 +131,14 @@ namespace PhxGui
 		}
 
 		#region DataLoadTest
-		static bool CanExecuteDataLoadTest(object unused)
+		static bool CanExecuteDataLoadTest(object? unused)
 		{
 			var settings = Properties.Settings.Default;
 
 			return System.IO.Directory.Exists(settings.EraExpandOutputPath);
 		}
 
-		private void ExecuteDataLoadTest(object unused)
+		private void ExecuteDataLoadTest(object? unused)
 		{
 			ClearMessages();
 			IsProcessing = true;
@@ -152,14 +152,14 @@ namespace PhxGui
 				{
 					bool verbose = Flags.Test(MiscFlags.UseVerboseOutput);
 
-					AggregateException ae = t.IsFaulted ? t.Exception : null;
+					AggregateException? ae = t.IsFaulted ? t.Exception : null;
 					string error = "";
 					if (ae != null)
 					{
-						var e = ae.GetOnlyExceptionOrAll();
+						var e = ae.GetOnlyExceptionOrAll()!;
 						error = verbose
-							? e.ToVerboseString()
-							: e.ToBasicString();
+							? e.ToVerboseString()!
+							: e.ToBasicString()!;
 					}
 					MessagesText += string.Format("Test data load finished with errors: {0}{1}{2}",
 						"See PhxGui.log for any additional details",

@@ -8,9 +8,9 @@ namespace PhxGui
 {
 	public partial class ModManifestView : Window
 	{
-		private KSoft.Phoenix.HaloWars.ModManifestFile ModManifest
+		private KSoft.Phoenix.HaloWars.ModManifestFile? ModManifest
 			=> this.DataContext as KSoft.Phoenix.HaloWars.ModManifestFile;
-		private KSoft.Phoenix.HaloWars.ModManifestDirectory SelectedModManifestDirectory
+		private KSoft.Phoenix.HaloWars.ModManifestDirectory? SelectedModManifestDirectory
 			=> DirectoriesDataGrid.SelectedItem as KSoft.Phoenix.HaloWars.ModManifestDirectory;
 
 		public ModManifestView()
@@ -146,7 +146,7 @@ namespace PhxGui
 				return;
 			}
 
-			ModManifest.Directories.Move(selected_index, selected_index - 1);
+			ModManifest!.Directories.Move(selected_index, selected_index - 1);
 		}
 
 		private void OnMoveRowDownClicked(object sender, RoutedEventArgs e)
@@ -157,17 +157,17 @@ namespace PhxGui
 				return;
 			}
 
-			if (selected_index == ModManifest.Directories.Count-1)
+			if (selected_index == ModManifest!.Directories.Count-1)
 			{
 				return;
 			}
 
-			ModManifest.Directories.Move(selected_index, selected_index + 1);
+			ModManifest!.Directories.Move(selected_index, selected_index + 1);
 		}
 
 		private void OnAddRowClicked(object sender, RoutedEventArgs e)
 		{
-			ModManifest.Directories.Add(new KSoft.Phoenix.HaloWars.ModManifestDirectory());
+			ModManifest!.Directories.Add(new KSoft.Phoenix.HaloWars.ModManifestDirectory());
 		}
 
 		private void OnDeleteRowClicked(object sender, RoutedEventArgs e)
@@ -178,12 +178,12 @@ namespace PhxGui
 				return;
 			}
 
-			ModManifest.Directories.RemoveAt(selected_index);
+			ModManifest!.Directories.RemoveAt(selected_index);
 		}
 
-		private void OpenFolderInExplorer(string path, string messageBoxCaption = null)
+		private void OpenFolderInExplorer(string? path, string? messageBoxCaption = null)
 		{
-			if (!System.IO.Directory.Exists(path))
+			if (string.IsNullOrEmpty(path) || !System.IO.Directory.Exists(path))
 			{
 				MessageBox.Show(this,
 					"Path does not exist: " + path,
@@ -227,7 +227,7 @@ namespace PhxGui
 				return;
 			}
 
-			string path = manifest.ContainingFolder;
+			string? path = manifest.ContainingFolder;
 
 			OpenFolderInExplorer(path);
 		}

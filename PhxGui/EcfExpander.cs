@@ -41,13 +41,13 @@ namespace PhxGui
 
 		private class ExpandEcfFilesStack
 		{
-			public MainWindowViewModel ViewModel;
+			public MainWindowViewModel ViewModel = null!;
 
 			public BitVector32 EcfOptions;
 			public BitVector32 EcfExpanderOptions;
 
-			public Dispatcher Dispatcher;
-			public string[] EcfFiles;
+			public Dispatcher Dispatcher = null!;
+			public string[] EcfFiles = null!;
 			private int mEcfFilesIndex;
 
 			public void Expand()
@@ -97,10 +97,10 @@ namespace PhxGui
 						{
 							error_type = "EXCEPTION";
 
-							var e = t.Exception.GetOnlyExceptionOrAll();
+							var e = t.Exception!.GetOnlyExceptionOrAll()!;
 							error_hint = verbose
-								? e.ToVerboseString()
-								: e.ToBasicString();
+								? e.ToVerboseString()!
+								: e.ToBasicString()!;
 						}
 						else
 						{
@@ -131,7 +131,7 @@ namespace PhxGui
 						sb.AppendLine("VerboseOutput:");
 						// include the ECF path for context, when dealing with multiple files
 						sb.AppendLine(args.EcfPath);
-						sb.AppendLine(args.VerboseOutput.GetStringBuilder().ToString());
+						sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
 						sb.AppendLine(message_text);
 
 						message_text = sb.ToString();
@@ -165,10 +165,10 @@ namespace PhxGui
 		{
 			public BitVector32 EcfOptions;
 			public BitVector32 EcfExpanderOptions;
-			public StringWriter VerboseOutput;
+			public StringWriter? VerboseOutput;
 
-			public string EcfPath;
-			public string ListingName;
+			public string EcfPath = null!;
+			public string ListingName = null!;
 
 			public ExpandEcfFileParameters(bool useVerboseOutput)
 			{
@@ -204,7 +204,7 @@ namespace PhxGui
 				expander.Options = args.EcfOptions;
 				expander.ExpanderOptions = args.EcfExpanderOptions;
 				expander.VerboseOutput = args.VerboseOutput;
-				string output_path = Path.GetDirectoryName(args.EcfPath);
+				string output_path = Path.GetDirectoryName(args.EcfPath)!;
 
 				do
 				{

@@ -32,11 +32,11 @@ namespace PhxGui
 				args.EcfOptions.Set(KSoft.Phoenix.Resource.ECF.EcfFileUtilOptions.SkipVerification);
 			}
 
-			args.AssetsPath = Path.GetDirectoryName(ecfListing);
+			args.AssetsPath = Path.GetDirectoryName(ecfListing)!;
 			#if false // #TODO make a EcfBuildOutputPath
 			args.OutputPath = Properties.Settings.Default.EraBuildOutputPath;
 			#else
-			args.OutputPath = Path.GetDirectoryName(ecfListing);
+			args.OutputPath = Path.GetDirectoryName(ecfListing)!;
 			#endif
 			args.ListingPath = ecfListing;
 
@@ -64,10 +64,10 @@ namespace PhxGui
 					{
 						error_type = "EXCEPTION";
 
-						var e = t.Exception.GetOnlyExceptionOrAll();
+						var e = t.Exception!.GetOnlyExceptionOrAll()!;
 						error_hint = verbose
-							? e.ToVerboseString()
-							: e.ToBasicString();
+							? e.ToVerboseString()!
+							: e.ToBasicString()!;
 					}
 					else
 					{
@@ -96,7 +96,7 @@ namespace PhxGui
 				{
 					var sb = new System.Text.StringBuilder();
 					sb.AppendLine("VerboseOutput:");
-					sb.AppendLine(args.VerboseOutput.GetStringBuilder().ToString());
+					sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
 					sb.AppendLine(message_text);
 
 					message_text = sb.ToString();
@@ -114,11 +114,11 @@ namespace PhxGui
 		{
 			public BitVector32 EcfOptions;
 			public BitVector32 EcfBuilderOptions = default;
-			public StringWriter VerboseOutput;
+			public StringWriter? VerboseOutput;
 
-			public string AssetsPath;
-			public string OutputPath;
-			public string ListingPath;
+			public string AssetsPath = null!;
+			public string OutputPath = null!;
+			public string ListingPath = null!;
 
 			public BuildEcfFileParameters(bool useVerboseOutput)
 			{

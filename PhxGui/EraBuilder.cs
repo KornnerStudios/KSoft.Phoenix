@@ -37,7 +37,7 @@ namespace PhxGui
 				args.EraBuilderOptions.Set(KSoft.Phoenix.Resource.EraFileBuilderOptions.AlwaysUseXmlOverXmb);
 			}
 
-			args.AssetsPath = System.IO.Path.GetDirectoryName(eraListing);
+			args.AssetsPath = System.IO.Path.GetDirectoryName(eraListing)!;
 			args.OutputPath = Properties.Settings.Default.EraBuildOutputPath;
 			args.ListingPath = eraListing;
 			args.EraName = System.IO.Path.GetFileNameWithoutExtension(eraListing);
@@ -66,10 +66,10 @@ namespace PhxGui
 					{
 						error_type = "EXCEPTION";
 
-						var e = t.Exception.GetOnlyExceptionOrAll();
+						var e = t.Exception!.GetOnlyExceptionOrAll()!;
 						error_hint = verbose
-							? e.ToVerboseString()
-							: e.ToBasicString();
+							? e.ToVerboseString()!
+							: e.ToBasicString()!;
 					}
 					else
 					{
@@ -98,7 +98,7 @@ namespace PhxGui
 				{
 					var sb = new System.Text.StringBuilder();
 					sb.AppendLine("VerboseOutput:");
-					sb.AppendLine(args.VerboseOutput.GetStringBuilder().ToString());
+					sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
 					sb.AppendLine(message_text);
 
 					message_text = sb.ToString();
@@ -116,12 +116,12 @@ namespace PhxGui
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraBuilderOptions;
-			public StringWriter VerboseOutput;
+			public StringWriter? VerboseOutput;
 
-			public string AssetsPath;
-			public string OutputPath;
-			public string ListingPath;
-			public string EraName;
+			public string AssetsPath = null!;
+			public string OutputPath = null!;
+			public string ListingPath = null!;
+			public string EraName = null!;
 
 			public BuildEraFileParameters(bool useVerboseOutput)
 			{

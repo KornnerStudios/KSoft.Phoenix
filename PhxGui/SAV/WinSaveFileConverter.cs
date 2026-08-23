@@ -49,7 +49,7 @@ partial class MainWindowViewModel
 		public System.Windows.Threading.Dispatcher Dispatcher;
 		public MainWindowViewModel ViewModel;
 
-		private List<string> mInputFiles;
+		private List<string> mInputFiles = null!;
 
 		public WinSaveFileConverter(WinSaveFileConverterMode mode, MainWindowViewModel viewModel)
 		{
@@ -112,7 +112,7 @@ partial class MainWindowViewModel
 		private void DecryptSav(string savDecryptedFile, string savFile)
 		{
 			PhxWinSaveFile.OpenSavResult openSavResult = PhxWinSaveFile.OpenSav(savFile,
-				out MemoryStream savFileStream);
+				out MemoryStream? savFileStream);
 
 			switch (openSavResult)
 			{
@@ -125,7 +125,7 @@ partial class MainWindowViewModel
 					return;
 
 				case PhxWinSaveFile.OpenSavResult.ValidAndNeedsDecryption:
-					PhxWinSaveFile.DecryptUserProfileData(savFileStream.GetBuffer());
+					PhxWinSaveFile.DecryptUserProfileData(savFileStream!.GetBuffer());
 					System.IO.File.WriteAllBytes(savDecryptedFile, savFileStream.GetBuffer());
 					break;
 
@@ -157,7 +157,7 @@ partial class MainWindowViewModel
 					break;
 
 				default:
-					savDecryptedFile = savFile = outputFile = null;
+					savDecryptedFile = savFile = outputFile = null!;
 					break;
 			}
 		}

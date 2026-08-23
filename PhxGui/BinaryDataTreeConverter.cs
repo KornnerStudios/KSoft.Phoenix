@@ -47,7 +47,7 @@ namespace PhxGui
 			public System.Windows.Threading.Dispatcher Dispatcher;
 			public MainWindowViewModel ViewModel;
 
-			private List<string> mInputFiles;
+			private List<string> mInputFiles = null!;
 
 			public BinaryDataTreeConverter(BinaryDataTreeConverterMode mode, MainWindowViewModel viewModel)
 			{
@@ -131,7 +131,7 @@ namespace PhxGui
 						break;
 
 					default:
-						xmlFile = xmbFile = outputFile = null;
+						xmlFile = xmbFile = outputFile = null!;
 						break;
 				}
 			}

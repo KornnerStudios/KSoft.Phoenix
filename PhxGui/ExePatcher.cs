@@ -33,7 +33,7 @@ namespace PhxGui
 				{
 					MessagesText += string.Format("Patch EXE finished with errors: {0}{1}",
 						Environment.NewLine,
-						t.IsFaulted ? t.Exception.GetOnlyExceptionOrAll().ToString() : t.Result);
+						t.IsFaulted ? t.Exception!.GetOnlyExceptionOrAll()!.ToString() : t.Result);
 				}
 				else
 				{
@@ -86,7 +86,7 @@ namespace PhxGui
 			kPatches.Add(v1_11279_1_2);
 		}
 
-		static bool TryGetPatchInfo(string actualSha1, out PatchInfo info)
+		static bool TryGetPatchInfo(string actualSha1, out PatchInfo? info)
 		{
 			info = null;
 
@@ -100,7 +100,7 @@ namespace PhxGui
 
 		public sealed class PatchGameExeByParameters
 		{
-			public string ExeFile;
+			public string ExeFile = null!;
 			public MainWindowViewModel.AcceptedFileType ExeFileType;
 			public bool CanOverwriteFiles = true;
 
@@ -110,14 +110,14 @@ namespace PhxGui
 				string backup_file = Path.GetFileNameWithoutExtension(ExeFile);
 				backup_file += "_UNTOUCHED.exe";
 				backup_file = Path.ChangeExtension(backup_file, extension);
-				backup_file = Path.Combine(Path.GetDirectoryName(ExeFile), backup_file);
+				backup_file = Path.Combine(Path.GetDirectoryName(ExeFile)!, backup_file);
 				File.Copy(ExeFile, backup_file, CanOverwriteFiles);
 			}
 		};
 
-		public static string PatchGameExeByPatternMatching(object taskState)
+		public static string PatchGameExeByPatternMatching(object? taskState)
 		{
-			var args = KSoft.Debug.TypeCheck.CastReference<PatchGameExeByParameters>(taskState);
+			var args = KSoft.Debug.TypeCheck.CastReference<PatchGameExeByParameters>(taskState!)!;
 
 			#region boilerplate
 			if (args.ExeFileType == MainWindowViewModel.AcceptedFileType.Xex)
@@ -158,18 +158,18 @@ namespace PhxGui
 			}
 			#endregion
 
-			byte[] exe_file_sha1_bytes = null;
+			byte[]? exe_file_sha1_bytes = null;
 			using (var ms = new MemoryStream(sourceExeBytes))
 			using (var sha1_provider = System.Security.Cryptography.SHA1.Create())
 			{
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(ms);
 			}
 
-			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes);
+			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes!);
 
 			var finalErrorMessage = new System.Text.StringBuilder();
 			{
-				string errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(sourceExeBytes, sourceExeBytes);
+				string? errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
 					finalErrorMessage.AppendFormat("ERROR EraDigitalSignatureCheck - {0}: {1}" +
@@ -182,7 +182,7 @@ namespace PhxGui
 			}
 
 			{
-				string errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(sourceExeBytes, sourceExeBytes);
+				string? errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
 					finalErrorMessage.AppendFormat("ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
@@ -195,7 +195,7 @@ namespace PhxGui
 			}
 
 			{
-				string errorMessage = PatchGameExeUserProfileSetupTickerInfoByPatternMatching(sourceExeBytes, sourceExeBytes);
+				string? errorMessage = PatchGameExeUserProfileSetupTickerInfoByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
 					finalErrorMessage.AppendFormat("ERROR UserProfileSetupTickerInfo - {0}: {1}" +
@@ -220,7 +220,7 @@ namespace PhxGui
 			return args.ExeFile;
 		}
 
-		static string PatchGameExeEraDigitalSignatureCheckByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
+		static string? PatchGameExeEraDigitalSignatureCheckByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
 		{
 			var patch_pattern = new KSoft.Phoenix.zPatching.WinExePatcherProcessHeaderData();
 			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
@@ -239,7 +239,7 @@ namespace PhxGui
 			return null;
 		}
 
-		static string PatchGameExeParticleGatewayAssertByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
+		static string? PatchGameExeParticleGatewayAssertByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
 		{
 			var patch_pattern = new KSoft.Phoenix.Games.HaloWars.zPatching.WinExePatcherParticleGateway();
 			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
@@ -258,7 +258,7 @@ namespace PhxGui
 			return null;
 		}
 
-		static string PatchGameExeUserProfileSetupTickerInfoByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, Span<byte> dstExeBytes)
+		static string? PatchGameExeUserProfileSetupTickerInfoByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, Span<byte> dstExeBytes)
 		{
 			var patch_pattern = new KSoft.Phoenix.Games.HaloWars.zPatching.WinExePatcherUserProfileTickerInfo();
 			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
@@ -276,9 +276,9 @@ namespace PhxGui
 		}
 
 		#region old PatchGameExeBySha1
-		public static string PatchGameExeBySha1(object taskState)
+		public static string PatchGameExeBySha1(object? taskState)
 		{
-			var args = taskState as PatchGameExeByParameters;
+			var args = (taskState as PatchGameExeByParameters)!;
 
 			var exe_file_attrs = File.GetAttributes(args.ExeFile);
 			if (exe_file_attrs.HasFlag(FileAttributes.ReadOnly))
@@ -289,15 +289,15 @@ namespace PhxGui
 
 			args.BackupFile();
 
-			byte[] exe_file_sha1_bytes = null;
+			byte[]? exe_file_sha1_bytes = null;
 			using (var fs = File.OpenRead(args.ExeFile))
 			using (var sha1_provider = System.Security.Cryptography.SHA1.Create())
 			{
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(fs);
 			}
 
-			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes);
-			if (!TryGetPatchInfo(exe_file_sha1, out PatchInfo exe_paches))
+			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes!);
+			if (!TryGetPatchInfo(exe_file_sha1, out PatchInfo? exe_paches) || exe_paches == null)
 			{
 				return string.Format("ERROR Unrecongized file: {0}" +
 					"SHA1={1}{2}" +

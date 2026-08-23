@@ -70,14 +70,14 @@ namespace PhxGui
 
 		private class ExpandEraFilesStack
 		{
-			public MainWindowViewModel ViewModel;
+			public MainWindowViewModel ViewModel = null!;
 
 			public BitVector32 EraOptions;
 			public BitVector32 EraExpanderOptions;
-			public string BaseOutputPath;
+			public string BaseOutputPath = null!;
 
-			public Dispatcher Dispatcher;
-			public string[] EraFiles;
+			public Dispatcher Dispatcher = null!;
+			public string[] EraFiles = null!;
 			private int mEraFilesIndex;
 
 			public void Expand()
@@ -132,10 +132,10 @@ namespace PhxGui
 						{
 							error_type = "EXCEPTION";
 
-							var e = t.Exception.GetOnlyExceptionOrAll();
+							var e = t.Exception!.GetOnlyExceptionOrAll()!;
 							error_hint = verbose
-								? e.ToVerboseString()
-								: e.ToBasicString();
+								? e.ToVerboseString()!
+								: e.ToBasicString()!;
 						}
 						else
 						{
@@ -166,7 +166,7 @@ namespace PhxGui
 						sb.AppendLine("VerboseOutput:");
 						// include the ERA path for context, when dealing with multiple files
 						sb.AppendLine(args.EraPath);
-						sb.AppendLine(args.VerboseOutput.GetStringBuilder().ToString());
+						sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
 						sb.AppendLine(message_text);
 
 						message_text = sb.ToString();
@@ -200,11 +200,11 @@ namespace PhxGui
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraExpanderOptions;
-			public StringWriter VerboseOutput;
+			public StringWriter? VerboseOutput;
 
-			public string EraPath;
-			public string OutputPath;
-			public string ListingName;
+			public string EraPath = null!;
+			public string OutputPath = null!;
+			public string ListingName = null!;
 
 			public ExpandEraFileParameters(bool useVerboseOutput)
 			{
