@@ -183,6 +183,7 @@ namespace KSoft.Security.Cryptography
 			ArgumentOutOfRangeException.ThrowIfLessThan(result.Length, kResultSize, nameof(result));
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy game digest format; not used for security authentication.")]
 		public static void Sha1Hash(string str, byte[] result)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(str);
@@ -239,6 +240,7 @@ namespace KSoft.Security.Cryptography
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy game digest format; not used for security authentication.")]
 		public static bool Sha1HashFile(string fileName, byte[] result, out long fileLength)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(fileName);

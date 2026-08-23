@@ -38,6 +38,7 @@ namespace KSoft.Phoenix.Resource
 		public byte[]? Content { get; set; }
 		byte[]? PaddingBytes { get; set; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy game-file digest format; not used for security authentication.")]
 		public GameFile()
 		{
 			Flags = FileFlags.kAll;

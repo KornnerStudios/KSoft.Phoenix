@@ -64,6 +64,7 @@ namespace KSoft.Phoenix.Resource
 		/// The signature digest (SHA1) is what is digitally signed when the engine's tools when they build
 		/// an ERA. The private keys are not known, but the exe has the public keys hard coded.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy ERA signature format.")]
 		internal static byte[] ComputeSignatureDigest(System.IO.Stream chunksStream
 			, long chunksOffset
 			, long chunksLength

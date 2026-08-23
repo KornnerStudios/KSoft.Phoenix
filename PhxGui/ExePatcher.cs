@@ -115,6 +115,7 @@ namespace PhxGui
 			}
 		};
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Used only to identify known executable fingerprints for patch selection, not for security authentication.")]
 		public static string PatchGameExeByPatternMatching(object? taskState)
 		{
 			var args = KSoft.Debug.TypeCheck.CastReference<PatchGameExeByParameters>(taskState!)!;
@@ -276,6 +277,7 @@ namespace PhxGui
 		}
 
 		#region old PatchGameExeBySha1
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Used only to identify known executable fingerprints for patch selection, not for security authentication.")]
 		public static string PatchGameExeBySha1(object? taskState)
 		{
 			var args = (taskState as PatchGameExeByParameters)!;
