@@ -9,7 +9,15 @@ namespace KSoft.Phoenix.Resource.Test
 	{
 		const string kEraCryptInputDir = @"C:\KStudio\HaloWars\PC\";
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
-		string kEraCryptOutputDir => TestContext.TestRunResultsDirectory;
+		string kEraCryptOutputDir
+		{
+			get
+			{
+				var outputDirectory = TestContext.TestRunResultsDirectory;
+				Assert.IsNotNull(outputDirectory);
+				return outputDirectory;
+			}
+		}
 		const string kEraCryptTestFileName = "root";
 
 		static readonly Collections.BitVector32 kEraUtilTestOptions = new Collections.BitVector32()
@@ -32,7 +40,7 @@ namespace KSoft.Phoenix.Resource.Test
 					+ EraFileUtil.kExtensionDecrypted
 			);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
-		string kEraExpanderOutputDir => System.IO.Path.Combine(TestContext.TestRunResultsDirectory, @"assets\");
+		string kEraExpanderOutputDir => System.IO.Path.Combine(kEraCryptOutputDir, @"assets\");
 		const string kEraBuilderOutputDir = kEraCryptInputDir;
 
 		[TestMethod]

@@ -11,7 +11,7 @@ namespace KSoft.Phoenix.Phx.Test
 		public void LocStringTable_IndexRangesTest()
 		{
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
-			LocStringTableIndexRange ranges = LocStringTable.IndexRanges;
+			LocStringTableIndexRange? ranges = LocStringTable.IndexRanges;
 			ranges = null;
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
 
@@ -28,7 +28,9 @@ namespace KSoft.Phoenix.Phx.Test
 		{
 			var ranges = LocStringTable.IndexRanges;
 			Assert.AreEqual("code", ranges.ReservedFor);
-			var range = ranges.SubRanges[0];
+			var subRanges = ranges.SubRanges;
+			Assert.IsNotNull(subRanges);
+			var range = subRanges[0];
 			Assert.AreEqual("unused1", range.ReservedFor);
 
 			var st = new LocStringTable();
