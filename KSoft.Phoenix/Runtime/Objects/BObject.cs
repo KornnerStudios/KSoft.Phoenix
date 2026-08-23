@@ -54,7 +54,7 @@ namespace KSoft.Phoenix.Runtime
 		public byte[] UVOffsets = new byte[kUVOffsetsSize];
 		public uint MultiframeTextureIndex;
 		public int VisualVariationIndex;
-		public required BVisual Visual;
+		public BVisual? Visual;
 		public float AnimationRate, Radius, MoveAnimationPosition, HighlightIntensity;
 		public uint SubUpdateNumber;
 		public BBitVector32 PlayerVisibility, DoppleBits;

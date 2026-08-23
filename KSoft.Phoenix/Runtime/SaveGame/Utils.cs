@@ -548,7 +548,7 @@ namespace KSoft.Phoenix.Runtime
 			return s;
 		}
 
-		public static bool StreamObjectId<T>(IO.EndianStream s, ref T obj,
+		public static bool StreamObjectId<T>(IO.EndianStream s, ref T? obj,
 			Func<T> initializer,
 			Action<T, int> setId,
 			Func<T, int> getId,

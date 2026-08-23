@@ -83,11 +83,11 @@ namespace KSoft.Phoenix.Runtime
 		{
 			return visual.ProtoId;
 		}
-		internal static void Stream(IO.EndianStream s, ref BVisual visual)
+		internal static void Stream(IO.EndianStream s, ref BVisual? visual)
 		{
 			if (BSaveGame.StreamObjectId(s, ref visual, NewVisual, SetProtoId, GetProtoId))
 			{
-				visual.Serialize(s);
+				visual!.Serialize(s);
 			}
 		}
 	};
