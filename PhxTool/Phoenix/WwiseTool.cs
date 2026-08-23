@@ -36,7 +36,7 @@ namespace KSoft.Tool.Phoenix
 		const string kGeneratedSoundBanksFolder = @"wwise_material\GeneratedSoundBanks\";
 		const string kSoundsPackListingName = @"HaloWars_sounds_pck.xml";
 		Mode mMode;
-		string mPath, mOutputPath, mSwitches;
+		string? mPath, mOutputPath, mSwitches;
 		bool mTimeOperation;
 
 		protected override void InitializeOptions()
@@ -122,7 +122,7 @@ namespace KSoft.Tool.Phoenix
 		{
 			switch (mMode)
 			{
-				case Mode.Extract: Extract(mPath, mOutputPath); break;
+				case Mode.Extract: Extract(mPath!, mOutputPath); break;
 
 				default: Program.UnavailableOption(mMode); break;
 			}
@@ -139,7 +139,7 @@ namespace KSoft.Tool.Phoenix
 			DumpSoundPackToXml=1<<0,
 			OverwriteExisting=1<<1,
 		};
-		void ExtractParseSwitches(string switches,
+		void ExtractParseSwitches(string? switches,
 			out ExtractSwitches flags)
 		{
 			flags = 0;
@@ -155,7 +155,7 @@ namespace KSoft.Tool.Phoenix
 				flags |= ExtractSwitches.OverwriteExisting;
 			}
 		}
-		void Extract(string banksPath, string /*outputPath*/_)
+		void Extract(string banksPath, string? /*outputPath*/_)
 		{
 			if (!System.IO.File.Exists(kSoundTablePath))
 			{
@@ -178,7 +178,7 @@ namespace KSoft.Tool.Phoenix
 				sound_table.Serialize(s);
 			}
 
-			if (mTimeOperation)
+			if (stopwatch != null)
 			{
 				stopwatch.Stop();
 				Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
@@ -208,7 +208,7 @@ namespace KSoft.Tool.Phoenix
 				pck.SerializeSoundBanks(s);
 			}
 
-			if (mTimeOperation)
+			if (stopwatch != null)
 			{
 				stopwatch.Stop();
 				Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
@@ -220,7 +220,7 @@ namespace KSoft.Tool.Phoenix
 
 			Console.WriteLine("\t" + "Postprocessing bank data...");
 			pck_extractor.PrepareForExtraction();
-			if (mTimeOperation)
+			if (stopwatch != null)
 			{
 				stopwatch.Stop();
 				Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
@@ -235,9 +235,9 @@ namespace KSoft.Tool.Phoenix
 					Console.WriteLine("\t" + "Taking a dump...");
 					Serialize(s, pck_extractor);
 					Console.WriteLine("\t\t" + "flushing...");
-					s.Document.Save(Path.Combine(mOutputPath, kSoundsPackListingName));
+					s.Document.Save(Path.Combine(mOutputPath!, kSoundsPackListingName));
 
-					if (mTimeOperation)
+					if (stopwatch != null)
 					{
 						stopwatch.Stop();
 						Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
@@ -252,13 +252,13 @@ namespace KSoft.Tool.Phoenix
 
 			using (var fs = File.OpenRead(sounds_pck_filename))
 			using (var s = new IO.EndianStream(fs, Shell.EndianFormat.Big))
-			using (var towav = new StreamWriter(Path.Combine(mOutputPath, "HaloWars_towav.bat")))
+			using (var towav = new StreamWriter(Path.Combine(mOutputPath!, "HaloWars_towav.bat")))
 			{
-				pck_extractor.ExtractSounds(mOutputPath, towav, s.Reader, (switches & ExtractSwitches.OverwriteExisting) != 0);
+				pck_extractor.ExtractSounds(mOutputPath!, towav, s.Reader, (switches & ExtractSwitches.OverwriteExisting) != 0);
 			}
 			#endregion
 
-			if (mTimeOperation)
+			if (stopwatch != null)
 			{
 				stopwatch.Stop();
 				Console.WriteLine("Perf: {0}", stopwatch.Elapsed);

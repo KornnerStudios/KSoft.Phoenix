@@ -37,7 +37,7 @@ namespace KSoft.Tool.Phoenix
 		}
 
 		Mode mMode;
-		string mPath, mName,
+		string? mPath, mName,
 			mOutputPath, mSwitches;
 
 		protected override void InitializeOptions()
@@ -148,16 +148,16 @@ namespace KSoft.Tool.Phoenix
 					switch (mMode)
 					{
 						case Mode.Expand:
-							Expand(mPath, mName, mOutputPath, mSwitches);
+							Expand(mPath!, mName!, mOutputPath, mSwitches);
 							break;
 						case Mode.Build:
-							Build(mPath, mName, mOutputPath, mSwitches);
+							Build(mPath!, mName!, mOutputPath, mSwitches);
 							break;
 						case Mode.Decrypt:
-							Crypt(mPath, mName, mOutputPath, mSwitches, Security.Cryptography.CryptographyTransformType.Decrypt);
+							Crypt(mPath!, mName!, mOutputPath!, mSwitches, Security.Cryptography.CryptographyTransformType.Decrypt);
 							break;
 						case Mode.Encrypt:
-							Crypt(mPath, mName, mOutputPath, mSwitches, Security.Cryptography.CryptographyTransformType.Encrypt);
+							Crypt(mPath!, mName!, mOutputPath!, mSwitches, Security.Cryptography.CryptographyTransformType.Encrypt);
 							break;
 
 						default: Program.UnavailableOption(mMode); break;
@@ -182,7 +182,7 @@ namespace KSoft.Tool.Phoenix
 				flag = switches[index] == '1';
 			}
 		}
-		static void ExpandParseSwitches(string switches,
+		static void ExpandParseSwitches(string? switches,
 			out Collections.BitVector32 options,
 			out Collections.BitVector32 expanderOptions)
 		{
@@ -274,7 +274,7 @@ namespace KSoft.Tool.Phoenix
 			}
 		}
 
-		static void Expand(string eraPath, string listingName, string outputPath, string switches)
+		static void Expand(string eraPath, string listingName, string? outputPath, string? switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{
@@ -300,7 +300,7 @@ namespace KSoft.Tool.Phoenix
 				return;
 			}
 
-			StreamWriter debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
+			StreamWriter? debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_expander.txt")
 				: null;
 
@@ -313,14 +313,14 @@ namespace KSoft.Tool.Phoenix
 
 				if (expander.Read())
 				{
-					expander.ExpandTo(outputPath, listingName);
+					expander.ExpandTo(outputPath!, listingName);
 				}
 			}
 
 			debug_output?.Close();
 		}
 
-		static void BuildParseSwitches(string switches,
+		static void BuildParseSwitches(string? switches,
 			out Collections.BitVector32 options,
 			out Collections.BitVector32 builderOptions)
 		{
@@ -360,7 +360,7 @@ namespace KSoft.Tool.Phoenix
 			}
 		}
 
-		static void Build(string path, string listingName, string outputPath, string switches)
+		static void Build(string path, string listingName, string? outputPath, string? switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{
@@ -370,7 +370,7 @@ namespace KSoft.Tool.Phoenix
 			BuildParseSwitches(switches,
 				out Collections.BitVector32 options, out Collections.BitVector32 builderOptions);
 
-			StreamWriter debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
+			StreamWriter? debug_output = options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_builder.txt")
 				: null;
 
@@ -399,9 +399,9 @@ namespace KSoft.Tool.Phoenix
 			debug_output?.Close();
 		}
 
-		static void Crypt(string path, string eraName, string outputPath, string /*switches*/_, Security.Cryptography.CryptographyTransformType transformType)
+		static void Crypt(string path, string eraName, string? outputPath, string? /*switches*/_, Security.Cryptography.CryptographyTransformType transformType)
 		{
-			KSoft.Phoenix.Resource.EraFileUtil.Crypt(path, eraName, outputPath, transformType,
+			KSoft.Phoenix.Resource.EraFileUtil.Crypt(path, eraName, outputPath!, transformType,
 				Console.Out);
 		}
 	};

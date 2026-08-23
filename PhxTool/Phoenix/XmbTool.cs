@@ -35,7 +35,7 @@ namespace KSoft.Tool.Phoenix
 		}
 
 		Mode mMode;
-		string mPath,
+		string? mPath,
 			mOutputPath, mSwitches;
 
 		protected override void InitializeOptions()
@@ -92,7 +92,7 @@ namespace KSoft.Tool.Phoenix
 					switch (mMode)
 					{
 						case Mode.DumpSingle24Values:
-							DumpSingle24Values(mPath, mOutputPath, mSwitches);
+							DumpSingle24Values(mPath!, mOutputPath, mSwitches);
 							break;
 
 						default: Program.UnavailableOption(mMode); break;
@@ -134,7 +134,7 @@ namespace KSoft.Tool.Phoenix
 
 			[Obsolete(EnumBitEncoderBase.kObsoleteMsg, true)] kNumberOf,
 		};
-		static void DumpSingle24ValuesParseSwitches(string switches,
+		static void DumpSingle24ValuesParseSwitches(string? switches,
 			out Collections.BitVector32 options)
 		{
 			const string kSwitchesContext = "Xmb:DumpSingle24Values";
@@ -153,7 +153,7 @@ namespace KSoft.Tool.Phoenix
 
 		}
 
-		static void DumpSingle24Values(string workDirectory, string outputPath, string switches)
+		static void DumpSingle24Values(string workDirectory, string? outputPath, string? switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{
@@ -163,7 +163,7 @@ namespace KSoft.Tool.Phoenix
 			DumpSingle24ValuesParseSwitches(switches,
 				out Collections.BitVector32 options);
 
-			StreamWriter debugOutput = options.Test(DumpSingle24ValuesOptions.DumpDebugInfo)
+			StreamWriter? debugOutput = options.Test(DumpSingle24ValuesOptions.DumpDebugInfo)
 				? new StreamWriter("debug_expander.txt")
 				: null;
 
@@ -184,7 +184,7 @@ namespace KSoft.Tool.Phoenix
 				{
 					xmb.StreamMode = FileAccess.Read;
 
-					Single24DumpInfo dumpInfo = KSoft.Phoenix.Resource.ECF.EcfFileXmb.DumpSingle24Values(
+					Single24DumpInfo? dumpInfo = KSoft.Phoenix.Resource.ECF.EcfFileXmb.DumpSingle24Values(
 						xmb, KSoft.Shell.ProcessorSize.x64); // #HACK HWDE
 
 					if (dumpInfo == null)
@@ -232,11 +232,11 @@ namespace KSoft.Tool.Phoenix
 				sb.AppendLine("];");
 
 				var cdataElement = s.Document.CreateElement("Single24BitsAndFloats");
-				s.Document[kRootName].AppendChild(cdataElement);
+				s.Document[kRootName]!.AppendChild(cdataElement);
 				var cdata = s.Document.CreateCDataSection(sb.ToString());
 				cdataElement.AppendChild(cdata);
 
-				s.Document.Save(Path.Combine(outputPath, "_Single24Dumps.xml"));
+				s.Document.Save(Path.Combine(outputPath!, "_Single24Dumps.xml"));
 			}
 
 			debugOutput?.Close();

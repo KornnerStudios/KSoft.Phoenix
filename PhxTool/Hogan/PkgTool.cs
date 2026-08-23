@@ -33,7 +33,7 @@ namespace KSoft.Tool.Hogan
 		}
 
 		Mode mMode;
-		string mPath, mName,
+		string? mPath, mName,
 			mOutputPath;
 
 //		string mHoganWorkPath;
@@ -154,10 +154,10 @@ namespace KSoft.Tool.Hogan
 					switch (mMode)
 					{
 						case Mode.Expand:
-							Expand(mPath, mName, mOutputPath, null);
+							Expand(mPath!, mName!, mOutputPath, null);
 							break;
 						case Mode.Build:
-							Build(mPath, mName, mOutputPath);
+							Build(mPath!, mName!, mOutputPath);
 							break;
 
 						default: Program.UnavailableOption(mMode); break;
@@ -182,7 +182,7 @@ namespace KSoft.Tool.Hogan
 				flag = switches[index] == '1';
 			}
 		}
-		static void ExpandParseSwitches(string switches,
+		static void ExpandParseSwitches(string? switches,
 			out Collections.BitVector32 options,
 			out Collections.BitVector32 expanderOptions)
 		{
@@ -274,7 +274,7 @@ namespace KSoft.Tool.Hogan
 			}
 		}
 
-		static void Expand(string eraPath, string listingName, string outputPath, string switches)
+		static void Expand(string eraPath, string listingName, string? outputPath, string? switches)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{
@@ -300,7 +300,7 @@ namespace KSoft.Tool.Hogan
 				return;
 			}
 
-			StreamWriter debug_output = false//options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
+			StreamWriter? debug_output = false//options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_expander.txt")
 				: null;
 
@@ -313,14 +313,14 @@ namespace KSoft.Tool.Hogan
 
 				if (expander.Read())
 				{
-					expander.ExpandTo(outputPath, listingName);
+					expander.ExpandTo(outputPath!, listingName);
 				}
 			}
 
 			debug_output?.Close();
 		}
 
-		void Build(string path, string listingName, string outputPath)
+		void Build(string path, string listingName, string? outputPath)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{
@@ -336,7 +336,7 @@ namespace KSoft.Tool.Hogan
 				}
 			}
 
-			StreamWriter debug_output = false//options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
+			StreamWriter? debug_output = false//options.Test(KSoft.Phoenix.Resource.EraFileUtilOptions.DumpDebugInfo)
 				? new StreamWriter("debug_builder.txt")
 				: null;
 
