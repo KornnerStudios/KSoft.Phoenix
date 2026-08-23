@@ -1286,13 +1286,18 @@ namespace KSoft.Phoenix.Phx
 			var xs = s.GetSerializerInterface();
 
 			s.StreamAttribute("Limit", ref mLimit);
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mObjectTypeID, DatabaseObjectKind.Unit, false, XML.XmlUtil.kSourceCursor);
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mObjectTypeID, DatabaseObjectKind.Unit, false, XML.XmlUtil.kSourceCursor);
 		}
 		#endregion
 
 		#region IComparable Members
-		public int CompareTo(BBurningEffectLimit other)
+		public int CompareTo(BBurningEffectLimit? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (Limit != other.Limit)
 			{
 				Limit.CompareTo(other.Limit);
@@ -1303,14 +1308,14 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEquatable Members
-		public bool Equals(BBurningEffectLimit other)
+		public bool Equals(BBurningEffectLimit? other)
 		{
 			return other != null
 				&& Limit == other.Limit
 				&& ObjectTypeID == other.ObjectTypeID;
 		}
 
-		public override bool Equals(object obj) => Equals(obj as BBurningEffectLimit);
+		public override bool Equals(object? obj) => Equals(obj as BBurningEffectLimit);
 
 		public override int GetHashCode()
 			=> HashCode.Combine(Limit, ObjectTypeID);

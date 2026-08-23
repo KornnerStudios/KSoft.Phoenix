@@ -39,12 +39,17 @@ namespace KSoft.Collections
 		{
 			return mList.FindIndex(n => PhxUtil.StrEqualsIgnoreCase(n, memberName));
 		}
-		public virtual string TryGetMemberName(int memberId)
+		public virtual string? TryGetMemberName(int memberId)
 		{
 			return IsValidMemberId(memberId)
 				? GetMemberName(memberId)
 				: null;
 		}
+		string IProtoEnum.TryGetMemberName(int memberId)
+		{
+			return TryGetMemberName(memberId)!;
+		}
+
 		public bool IsValidMemberId(int memberId)
 		{
 			return memberId >= 0 && memberId < MemberCount;
@@ -80,7 +85,7 @@ namespace KSoft.Collections
 		public virtual int MemberCount { get { return Count; } }
 		#endregion
 
-		public override object GetObject(int id)
+		public override object? GetObject(int id)
 		{
 			if (id.IsNone())
 			{
@@ -105,7 +110,7 @@ namespace KSoft.Phoenix
 {
 	partial class TypeExtensionsPhx
 	{
-		public static string TryGetName(this Collections.BTypeNames dbi, int id)
+		public static string? TryGetName(this Collections.BTypeNames dbi, int id)
 		{
 			if (dbi == null)
 			{

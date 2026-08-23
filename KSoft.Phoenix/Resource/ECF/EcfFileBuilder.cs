@@ -75,7 +75,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		#endregion
 
 		#region Building
-		public bool Build(string workPath, string outputPath = null)
+		public bool Build(string workPath, string? outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{
@@ -101,10 +101,12 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			EcfDefinition.WorkingDirectory = workPath;
 
-			string ecf_name = EcfDefinition.EcfName;
+			string ecf_name = EcfDefinition.EcfName
+				?? throw new InvalidOperationException("ECF name must be initialized before building.");
 			if (ecf_name.IsNotNullOrEmpty())
 			{
-				ecf_name = Path.GetFileNameWithoutExtension(mSourceFile);
+				ecf_name = Path.GetFileNameWithoutExtension(mSourceFile
+					?? throw new InvalidOperationException("Source listing path must be initialized before building."));
 			}
 
 			string ecf_filename = Path.Combine(outputPath, ecf_name);
@@ -209,7 +211,9 @@ namespace KSoft.Phoenix.Resource.ECF
 		{
 			bool success = true;
 
-			var raw_chunk = mEcfFile.GetChunk(chunk.RawChunkIndex);
+			var ecfFile = mEcfFile
+				?? throw new InvalidOperationException("ECF file must be initialized before packing chunks.");
+			var raw_chunk = ecfFile.GetChunk(chunk.RawChunkIndex);
 
 			using (var chunk_ms = EcfDefinition.GetChunkFileDataStream(chunk))
 			{

@@ -23,9 +23,9 @@ namespace KSoft.Phoenix.Resource
 		const int kPaddingLength = 13;
 
 		public ulong Id;
-		public string Name;
-		public string Description;
-		public string Author;
+		public string? Name;
+		public string? Description;
+		public string? Author;
 		#region DateTime
 		PhxSYSTEMTIME mDateTime;
 		public PhxSYSTEMTIME DateTime { get { return mDateTime; } }
@@ -46,13 +46,33 @@ namespace KSoft.Phoenix.Resource
 			Hash = new byte[PhxHash.kSha1SizeOf];
 		}
 
+		static void StreamString(IO.EndianStream s, ref string? value, Memory.Strings.StringStorage storage, string valueName)
+		{
+			if (s.IsReading)
+			{
+				string streamedValue = string.Empty;
+				s.Stream(ref streamedValue, storage);
+				value = streamedValue;
+			}
+			else if (s.IsWriting)
+			{
+				string valueToStream = value ?? string.Empty;
+				s.Stream(ref valueToStream, storage);
+			}
+		}
+
 		public void UpdateHash(SHA1 sha)
 		{
+			System.ArgumentNullException.ThrowIfNull(sha);
+			string name = Name ?? throw new System.InvalidOperationException("Name must be supplied before hashing a media header.");
+			string description = Description ?? throw new System.InvalidOperationException("Description must be supplied before hashing a media header.");
+			string author = Author ?? throw new System.InvalidOperationException("Author must be supplied before hashing a media header.");
+
 			PhxHash.UInt8(sha, kVersion);
 			PhxHash.UInt64(sha, Id);
-			PhxHash.Unicode(sha, Name, kNameStorage.FixedLength-1);
-			PhxHash.Unicode(sha, Description, kDescStorage.FixedLength-1);
-			PhxHash.Ascii(sha, Author, kAuthorStorage.FixedLength);
+			PhxHash.Unicode(sha, name, kNameStorage.FixedLength-1);
+			PhxHash.Unicode(sha, description, kDescStorage.FixedLength-1);
+			PhxHash.Ascii(sha, author, kAuthorStorage.FixedLength);
 			DateTime.UpdateHash(sha);
 			PhxHash.UInt64(sha, AuthorXuid);
 			PhxHash.UInt32(sha, Bitwise.ByteSwap.SingleToUInt32(Length));
@@ -68,9 +88,9 @@ namespace KSoft.Phoenix.Resource
 		{
 			s.StreamVersion(kVersion);
 			s.Stream(ref Id);
-			s.Stream(ref Name, kNameStorage);
-			s.Stream(ref Description, kDescStorage);
-			s.Stream(ref Author, kAuthorStorage);
+			StreamString(s, ref Name, kNameStorage, nameof(Name));
+			StreamString(s, ref Description, kDescStorage, nameof(Description));
+			StreamString(s, ref Author, kAuthorStorage, nameof(Author));
 			s.Stream(ref mDateTime);
 			s.Stream(ref AuthorXuid);
 			s.Stream(ref Length);

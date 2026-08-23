@@ -1314,7 +1314,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mDeathSpawnSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mDeathSpawnSquadID, DatabaseObjectKind.Squad, xmlSource: XML.XmlUtil.kSourceCursor);
 
 					// #NOTE engine streams this as CheckPos, but it is also case insensitive
 					const string kCheckPosName = "checkPos";
@@ -1410,7 +1410,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					s.StreamAttributeOpt("Radius", ref mGatherLinkRadius, Predicates.IsNotZero);
 					xs.StreamDBID(s, "Target", ref mGatherLinkObjectType, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
 					s.StreamAttributeOpt("Self", ref mGatherLinkSelf, Predicates.IsTrue);
@@ -1447,7 +1447,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mSocketID, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mSocketID, DatabaseObjectKind.ObjectType, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					// #NOTE engine reads this Player in lower case, but actual uses are pascal case
 					s.StreamAttributeEnumOpt("Player", ref mSocketPlayerScope, e => e != BPlayerScope.Player);
 					s.StreamAttributeOpt("AutoSocket", ref mAutoSocket, Predicates.IsTrue);
@@ -1498,7 +1498,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				if (bm.IsNotNull)
 				{
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mAutoParkingLotObjectID, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mAutoParkingLotObjectID, DatabaseObjectKind.Object, isOptional: false, xmlSource: XML.XmlUtil.kSourceCursor);
 					s.StreamAttributeOpt("Rotation", ref mAutoParkingLotRotation, Predicates.IsNotZero);
 					s.StreamBVector("Offset", ref mAutoParkingLotOffset, xmlSource: XML.XmlUtil.kSourceAttr);
 				}

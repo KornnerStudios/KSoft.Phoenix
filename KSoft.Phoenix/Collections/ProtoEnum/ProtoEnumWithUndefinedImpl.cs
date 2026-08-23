@@ -11,11 +11,11 @@ namespace KSoft.Collections
 		, IDisposable
 	{
 		readonly IProtoEnum mRoot;
-		ObservableCollection<string> mUndefined;
+		ObservableCollection<string>? mUndefined;
 		// This is only really needed while we're loading a database.
 		// Multiple files could be async loading, causing multiple threads
 		// to resolve undefined members which need to be added.
-		ReaderWriterLockSlim mUndefinedLock;
+		ReaderWriterLockSlim? mUndefinedLock;
 
 		public ProtoEnumWithUndefinedImpl(IProtoEnum root)
 		{
@@ -45,11 +45,13 @@ namespace KSoft.Collections
 
 		public void Clear()
 		{
-			if (mUndefined != null)
+			var undefined = mUndefined;
+			if (undefined is not null)
 			{
-				mUndefinedLock.EnterWriteLock();
-				mUndefined.Clear();
-				mUndefinedLock.ExitWriteLock();
+				var undefinedLock = mUndefinedLock ?? throw new ObjectDisposedException(nameof(ProtoEnumWithUndefinedImpl));
+				undefinedLock.EnterWriteLock();
+				undefined.Clear();
+				undefinedLock.ExitWriteLock();
 			}
 		}
 
@@ -70,9 +72,11 @@ namespace KSoft.Collections
 
 			if (id.IsNone() && MemberUndefinedCount != 0)
 			{
-				mUndefinedLock.EnterReadLock();
-				id = mUndefined.FindIndex(str => PhxUtil.StrEqualsIgnoreCase(str, memberName));
-				mUndefinedLock.ExitReadLock();
+				var undefined = mUndefined ?? throw new InvalidOperationException("Undefined members were unexpectedly unavailable.");
+				var undefinedLock = mUndefinedLock ?? throw new ObjectDisposedException(nameof(ProtoEnumWithUndefinedImpl));
+				undefinedLock.EnterReadLock();
+				id = undefined.FindIndex(str => PhxUtil.StrEqualsIgnoreCase(str, memberName));
+				undefinedLock.ExitReadLock();
 
 				if (id.IsNotNone())
 				{
@@ -91,11 +95,13 @@ namespace KSoft.Collections
 			{
 				InitializeUndefined();
 
-				mUndefinedLock.EnterWriteLock();
-				id = mUndefined.Count;
-				mUndefined.Add(memberName);
+				var undefined = mUndefined ?? throw new InvalidOperationException("Undefined members were unexpectedly unavailable.");
+				var undefinedLock = mUndefinedLock ?? throw new ObjectDisposedException(nameof(ProtoEnumWithUndefinedImpl));
+				undefinedLock.EnterWriteLock();
+				id = undefined.Count;
+				undefined.Add(memberName);
 				id = PhxUtil.GetUndefinedReferenceHandle(id);
-				mUndefinedLock.ExitWriteLock();
+				undefinedLock.ExitWriteLock();
 			}
 
 			return id;
@@ -108,23 +114,25 @@ namespace KSoft.Collections
 			if (PhxUtil.IsUndefinedReferenceHandle(memberId))
 			{
 				int undefined_index = PhxUtil.GetUndefinedReferenceDataIndex(memberId);
-				if (mUndefined == null)
+				var undefined = mUndefined;
+				if (undefined is null)
 				{
 					throw new ArgumentOutOfRangeException(nameof(memberId));
 				}
+				var undefinedLock = mUndefinedLock ?? throw new ObjectDisposedException(nameof(ProtoEnumWithUndefinedImpl));
 
-				mUndefinedLock.EnterReadLock();
+				undefinedLock.EnterReadLock();
 				try
 				{
-					if (undefined_index >= mUndefined.Count)
+					if (undefined_index >= undefined.Count)
 					{
 						throw new ArgumentOutOfRangeException(nameof(memberId));
 					}
-					name = mUndefined[undefined_index];
+					name = undefined[undefined_index];
 				}
 				finally
 				{
-					mUndefinedLock.ExitReadLock();
+					undefinedLock.ExitReadLock();
 				}
 			}
 			else
@@ -136,17 +144,20 @@ namespace KSoft.Collections
 		}
 
 		public int MemberUndefinedCount { get {
-			if (mUndefined != null)
+			var undefined = mUndefined;
+			if (undefined is not null)
 			{
-				mUndefinedLock.EnterReadLock();
-				int count = mUndefined.Count;
-				mUndefinedLock.ExitReadLock();
+				var undefinedLock = mUndefinedLock ?? throw new ObjectDisposedException(nameof(ProtoEnumWithUndefinedImpl));
+				undefinedLock.EnterReadLock();
+				int count = undefined.Count;
+				undefinedLock.ExitReadLock();
 				return count;
 			}
 			return 0;
 		} }
 
-		public ObservableCollection<string> UndefinedMembers => mUndefined;
+		public ObservableCollection<string> UndefinedMembers
+			=> mUndefined ?? throw new InvalidOperationException("Undefined members are not available.");
 		#endregion
 	};
 }

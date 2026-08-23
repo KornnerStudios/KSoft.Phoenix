@@ -37,12 +37,12 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEquatable<BTargetPriority> Members
-		public bool Equals(BTargetPriority other)
+		public bool Equals(BTargetPriority? other)
 			=> other != null
 				&& this.UnitTypeID == other.UnitTypeID
 				&& this.PriorityAdjustment == other.PriorityAdjustment;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BTargetPriority);
 
 		public override int GetHashCode()
@@ -50,9 +50,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEqualityComparer<BTargetPriority> Members
-		public bool Equals(BTargetPriority x, BTargetPriority y)
+		public bool Equals(BTargetPriority? x, BTargetPriority? y)
 		{
-			return x.Equals(y);
+			return ReferenceEquals(x, y) || (x is not null && x.Equals(y));
 		}
 
 		public int GetHashCode(BTargetPriority obj)

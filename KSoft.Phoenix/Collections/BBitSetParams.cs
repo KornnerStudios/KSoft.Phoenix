@@ -7,10 +7,10 @@ namespace KSoft.Collections
 	public sealed class BBitSetParams
 	{
 		/// <summary>Get the source IProtoEnum from a global object</summary>
-		public readonly Func<IProtoEnum> kGetProtoEnum;
+		public readonly Func<IProtoEnum>? kGetProtoEnum;
 		/// <summary>Get the source IProtoEnum from an engine's main database</summary>
-		public readonly Func<Phx.BDatabaseBase, IProtoEnum> kGetProtoEnumFromDB;
-		public Func<int, bool> kGetMemberDefaultValue;
+		public readonly Func<Phx.BDatabaseBase, IProtoEnum> kGetProtoEnumFromDB = null!;
+		public Func<int, bool>? kGetMemberDefaultValue;
 
 		public BBitSetParams(Func<Phx.BDatabaseBase, IProtoEnum> protoEnumGetter)
 		{

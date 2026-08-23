@@ -62,7 +62,7 @@ namespace KSoft.Phoenix.Phx
 		[Meta.BProtoObjectReference]
 		int mProtoObjectID = TypeExtensions.kNone;
 		bool mProtoObjectIsSquad;
-		string mBoneName;
+		string? mBoneName;
 #if false
 		[Meta.LocStringReference]
 		int mCountStringID = TypeExtensions.kNone;
@@ -77,7 +77,9 @@ namespace KSoft.Phoenix.Phx
 		public override void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
 		{
 			var xs = s.GetSerializerInterface();
-			var td = KSoft.Debug.TypeCheck.CastReference<BTacticData>(s.UserData);
+			var userData = s.UserData;
+			ArgumentNullException.ThrowIfNull(userData);
+			var td = KSoft.Debug.TypeCheck.CastReference<BTacticData>(userData);
 
 			s.StreamElementEnumOpt("ActionType", ref mActionType, kNotInvalidActionType);
 			s.StreamElementOpt("ProjectileSpread", ref mProjectileSpread, PhxPredicates.IsNotInvalid);

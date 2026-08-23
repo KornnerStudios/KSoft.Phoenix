@@ -13,12 +13,14 @@ namespace KSoft.Phoenix.Xmb
 		/// <summary>Default amount of entry memory allocated for use</summary>
 		const int kEntryStartCount = 16;
 
-		Dictionary<uint, PoolEntry> mEntries;
+		Dictionary<uint, PoolEntry>? mEntries;
+		Dictionary<uint, PoolEntry> Entries => mEntries
+			?? throw new ObjectDisposedException(nameof(XmbVariantMemoryPool));
 		uint mPoolSize;
 
 		public uint Size => mPoolSize;
 
-		IO.EndianReader mBuffer;
+		IO.EndianReader? mBuffer;
 		uint mBufferedDataRemaining;
 
 		public XmbVariantMemoryPool(int initialEntryCount = kEntryStartCount)
@@ -67,13 +69,13 @@ namespace KSoft.Phoenix.Xmb
 			// In case the entry needs to be aligned
 			mPoolSize += e.CalculatePadding(offset);
 
-			mEntries.Add(offset, e);
+			Entries.Add(offset, e);
 			return offset;
 		}
 
 		public uint Add(XmbFileBuilder builder, int v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -86,7 +88,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, uint v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -99,7 +101,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, float v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -112,7 +114,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, double v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -125,7 +127,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, string v, bool isUnicode = false)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -139,7 +141,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, Vector2f v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -152,7 +154,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, Vector3f v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -165,7 +167,7 @@ namespace KSoft.Phoenix.Xmb
 		}
 		public uint Add(XmbFileBuilder builder, Vector4f v)
 		{
-			foreach (var kv in mEntries)
+			foreach (var kv in Entries)
 			{
 				if (kv.Value.Equals(v))
 				{
@@ -189,7 +191,7 @@ namespace KSoft.Phoenix.Xmb
 					offset.ToString("X8"), mPoolSize.ToString("X6")));
 			}
 
-			if (!mEntries.TryGetValue(offset, out PoolEntry e))
+			if (!Entries.TryGetValue(offset, out PoolEntry? e))
 			{
 				if (mBufferedDataRemaining == 0)
 				{
@@ -223,7 +225,7 @@ namespace KSoft.Phoenix.Xmb
 					DisposeBuffer();
 				}
 
-				mEntries.Add(offset, e);
+				Entries.Add(offset, e);
 			}
 
 			return e;
@@ -281,7 +283,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public void Write(IO.EndianWriter s)
 		{
-			foreach (var e in mEntries.Values)
+			foreach (var e in Entries.Values)
 			{
 				e.Write(s);
 			}

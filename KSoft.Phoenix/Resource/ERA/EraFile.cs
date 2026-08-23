@@ -139,7 +139,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				EraFileEntryChunk file = mFiles[x];
 
-				if (mFileNameToChunk.TryGetValue(file.FileName, out EraFileEntryChunk? existingFile))
+				if (mFileNameToChunk.TryGetValue(file.FileName!, out EraFileEntryChunk? existingFile))
 				{
 					Util.MarkUnusedVariable(ref existingFile);
 
@@ -150,7 +150,7 @@ namespace KSoft.Phoenix.Resource
 					continue;
 				}
 
-				mFileNameToChunk.Add(file.FileName, file);
+				mFileNameToChunk.Add(file.FileName!, file);
 				x++;
 			}
 		}
@@ -160,12 +160,12 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				EraFileEntryChunk file = mFiles[x];
-				if (!ResourceUtils.IsXmbFile(file.FileName))
+				if (!ResourceUtils.IsXmbFile(file.FileName!))
 				{
 					continue;
 				}
 
-				string xml_name = file.FileName;
+				string xml_name = file.FileName!;
 				ResourceUtils.RemoveXmbExtension(ref xml_name);
 				if (!mFileNameToChunk.TryGetValue(xml_name, out EraFileEntryChunk? xml_file))
 				{
@@ -187,12 +187,12 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				EraFileEntryChunk file = mFiles[x];
-				if (!ResourceUtils.IsXmlBasedFile(file.FileName))
+				if (!ResourceUtils.IsXmlBasedFile(file.FileName!))
 				{
 					continue;
 				}
 
-				string xmb_name = file.FileName;
+				string xmb_name = file.FileName!;
 				xmb_name += Xmb.XmbFile.kFileExt;
 				if (!mFileNameToChunk.TryGetValue(xmb_name, out EraFileEntryChunk? xmb_file))
 				{
@@ -214,12 +214,12 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				var file = mFiles[x];
-				if (!ResourceUtils.IsXmbFile(file.FileName))
+				if (!ResourceUtils.IsXmbFile(file.FileName!))
 				{
 					continue;
 				}
 
-				string xml_name = file.FileName;
+				string xml_name = file.FileName!;
 				ResourceUtils.RemoveXmbExtension(ref xml_name);
 
 				// if the user already references the XML file too, just skip doing anything
@@ -239,7 +239,7 @@ namespace KSoft.Phoenix.Resource
 					xml_name);
 
 				// right now, all we should need to do to update things is remove the XMB mapping and replace it with the XML we found
-				bool removed = mFileNameToChunk.Remove(file.FileName);
+				bool removed = mFileNameToChunk.Remove(file.FileName!);
 				file.FileName = xml_name;
 				if (removed)
 				{
@@ -397,14 +397,14 @@ namespace KSoft.Phoenix.Resource
 
 		private bool TryUnpack(IO.EndianStream blockStream, string workPath, EraFileExpander expander, EraFileEntryChunk file)
 		{
-			if (IsIgnoredLocalFile(file.FileName))
+			if (IsIgnoredLocalFile(file.FileName!))
 			{
 				return false;
 			}
 
-			string full_path = System.IO.Path.Combine(workPath, file.FileName);
+			string full_path = System.IO.Path.Combine(workPath, file.FileName!);
 
-			if (ResourceUtils.IsLocalScenarioFile(file.FileName))
+			if (ResourceUtils.IsLocalScenarioFile(file.FileName!))
 			{
 				return false;
 			}
@@ -667,7 +667,7 @@ namespace KSoft.Phoenix.Resource
 				{
 					var file = mFiles[x];
 
-					file.FileNameOffset = smp.Add(file.FileName).u32;
+					file.FileNameOffset = smp.Add(file.FileName!).u32;
 				}
 				smp.WriteStrings(s);
 
@@ -767,7 +767,7 @@ namespace KSoft.Phoenix.Resource
 		private bool TryPack(IO.EndianStream blockStream, string workPath,
 			EraFileEntryChunk file)
 		{
-			if (mLocalFiles.ContainsKey(file.FileName))
+			if (mLocalFiles.ContainsKey(file.FileName!))
 			{
 				return TryPackLocalFile(blockStream, file);
 			}
@@ -778,7 +778,7 @@ namespace KSoft.Phoenix.Resource
 		private bool TryPackLocalFile(IO.EndianStream blockStream,
 			EraFileEntryChunk file)
 		{
-			if (!mLocalFiles.TryGetValue(file.FileName, out string? file_data))
+			if (!mLocalFiles.TryGetValue(file.FileName!, out string? file_data))
 			{
 				Debug.Trace.Resource.TraceInformation("Couldn't pack local-file into {0}, local-file does not exist: {1}",
 					FileName, file.FileName);
@@ -797,7 +797,7 @@ namespace KSoft.Phoenix.Resource
 		private bool TryPackFileFromDisk(IO.EndianStream blockStream, string workPath,
 			EraFileEntryChunk file)
 		{
-			string path = Path.Combine(workPath, file.FileName);
+			string path = Path.Combine(workPath, file.FileName!);
 			if (!File.Exists(path))
 			{
 				Debug.Trace.Resource.TraceInformation("Couldn't pack file into {0}, file does not exist: {1}",
@@ -941,7 +941,7 @@ namespace KSoft.Phoenix.Resource
 			for (int x = FileChunksFirstIndex; x < mFiles.Count; x++)
 			{
 				EraFileEntryChunk file = mFiles[x];
-				if (!ResourceUtils.IsLocalScenarioFile(file.FileName))
+				if (!ResourceUtils.IsLocalScenarioFile(file.FileName!))
 				{
 					continue;
 				}
@@ -952,7 +952,7 @@ namespace KSoft.Phoenix.Resource
 				{
 					string file_data = sr.ReadToEnd();
 
-					mLocalFiles[file.FileName] = file_data;
+					mLocalFiles[file.FileName!] = file_data;
 				}
 			}
 		}

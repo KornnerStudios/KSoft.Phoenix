@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Phx.Meta
 	public interface IProtoDataReferenceAttribute
 	{
 		ProtoDataObjectSourceKind ObjectSourceKind { get; }
-		Type ProtoType { get; }
+		Type? ProtoType { get; }
 		string ProtoKindName { get; }
 		int ProtoKindId { get; }
 	};
@@ -23,7 +23,7 @@ namespace KSoft.Phoenix.Phx.Meta
 			;
 
 		public abstract ProtoDataObjectSourceKind ObjectSourceKind { get; }
-		public abstract Type ProtoType { get; }
+		public abstract Type? ProtoType { get; }
 	};
 
 	/// <summary>For fields in ProtoData that are not actually used in any meaningful way</summary>
@@ -111,7 +111,7 @@ namespace KSoft.Phoenix.Phx.Meta
 
 		public abstract GameDataObjectKind ProtoKind { get; }
 
-		Type IProtoDataReferenceAttribute.ProtoType { get { return ProtoType; } }
+		Type? IProtoDataReferenceAttribute.ProtoType { get { return ProtoType; } }
 		string IProtoDataReferenceAttribute.ProtoKindName { get { return ProtoKind.ToString(); } }
 		int IProtoDataReferenceAttribute.ProtoKindId { get { return (int)ProtoKind; } }
 	};
@@ -147,7 +147,7 @@ namespace KSoft.Phoenix.Phx.Meta
 
 		public abstract HPBarDataObjectKind ProtoKind { get; }
 
-		Type IProtoDataReferenceAttribute.ProtoType { get { return ProtoType; } }
+		Type? IProtoDataReferenceAttribute.ProtoType { get { return ProtoType; } }
 		string IProtoDataReferenceAttribute.ProtoKindName { get { return ProtoKind.ToString(); } }
 		int IProtoDataReferenceAttribute.ProtoKindId { get { return (int)ProtoKind; } }
 	};
@@ -205,7 +205,7 @@ namespace KSoft.Phoenix.Phx.Meta
 
 		public abstract DatabaseObjectKind ProtoKind { get; }
 
-		Type IProtoDataReferenceAttribute.ProtoType { get { return ProtoType; } }
+		Type? IProtoDataReferenceAttribute.ProtoType { get { return ProtoType; } }
 		string IProtoDataReferenceAttribute.ProtoKindName { get { return ProtoKind.ToString(); } }
 		int IProtoDataReferenceAttribute.ProtoKindId { get { return (int)ProtoKind; } }
 	};
@@ -267,7 +267,7 @@ namespace KSoft.Phoenix.Phx.Meta
 	[AttributeUsage(kValidOn, AllowMultiple=false)]
 	public sealed class ObjectTypeReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType { get { return null; } }
+		public override Type? ProtoType { get { return null; } }
 		public override DatabaseObjectKind ProtoKind { get { return DatabaseObjectKind.ObjectType; } }
 	};
 
@@ -315,7 +315,7 @@ namespace KSoft.Phoenix.Phx.Meta
 //	[Obsolete($"Use {nameof(ObjectTypeReferenceAttribute)} and {nameof(BObjectTypeID)}")]
 	public sealed class UnitReferenceAttribute : ProtoReferenceAttribute
 	{
-		public override Type ProtoType => null;
+		public override Type? ProtoType => null;
 		public override DatabaseObjectKind ProtoKind => DatabaseObjectKind.Unit;
 	};
 
@@ -339,7 +339,7 @@ namespace KSoft.Phoenix
 {
 	partial class TypeExtensionsPhx
 	{
-		public static string GetExportContractName(this Phx.Meta.IProtoDataReferenceAttribute attr)
+		public static string? GetExportContractName(this Phx.Meta.IProtoDataReferenceAttribute? attr)
 		{
 			if (attr == null)
 			{

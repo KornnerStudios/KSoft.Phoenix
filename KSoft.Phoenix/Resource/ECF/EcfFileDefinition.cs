@@ -9,11 +9,11 @@ namespace KSoft.Phoenix.Resource.ECF
 	{
 		public const string kFileExtension = ".ecfdef";
 
-		public string WorkingDirectory { get; set; }
+		public string? WorkingDirectory { get; set; }
 
 		/// <summary>This should be the source file's name (without extension) or a user defined name</summary>
-		public string EcfName { get; private set; }
-		public string EcfFileExtension { get; private set; }
+		public string? EcfName { get; private set; }
+		public string? EcfFileExtension { get; private set; }
 		public uint HeaderId { get; private set; }
 		public uint ChunkExtraDataSize { get; private set; }
 
@@ -106,7 +106,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 
 		internal void CullChunksPossiblyWithoutFileData(
-			Action<int, EcfFileChunkDefinition> cullCallback = null)
+			Action<int, EcfFileChunkDefinition>? cullCallback = null)
 		{
 			for (int x = Chunks.Count - 1; x >= 0; x--)
 			{
@@ -139,7 +139,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			{
 				throw new InvalidOperationException("Working directory must be initialized before resolving chunk paths.");
 			}
-			string abs_path = Path.Combine(WorkingDirectory, chunk.FilePath);
+			string abs_path = Path.Combine(WorkingDirectory!, chunk.FilePath!);
 
 			abs_path = Path.GetFullPath(abs_path);
 			return abs_path;

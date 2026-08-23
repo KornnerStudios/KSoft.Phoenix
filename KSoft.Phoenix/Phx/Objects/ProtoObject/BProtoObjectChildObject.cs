@@ -31,8 +31,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region AttachBone
-		string mAttachBone;
-		public string AttachBone
+		string? mAttachBone;
+		public string? AttachBone
 		{
 			get { return mAttachBone; }
 			set { mAttachBone = value; }

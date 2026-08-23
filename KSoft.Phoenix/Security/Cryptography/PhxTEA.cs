@@ -39,7 +39,7 @@ namespace KSoft.Security.Cryptography
 		public static ulong GameFileKey0 => kKeyGameFile[0];
 		public static ulong GameFileKey1 => kKeyGameFile[1];
 
-		ulong[] mKey;
+		ulong[]? mKey;
 
 		public void InitializeKey(ulong[] key, ulong userKey = 0)
 		{
@@ -96,6 +96,7 @@ namespace KSoft.Security.Cryptography
 		readonly IO.EndianWriter mStreamOut;
 		ulong[] mBufferIn, mBufferOut;
 
+		[System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(mBufferIn), nameof(mBufferOut))]
 		void InitializeBuffers()
 		{
 			mBufferIn = new ulong[kBlocksPerIteration];
@@ -126,6 +127,8 @@ namespace KSoft.Security.Cryptography
 
 		void ProcessBuffer(long size, ProcessIterationProc proc)
 		{
+			ulong[] key = mKey ?? throw new InvalidOperationException("An encryption key must be initialized before processing.");
+
 			if (size == 0)
 			{
 				size = mStreamIn.BaseStream.Length - mStreamIn.BaseStream.Position;
@@ -137,7 +140,7 @@ namespace KSoft.Security.Cryptography
 			{
 				FillBufferIn();
 
-				proc(mKey, mBufferIn, mBufferOut, x);
+				proc(key, mBufferIn, mBufferOut, x);
 
 				FillBufferOut();
 			}

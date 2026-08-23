@@ -74,8 +74,13 @@ namespace KSoft.Phoenix.Phx
 		public bool IsIgnored => mXP == 0.0f;
 
 		#region IComparable Members
-		int IComparable<BProtoObjectVeterancy>.CompareTo(BProtoObjectVeterancy other)
+		int IComparable<BProtoObjectVeterancy>.CompareTo(BProtoObjectVeterancy? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (XP != other.XP)
 			{
 				return XP.CompareTo(other.XP);
@@ -116,7 +121,7 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEquatable<BProtoObjectVeterancy> Members
-		public bool Equals(BProtoObjectVeterancy other)
+		public bool Equals(BProtoObjectVeterancy? other)
 			=> other != null
 				&& this.XP == other.XP
 				&& this.Damage == other.Damage
@@ -126,7 +131,7 @@ namespace KSoft.Phoenix.Phx
 				&& this.WeaponRange == other.WeaponRange
 				&& this.DamageTaken == other.DamageTaken;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BProtoObjectVeterancy);
 
 		public override int GetHashCode()

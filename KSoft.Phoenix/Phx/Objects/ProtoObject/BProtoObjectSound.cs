@@ -12,8 +12,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Sound
-		string mSound;
-		public string Sound
+		string? mSound;
+		public string? Sound
 		{
 			get { return mSound; }
 			set { mSound = value; }
@@ -40,9 +40,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Action
-		string mAction;
+		string? mAction;
 		[Meta.BProtoActionReference]
-		public string Action
+		public string? Action
 		{
 			get { return mAction; }
 			set { mAction = value; }
@@ -56,7 +56,18 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamCursor(ref mSound);
+			if (s.IsReading)
+			{
+				string sound = string.Empty;
+				s.StreamCursor(ref sound);
+				mSound = sound;
+			}
+			else if (s.IsWriting)
+			{
+				string sound = mSound ?? throw new System.InvalidOperationException("Sound must be supplied when writing a proto-object sound.");
+				s.StreamCursor(ref sound);
+				mSound = sound;
+			}
 
 			if (s.StreamAttributeEnumOpt("Type", ref mType, e => e != BObjectSoundType.None))
 			{

@@ -89,15 +89,15 @@ namespace KSoft.Phoenix.Phx
 			switch (mCommandType)
 			{
 				case BProtoObjectCommandType.Research: // proto tech
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mID, DatabaseObjectKind.Tech, false, XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mID, DatabaseObjectKind.Tech, false, XML.XmlUtil.kSourceCursor);
 					break;
 				case BProtoObjectCommandType.TrainUnit: // proto object
 				case BProtoObjectCommandType.Build:
 				case BProtoObjectCommandType.BuildOther:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mID, DatabaseObjectKind.Object, false, XML.XmlUtil.kSourceCursor);
 					break;
 				case BProtoObjectCommandType.TrainSquad: // proto squad
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mID, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mID, DatabaseObjectKind.Squad, false, XML.XmlUtil.kSourceCursor);
 					break;
 
 				case BProtoObjectCommandType.ChangeMode: // unused
@@ -105,10 +105,10 @@ namespace KSoft.Phoenix.Phx
 					break;
 
 				case BProtoObjectCommandType.Ability:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mID, DatabaseObjectKind.Ability, false, XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mID, DatabaseObjectKind.Ability, false, XML.XmlUtil.kSourceCursor);
 					break;
 				case BProtoObjectCommandType.Power:
-					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref mID, DatabaseObjectKind.Power, false, XML.XmlUtil.kSourceCursor);
+					xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref mID, DatabaseObjectKind.Power, false, XML.XmlUtil.kSourceCursor);
 					break;
 			}
 

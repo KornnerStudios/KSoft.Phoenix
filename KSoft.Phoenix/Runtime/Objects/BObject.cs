@@ -1,4 +1,6 @@
-﻿using BBitVector32 = System.UInt32;
+﻿using System;
+
+using BBitVector32 = System.UInt32;
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -52,16 +54,16 @@ namespace KSoft.Phoenix.Runtime
 		public byte[] UVOffsets = new byte[kUVOffsetsSize];
 		public uint MultiframeTextureIndex;
 		public int VisualVariationIndex;
-		public BVisual Visual;
+		public required BVisual Visual;
 		public float AnimationRate, Radius, MoveAnimationPosition, HighlightIntensity;
 		public uint SubUpdateNumber;
 		public BBitVector32 PlayerVisibility, DoppleBits;
 		public int SimX, SimZ;
 		public float LOSScalar;
 		public int LastSimLOS;
-		public BObjectAttachments[] ObjectAttachments;
-		public BAdditionalTextures[] AdditionalTextures;
-		public BHardpointState[] HardpointState;
+		public BObjectAttachments[]? ObjectAttachments;
+		public BAdditionalTextures[]? AdditionalTextures;
+		public BHardpointState[] HardpointState = [];
 		public BObjectAnimationState AnimationState;
 		public uint AnimationLockEnds;
 		public int ProtoID;
@@ -117,12 +119,26 @@ namespace KSoft.Phoenix.Runtime
 
 			if (s.StreamCond(this, me => me.HasObjectAttachments))
 			{
-				BSaveGame.StreamArray(s, ref ObjectAttachments, cMaximumObjectAttachments);
+				var objectAttachments = ObjectAttachments;
+				if (s.IsReading)
+				{
+					objectAttachments = [];
+				}
+				ArgumentNullException.ThrowIfNull(objectAttachments);
+				BSaveGame.StreamArray(s, ref objectAttachments, cMaximumObjectAttachments);
+				ObjectAttachments = objectAttachments;
 			}
 
 			if (s.StreamCond(this, me => me.HasAdditionalTextures))
 			{
-				BSaveGame.StreamArray(s, ref AdditionalTextures, cMaximumAdditionalTextures);
+				var additionalTextures = AdditionalTextures;
+				if (s.IsReading)
+				{
+					additionalTextures = [];
+				}
+				ArgumentNullException.ThrowIfNull(additionalTextures);
+				BSaveGame.StreamArray(s, ref additionalTextures, cMaximumAdditionalTextures);
+				AdditionalTextures = additionalTextures;
 			}
 
 			BSaveGame.StreamArray(s, ref HardpointState, cMaximumHardpoints);

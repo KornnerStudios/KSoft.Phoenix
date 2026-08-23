@@ -11,7 +11,7 @@ namespace KSoft.Phoenix.Xmb
 	{
 		public uint Single24Bits { get; set; }
 		public float FloatValue { get; set; } = float.NaN;
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		#region ITagElementTextStreamable Members
 		public void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s)
@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Xmb
 	public sealed class Single24DumpInfo
 		: IO.ITagElementStringNameStreamable
 	{
-		public string SourcePath { get; set; }
+		public string? SourcePath { get; set; }
 
 		public List<Single24DumpEntry> Entries { get; } = new();
 
@@ -51,8 +51,9 @@ namespace KSoft.Phoenix.Xmb
 			{
 				foreach (Single24DumpEntry sourceEntry in sourceInfo.Entries)
 				{
-					if (bitsToEntries.TryGetValue(sourceEntry.Single24Bits, out Single24DumpEntry existingEntry))
+					if (bitsToEntries.TryGetValue(sourceEntry.Single24Bits, out Single24DumpEntry? existingEntry))
 					{
+						ArgumentNullException.ThrowIfNull(existingEntry);
 						if (existingEntry.FloatValue != existingEntry.FloatValue)
 						{
 							throw new System.IO.InvalidDataException(

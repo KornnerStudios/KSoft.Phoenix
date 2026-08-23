@@ -22,7 +22,7 @@ namespace KSoft.Phoenix.Resource
 
 		// needs to be in a range of [2, 32]
 		public byte SizeBit = kDefaultSizeBit;
-		public byte[] SignatureData;
+		public byte[]? SignatureData;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
@@ -53,7 +53,8 @@ namespace KSoft.Phoenix.Resource
 			}
 			if (sig_data_length > 0)
 			{
-				s.Stream(SignatureData);
+				byte[] signatureData = SignatureData ?? throw new InvalidOperationException("Signature data was unexpectedly null.");
+				s.Stream(signatureData);
 			}
 			s.StreamSignature(kSignatureMarker);
 		}
@@ -88,7 +89,7 @@ namespace KSoft.Phoenix.Resource
 					chunksStream, chunksOffset, chunksLength,
 					isFinal: true);
 
-				return sha.Hash;
+				return sha.Hash ?? throw new System.Security.Cryptography.CryptographicException("SHA-1 did not produce a hash result.");
 			}
 		}
 	};

@@ -100,22 +100,22 @@ namespace KSoft.Phoenix.Resource
 			s.Pad(sizeof(byte) + sizeof(uint));
 		}
 
-		public bool StreamTagMachineName(IO.EndianStream s, ref string value)
+		public bool StreamTagMachineName(IO.EndianStream s, ref string? value)
 		{
 			return PhxUtil.StreamPointerizedCString(s, ref TagMachineNameOffset, ref value);
 		}
 
-		public bool StreamTagUserName(IO.EndianStream s, ref string value)
+		public bool StreamTagUserName(IO.EndianStream s, ref string? value)
 		{
 			return PhxUtil.StreamPointerizedCString(s, ref TagUserNameOffset, ref value);
 		}
 
-		public bool StreamSourceFileNamee(IO.EndianStream s, ref string value)
+		public bool StreamSourceFileNamee(IO.EndianStream s, ref string? value)
 		{
 			return PhxUtil.StreamPointerizedCString(s, ref SourceFileName, ref value);
 		}
 
-		public bool StreamCreatorToolCommandLine(IO.EndianStream s, ref string value)
+		public bool StreamCreatorToolCommandLine(IO.EndianStream s, ref string? value)
 		{
 			return PhxUtil.StreamPointerizedCString(s, ref CreatorToolCommandLine, ref value);
 		}

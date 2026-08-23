@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KSoft.Phoenix.Resource
 {
@@ -24,8 +25,8 @@ namespace KSoft.Phoenix.Resource
 		Header mHeader;
 		bool mUseBufferedStreaming;
 
-		public byte[] CompressedData { get; private set; }
-		public byte[] UncompressedData { get; private set; }
+		public byte[]? CompressedData { get; private set; }
+		public byte[]? UncompressedData { get; private set; }
 
 		public CompressedStream(bool useBufferedStreaming = false)
 		{
@@ -55,7 +56,9 @@ namespace KSoft.Phoenix.Resource
 				CompressedData = new byte[(int)mHeader.CompressedSize];
 			}
 
-			s.Stream(CompressedData);
+			var compressedData = CompressedData;
+			ArgumentNullException.ThrowIfNull(compressedData);
+			s.Stream(compressedData);
 			s.StreamSignature(kSignatureEndOfStream);
 		}
 
@@ -78,7 +81,10 @@ namespace KSoft.Phoenix.Resource
 		}
 		int WriteChunk(IO.EndianWriter s, int chunkStart, ref int bytesRemaining)
 		{
-			if (chunkStart == CompressedData.Length)
+			var compressedData = CompressedData;
+			ArgumentNullException.ThrowIfNull(compressedData);
+
+			if (chunkStart == compressedData.Length)
 			{
 				s.Write((ushort)0x0000);
 				s.Write((ushort)0xFFFF); // ~0
@@ -86,13 +92,13 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			int chunk_size = (bytesRemaining < kBufferedSize)
-				? CompressedData.Length % kBufferedSize
+				? compressedData.Length % kBufferedSize
 				: kBufferedSize;
 			bytesRemaining -= chunk_size;
 
 			s.Write((ushort)chunk_size);
 			s.Write((ushort)~chunk_size);
-			s.Write(CompressedData, chunkStart, chunk_size);
+			s.Write(compressedData, chunkStart, chunk_size);
 
 			return chunk_size;
 		}
@@ -110,7 +116,10 @@ namespace KSoft.Phoenix.Resource
 		}
 		void WriteCompressedDataInChunks(IO.EndianStream s)
 		{
-			for (int offset = 0, size, bytes_remaining = CompressedData.Length;
+			var compressedData = CompressedData;
+			ArgumentNullException.ThrowIfNull(compressedData);
+
+			for (int offset = 0, size, bytes_remaining = compressedData.Length;
 				(size = WriteChunk(s.Writer, offset, ref bytes_remaining)) != 0;
 				offset += size)
 			{
@@ -186,6 +195,7 @@ namespace KSoft.Phoenix.Resource
 		}
 		#endregion
 
+		[MemberNotNull(nameof(UncompressedData))]
 		public void ReadData(System.IO.Stream s)
 		{
 			UncompressedData = new byte[mHeader.UncompressedSize];
@@ -195,8 +205,11 @@ namespace KSoft.Phoenix.Resource
 		}
 		public void WriteData(System.IO.Stream s)
 		{
-			s.Write(UncompressedData, 0, UncompressedData.Length);
+			var uncompressedData = UncompressedData;
+			ArgumentNullException.ThrowIfNull(uncompressedData);
+			s.Write(uncompressedData, 0, uncompressedData.Length);
 		}
+		[MemberNotNull(nameof(UncompressedData))]
 		public void InitializeFromStream(System.IO.Stream source)
 		{
 			ArgumentNullException.ThrowIfNull(source);
@@ -209,6 +222,7 @@ namespace KSoft.Phoenix.Resource
 			ReadData(source);
 		}
 
+		[MemberNotNull(nameof(CompressedData))]
 		public void Compress(int level = 5)
 		{
 			if (!level.IsNone() && (level < IO.Compression.ZLib.kNoCompression || level > IO.Compression.ZLib.kBestCompression))
@@ -216,20 +230,25 @@ namespace KSoft.Phoenix.Resource
 				throw new ArgumentOutOfRangeException(nameof(level));
 			}
 
+			var uncompressedData = UncompressedData;
+			ArgumentNullException.ThrowIfNull(uncompressedData);
+
 			// Assume the compressed data will be at most the same size as the uncompressed data
-			if (CompressedData == null || CompressedData.Length < (int)mHeader.UncompressedSize)
+			var compressedData = CompressedData;
+			if (compressedData == null || compressedData.Length < (int)mHeader.UncompressedSize)
 			{
-				CompressedData = new byte[mHeader.UncompressedSize];
+				compressedData = new byte[mHeader.UncompressedSize];
 			}
 			else
 			{
-				Array.Clear(CompressedData, 0, CompressedData.Length);
+				Array.Clear(compressedData, 0, compressedData.Length);
 			}
 
-			CompressedData = IO.Compression.ZLib.LowLevelCompress(UncompressedData, level,
-				out uint adler32/*mHeader.CompressedAdler32*/, CompressedData);
+			compressedData = IO.Compression.ZLib.LowLevelCompress(uncompressedData, level,
+				out uint adler32/*mHeader.CompressedAdler32*/, compressedData);
+			CompressedData = compressedData;
 
-			mHeader.CompressedAdler32 = Adler32.Compute(CompressedData);
+			mHeader.CompressedAdler32 = Adler32.Compute(compressedData);
 			if (mHeader.CompressedAdler32 != adler32)
 			{
 #if false
@@ -240,20 +259,26 @@ namespace KSoft.Phoenix.Resource
 #endif
 			}
 
-			mHeader.CompressedSize = (ulong)CompressedData.LongLength;
+			mHeader.CompressedSize = (ulong)compressedData.LongLength;
 		}
+		[MemberNotNull(nameof(UncompressedData))]
 		public void Decompress()
 		{
-			if (UncompressedData == null || UncompressedData.Length < (int)mHeader.UncompressedSize)
+			var compressedData = CompressedData;
+			ArgumentNullException.ThrowIfNull(compressedData);
+
+			var uncompressedData = UncompressedData;
+			if (uncompressedData == null || uncompressedData.Length < (int)mHeader.UncompressedSize)
 			{
-				UncompressedData = new byte[mHeader.UncompressedSize];
+				uncompressedData = new byte[mHeader.UncompressedSize];
 			}
 			else
 			{
-				Array.Clear(UncompressedData, 0, UncompressedData.Length);
+				Array.Clear(uncompressedData, 0, uncompressedData.Length);
 			}
 
-			IO.Compression.ZLib.LowLevelDecompress(CompressedData, UncompressedData);
+			UncompressedData = uncompressedData;
+			IO.Compression.ZLib.LowLevelDecompress(compressedData, uncompressedData);
 		}
 	};
 }

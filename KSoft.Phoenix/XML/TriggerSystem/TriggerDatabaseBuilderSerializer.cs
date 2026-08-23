@@ -13,8 +13,8 @@
 		{
 			System.ArgumentNullException.ThrowIfNull(phx);
 
-			mDatabase = phx.Database;
-			TriggerDb = phx.TriggerDb;
+			mDatabase = phx.Database!;
+			TriggerDb = phx.TriggerDb!;
 		}
 
 		#region IDisposable Members
@@ -35,7 +35,7 @@
 			where TCursor : class
 		{
 			// This HW script has all the debug info stripped :o
-			if (s.StreamName.EndsWith("skirmishai.triggerscript"))
+			if (s.StreamName!.EndsWith("skirmishai.triggerscript"))
 			{
 				return;
 			}

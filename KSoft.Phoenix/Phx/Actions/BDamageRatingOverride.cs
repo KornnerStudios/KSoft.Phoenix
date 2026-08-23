@@ -35,12 +35,12 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEquatable<BDamageRatingOverride> Members
-		public bool Equals(BDamageRatingOverride other)
+		public bool Equals(BDamageRatingOverride? other)
 			=> other != null
 				&& this.Rating == other.Rating
 				&& this.HalfKillCutoffFactor == other.HalfKillCutoffFactor;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> Equals(obj as BDamageRatingOverride);
 
 		public override int GetHashCode()
@@ -48,9 +48,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEqualityComparer<BDamageRatingOverride> Members
-		public bool Equals(BDamageRatingOverride x, BDamageRatingOverride y)
+		public bool Equals(BDamageRatingOverride? x, BDamageRatingOverride? y)
 		{
-			return x.Equals(y);
+			return ReferenceEquals(x, y) || (x is not null && x.Equals(y));
 		}
 
 		public int GetHashCode(BDamageRatingOverride obj)

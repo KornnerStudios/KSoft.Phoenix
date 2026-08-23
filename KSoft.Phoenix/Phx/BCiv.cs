@@ -119,9 +119,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region SoundBank
-		string mSoundBank;
+		string? mSoundBank;
 		// .bnk
-		public string SoundBank
+		public string? SoundBank
 		{
 			get { return mSoundBank; }
 			set { mSoundBank = value; }
@@ -148,9 +148,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region UIControlBackground
-		string mUIControlBackground;
+		string? mUIControlBackground;
 		[Meta.TextureReference]
-		public string UIControlBackground
+		public string? UIControlBackground
 		{
 			get { return mUIControlBackground; }
 			set { mUIControlBackground = value; }

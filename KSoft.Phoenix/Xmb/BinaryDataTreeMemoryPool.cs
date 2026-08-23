@@ -13,16 +13,18 @@ namespace KSoft.Phoenix.Xmb
 		/// <summary>Default amount of entry memory allocated for use</summary>
 		const int kEntryStartCount = 16;
 
-		Dictionary<uint, PoolEntry> mEntries;
+		Dictionary<uint, PoolEntry>? mEntries;
+		Dictionary<uint, PoolEntry> Entries => mEntries
+			?? throw new ObjectDisposedException(nameof(BinaryDataTreeMemoryPool));
 		readonly Dictionary<uint, uint> mDataOffsetToSizeValue;
 		readonly uint mPoolSize;
 
 		public uint Size => mPoolSize;
 
-		IO.EndianReader mBuffer;
+		IO.EndianReader? mBuffer;
 		uint mBufferedDataRemaining;
 
-		internal IO.EndianReader InternalBuffer { get { return mBuffer; } }
+		internal IO.EndianReader? InternalBuffer { get { return mBuffer; } }
 
 		public BinaryDataTreeMemoryPool(int initialEntryCount = kEntryStartCount)
 		{
@@ -127,7 +129,7 @@ namespace KSoft.Phoenix.Xmb
 					offset.ToString("X8"), mPoolSize.ToString("X6")));
 			}
 
-			if (!mEntries.TryGetValue(offset, out PoolEntry e))
+			if (!Entries.TryGetValue(offset, out PoolEntry? e))
 			{
 				if (mBufferedDataRemaining == 0)
 				{
@@ -158,7 +160,7 @@ namespace KSoft.Phoenix.Xmb
 					DisposeBuffer();
 				}
 
-				mEntries.Add(offset, e);
+				Entries.Add(offset, e);
 			}
 
 			return e;
@@ -167,7 +169,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public void Write(IO.EndianWriter s)
 		{
-			foreach (var e in mEntries.Values)
+			foreach (var e in Entries.Values)
 			{
 				e.Write(s);
 			}

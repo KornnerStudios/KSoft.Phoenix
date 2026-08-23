@@ -71,8 +71,13 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IComparable<BDamageModifier> Members
-		public int CompareTo(BWeaponModifier other)
+		public int CompareTo(BWeaponModifier? other)
 		{
+			if (other is null)
+			{
+				return 1;
+			}
+
 			if (Rating != other.Rating)
 			{
 				return Rating.CompareTo(other.Rating);
@@ -83,8 +88,17 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region IEqualityComparer<BDamageModifier> Members
-		public bool Equals(BWeaponModifier x, BWeaponModifier y)
+		public bool Equals(BWeaponModifier? x, BWeaponModifier? y)
 		{
+			if (ReferenceEquals(x, y))
+			{
+				return true;
+			}
+			if (x is null || y is null)
+			{
+				return false;
+			}
+
 			return x.Rating == y.Rating
 				&& x.DamagePercentage == y.DamagePercentage;
 		}

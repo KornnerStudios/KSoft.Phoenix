@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Runtime
 		const int kMaxEntitiesPerList = 0x3E8;
 
 		public BVector Vector;
-		public BEntityID[] SquadList, UnitList;
+		public BEntityID[] SquadList = [], UnitList = [];
 		public BEntityFilterSet EntityFilterSet = new();
 		public float Float;
 		public int ObjectType;
@@ -86,7 +86,7 @@ namespace KSoft.Phoenix.Runtime
 		public float InitialWaitTimeRemaining, TerminalWaitTimeRemaining;
 		public uint CoolDownTimer, LastCoolDownAmount;
 		public float CoolDownTimerAccumulator;
-		public int[] SubHints; // ids
+		public int[] SubHints = []; // ids
 		public int ParentHint;
 		public bool PrereqsMet, DirtyProfile;
 
@@ -134,7 +134,7 @@ namespace KSoft.Phoenix.Runtime
 		public List<CondensedListItem32<BConcept>> Concepts { get; private set; } = new();
 		public float TimeSinceLastHint;
 		public bool HintMessageOn;
-		public int[] AllowedConcepts;
+		public int[] AllowedConcepts = [];
 		public float WaitForNextRescore;
 		public uint LastGameTime;
 

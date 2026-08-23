@@ -22,7 +22,7 @@ namespace KSoft.Phoenix.HaloWars
 		#endregion
 
 		#region FilePath
-		string mFilePath;
+		string mFilePath = null!;
 		public string FilePath
 		{
 			get { return mFilePath; }
@@ -39,7 +39,7 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		#endregion
 
-		public string ContainingFolder
+		public string? ContainingFolder
 		{
 			get
 			{
@@ -48,7 +48,7 @@ namespace KSoft.Phoenix.HaloWars
 					return null;
 				}
 
-				string path = FilePath;
+				string? path = FilePath;
 				path = Path.GetDirectoryName(path);
 				return path;
 			}
@@ -129,7 +129,7 @@ namespace KSoft.Phoenix.HaloWars
 		#endregion
 
 		#region Directory
-		string mDirectory;
+		string mDirectory = null!;
 		public string Directory
 		{
 			get { return mDirectory; }

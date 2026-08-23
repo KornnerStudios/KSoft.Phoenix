@@ -5,9 +5,9 @@ namespace KSoft.Phoenix.Phx
 	public sealed class ProtoDataObjectSource
 	{
 		public ProtoDataObjectSourceKind SourceKind { get; private set; }
-		public Engine.XmlFileInfo FileReference { get; private set; }
+		public Engine.XmlFileInfo? FileReference { get; private set; }
 
-		public ProtoDataObjectSource(ProtoDataObjectSourceKind kind, Engine.XmlFileInfo fileReference)
+		public ProtoDataObjectSource(ProtoDataObjectSourceKind kind, Engine.XmlFileInfo? fileReference)
 		{
 			if (kind == ProtoDataObjectSourceKind.None)
 			{
@@ -35,11 +35,14 @@ namespace KSoft.Phoenix.Phx
 
 		public ProtoDataObjectDatabase GetObjectDatabase(Engine.PhxEngine engine)
 		{
+			ArgumentNullException.ThrowIfNull(engine);
+			var database = engine.Database ?? throw new InvalidOperationException("The engine database has not been initialized.");
+
 			return SourceKind switch
 			{
-				ProtoDataObjectSourceKind.Database => new(engine.Database, typeof(DatabaseObjectKind)),
-				ProtoDataObjectSourceKind.GameData => new(engine.Database.GameData, typeof(GameDataObjectKind)),
-				ProtoDataObjectSourceKind.HPData => new(engine.Database.HPBars, typeof(HPBarDataObjectKind)),
+				ProtoDataObjectSourceKind.Database => new(database, typeof(DatabaseObjectKind)),
+				ProtoDataObjectSourceKind.GameData => new(database.GameData, typeof(GameDataObjectKind)),
+				ProtoDataObjectSourceKind.HPData => new(database.HPBars, typeof(HPBarDataObjectKind)),
 				_ => throw new System.NotImplementedException(string.Format(
 					nameof(GetObjectDatabase) + " needs support for {0}",
 					this)),

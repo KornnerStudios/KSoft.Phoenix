@@ -56,12 +56,12 @@ namespace KSoft.Phoenix.Phx
 			return kind;
 		}
 
-		public bool Equals(ProtoDataObjectDatabase other)
+		public bool Equals(ProtoDataObjectDatabase? other)
 			=> other != null
 				&& ObjectSourceKind == other.ObjectSourceKind
 				&& Provider == other.Provider;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> obj is ProtoDataObjectDatabase database && Equals(database);
 
 		public override int GetHashCode()
@@ -99,7 +99,7 @@ namespace KSoft.Phoenix
 			return dbi.TryGetNameWithUndefined(id);
 		}
 
-		public static object GetObject(this Phx.IProtoDataObjectDatabaseProvider provider
+		public static object? GetObject(this Phx.IProtoDataObjectDatabaseProvider provider
 			, int objectKind, int id)
 		{
 			ArgumentNullException.ThrowIfNull(provider);

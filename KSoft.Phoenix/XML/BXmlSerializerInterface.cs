@@ -57,7 +57,7 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				result = true;
-				var xml_or_xmb = GameEngine.Directories!.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				var xml_or_xmb = GameEngine.Directories!.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName!, out System.IO.FileInfo file, ext!);
 
 				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
@@ -86,7 +86,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (mode == FA.Write)
 			{
-				result = GameEngine.Directories!.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				result = GameEngine.Directories!.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName!, out System.IO.FileInfo file, ext!);
 
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 				{
@@ -95,7 +95,7 @@ namespace KSoft.Phoenix.XML
 
 				if (result)
 				{
-					using (var s = IO.XmlElementStream.CreateForWrite(xfi.RootName))
+					using (var s = IO.XmlElementStream.CreateForWrite(xfi.RootName!))
 				{
 					SetupStream(s, mode, this);
 					streamProc(s, ctxt);
@@ -119,7 +119,7 @@ namespace KSoft.Phoenix.XML
 			if (mode == FA.Read)
 			{
 				result = true;
-				var xml_or_xmb = GameEngine.Directories!.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				var xml_or_xmb = GameEngine.Directories!.TryGetXmlOrXmbFile(xfi.Location, xfi.Directory, xfi.FileName!, out System.IO.FileInfo file, ext!);
 
 				if (xml_or_xmb == Engine.GetXmlOrXmbFileResult.FileNotFound)
 				{
@@ -148,7 +148,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else if (mode == FA.Write)
 			{
-				result = GameEngine.Directories!.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName, out System.IO.FileInfo file, ext!);
+				result = GameEngine.Directories!.TryGetFile(xfi.Location, xfi.Directory, xfi.FileName!, out System.IO.FileInfo file, ext!);
 
 				if (Engine.XmlFileInfo.RespectWritableFlag)
 				{
@@ -157,7 +157,7 @@ namespace KSoft.Phoenix.XML
 
 				if (result)
 				{
-					using (var s = IO.XmlElementStream.CreateForWrite(xfi.RootName))
+					using (var s = IO.XmlElementStream.CreateForWrite(xfi.RootName!))
 					{
 						SetupStream(s, mode, this);
 						streamProc(s);
@@ -225,7 +225,7 @@ namespace KSoft.Phoenix.XML
 
 		[System.Diagnostics.Conditional("TRACE")]
 		protected static void TraceUndefinedHandle<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, string name,
-			string xmlName,
+			string? xmlName,
 			int id, string kind)
 			where TDoc : class
 			where TCursor : class
@@ -252,7 +252,7 @@ namespace KSoft.Phoenix.XML
 		}
 
 		static void ThrowUnresolvedReferenceId<TDoc, TCursor>(
-			IO.TagElementStream<TDoc, TCursor, string> s, string xmlName, string idName, string kind)
+			IO.TagElementStream<TDoc, TCursor, string> s, string? xmlName, string idName, string kind)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -355,8 +355,55 @@ namespace KSoft.Phoenix.XML
 
 			return was_streamed;
 		}
+		static bool StreamReferenceNameOpt<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
+			string? xmlName, ref string? value, bool toLower, IO.TagElementNodeType xmlSource)
+			where TDoc : class
+			where TCursor : class
+		{
+			if (xmlSource == XmlUtil.kSourceCursor)
+			{
+				if (s.IsReading)
+				{
+					string streamedValue = string.Empty;
+					s.StreamCursor(ref streamedValue);
+					if (toLower) streamedValue = streamedValue.ToLowerInvariant();
+					value = string.Intern(streamedValue);
+				}
+				else if (s.IsWriting)
+				{
+					string streamedValue = value ?? string.Empty;
+					s.StreamCursor(ref streamedValue);
+					value = streamedValue;
+				}
+
+				return true;
+			}
+
+			ArgumentNullException.ThrowIfNull(xmlName);
+			return s.StreamStringOpt(xmlName, ref value, toLower, xmlSource, intern: true);
+		}
+		static void StreamReferenceName<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
+			string? xmlName, ref string value, bool toLower, IO.TagElementNodeType xmlSource)
+			where TDoc : class
+			where TCursor : class
+		{
+			if (xmlSource == XmlUtil.kSourceCursor)
+			{
+				s.StreamCursor(ref value);
+				if (s.IsReading)
+				{
+					if (toLower) value = value.ToLowerInvariant();
+					value = string.Intern(value);
+				}
+				return;
+			}
+
+			ArgumentNullException.ThrowIfNull(xmlName);
+			s.StreamString(xmlName, ref value, toLower, xmlSource, intern: true);
+		}
+
 		public bool StreamHPBarName<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
-			string xmlName, ref int dbid,
+			string? xmlName, ref int dbid,
 			Phx.HPBarDataObjectKind kind,
 			bool isOptional = true, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
 			where TDoc : class
@@ -372,25 +419,26 @@ namespace KSoft.Phoenix.XML
 			{
 				if (isOptional)
 				{
-					was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					was_streamed = StreamReferenceNameOpt(s, xmlName, ref id_name, to_lower, xmlSource);
 				}
 				else
 				{
-					string required_id_name = id_name!;
-					s.StreamString(xmlName, ref required_id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = string.Empty;
+					StreamReferenceName(s, xmlName, ref required_id_name, to_lower, xmlSource);
 					id_name = required_id_name;
 				}
 
 				if (was_streamed)
 				{
-					dbid = Database.GetId(kind, id_name!);
+					string idName = id_name ?? throw new InvalidOperationException("A streamed reference name was unexpectedly null.");
+					dbid = Database.GetId(kind, idName);
 					if (dbid.IsNone())
 					{
-						ThrowUnresolvedReferenceId(s, xmlName, id_name!, kind.ToString());
+						ThrowUnresolvedReferenceId(s, xmlName, idName, kind.ToString());
 					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
-						TraceUndefinedHandle(s, id_name!, xmlName, dbid, kind.ToString());
+						TraceUndefinedHandle(s, idName, xmlName, dbid, kind.ToString());
 					}
 				}
 				else
@@ -414,18 +462,20 @@ namespace KSoft.Phoenix.XML
 
 				if (isOptional)
 				{
-					s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					StreamReferenceNameOpt(s, xmlName, ref id_name, to_lower, xmlSource);
 				}
 				else
 				{
-					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = id_name ?? throw new InvalidOperationException("A database reference name was unexpectedly null.");
+					StreamReferenceName(s, xmlName, ref required_id_name, to_lower, xmlSource);
+					id_name = required_id_name;
 				}
 			}
 
 			return was_streamed;
 		}
 		public bool StreamDBID<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
-			string xmlName, ref int dbid,
+			string? xmlName, ref int dbid,
 			Phx.DatabaseObjectKind kind,
 			bool isOptional = true, IO.TagElementNodeType xmlSource = XmlUtil.kSourceElement)
 			where TDoc : class
@@ -441,25 +491,26 @@ namespace KSoft.Phoenix.XML
 			{
 				if (isOptional)
 				{
-					was_streamed = s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					was_streamed = StreamReferenceNameOpt(s, xmlName, ref id_name, to_lower, xmlSource);
 				}
 				else
 				{
-					string required_id_name = id_name!;
-					s.StreamString(xmlName, ref required_id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = string.Empty;
+					StreamReferenceName(s, xmlName, ref required_id_name, to_lower, xmlSource);
 					id_name = required_id_name;
 				}
 
 				if (was_streamed)
 				{
-					dbid = Database.GetId(kind, id_name!);
+					string idName = id_name ?? throw new InvalidOperationException("A streamed reference name was unexpectedly null.");
+					dbid = Database.GetId(kind, idName);
 					if (dbid.IsNone())
 					{
-						ThrowUnresolvedReferenceId(s, xmlName, id_name!, kind.ToString());
+						ThrowUnresolvedReferenceId(s, xmlName, idName, kind.ToString());
 					}
 					if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 					{
-						TraceUndefinedHandle(s, id_name!, xmlName, dbid, kind.ToString());
+						TraceUndefinedHandle(s, idName, xmlName, dbid, kind.ToString());
 					}
 				}
 				else
@@ -483,11 +534,13 @@ namespace KSoft.Phoenix.XML
 
 				if (isOptional)
 				{
-					s.StreamStringOpt(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					StreamReferenceNameOpt(s, xmlName, ref id_name, to_lower, xmlSource);
 				}
 				else
 				{
-					s.StreamString(xmlName, ref id_name, to_lower, xmlSource, intern: true);
+					string required_id_name = id_name ?? throw new InvalidOperationException("A database reference name was unexpectedly null.");
+					StreamReferenceName(s, xmlName, ref required_id_name, to_lower, xmlSource);
+					id_name = required_id_name;
 				}
 			}
 
@@ -611,7 +664,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref damangeType, Phx.DatabaseObjectKind.DamageType,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref damangeType, Phx.DatabaseObjectKind.DamageType,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ObjectType</summary>
@@ -620,7 +673,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref objectType, Phx.DatabaseObjectKind.ObjectType,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref objectType, Phx.DatabaseObjectKind.ObjectType,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoObject</summary>
@@ -629,7 +682,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref objectProtoId, Phx.DatabaseObjectKind.Object,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref objectProtoId, Phx.DatabaseObjectKind.Object,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoSquad</summary>
@@ -638,7 +691,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref squadProtoId, Phx.DatabaseObjectKind.Squad,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref squadProtoId, Phx.DatabaseObjectKind.Squad,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoTech</summary>
@@ -647,7 +700,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref techProtoId, Phx.DatabaseObjectKind.Object,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref techProtoId, Phx.DatabaseObjectKind.Object,
 				false, XmlUtil.kSourceCursor);
 		}
 		/// <summary>Stream the current element's Text as a ProtoObject or ObjectType</summary>
@@ -656,7 +709,7 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName!, ref unitProtoId, Phx.DatabaseObjectKind.Unit,
+			xs.StreamDBID(s, XML.XmlUtil.kNoXmlName, ref unitProtoId, Phx.DatabaseObjectKind.Unit,
 				false, XmlUtil.kSourceCursor);
 		}
 	};

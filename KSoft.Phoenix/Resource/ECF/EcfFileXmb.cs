@@ -8,7 +8,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		const uint kSignature = 0xE43ABC00;
 		const ulong kChunkId = 0x00000000A9C96500;
 
-		public byte[] FileData;
+		public byte[]? FileData;
 
 		public EcfFileXmb()
 		{
@@ -78,7 +78,7 @@ namespace KSoft.Phoenix.Resource.ECF
 				throw new ArgumentException("Stream must be readable", nameof(xmbStream));
 			}
 
-			byte[] xmbBytes;
+			byte[]? xmbBytes;
 
 			using (var xmb = new ECF.EcfFileXmb())
 			{
@@ -123,7 +123,7 @@ namespace KSoft.Phoenix.Resource.ECF
 			}
 		}
 
-		public static Xmb.Single24DumpInfo DumpSingle24Values(IO.EndianStream xmbStream, Shell.ProcessorSize vaSize)
+		public static Xmb.Single24DumpInfo? DumpSingle24Values(IO.EndianStream xmbStream, Shell.ProcessorSize vaSize)
 		{
 			var xmbFileContext = new Xmb.XmbFileContext()
 			{
@@ -132,10 +132,11 @@ namespace KSoft.Phoenix.Resource.ECF
 				CallOnRawDataRead = true, // #HACK
 			};
 
-			var dumpInfo = new Xmb.Single24DumpInfo()
+			var dumpInfo = new Xmb.Single24DumpInfo();
+			if (xmbStream.StreamName is string streamName)
 			{
-				SourcePath = xmbStream.StreamName,
-			};
+				dumpInfo.SourcePath = streamName;
+			}
 
 			using (Phoenix.Xmb.XmbFile xmbf = ReadXmbFromStream(xmbStream, xmbFileContext))
 			{
