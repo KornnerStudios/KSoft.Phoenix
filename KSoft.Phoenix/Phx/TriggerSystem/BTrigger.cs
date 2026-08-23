@@ -66,7 +66,7 @@ namespace KSoft.Phoenix.Phx
 				}
 				else
 				{
-					XML.XmlUtil.Serialize(s, Conditions, 
+					XML.XmlUtil.Serialize(s, Conditions,
 						OrConditions ? BTriggerCondition.kBListXmlParams_Or : k_AND_params);
 				}
 			}
