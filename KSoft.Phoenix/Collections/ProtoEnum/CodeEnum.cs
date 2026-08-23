@@ -8,17 +8,8 @@ namespace KSoft.Collections
 		: IProtoEnum
 		where TEnum : struct, Enum
 	{
-		static readonly string[] kNames;
-		static readonly string kUnregisteredMessage;
-
-		static CodeEnum()
-		{
-			var enum_type = typeof(TEnum);
-
-			kNames = Enum.GetNames(enum_type);
-
-			kUnregisteredMessage = string.Format("Unregistered {0}!", enum_type.Name);
-		}
+		static readonly string[] kNames = Enum.GetNames(typeof(TEnum));
+		static readonly string kUnregisteredMessage = string.Format("Unregistered {0}!", typeof(TEnum).Name);
 
 		#region IProtoEnum Members
 		public int TryGetMemberId(string memberName)
