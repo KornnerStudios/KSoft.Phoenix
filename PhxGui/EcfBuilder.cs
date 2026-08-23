@@ -51,66 +51,74 @@ namespace PhxGui
 
 			task.ContinueWith(t =>
 			{
-				string message_text = "";
-				string verbose_output = args.GetVerboseOutput();
-
-				if (t.IsFaulted || t.Result != BuildEcfFileResult.Success)
+				try
 				{
-					bool verbose = Flags.Test(MiscFlags.UseVerboseOutput);
+					string message_text = "";
+					string verbose_output = args.GetVerboseOutput();
 
-					string error_type;
-					string error_hint;
-					if (t.IsFaulted)
+					if (t.IsFaulted || t.Result != BuildEcfFileResult.Success)
 					{
-						error_type = "EXCEPTION";
+						bool verbose = Flags.Test(MiscFlags.UseVerboseOutput);
 
-						var e = t.Exception!.GetOnlyExceptionOrAll()!;
-						error_hint = verbose
-							? e.ToVerboseString()!
-							: e.ToBasicString()!;
-					}
-					else
-					{
-						error_type = "FAILED";
-						error_hint = t.Result switch
+						string error_type;
+						string error_hint;
+						if (t.IsFaulted)
 						{
-							BuildEcfFileResult.Error
-							=> "NO HINT",
-							BuildEcfFileResult.ReadFailed
-							=> "Failed reading or initializing .ECFDEF data",
-							BuildEcfFileResult.BuildFailed
-							=> "Failed building ECF (invalid files?). See PhxGui.log for possible details",
-							_ => "UNKNOWN",
-						};
+							error_type = "EXCEPTION";
+
+							var e = t.Exception!.GetOnlyExceptionOrAll()!;
+							error_hint = verbose
+								? e.ToVerboseString()!
+								: e.ToBasicString()!;
+						}
+						else
+						{
+							error_type = "FAILED";
+							error_hint = t.Result switch
+							{
+								BuildEcfFileResult.Error
+								=> "NO HINT",
+								BuildEcfFileResult.ReadFailed
+								=> "Failed reading or initializing .ECFDEF data",
+								BuildEcfFileResult.BuildFailed
+								=> "Failed building ECF (invalid files?). See PhxGui.log for possible details",
+								_ => "UNKNOWN",
+							};
+						}
+
+						var sb = new System.Text.StringBuilder();
+						sb.Append($"Build {error_type} ");
+						sb.AppendLine(args.ListingPath);
+						sb.AppendLine(error_hint);
+
+						message_text = sb.ToString();
 					}
 
-					var sb = new System.Text.StringBuilder();
-					sb.Append($"Build {error_type} ");
-					sb.AppendLine(args.ListingPath);
-					sb.AppendLine(error_hint);
+					if (!string.IsNullOrEmpty(verbose_output))
+					{
+						var sb = new System.Text.StringBuilder();
+						sb.AppendLine("VerboseOutput:");
+						sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
+						sb.AppendLine(message_text);
 
-					message_text = sb.ToString();
+						message_text = sb.ToString();
+					}
+					if (!string.IsNullOrEmpty(message_text))
+					{
+						MessagesText += message_text;
+					}
+
+					FinishProcessing();
 				}
-
-				if (!string.IsNullOrEmpty(verbose_output))
+				finally
 				{
-					var sb = new System.Text.StringBuilder();
-					sb.AppendLine("VerboseOutput:");
-					sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
-					sb.AppendLine(message_text);
-
-					message_text = sb.ToString();
+					args.Dispose();
 				}
-				if (!string.IsNullOrEmpty(message_text))
-				{
-					MessagesText += message_text;
-				}
-
-				FinishProcessing();
 			}, scheduler);
 		}
 
 		private sealed class BuildEcfFileParameters
+			: IDisposable
 		{
 			public BitVector32 EcfOptions;
 			public BitVector32 EcfBuilderOptions = default;
@@ -126,6 +134,11 @@ namespace PhxGui
 				{
 					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
 				}
+			}
+
+			public void Dispose()
+			{
+				VerboseOutput?.Dispose();
 			}
 
 			public string GetVerboseOutput()

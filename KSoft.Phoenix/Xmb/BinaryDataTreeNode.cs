@@ -85,10 +85,9 @@ namespace KSoft.Phoenix.Xmb
 			}
 		}
 
-		internal void SetNameValues(BinaryDataTreeDecompiler decompiler, BinaryDataTreePackedNode packedNode, int numNameValues)
+		internal void SetNameValues(BinaryDataTreeDecompiler decompiler, IO.EndianReader nameDataReader, BinaryDataTreeMemoryPool valueDataPool, BinaryDataTreePackedNode packedNode, int numNameValues)
 		{
 			var decompilerNameValues = decompiler.NameValues ?? throw new System.InvalidOperationException();
-			var valueDataPool = decompiler.ValueDataPool ?? throw new System.InvalidOperationException();
 			NameValues = new List<BinaryDataTreeBuildNameValue>(numNameValues);
 			for (int y = 0; y < numNameValues; y++)
 			{
@@ -109,7 +108,7 @@ namespace KSoft.Phoenix.Xmb
 					}
 				}
 
-				build_name_value.Name = decompiler.ReadName(packed_name_value.NameOffset);
+				build_name_value.Name = decompiler.ReadName(nameDataReader, packed_name_value.NameOffset);
 				build_name_value.Variant.Read(valueDataPool, packed_name_value);
 
 				if (packed_name_value.HasUnicodeData)

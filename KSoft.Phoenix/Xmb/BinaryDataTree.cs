@@ -384,21 +384,18 @@ namespace KSoft.Phoenix.Xmb
 		public byte[]? NameData;
 		public byte[]? ValueData;
 
-		public IO.EndianReader? NameDataReader;
-		public BinaryDataTreeMemoryPool? ValueDataPool;
-
 		public void Decompile()
 		{
 			var nameData = NameData ?? throw new InvalidOperationException();
 			var valueData = ValueData ?? throw new InvalidOperationException();
 			var packedNodes = PackedNodes ?? throw new InvalidOperationException();
 
-			NameDataReader = new IO.EndianReader(
+			using var nameDataReader = new IO.EndianReader(
 				new MemoryStream(nameData, writable: false),
 				Shell.EndianFormat.Little,
 				name: "NameDataReader");
 
-			ValueDataPool = new BinaryDataTreeMemoryPool(valueData);
+			using var valueDataPool = new BinaryDataTreeMemoryPool(valueData);
 
 			var nodes = new List<BinaryDataTreeBuildNode>(packedNodes.Length);
 			Nodes = nodes;
@@ -423,17 +420,15 @@ namespace KSoft.Phoenix.Xmb
 					throw new InvalidDataException("No name-values: #" + x);
 				}
 
-				build_node.SetNameValues(this, packed_node, num_name_values);
+				build_node.SetNameValues(this, nameDataReader, valueDataPool, packed_node, num_name_values);
 			}
 
-			Util.DisposeAndNull(ref NameDataReader);
 		}
 
-		public string ReadName(int nameOffset)
+		public string ReadName(IO.EndianReader nameDataReader, int nameOffset)
 		{
 			var nameData = NameData;
-			var nameDataReader = NameDataReader;
-			if (nameData == null || nameOffset >= nameData.Length || nameDataReader == null)
+			if (nameData == null || nameOffset >= nameData.Length)
 			{
 				throw new InvalidOperationException(nameOffset.ToString("X8"));
 			}

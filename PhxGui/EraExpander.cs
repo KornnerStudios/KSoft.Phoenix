@@ -119,84 +119,92 @@ namespace PhxGui
 
 				task.ContinueWith(t =>
 				{
-					string message_text = "";
-					string verbose_output = args.GetVerboseOutput();
-
-					if (t.IsFaulted || t.Result != ExpandEraFileResult.Success)
+					try
 					{
-						bool verbose = ViewModel.Flags.Test(MiscFlags.UseVerboseOutput);
+						string message_text = "";
+						string verbose_output = args.GetVerboseOutput();
 
-						string error_type;
-						string error_hint;
-						if (t.IsFaulted)
+						if (t.IsFaulted || t.Result != ExpandEraFileResult.Success)
 						{
-							error_type = "EXCEPTION";
+							bool verbose = ViewModel.Flags.Test(MiscFlags.UseVerboseOutput);
 
-							var e = t.Exception!.GetOnlyExceptionOrAll()!;
-							error_hint = verbose
-								? e.ToVerboseString()!
-								: e.ToBasicString()!;
+							string error_type;
+							string error_hint;
+							if (t.IsFaulted)
+							{
+								error_type = "EXCEPTION";
+
+								var e = t.Exception!.GetOnlyExceptionOrAll()!;
+								error_hint = verbose
+									? e.ToVerboseString()!
+									: e.ToBasicString()!;
+							}
+							else
+							{
+								error_type = "FAILED";
+								error_hint = t.Result switch
+								{
+									ExpandEraFileResult.Error
+									=> "NO HINT",
+									ExpandEraFileResult.ReadFailed
+									=> "Failed reading ERA file",
+									ExpandEraFileResult.ExpandFailed
+									=> "Failed expanding archive (do you have the correct game version selected?)",
+									_ => "UNKNOWN",
+								};
+							}
+
+							var sb = new System.Text.StringBuilder();
+							sb.Append($"Expand {error_type} ");
+							sb.AppendLine(eraFile);
+							sb.AppendLine(error_hint);
+
+							message_text = sb.ToString();
+						}
+
+						if (!string.IsNullOrEmpty(verbose_output))
+						{
+							var sb = new System.Text.StringBuilder();
+							sb.AppendLine("VerboseOutput:");
+							// include the ERA path for context, when dealing with multiple files
+							sb.AppendLine(args.EraPath);
+							sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
+							sb.AppendLine(message_text);
+
+							message_text = sb.ToString();
+						}
+						if (!string.IsNullOrEmpty(message_text))
+						{
+							Dispatcher.BeginInvoke(DispatcherPriority.Background,
+								new Action(() =>
+								{
+									ViewModel.MessagesText += message_text;
+								}));
+						}
+
+						if (mEraFilesIndex < EraFiles.Length)
+						{
+							Expand();
 						}
 						else
 						{
-							error_type = "FAILED";
-							error_hint = t.Result switch
-							{
-								ExpandEraFileResult.Error
-								=> "NO HINT",
-								ExpandEraFileResult.ReadFailed
-								=> "Failed reading ERA file",
-								ExpandEraFileResult.ExpandFailed
-								=> "Failed expanding archive (do you have the correct game version selected?)",
-								_ => "UNKNOWN",
-							};
+							Dispatcher.BeginInvoke(DispatcherPriority.Background,
+								new Action(() =>
+								{
+									ViewModel.FinishProcessing();
+								}));
 						}
-
-						var sb = new System.Text.StringBuilder();
-						sb.Append($"Expand {error_type} ");
-						sb.AppendLine(eraFile);
-						sb.AppendLine(error_hint);
-
-						message_text = sb.ToString();
 					}
-
-					if (!string.IsNullOrEmpty(verbose_output))
+					finally
 					{
-						var sb = new System.Text.StringBuilder();
-						sb.AppendLine("VerboseOutput:");
-						// include the ERA path for context, when dealing with multiple files
-						sb.AppendLine(args.EraPath);
-						sb.AppendLine(args.VerboseOutput!.GetStringBuilder().ToString());
-						sb.AppendLine(message_text);
-
-						message_text = sb.ToString();
-					}
-					if (!string.IsNullOrEmpty(message_text))
-					{
-						Dispatcher.BeginInvoke(DispatcherPriority.Background,
-							new Action(() =>
-							{
-								ViewModel.MessagesText += message_text;
-							}));
-					}
-
-					if (mEraFilesIndex < EraFiles.Length)
-					{
-						Expand();
-					}
-					else
-					{
-						Dispatcher.BeginInvoke(DispatcherPriority.Background,
-							new Action(() =>
-							{
-								ViewModel.FinishProcessing();
-							}));
+						args.Dispose();
 					}
 				});
 			}
 		};
 
 		private sealed class ExpandEraFileParameters
+			: IDisposable
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraExpanderOptions;
@@ -212,6 +220,11 @@ namespace PhxGui
 				{
 					VerboseOutput = new StringWriter(new System.Text.StringBuilder(2048));
 				}
+			}
+
+			public void Dispose()
+			{
+				VerboseOutput?.Dispose();
 			}
 
 			public string GetVerboseOutput()
