@@ -46,8 +46,8 @@ namespace KSoft.Phoenix.Phx
 		{
 			if (s.IsWriting)
 			{
-				var task_sort_cond = Task.Factory.StartNew(() => Conditions.Sort(SortById));
-				var task_sort_effe = Task.Factory.StartNew(() => Effects.Sort(SortById));
+				var task_sort_cond = Task.Run(() => Conditions.Sort(SortById));
+				var task_sort_effe = Task.Run(() => Effects.Sort(SortById));
 
 				var task_unknowns = Task<int>.Factory.StartNew(() =>
 				{

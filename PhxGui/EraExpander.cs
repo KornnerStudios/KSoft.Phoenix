@@ -199,7 +199,7 @@ namespace PhxGui
 					{
 						args.Dispose();
 					}
-				});
+				}, TaskScheduler.Default);
 			}
 		};
 

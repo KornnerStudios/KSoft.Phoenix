@@ -21,10 +21,9 @@ namespace PhxGui
 				CanOverwriteFiles = Flags.Test(MiscFlags.DontOverwriteExistingFiles)==false,
 			};
 
-			var task = Task.Factory.StartNew(
+			var task = Task.Run(() =>
 				//ExePatching.PatchGameExeBySha1,
-				ExePatching.PatchGameExeByPatternMatching,
-				args);
+				ExePatching.PatchGameExeByPatternMatching(args));
 
 			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 			task.ContinueWith(t =>
