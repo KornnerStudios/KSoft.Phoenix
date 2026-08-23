@@ -36,7 +36,7 @@ namespace KSoft.Phoenix
 		} }
 
 		public static bool StrEqualsIgnoreCase(string? str1, string? str2)
-			=> string.Compare(str1, str2, StringComparison.OrdinalIgnoreCase) == 0;
+			=> string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
 
 		public static string? ToLowerIfContainsUppercase(this string? str)
 		{

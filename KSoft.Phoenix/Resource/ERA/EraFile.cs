@@ -1064,7 +1064,7 @@ namespace KSoft.Phoenix.Resource
 		#region Local file utils
 		private static bool IsIgnoredLocalFile(string fileName)
 		{
-			if (0==string.Compare(fileName, "version.txt", System.StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(fileName, "version.txt", System.StringComparison.OrdinalIgnoreCase))
 			{
 				return true;
 			}

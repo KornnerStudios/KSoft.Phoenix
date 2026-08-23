@@ -162,15 +162,15 @@ namespace KSoft.Phoenix.Resource
 		#region Local file utils
 		public static bool IsLocalScenarioFile(string fileName)
 		{
-			if (0==string.Compare(fileName, "pfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(fileName, "pfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
 			{
 				return true;
 			}
-			else if (0==string.Compare(fileName, "tfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
+			else if (string.Equals(fileName, "tfxFileList.txt", System.StringComparison.OrdinalIgnoreCase))
 			{
 				return true;
 			}
-			else if (0==string.Compare(fileName, "visFileList.txt", System.StringComparison.OrdinalIgnoreCase))
+			else if (string.Equals(fileName, "visFileList.txt", System.StringComparison.OrdinalIgnoreCase))
 			{
 				return true;
 			}
