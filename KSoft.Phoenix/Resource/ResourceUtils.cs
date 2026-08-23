@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace KSoft.Phoenix.Resource
@@ -76,7 +77,7 @@ namespace KSoft.Phoenix.Resource
 
 		public static void RemoveXmbExtension(ref string filename)
 		{
-			filename = filename.Replace(Xmb.XmbFile.kFileExt, "");
+			filename = filename.Replace(Xmb.XmbFile.kFileExt, "", StringComparison.Ordinal);
 
 			//if (System.IO.Path.GetExtension(filename) != ".xml")
 			//	filename += ".xml";

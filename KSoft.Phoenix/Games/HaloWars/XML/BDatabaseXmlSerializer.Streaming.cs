@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 
 namespace KSoft.Phoenix.HaloWars
@@ -80,7 +81,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			if (!removed)
 			{
-				int index = value.IndexOf('.');
+				int index = value.IndexOf('.', StringComparison.Ordinal);
 				if (index >= 0)
 				{
 					removed = true;
@@ -135,7 +136,7 @@ namespace KSoft.Phoenix.HaloWars
 				foreach (XmlElement e in elements)
 			{
 				var attr = e.Attributes["infected"]!;
-				attr.Value = attr.Value.Replace("_Inf", "_inf");
+				attr.Value = attr.Value.Replace("_Inf", "_inf", StringComparison.Ordinal);
 			}
 			}
 		}
@@ -153,7 +154,7 @@ namespace KSoft.Phoenix.HaloWars
 					foreach (XmlElement e in elements)
 				{
 					var attr = e.Attributes["base"]!;
-					attr.Value = attr.Value.Replace("needlergrunt", "needlerGrunt");
+					attr.Value = attr.Value.Replace("needlergrunt", "needlerGrunt", StringComparison.Ordinal);
 				}
 				}
 
@@ -171,7 +172,7 @@ namespace KSoft.Phoenix.HaloWars
 					foreach (XmlElement e in elements)
 				{
 					var attr = e.Attributes["infectedSquad"]!;
-					attr.Value = attr.Value.Replace("_Inf", "_inf");
+					attr.Value = attr.Value.Replace("_Inf", "_inf", StringComparison.Ordinal);
 				}
 				}
 			}
@@ -275,7 +276,7 @@ namespace KSoft.Phoenix.HaloWars
 			var element = (node[Phx.BProtoObject.kXmlElementAttackGradeDPS] as XmlElement)!;
 
 			string txt = element.InnerText;
-			int idx = txt.IndexOf('.');
+			int idx = txt.IndexOf('.', StringComparison.Ordinal);
 			if (idx != -1 && (idx = txt.IndexOf('.', idx)) != -1)
 			{
 				element.InnerText = txt.Remove(idx, txt.Length - idx);

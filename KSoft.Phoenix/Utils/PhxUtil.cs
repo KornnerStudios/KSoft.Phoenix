@@ -237,7 +237,7 @@ namespace KSoft.Phoenix
 			for (; count < src.Length; count++, srcIndex++)
 			{
 				char c = src[srcIndex];
-				if (!tokens.Contains(c))
+				if (!tokens.Contains(c, StringComparison.Ordinal))
 				{
 					break;
 				}
@@ -248,7 +248,7 @@ namespace KSoft.Phoenix
 			for (; count < src.Length && srcIndex+copy_length < src.Length; count++, copy_length++)
 			{
 				char c = src[srcIndex+copy_length];
-				if (tokens.Contains(c))
+				if (tokens.Contains(c, StringComparison.Ordinal))
 				{
 					break;
 				}
