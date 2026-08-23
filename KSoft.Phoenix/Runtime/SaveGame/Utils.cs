@@ -575,6 +575,10 @@ namespace KSoft.Phoenix.Runtime
 
 					setId(obj, id);
 				}
+				else
+				{
+					obj = null;
+				}
 			}
 			#endregion
 			#region Write
