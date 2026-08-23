@@ -77,7 +77,9 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			var xs = s.GetSerializerInterface();
-			var td = KSoft.Debug.TypeCheck.CastReference<BTacticData>(s.UserData);
+			var userData = s.UserData;
+			System.ArgumentNullException.ThrowIfNull(userData);
+			var td = KSoft.Debug.TypeCheck.CastReference<BTacticData>(userData);
 
 			s.StreamElementEnumOpt("Relation", ref mRelation, e => e != BRelationType.Enemy);
 			if (!s.StreamElementEnumOpt("SquadMode", ref mSquadMode, e => e != BSquadMode.Invalid))

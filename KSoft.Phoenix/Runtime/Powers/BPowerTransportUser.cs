@@ -5,8 +5,8 @@ namespace KSoft.Phoenix.Runtime
 		: BPowerUser
 	{
 		public BPowerHelperHudSounds HudSounds = new();
-		public BEntityID[] SquadsToTransport;
-		public BEntityID[] TargetedSquads;
+		public BEntityID[]? SquadsToTransport;
+		public BEntityID[]? TargetedSquads;
 		public int LOSMode;
 		public bool GotPickupLocation;
 		public BVector PickupLocation;
@@ -17,8 +17,8 @@ namespace KSoft.Phoenix.Runtime
 			base.Serialize(s);
 
 			s.Stream(HudSounds);
-			BSaveGame.StreamArray(s, ref SquadsToTransport);
-			BSaveGame.StreamArray(s, ref TargetedSquads);
+			BSaveGameNullableSerialization.StreamArray(s, ref SquadsToTransport);
+			BSaveGameNullableSerialization.StreamArray(s, ref TargetedSquads);
 			s.Stream(ref LOSMode);
 			s.Stream(ref GotPickupLocation);
 			s.StreamV(ref PickupLocation);

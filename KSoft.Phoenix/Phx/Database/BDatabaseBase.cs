@@ -194,7 +194,7 @@ namespace KSoft.Phoenix.Phx
 
 			return id;
 		}
-		string TryGetNameUnit(int id)
+		string? TryGetNameUnit(int id)
 		{
 			if (ObjectIdIsObjectTypeBitGet(ref id))
 			{
@@ -302,7 +302,7 @@ namespace KSoft.Phoenix.Phx
 				_ => throw new KSoft.Debug.UnreachableException(kind.ToString()),
 			};
 		}
-		public string GetName(GameDataObjectKind kind, int id)
+		public string? GetName(GameDataObjectKind kind, int id)
 		{
 			if (kind == GameDataObjectKind.None)
 			{
@@ -312,7 +312,7 @@ namespace KSoft.Phoenix.Phx
 			IProtoDataObjectDatabaseProvider provider = GameData;
 			return provider.GetName((int)kind, id);
 		}
-		public string GetName(HPBarDataObjectKind kind, int id)
+		public string? GetName(HPBarDataObjectKind kind, int id)
 		{
 			if (kind == HPBarDataObjectKind.None)
 			{
@@ -322,7 +322,7 @@ namespace KSoft.Phoenix.Phx
 			IProtoDataObjectDatabaseProvider provider = HPBars;
 			return provider.GetName((int)kind, id);
 		}
-		public string GetName(DatabaseObjectKind kind, int id)
+		public string? GetName(DatabaseObjectKind kind, int id)
 		{
 			if (kind == DatabaseObjectKind.None)
 			{
@@ -386,8 +386,9 @@ namespace KSoft.Phoenix.Phx
 			System.ArgumentNullException.ThrowIfNull(triggerSerializer);
 
 			var ctxt = triggerSerializer.StreamTriggerScriptGetContext(FA.Read, type, scriptName);
+			var fileInfo = ctxt.FileInfo ?? throw new InvalidOperationException("Trigger script file information is required.");
 			var task = Task<bool>.Factory.StartNew(() =>
-				triggerSerializer.TryStreamData(ctxt.FileInfo, FA.Read, triggerSerializer.StreamTriggerScript, ctxt));
+				triggerSerializer.TryStreamData(fileInfo, FA.Read, triggerSerializer.StreamTriggerScript, ctxt));
 
 			return task.Result ? ctxt.Script : null;
 		}
@@ -397,8 +398,9 @@ namespace KSoft.Phoenix.Phx
 			System.ArgumentNullException.ThrowIfNull(triggerSerializer);
 
 			var ctxt = triggerSerializer.StreamTriggerScriptGetContext(FA.Read, BTriggerScriptType.Scenario, scnrPath);
+			var fileInfo = ctxt.FileInfo ?? throw new InvalidOperationException("Scenario script file information is required.");
 			var task = Task<bool>.Factory.StartNew(() =>
-				triggerSerializer.TryStreamData(ctxt.FileInfo, FA.Read, triggerSerializer.LoadScenarioScripts, ctxt));
+				triggerSerializer.TryStreamData(fileInfo, FA.Read, triggerSerializer.LoadScenarioScripts, ctxt));
 
 			return task.Result;
 		}

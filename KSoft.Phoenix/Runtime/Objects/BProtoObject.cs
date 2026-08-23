@@ -70,7 +70,7 @@ namespace KSoft.Phoenix.Runtime
 					Hardpoints!.Length,
 					BHardpoint.kMaxCount));
 			}
-			sg.StreamBCost(s, ref Cost);
+			BSaveGameNullableSerialization.StreamBCost(sg, s, ref Cost);
 			s.Stream(ref ProtoVisualIndex);
 			s.Stream(ref DesiredVelocity); s.Stream(ref MaxVelocity);
 			s.Stream(ref Hitpoints); s.Stream(ref Shieldpoints);

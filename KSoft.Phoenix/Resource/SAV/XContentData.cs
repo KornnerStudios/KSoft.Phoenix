@@ -18,8 +18,8 @@ namespace KSoft.Phoenix.Resource.SAV
 			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageType.CString,
 			fixedLength: XCONTENT_MAX_FILENAME_LENGTH);
 
-		public string DisplayName;
-		public string FileName;
+		public string DisplayName = null!;
+		public string FileName = null!;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

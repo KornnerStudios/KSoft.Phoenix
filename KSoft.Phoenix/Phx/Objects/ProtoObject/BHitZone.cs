@@ -12,8 +12,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region AttachmentName
-		string mAttachmentName;
-		public string AttachmentName
+		string? mAttachmentName;
+		public string? AttachmentName
 		{
 			get { return mAttachmentName; }
 			set { mAttachmentName = value; }
@@ -61,7 +61,9 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamCursor(ref mAttachmentName);
+			string attachmentName = s.IsReading ? string.Empty : mAttachmentName ?? throw new System.ArgumentNullException(nameof(mAttachmentName));
+			s.StreamCursor(ref attachmentName);
+			mAttachmentName = attachmentName;
 			s.StreamElementOpt("Hitpoints", ref mHitpoints, PhxPredicates.IsNotInvalid);
 			s.StreamElementOpt("Shieldpoints", ref mShieldpoints, PhxPredicates.IsNotInvalid);
 		}

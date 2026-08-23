@@ -113,7 +113,7 @@ namespace KSoft.Phoenix.Resource
 				throw new InvalidOperationException("Resource tag metadata can only be populated while reading.");
 			}
 
-			string streamedString = string.Empty;
+			string? streamedString = null;
 
 			this.TimeStamp = DateTime.FromFileTimeUtc((long)header.TagTimeStamp);
 			this.Guid = header.TagGuid;

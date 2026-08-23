@@ -32,8 +32,9 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			return Params.UseElementName
-				? s.ElementsByName(Params.ElementName)
+			var elementName = Params.ElementName;
+			return elementName is not null
+				? s.ElementsByName(elementName)
 				: s.Elements;
 		}
 		protected virtual void ReadNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
@@ -55,7 +56,8 @@ namespace KSoft.Phoenix.XML
 		}
 		protected virtual string WriteGetElementName(T data)
 		{
-			return Params.ElementName;
+			return Params.ElementName
+				?? throw new InvalidOperationException("List XML serialization requires an element name.");
 		}
 		protected virtual void WriteNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
 			where TDoc : class
@@ -75,7 +77,7 @@ namespace KSoft.Phoenix.XML
 			where TCursor : class
 		{
 			bool should_stream = true;
-			string root_name = Params.GetOptionalRootName();
+			string? root_name = Params.GetOptionalRootName();
 			var xs = s.GetSerializerInterface();
 
 			if (s.IsReading) // If the stream doesn't have the expected element, don't try to stream
@@ -89,7 +91,7 @@ namespace KSoft.Phoenix.XML
 
 			if (should_stream)
 			{
-				using (s.EnterCursorBookmark(root_name))
+				if (root_name is null)
 				{
 					if (s.IsReading)
 					{
@@ -98,6 +100,20 @@ namespace KSoft.Phoenix.XML
 					else if (s.IsWriting)
 					{
 						WriteNodes(s, xs);
+					}
+				}
+				else
+				{
+					using (s.EnterCursorBookmark(root_name))
+					{
+						if (s.IsReading)
+						{
+							ReadNodes(s, xs);
+						}
+						else if (s.IsWriting)
+						{
+							WriteNodes(s, xs);
+						}
 					}
 				}
 			}

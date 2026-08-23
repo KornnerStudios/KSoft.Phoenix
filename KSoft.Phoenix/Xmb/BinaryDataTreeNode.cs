@@ -45,7 +45,7 @@ namespace KSoft.Phoenix.Xmb
 
 		public string NodeName { get {
 			var name_value = GetNameValues()[0];
-			return name_value.Name;
+			return name_value.Name ?? throw new System.InvalidOperationException("Node name is required.");
 		} }
 		public BinaryDataTreeVariantData NodeVariant { get {
 			var name_value = GetNameValues()[0];
@@ -131,7 +131,8 @@ namespace KSoft.Phoenix.Xmb
 					{
 						var name_value = NameValues[x];
 
-						using (s.EnterCursorBookmark(name_value.Name))
+						var attributeName = name_value.Name ?? throw new System.InvalidOperationException("Attribute name is required.");
+					using (s.EnterCursorBookmark(attributeName))
 						{
 							name_value.Variant.ToStream(s);
 						}
@@ -143,7 +144,8 @@ namespace KSoft.Phoenix.Xmb
 				for (int x = 1; x < NameValues.Count; x++)
 				{
 					var name_value = NameValues[x];
-					name_value.Variant.ToStreamAsAttribute(name_value.Name, s);
+					var attributeName = name_value.Name ?? throw new System.InvalidOperationException("Attribute name is required.");
+					name_value.Variant.ToStreamAsAttribute(attributeName, s);
 				}
 			}
 		}

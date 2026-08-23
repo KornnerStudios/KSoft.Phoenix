@@ -22,16 +22,18 @@ namespace KSoft.Phoenix.HaloWars
 		#endregion
 
 		#region FilePath
-		string mFilePath = null!;
-		public string FilePath
+		string? mFilePath;
+		public string? FilePath
 		{
 			get { return mFilePath; }
 			[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2245:Do not assign a property to itself",
 				Justification = "This is how OnPropertyChanged fires")]
 			set
 			{
-				if (this.SetFieldObj(ref mFilePath, value))
+				if (!string.Equals(mFilePath, value, System.StringComparison.Ordinal))
 				{
+					mFilePath = value;
+					OnPropertyChanged();
 					ContainingFolder = ContainingFolder;
 					DisplayTitle = DisplayTitle;
 				}
@@ -91,12 +93,13 @@ namespace KSoft.Phoenix.HaloWars
 
 		public void WriteToFile()
 		{
-			if (!Directory.Exists(ContainingFolder))
+			var filePath = FilePath;
+			if (filePath is null || !Directory.Exists(ContainingFolder))
 			{
 				return;
 			}
 
-			using (var sw = new StreamWriter(FilePath))
+			using (var sw = new StreamWriter(filePath))
 			{
 				var line = new System.Text.StringBuilder(512);
 

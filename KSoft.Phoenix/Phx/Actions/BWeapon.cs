@@ -35,9 +35,9 @@ namespace KSoft.Phoenix.Phx
 		public int VisualAmmo { get { return mVisualAmmo; } }
 
 		#region TriggerScript
-		string mTriggerScript;
+		string? mTriggerScript;
 		[Meta.TriggerScriptReference]
-		public string TriggerScript
+		public string? TriggerScript
 		{
 			get { return mTriggerScript; }
 			set { mTriggerScript = value; }

@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 		//, IO.IIndentedTextWritable
 	{
-		public BPowerEntryItem[] Items;
+		public BPowerEntryItem[]? Items;
 		public BProtoPowerID ProtoPowerID;
 		public int TimesUsed, IconLocation;
 		public bool IgnoreCost, IgnoreTechPrereqs, IgnorePop;
@@ -13,7 +13,7 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref Items);
+			BSaveGameNullableSerialization.StreamArray16(s, ref Items);
 			s.Stream(ref ProtoPowerID);
 			s.Stream(ref TimesUsed); s.Stream(ref IconLocation);
 			s.Stream(ref IgnoreCost); s.Stream(ref IgnoreTechPrereqs); s.Stream(ref IgnorePop);

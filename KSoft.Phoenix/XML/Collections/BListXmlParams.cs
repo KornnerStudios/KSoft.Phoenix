@@ -2,7 +2,7 @@
 {
 	public class BListXmlParams : BCollectionXmlParams
 	{
-		public /*readonly*/ string DataName;
+		public /*readonly*/ string? DataName;
 
 		#region Flags
 		public bool InternDataNames { get { return HasFlag(BCollectionXmlParamsFlags.InternDataNames); } }

@@ -39,7 +39,7 @@ namespace KSoft.Phoenix.XML
 		protected override void WriteNodes<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
 		{
 			var eip = ListExplicitIndex.ExplicitIndexParams;
-			T k_invalid = eip.kTypeGetInvalid();
+			T? k_invalid = eip.kTypeGetInvalid();
 
 			int index = 0;
 			foreach (T data in ListExplicitIndex)

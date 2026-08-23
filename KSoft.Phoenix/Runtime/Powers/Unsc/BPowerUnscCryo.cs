@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BPowerUnscCryo
 		: BPower
 	{
-		public BEntityTimePair[] IgnoreList;
+		public BEntityTimePair[]? IgnoreList;
 		public uint NextTickTime;
 		public BEntityID CryoObjectID;
 		public BVector Direction, Right;
@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Runtime
 		{
 			base.Serialize(s);
 
-			BSaveGame.StreamArray(s, ref IgnoreList);
+			BSaveGameNullableSerialization.StreamArray(s, ref IgnoreList);
 			s.Stream(ref NextTickTime);
 			s.Stream(ref CryoObjectID);
 			s.StreamV(ref Direction); s.StreamV(ref Right);

@@ -100,7 +100,7 @@ namespace KSoft.Phoenix.Phx
 			mUsedIds[dbo.DbId] = true;
 			LookupTable.Add(GenerateHandle(dbo), dbo);
 		}
-		bool LookupTableContains<T>(T obj, out TriggerSystemProtoObject dbo)
+		bool LookupTableContains<T>(T obj, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out TriggerSystemProtoObject? dbo)
 			where T : TriggerScriptObject
 		{
 			return LookupTable.TryGetValue(GenerateHandle(obj), out dbo);
@@ -114,7 +114,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		void TryUpdate(BTriggerSystem ts, BTriggerCondition cond)
 		{
-			if (!LookupTableContains(cond, out TriggerSystemProtoObject dbo))
+			if (!LookupTableContains(cond, out TriggerSystemProtoObject? dbo))
 			{
 				var dbo_cond = new BTriggerProtoCondition(ts, cond);
 
@@ -134,7 +134,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		void TryUpdate(BTriggerSystem ts, BTriggerEffect effe)
 		{
-			if (!LookupTableContains(effe, out TriggerSystemProtoObject dbo))
+			if (!LookupTableContains(effe, out TriggerSystemProtoObject? dbo))
 			{
 				var dbo_effe = new BTriggerProtoEffect(ts, effe);
 

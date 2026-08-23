@@ -259,7 +259,7 @@ namespace KSoft.Phoenix.Xmb
 		{
 			var e = DeBuffer(XmbVariantType.String, offset, (byte)(isUnicode ? 1 : 0));
 
-			return e.String;
+			return e.String ?? throw new System.InvalidOperationException("String pool entry has no string value.");
 		}
 		public Vector2f GetVector2D(uint offset)
 		{

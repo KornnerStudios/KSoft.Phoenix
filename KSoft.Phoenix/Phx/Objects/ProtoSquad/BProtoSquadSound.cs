@@ -12,8 +12,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Sound
-		string mSound;
-		public string Sound
+		string? mSound;
+		public string? Sound
 		{
 			get { return mSound; }
 			set { mSound = value; }
@@ -67,7 +67,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			var xs = s.GetSerializerInterface();
 
-			s.StreamCursor(ref mSound);
+			string sound = s.IsReading ? string.Empty : mSound ?? throw new System.ArgumentNullException(nameof(mSound));
+			s.StreamCursor(ref sound);
+			mSound = sound;
 
 			if (s.StreamAttributeEnumOpt("Type", ref mType, e => e != BSquadSoundType.None))
 			{

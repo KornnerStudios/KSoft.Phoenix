@@ -1364,7 +1364,9 @@ namespace KSoft.Phoenix.Phx
 			XML.XmlUtil.Serialize(s, DamageTypes, BProtoObjectDamageType.kBListXmlParams);
 			XML.XmlUtil.Serialize(s, Sounds, BProtoObjectSound.kBListXmlParams);
 			#region ImpactDecal
-			using (var bm = s.EnterCursorBookmarkOpt(BTerrainImpactDecalHandle.kBListXmlParams.ElementName, ImpactDecal, Predicates.IsNotNull))
+			var impactDecalElementName = BTerrainImpactDecalHandle.kBListXmlParams.ElementName
+				?? throw new System.InvalidOperationException("Impact decal element name is required.");
+			using (var bm = s.EnterCursorBookmarkOpt(impactDecalElementName, ImpactDecal, Predicates.IsNotNull))
 			{
 				if (bm.IsNotNull)
 				{
@@ -1455,12 +1457,16 @@ namespace KSoft.Phoenix.Phx
 			}
 			#endregion
 			#region Rate
-			using (var bm = s.EnterCursorBookmarkOpt(BGameData.kRatesBListTypeValuesXmlParams.ElementName, this, v => v.HasRateData))
+			var rateElementName = BGameData.kRatesBListTypeValuesXmlParams.ElementName
+				?? throw new System.InvalidOperationException("Rate element name is required.");
+			using (var bm = s.EnterCursorBookmarkOpt(rateElementName, this, v => v.HasRateData))
 			{
 				if (bm.IsNotNull)
 				{
 					// #NOTE engine reads Rate as lower case, but actual data is in pascal case
-					xs.StreamTypeName(s, BGameData.kRatesBListTypeValuesXmlParams.DataName, ref mRateID, GameDataObjectKind.Rate, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
+					var rateDataName = BGameData.kRatesBListTypeValuesXmlParams.DataName
+						?? throw new System.InvalidOperationException("Rate data name is required.");
+					xs.StreamTypeName(s, rateDataName, ref mRateID, GameDataObjectKind.Rate, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr);
 					s.StreamCursor(ref mRateAmount);
 				}
 			}

@@ -60,7 +60,7 @@ namespace KSoft.Phoenix.Phx
 		public readonly bool Equals(BPopulation other)
 			=> this.Max == other.Max && this.Count == other.Count;
 
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 			=> obj is BPopulation population && Equals(population);
 
 		public static bool operator ==(BPopulation left, BPopulation right)

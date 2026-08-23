@@ -11,12 +11,12 @@ namespace KSoft.Phoenix.Runtime
 		public Phx.BProtoTechStatus Status;
 		public bool Unique;
 
-		public BTechUniqueNode[] UniqueNodes;
+		public BTechUniqueNode[]? UniqueNodes;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref UniqueNodes);
+			BSaveGameNullableSerialization.StreamArray16(s, ref UniqueNodes);
 			s.Stream(ref ResearchPoints);
 			s.Stream(ref ResearchBuilding);
 			s.Stream(ref Status, BProtoTechStatusStreamer.Instance);

@@ -13,7 +13,7 @@ namespace KSoft.Phoenix.Phx
 
 		#region UserInterfaceTextData
 		[Browsable(false)]
-		public DatabaseObjectUserInterfaceTextData UserInterfaceTextData { get; private set; }
+		public DatabaseObjectUserInterfaceTextData? UserInterfaceTextData { get; private set; }
 
 		protected DatabaseObjectUserInterfaceTextData CreateDatabaseObjectUserInterfaceTextData()
 		{

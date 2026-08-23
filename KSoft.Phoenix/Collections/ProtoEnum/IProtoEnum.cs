@@ -3,7 +3,7 @@
 	public interface IProtoEnum
 	{
 		int TryGetMemberId(string memberName);
-		string TryGetMemberName(int memberId);
+		string? TryGetMemberName(int memberId);
 
 		bool IsValidMemberId(int memberId);
 		bool IsValidMemberName(string memberName);

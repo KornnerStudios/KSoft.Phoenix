@@ -25,8 +25,9 @@ namespace KSoft.Phoenix.XML
 		public sealed class StreamXmlContextData
 		{
 			public Engine.ProtoDataXmlFileInfo ProtoFileInfo;
-			public Engine.XmlFileInfo FileInfo { get { return ProtoFileInfo.FileInfo; } }
-			public Engine.XmlFileInfo FileInfoWithUpdates { get { return ProtoFileInfo.FileInfoWithUpdates; } }
+			public Engine.XmlFileInfo FileInfo { get { return ProtoFileInfo.FileInfo
+				?? throw new InvalidOperationException("A primary XML file is required."); } }
+			public Engine.XmlFileInfo? FileInfoWithUpdates { get { return ProtoFileInfo.FileInfoWithUpdates; } }
 			public Action<IO.XmlElementStream>? Preload;
 			public Action<IO.XmlElementStream>? Stream;
 			public Action<IO.XmlElementStream>? StreamUpdates;

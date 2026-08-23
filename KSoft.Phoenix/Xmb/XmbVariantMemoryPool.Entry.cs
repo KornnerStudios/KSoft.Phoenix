@@ -32,7 +32,7 @@ namespace KSoft.Phoenix.Xmb
 
 			// we don't know how big a .NET reference really is (we could be compiling for x64!) so always give it 8 bytes
 			[Interop.FieldOffset(16)]
-			public string String;
+			public string? String;
 
 			[Interop.FieldOffset(24)]
 			public XmbVariantType Type;
@@ -82,7 +82,8 @@ namespace KSoft.Phoenix.Xmb
 						return sizeof(ulong);
 					case XmbVariantType.String:
 						var sse = IsUnicode ? kUnicodeEncoding : kAnsiEncoding;
-						return (uint)sse.GetByteCount(String);
+						var stringValue = String ?? throw new System.InvalidOperationException("String variant has no string value.");
+						return (uint)sse.GetByteCount(stringValue);
 					case XmbVariantType.Vector:
 						return (uint)(sizeof(uint) * VectorLength);
 
@@ -159,7 +160,8 @@ namespace KSoft.Phoenix.Xmb
 					case XmbVariantType.Single: s.Write(Single); break;
 					case XmbVariantType.Double: s.Write(Double); break;
 					case XmbVariantType.String:
-						s.Write(String, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						var stringValue = String ?? throw new System.InvalidOperationException("String variant has no string value.");
+						s.Write(stringValue, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
 						break;
 					case XmbVariantType.Vector:
 					{

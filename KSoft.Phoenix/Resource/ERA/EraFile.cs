@@ -512,7 +512,8 @@ namespace KSoft.Phoenix.Resource
 				es.StreamMode = System.IO.FileAccess.Read;
 				xmb.Serialize(es);
 
-				xmb_buffer = xmb.FileData;
+				xmb_buffer = xmb.FileData
+					?? throw new InvalidDataException("XMB data is missing after deserialization.");
 			}
 
 			string xmb_path = fullPath;

@@ -28,7 +28,9 @@ namespace KSoft.Phoenix.Resource
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			var eraFile = KSoft.Debug.TypeCheck.CastReference<EraFileUtil>(s.Owner);
+			var owner = s.Owner;
+			System.ArgumentNullException.ThrowIfNull(owner);
+			var eraFile = KSoft.Debug.TypeCheck.CastReference<EraFileUtil>(owner);
 
 			if (s.IsWriting)
 			{

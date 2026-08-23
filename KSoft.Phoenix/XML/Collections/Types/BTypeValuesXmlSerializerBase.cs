@@ -20,7 +20,7 @@ namespace KSoft.Phoenix.XML
 		#region IXmlElementStreamable Members
 		protected override int ReadExplicitIndex<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs)
 		{
-			string name = null;
+			string name = string.Empty;
 			Params.StreamDataName(s, ref name);
 
 			Collections.IProtoEnum protoEnumFromDb = mList.TypeValuesParams.kGetProtoEnumFromDB(xs.Database);

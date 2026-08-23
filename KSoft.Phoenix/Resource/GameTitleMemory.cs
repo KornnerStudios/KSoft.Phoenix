@@ -17,10 +17,10 @@ namespace KSoft.Phoenix.Resource
 		byte UnkLength; // 0xD in mine (latest) TU
 		// ConceptIDs
 		// 0x1...0xD
-		public byte[] UnkC { get; private set; }
+		public byte[] UnkC { get; private set; } = null!;
 		// ConceptTimesReinforced
 		// 6 6 5 2 3 3 3 0 0 0 4 0 0
-		public byte[] Unk18 { get; private set; }
+		public byte[] Unk18 { get; private set; } = null!;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.XML
 	{
 		public static void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
 			Collections.BTypeValuesSingle list, BTypeValuesXmlParams<float> @params,
-			string attrName = null)
+			string? attrName = null)
 			where TDoc : class
 			where TCursor : class
 		{

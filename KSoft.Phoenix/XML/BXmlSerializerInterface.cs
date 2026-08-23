@@ -342,6 +342,7 @@ namespace KSoft.Phoenix.XML
 				{
 					ThrowUnresolvedReferenceName(dbid, kind.ToString());
 				}
+				ArgumentNullException.ThrowIfNull(id_name);
 
 				if (isOptional)
 				{
@@ -459,6 +460,7 @@ namespace KSoft.Phoenix.XML
 				{
 					ThrowUnresolvedReferenceName(dbid, kind.ToString());
 				}
+				ArgumentNullException.ThrowIfNull(id_name);
 
 				if (isOptional)
 				{
@@ -531,6 +533,7 @@ namespace KSoft.Phoenix.XML
 				{
 					ThrowUnresolvedReferenceName(dbid, kind.ToString());
 				}
+				ArgumentNullException.ThrowIfNull(id_name);
 
 				if (isOptional)
 				{

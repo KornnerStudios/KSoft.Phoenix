@@ -4,8 +4,8 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BSaveTeam
 		: IO.IEndianStreamSerializable
 	{
-		public int[] Players;
-		public byte[] Relations; // BRelationType
+		public int[] Players = null!;
+		public byte[] Relations = null!; // BRelationType
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)

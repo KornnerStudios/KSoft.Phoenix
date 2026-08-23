@@ -12,7 +12,7 @@ namespace KSoft.Phoenix.Runtime
 		};
 
 		public BSimTarget Target { get; private set; } = new();
-		public BVector[] Waypoints;
+		public BVector[]? Waypoints;
 		public BEntityID OwnerID;
 		public uint ID, RefCount;
 		public float Angle;
@@ -25,7 +25,7 @@ namespace KSoft.Phoenix.Runtime
 		public void Serialize(IO.EndianStream s)
 		{
 			s.Stream(Target);
-			BSaveGame.StreamVectorArray(s, ref Waypoints, cMaximumWaypoints);
+			BSaveGameNullableSerialization.StreamVectorArray(s, ref Waypoints, cMaximumWaypoints);
 			s.Stream(ref OwnerID);
 			s.Stream(ref ID); s.Stream(ref RefCount);
 			s.Stream(ref Angle);

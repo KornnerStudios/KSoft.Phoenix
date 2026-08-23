@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 
 namespace KSoft.Collections
@@ -36,7 +36,7 @@ namespace KSoft.Phoenix
 
 			return dbi.UndefinedInterface.GetMemberIdOrUndefined(name);
 		}
-		internal static string TryGetNameWithUndefined(this Collections.IHasUndefinedProtoMemberInterface dbi, int id)
+		internal static string? TryGetNameWithUndefined(this Collections.IHasUndefinedProtoMemberInterface dbi, int id)
 		{
 			if (dbi == null)
 			{

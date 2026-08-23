@@ -30,14 +30,14 @@ namespace KSoft.Phoenix.Runtime
 		public sealed class BUITalkingHeadControl
 			: IO.IEndianStreamSerializable
 		{
-			public string TalkingHeadText;
+			public string? TalkingHeadText;
 			public int ObjectiveID, LastCount;
 			public bool ShowBackground, ObjectiveVisible, TalkingHeadVisible, IsShown;
 
 			#region IEndianStreamSerializable Members
 			public void Serialize(IO.EndianStream s)
 			{
-				s.StreamPascalWideString32(ref TalkingHeadText);
+				BSaveGameNullableSerialization.StreamPascalWideString32(s, ref TalkingHeadText);
 				s.Stream(ref ObjectiveID); s.Stream(ref LastCount);
 				s.Stream(ref ShowBackground); s.Stream(ref ObjectiveVisible); s.Stream(ref TalkingHeadVisible); s.Stream(ref IsShown);
 			}
@@ -51,13 +51,13 @@ namespace KSoft.Phoenix.Runtime
 				: IO.IEndianStreamSerializable
 			{
 				public bool IsShown;
-				public string Text;
+				public string? Text;
 
 				#region IEndianStreamSerializable Members
 				public void Serialize(IO.EndianStream s)
 				{
 					s.Stream(ref IsShown);
-					s.StreamPascalWideString32(ref Text);
+					BSaveGameNullableSerialization.StreamPascalWideString32(s, ref Text);
 				}
 				#endregion
 			};
@@ -82,7 +82,7 @@ namespace KSoft.Phoenix.Runtime
 			};
 
 			public BUILabel[] ObjectiveLabels = new BUILabel[4];
-			public BUIObjectiveProgressData[] Objectives;
+			public BUIObjectiveProgressData[]? Objectives;
 
 			public BUIObjectiveProgressControl()
 			{
@@ -100,7 +100,7 @@ namespace KSoft.Phoenix.Runtime
 					s.Stream(ref ObjectiveLabels[x]);
 				}
 
-				BSaveGame.StreamArray(s, ref Objectives);
+				BSaveGameNullableSerialization.StreamArray(s, ref Objectives);
 			}
 			#endregion
 		};

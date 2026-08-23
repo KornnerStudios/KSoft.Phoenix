@@ -40,8 +40,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region FileName
-		string mFileName;
-		public string FileName
+		string? mFileName;
+		public string? FileName
 		{
 			get { return mFileName; }
 			set { mFileName = value; }
@@ -53,7 +53,9 @@ namespace KSoft.Phoenix.Phx
 		{
 			s.StreamAttributeOpt("limit", ref mLimit, x => x != 2);
 			s.StreamAttributeOpt("lifespan", ref mLifespan, x => x != 3.0f);
-			s.StreamCursor(ref mFileName);
+			string fileName = s.IsReading ? string.Empty : mFileName ?? throw new System.ArgumentNullException(nameof(mFileName));
+			s.StreamCursor(ref fileName);
+			mFileName = fileName;
 		}
 		#endregion
 	};

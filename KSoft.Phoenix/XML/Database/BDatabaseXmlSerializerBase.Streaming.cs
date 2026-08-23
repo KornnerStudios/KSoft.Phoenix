@@ -281,7 +281,9 @@ namespace KSoft.Phoenix.XML
 			XML.XmlUtil.Serialize(s, db.MergedSquads, Phx.BProtoMergedSquads.kBListXmlParams);
 			db.ShieldBubbleTypes.Serialize(s);
 
-			using (s.EnterCursorBookmark(Phx.LocStringTable.kBListXmlParams.RootName))
+			var rootName = Phx.LocStringTable.kBListXmlParams.RootName
+				?? throw new System.InvalidOperationException("Localization string table root name is required.");
+			using (s.EnterCursorBookmark(rootName))
 			{
 				db.EnglishStringTable.Serialize(s);
 			}

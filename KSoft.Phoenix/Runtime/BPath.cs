@@ -13,7 +13,7 @@ namespace KSoft.Phoenix.Runtime
 	{
 		const int cMaximumWaypoints = 0x2710;
 
-		public BVector[] Waypoints;
+		public BVector[]? Waypoints;
 		public byte Flags;
 		public float PathLength;
 		public uint CreationTime;
@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamVectorArray16(s, ref Waypoints, cMaximumWaypoints);
+			BSaveGameNullableSerialization.StreamVectorArray16(s, ref Waypoints, cMaximumWaypoints);
 			s.Stream(ref Flags);
 			s.Stream(ref PathLength);
 			s.Stream(ref CreationTime);

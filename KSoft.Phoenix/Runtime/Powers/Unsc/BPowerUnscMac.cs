@@ -25,7 +25,7 @@ namespace KSoft.Phoenix.Runtime
 
 		public BEntityID RealTargettingLaserID;
 		public BVector DesiredTargettingPosition;
-		public BShot[] Shots;
+		public BShot[]? Shots;
 		public bool FiredInitialShot;
 		public uint ShotsRemaining, ImpactsToProcess;
 		public BProtoObjectID TargetBeamID, ProjectileID, EffectProtoID,
@@ -43,7 +43,7 @@ namespace KSoft.Phoenix.Runtime
 
 			s.Stream(ref RealTargettingLaserID);
 			s.StreamV(ref DesiredTargettingPosition);
-			BSaveGame.StreamArray(s, ref Shots);
+			BSaveGameNullableSerialization.StreamArray(s, ref Shots);
 			s.Stream(ref FiredInitialShot);
 			s.Stream(ref ShotsRemaining); s.Stream(ref ImpactsToProcess);
 			s.Stream(ref TargetBeamID); s.Stream(ref ProjectileID); s.Stream(ref EffectProtoID);

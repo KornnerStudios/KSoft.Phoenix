@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 
@@ -57,7 +57,7 @@ namespace KSoft.Collections
 
 		#region IProtoEnum Members
 		public int TryGetMemberId(string memberName)		=> mRoot.TryGetMemberId(memberName);
-		public string TryGetMemberName(int memberId)		=> mRoot.TryGetMemberName(memberId);
+		public string? TryGetMemberName(int memberId)		=> mRoot.TryGetMemberName(memberId);
 		public bool IsValidMemberId(int memberId)			=> mRoot.IsValidMemberId(memberId);
 		public bool IsValidMemberName(string memberName)	=> mRoot.IsValidMemberName(memberName);
 		public int GetMemberId(string memberName)			=> mRoot.GetMemberId(memberName);

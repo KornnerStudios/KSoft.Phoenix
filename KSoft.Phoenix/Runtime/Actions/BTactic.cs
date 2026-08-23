@@ -12,8 +12,8 @@
 	sealed class BTactic
 		: IO.IEndianStreamSerializable
 	{
-		public BWeapon[] Weapons;
-		public BProtoAction[] ProtoActions;
+		public BWeapon[] Weapons = null!;
+		public BProtoAction[] ProtoActions = null!;
 		public bool AnimInfoLoaded;
 
 		#region IEndianStreamSerializable Members

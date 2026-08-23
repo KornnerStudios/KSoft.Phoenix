@@ -158,8 +158,10 @@ namespace KSoft.Phoenix.Resource
 		}
 
 		public override void BuildBuffer(IO.EndianStream blockStream, System.IO.Stream sourceFile,
-			Security.Cryptography.TigerHashBase hasher)
+			Security.Cryptography.TigerHashBase? hasher)
 		{
+			ArgumentNullException.ThrowIfNull(hasher);
+
 			base.BuildBuffer(blockStream, sourceFile, hasher);
 
 			ComputeHash(blockStream, hasher);

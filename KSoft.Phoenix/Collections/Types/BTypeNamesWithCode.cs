@@ -30,9 +30,9 @@ namespace KSoft.Collections
 
 			return idx;
 		}
-		public override string TryGetMemberName(int memberId)
+		public override string? TryGetMemberName(int memberId)
 		{
-			string name = base.TryGetMemberName(memberId);
+			string? name = base.TryGetMemberName(memberId);
 
 			if (name == null)
 			{

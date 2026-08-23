@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Runtime
 		: BPowerUser
 	{
 		public BPowerHelperHudSounds HudSounds = new();
-		public string HelpString;
+		public string? HelpString;
 		public BEntityID FakeTargettingLaserID, RealTargettingLaserID, TargettedSquadID;
 		public uint ShotsRemaining;
 		public float LastCommandSent, CommandInterval, LastShotSent, ShotInterval;
@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.Runtime
 			base.Serialize(s);
 
 			s.Stream(HudSounds);
-			s.StreamPascalWideString32(ref HelpString);
+			BSaveGameNullableSerialization.StreamPascalWideString32(s, ref HelpString);
 			s.Stream(ref FakeTargettingLaserID); s.Stream(ref RealTargettingLaserID); s.Stream(ref TargettedSquadID);
 			s.Stream(ref ShotsRemaining);
 			s.Stream(ref LastCommandSent); s.Stream(ref CommandInterval); s.Stream(ref LastShotSent); s.Stream(ref ShotInterval);

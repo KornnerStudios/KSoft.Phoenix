@@ -23,8 +23,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region DeathAnimation
-		string mDeathAnimation;
-		public string DeathAnimation
+		string? mDeathAnimation;
+		public string? DeathAnimation
 		{
 			get { return mDeathAnimation; }
 			set { mDeathAnimation = value; }

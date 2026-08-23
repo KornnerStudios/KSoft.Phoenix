@@ -25,7 +25,7 @@ namespace KSoft.Collections
 		{
 			return Array.FindIndex(kNames, n => PhxUtil.StrEqualsIgnoreCase(n, memberName));
 		}
-		public string TryGetMemberName(int memberId)
+		public string? TryGetMemberName(int memberId)
 		{
 			return IsValidMemberId(memberId)
 				? GetMemberName(memberId)

@@ -4,7 +4,7 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BPowerUnscOdstUser
 		: BPowerUser
 	{
-		public string HelpString;
+		public string? HelpString;
 		public BPowerHelperHudSounds HudSounds = new();
 		public int LOSMode;
 		public BProtoObjectID ODSTProtoSquadID, ODSTProtoObjectID;
@@ -16,7 +16,7 @@ namespace KSoft.Phoenix.Runtime
 		{
 			base.Serialize(s);
 
-			s.StreamPascalWideString32(ref HelpString);
+			BSaveGameNullableSerialization.StreamPascalWideString32(s, ref HelpString);
 			s.Stream(HudSounds);
 			s.Stream(ref LOSMode);
 			s.Stream(ref ODSTProtoSquadID); s.Stream(ref ODSTProtoObjectID);

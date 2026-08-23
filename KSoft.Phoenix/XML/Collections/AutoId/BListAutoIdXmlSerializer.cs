@@ -168,9 +168,8 @@ namespace KSoft.Phoenix.XML
 		#region IXmlElementStreamable Members
 		protected override void Read<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s, BXmlSerializerInterface xs, int iteration)
 		{
-			string item_name = null;
+			string item_name = string.Empty;
 			Params.StreamDataName(s, ref item_name);
-
 			if (SetupItem(out T item, item_name, iteration))
 			{
 				item.Serialize(s);

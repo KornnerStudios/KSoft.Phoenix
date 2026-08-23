@@ -35,7 +35,7 @@ namespace KSoft.Phoenix.XML
 			int index = ReadExplicitIndex(s, xs);
 
 			ListExplicitIndex.InitializeItem(index);
-			string value = null;
+			string value = string.Empty;
 			s.ReadCursor(ref value);
 			ListExplicitIndex[index] = value;
 		}

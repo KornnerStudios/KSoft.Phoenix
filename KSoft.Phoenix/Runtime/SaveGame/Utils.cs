@@ -141,7 +141,7 @@ namespace KSoft.Phoenix.Runtime
 
 			for (int x = 0; x < count; x++)
 			{
-				string t = reading ? null : c[x];
+				string t = reading ? string.Empty : c[x];
 				s.StreamPascalString32(ref t);
 				if (reading)
 				{

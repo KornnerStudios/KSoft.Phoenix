@@ -86,7 +86,7 @@ namespace KSoft.Phoenix
 			return dbi.TryGetIdWithUndefined(name);
 		}
 
-		public static string GetName(this Phx.IProtoDataObjectDatabaseProvider provider
+		public static string? GetName(this Phx.IProtoDataObjectDatabaseProvider provider
 			, int objectKind, int id)
 		{
 			ArgumentNullException.ThrowIfNull(provider);

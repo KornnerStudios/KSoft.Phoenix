@@ -131,7 +131,7 @@ namespace KSoft.Phoenix.Runtime
 		public BPlayerPop[] Populations = null!;
 		#endregion
 		#region Player2
-		public BHintEngine HintEngine = null!;
+		public BHintEngine? HintEngine;
 		public List<CondensedListItemValue16<UnitCountInfo>> GenericObjectCounts = null!, SquadCounts = null!;
 		#endregion
 		#region Player3

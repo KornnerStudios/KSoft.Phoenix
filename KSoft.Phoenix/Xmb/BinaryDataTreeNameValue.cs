@@ -356,7 +356,7 @@ namespace KSoft.Phoenix.Xmb
 
 	public sealed class BinaryDataTreeBuildNameValue
 	{
-		public string Name;
+		public string? Name;
 		public BinaryDataTreeVariantData Variant;
 	};
 }

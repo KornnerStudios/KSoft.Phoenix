@@ -9,7 +9,7 @@ namespace KSoft.Phoenix.Resource
 		readonly Runtime.BSaveGame mSaveGame = new();
 
 		long mLeftoversPos;
-		byte[] mLeftovers;
+		byte[]? mLeftovers;
 
 		#region IEndianStreamSerializable Members
 		void SerializeLeftovers(IO.EndianStream s)
@@ -21,7 +21,8 @@ namespace KSoft.Phoenix.Resource
 				mLeftovers = new byte[s.BaseStream.Length - s.BaseStream.Position];
 			}
 
-			s.Stream(mLeftovers, 0, mLeftovers.Length);
+			var leftovers = mLeftovers ?? throw new System.InvalidOperationException("Save file leftovers are required when writing.");
+			s.Stream(leftovers, 0, leftovers.Length);
 		}
 		public void Serialize(IO.EndianStream s)
 		{

@@ -12,12 +12,12 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 		//, IO.IIndentedTextWritable
 	{
-		public BTechNode[] Techs;
+		public BTechNode[]? Techs;
 
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamArray16(s, ref Techs);
+			BSaveGameNullableSerialization.StreamArray16(s, ref Techs);
 			s.StreamSignature(cSaveMarker.TechTree);
 		}
 		#endregion

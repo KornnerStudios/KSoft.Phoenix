@@ -4,8 +4,8 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BSavePlayer
 		: IO.IEndianStreamSerializable
 	{
-		public string Name;
-		public string DisplayName;
+		public string Name = null!;
+		public string DisplayName = null!;
 		public int MPID, ScenarioID, CivID, TeamID, LeaderID;
 		public ushort Difficulty; // BHalfFloat
 		public sbyte PlayerType;

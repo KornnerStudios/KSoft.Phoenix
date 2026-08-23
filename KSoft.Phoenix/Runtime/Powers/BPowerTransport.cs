@@ -5,7 +5,7 @@ namespace KSoft.Phoenix.Runtime
 		: BPower
 	{
 		public BVector PickupLocation;
-		public BEntityID[] SquadsToTransport;
+		public BEntityID[]? SquadsToTransport;
 		public bool GotPickupLocation;
 
 		#region IEndianStreamSerializable Members
@@ -14,7 +14,7 @@ namespace KSoft.Phoenix.Runtime
 			base.Serialize(s);
 
 			s.StreamV(ref PickupLocation);
-			BSaveGame.StreamArray(s, ref SquadsToTransport);
+			BSaveGameNullableSerialization.StreamArray(s, ref SquadsToTransport);
 			s.Stream(ref GotPickupLocation);
 		}
 		#endregion

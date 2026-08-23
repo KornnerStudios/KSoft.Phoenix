@@ -91,6 +91,8 @@ namespace KSoft.Phoenix.Resource
 
 		bool BuildInternal(string workPath, string eraName, string outputPath)
 		{
+			var eraFile = mEraFile
+				?? throw new InvalidOperationException("Read the ERA definition before building it.");
 			string era_filename = Path.Combine(outputPath, eraName);
 			if (!BuilderOptions.Test(EraFileBuilderOptions.Encrypt))
 			{
@@ -101,7 +103,7 @@ namespace KSoft.Phoenix.Resource
 				era_filename += EraFileBuilder.kExtensionEncrypted;
 			}
 
-			mEraFile.FileName = era_filename;
+			eraFile.FileName = era_filename;
 
 			if (File.Exists(era_filename))
 			{
@@ -116,7 +118,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				ProgressOutput?.WriteLine("Finding XML files to use over XMB references...");
 
-				mEraFile.TryToReferenceXmlOverXmbFies(workPath, VerboseOutput);
+				eraFile.TryToReferenceXmlOverXmbFies(workPath, VerboseOutput);
 			}
 
 			const FA k_mode = FA.Write;
@@ -135,13 +137,13 @@ namespace KSoft.Phoenix.Resource
 
 				// create null bytes for the header and embedded file chunk descriptors
 				// previously just used Seek to do this, but it doesn't update Length.
-				long preamble_size = mEraFile.CalculateHeaderAndFileChunksSize();
+				long preamble_size = eraFile.CalculateHeaderAndFileChunksSize();
 				ms.SetLength(preamble_size);
 				ms.Seek(preamble_size, SeekOrigin.Begin);
 
 				// now we can start embedding the files
 				ProgressOutput?.WriteLine("\tPacking files...");
-				result &= mEraFile.Build(era_memory, workPath);
+				result &= eraFile.Build(era_memory, workPath);
 
 				if (result)
 				{
@@ -149,7 +151,7 @@ namespace KSoft.Phoenix.Resource
 
 					// seek back to the start of the ERA and write out the finalized header and file chunk descriptors
 					ms.Seek(0, SeekOrigin.Begin);
-					mEraFile.Serialize(era_memory);
+					eraFile.Serialize(era_memory);
 
 					// Right now we don't actually perform any file removing (eg, duplicates) until EraFile.Build so
 					// we also allow the written size to be LESS THAN the assumed preamble size
@@ -186,7 +188,7 @@ namespace KSoft.Phoenix.Resource
 		/// <param name="eraName">Name of the final ERA file (without any directory or extension data)</param>
 		/// <param name="outputPath">(Optional) The path to output the final ERA file. Defaults to <paramref name="workPath"/></param>
 		/// <returns>True if all build operations were successful, false otherwise</returns>
-		public bool Build(string workPath, string eraName, string outputPath = null)
+		public bool Build(string workPath, string eraName, string? outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
 			{

@@ -19,7 +19,7 @@ namespace KSoft.Phoenix.Runtime
 		public BVisualAsset ModelAsset;
 		public byte[] ModelUVOffsets = new byte[kUVOffsetsSize]; // BVisualModelUVOffsets
 		public uint Flags;
-		public BVisualItem[] Attachments;
+		public BVisualItem[]? Attachments;
 
 		#region IEndianStreamSerializable Members
 		void StreamFlags(IO.EndianStream s)

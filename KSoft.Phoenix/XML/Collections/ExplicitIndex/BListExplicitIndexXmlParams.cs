@@ -29,7 +29,8 @@ namespace KSoft.Phoenix.XML
 				index += IndexBase;
 			}
 
-			BCollectionXmlParams.StreamValue(s, DataName, ref index,
+			var dataName = DataName ?? throw new System.InvalidOperationException("Explicit index data name is required.");
+			BCollectionXmlParams.StreamValue(s, dataName, ref index,
 				UseInnerTextForData, UseElementForData);
 
 			// Undo any rebasing

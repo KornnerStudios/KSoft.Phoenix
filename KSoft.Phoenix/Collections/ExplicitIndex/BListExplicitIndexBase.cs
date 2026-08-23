@@ -9,7 +9,8 @@ namespace KSoft.Collections
 	public abstract class BListExplicitIndexBase<T>
 		: BListBase<T>
 	{
-		internal BListExplicitIndexParams<T> ExplicitIndexParams => Params as BListExplicitIndexParams<T>;
+		internal BListExplicitIndexParams<T> ExplicitIndexParams => Params as BListExplicitIndexParams<T>
+			?? throw new InvalidOperationException("Explicit index parameters are required.");
 
 		protected BListExplicitIndexBase(BListExplicitIndexParams<T> @params) : base(@params)
 		{

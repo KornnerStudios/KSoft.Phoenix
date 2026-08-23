@@ -193,19 +193,21 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		static void FixGameDataAmbientLife(IO.XmlElementStream s)
 		{
-			XmlElement element;
+			XmlElement? element;
 			string elementName;
+			var rootName = Phx.BGameData.kXmlFileInfo.RootName;
+			System.ArgumentNullException.ThrowIfNull(rootName);
 			// data provides float, engine expects DWORD
 
-			element = XPathSelectElementByName(s, Phx.BGameData.kXmlFileInfo.RootName,
+			element = XPathSelectElementByName(s, rootName,
 				elementName="ALMaxWanderFrequency");
 			RemoveFloatText(s, element, elementName);
 
-			element = XPathSelectElementByName(s, Phx.BGameData.kXmlFileInfo.RootName,
+			element = XPathSelectElementByName(s, rootName,
 				elementName="ALPredatorCheckFrequency");
 			RemoveFloatText(s, element, elementName);
 
-			element = XPathSelectElementByName(s, Phx.BGameData.kXmlFileInfo.RootName,
+			element = XPathSelectElementByName(s, rootName,
 				elementName="ALPreyCheckFrequency");
 			RemoveFloatText(s, element, elementName);
 		}
@@ -350,7 +352,7 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		static void FixObjectsXmlInvalidSounds(IO.XmlElementStream s)
 		{
-			XmlNode node;
+			XmlNode? node;
 
 			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "pow_gp_wave_01");
 			if (node != null)
@@ -372,7 +374,7 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		static void FixObjectsXmlInvalidCommandId(IO.XmlElementStream s)
 		{
-			XmlNode node;
+			XmlNode? node;
 
 			node = XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "cov_bldg_megaTurret_01");
 			if (node != null)
@@ -461,13 +463,13 @@ namespace KSoft.Phoenix.HaloWars
 					"fx_unitLevelUp",
 					"fx_unitLevelUpHigh",
 					"fx_unitLevelUpLow");
-				FixObjectsXml_fld_air_bomber_01(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "fld_air_bomber_01"));
-				FixObjectsXml_hook_spawner_FloodRelease(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_01"));
-				FixObjectsXml_hook_spawner_FloodRelease(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_02"));
-				FixObjectsXml_for_air_monitor(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_01"));
-				FixObjectsXml_for_air_monitor(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_02"));
-				FixObjectsXml_for_air_monitor(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_04"));
-				FixObjectsXml_for_air_attractor_01(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_attractor_01"));
+				FixObjectsXml_fld_air_bomber_01(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "fld_air_bomber_01"));
+				FixObjectsXml_hook_spawner_FloodRelease(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_01"));
+				FixObjectsXml_hook_spawner_FloodRelease(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "hook_spawner_FloodRelease_02"));
+				FixObjectsXml_for_air_monitor(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_01"));
+				FixObjectsXml_for_air_monitor(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_02"));
+				FixObjectsXml_for_air_monitor(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_monitor_04"));
+				FixObjectsXml_for_air_attractor_01(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoObject.kBListXmlParams, "for_air_attractor_01"));
 			}
 		}
 		#endregion
@@ -520,7 +522,7 @@ namespace KSoft.Phoenix.HaloWars
 
 		static void FixSquadsXmlSounds(IO.XmlElementStream s)
 		{
-			XmlNode node;
+			XmlNode? node;
 
 			node = XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "cov_veh_bruteChopper_01");
 			FixSquadsXmlSoundsKillEnemy(node);
@@ -546,7 +548,7 @@ namespace KSoft.Phoenix.HaloWars
 			}
 		}
 
-		static void FixSquadsXml_for_air_sentinel_03(IO.XmlElementStream s, XmlElement node)
+		static void FixSquadsXml_for_air_sentinel_03(IO.XmlElementStream s, XmlElement? node)
 		{
 			// remove duplicate BuildPoints values, preferring the last entry
 			RemoveAllButTheLastElement(s, node, "BuildPoints");
@@ -561,7 +563,7 @@ namespace KSoft.Phoenix.HaloWars
 			else
 			{
 				FixSquadsXmlSounds(s);
-				FixSquadsXml_for_air_sentinel_03(s, (XmlElement)XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "for_air_sentinel_03"));
+				FixSquadsXml_for_air_sentinel_03(s, (XmlElement?)XPathSelectNodeByName(s, Phx.BProtoSquad.kBListXmlParams, "for_air_sentinel_03"));
 			}
 		}
 		#endregion

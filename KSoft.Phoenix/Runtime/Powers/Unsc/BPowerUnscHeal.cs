@@ -4,8 +4,8 @@ namespace KSoft.Phoenix.Runtime
 	sealed class BPowerUnscHeal
 		: BPower
 	{
-		public BEntityID[] SquadsRepairing;
-		public BEntityTimePair[] IgnoreList;
+		public BEntityID[] SquadsRepairing = null!;
+		public BEntityTimePair[] IgnoreList = null!;
 		public uint NextTickTime;
 		public BEntityID RepairObjectID;
 		public BProtoObjectID RepairAttachmentProtoID;

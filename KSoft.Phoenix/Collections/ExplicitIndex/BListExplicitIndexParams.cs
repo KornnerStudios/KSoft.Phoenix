@@ -9,7 +9,7 @@ namespace KSoft.Collections
 		public IComparer<T> kComparer = Comparer<T>.Default;
 
 		/// <summary>Get the 'invalid' value for a value</summary>
-		public Func<T> kTypeGetInvalid = () => default;
+		public Func<T?> kTypeGetInvalid = () => default;
 
 		public BListExplicitIndexParams() { }
 

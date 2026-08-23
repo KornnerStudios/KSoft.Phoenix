@@ -125,15 +125,16 @@ namespace KSoft.Collections
 			set { RawList.Capacity = value; }
 		}
 
+		[System.Diagnostics.CodeAnalysis.AllowNull]
 		public virtual T this[int index]
 		{
 			get { return mList[index]; }
-			set { mList[index] = value; }
+			set { ((System.Collections.IList)mList)[index] = value; }
 		}
 
-		internal void AddItem(T item)
+		internal void AddItem([System.Diagnostics.CodeAnalysis.AllowNull] T item)
 		{
-			mList.Add(item);
+			((System.Collections.IList)mList).Add(item);
 		}
 
 		public virtual void Clear()

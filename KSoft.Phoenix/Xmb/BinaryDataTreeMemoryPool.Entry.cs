@@ -35,9 +35,9 @@ namespace KSoft.Phoenix.Xmb
 
 			// String must come last, because we don't know how big a .NET reference really is (we could be compiling for x64!)
 			[Interop.FieldOffset(16)]
-			public string String;
+			public string? String;
 			[Interop.FieldOffset(16)]
-			public object OpaqueArrayRef;
+			public object? OpaqueArrayRef;
 
 			// Amount of padding to prefix this entry with when written
 			[Interop.FieldOffset(16 + 8)]

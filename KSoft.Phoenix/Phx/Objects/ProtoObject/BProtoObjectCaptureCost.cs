@@ -55,7 +55,10 @@ namespace KSoft.Phoenix.Phx
 
 			xs.StreamDBID(s, "Civ", ref mCivID, DatabaseObjectKind.Civ, xmlSource: XML.XmlUtil.kSourceAttr);
 
-			if (!xs.StreamTypeName(s, BResource.kBListTypeValuesXmlParams_Cost.DataName, ref mResourceType, GameDataObjectKind.Cost, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr))
+			var costDataName = BResource.kBListTypeValuesXmlParams_Cost.DataName
+				?? throw new System.InvalidOperationException("Cost data name is required.");
+
+			if (!xs.StreamTypeName(s, costDataName, ref mResourceType, GameDataObjectKind.Cost, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr))
 			{
 				s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
 					"ProtoObject's {0} XML doesn't define a {1}",

@@ -21,7 +21,7 @@ namespace KSoft.Phoenix.Phx
 			[Interop.FieldOffset(0)] public BObjectDataType SubType;
 			[Interop.FieldOffset(kFirstParam)] public int ID;
 			[Interop.FieldOffset(kSecondParam)] public int ID2;
-			[Interop.FieldOffset(kStringParam)] public string StringValue;
+			[Interop.FieldOffset(kStringParam)] public string? StringValue;
 
 			[Interop.FieldOffset(kFirstParam)] public int Cost_Type;
 			[Interop.FieldOffset(kSecondParam)] public int Cost_UnitType; // proto object or type ID
@@ -40,12 +40,12 @@ namespace KSoft.Phoenix.Phx
 
 			[Interop.FieldOffset(kFirstParam)] public BProtoTechEffectSetAgeLevel SetAgeLevel;
 
-			[Interop.FieldOffset(kStringParam)] public string TurretRate_HardpointName;
+			[Interop.FieldOffset(kStringParam)] public string? TurretRate_HardpointName;
 
 			[Interop.FieldOffset(kFirstParam)] public BObjectDataIconType Icon_Type;
-			[Interop.FieldOffset(kStringParam)] public string Icon_Name;
+			[Interop.FieldOffset(kStringParam)] public string? Icon_Name;
 
-			[Interop.FieldOffset(kStringParam)] public string HPBar_Name;
+			[Interop.FieldOffset(kStringParam)] public string? HPBar_Name;
 
 			public void Initialize()
 			{
@@ -137,7 +137,9 @@ namespace KSoft.Phoenix.Phx
 				// #NOTE engine parses this as "IconType", but its parser ignores case
 				s.StreamAttributeEnum("iconType", ref Icon_Type);
 				// #NOTE engine parses this as "IconType", but its parser ignores case
-				s.StreamString("iconName", ref Icon_Name, false);
+				string iconName = s.IsReading ? string.Empty : Icon_Name ?? throw new System.InvalidOperationException("Icon name is required when writing.");
+				s.StreamString("iconName", ref iconName, false);
+				Icon_Name = iconName;
 			}
 		};
 

@@ -6,7 +6,7 @@ namespace KSoft.Phoenix.Runtime
 		public sealed class Tactic
 			: IO.IEndianStreamSerializable
 		{
-			public string[] ProtoActions, Weapons;
+			public string[] ProtoActions = null!, Weapons = null!;
 
 			#region IEndianStreamSerializable Members
 			public void Serialize(IO.EndianStream s)

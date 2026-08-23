@@ -26,10 +26,9 @@ namespace KSoft.Phoenix.Phx
 			{
 				using (s.EnterCursorBookmark(element))
 				{
-					string name = null; uint event_id = 0;
+					string name = string.Empty; uint event_id = 0;
 					s.StreamElement("CueName", ref name);
 					s.StreamElement("CueIndex", ref event_id);
-
 					mEventsMap.Add(event_id, name);
 				}
 			}

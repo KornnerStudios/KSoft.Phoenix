@@ -53,7 +53,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		internal void SerializeBegin(IO.EndianStream s
 			, bool isFinalizing = false)
 		{
-			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EcfFileUtil ecfFile);
+			KSoft.Debug.TypeCheck.TryCastReference(s.Owner, out EcfFileUtil? ecfFile);
 
 			if (s.IsWriting)
 			{

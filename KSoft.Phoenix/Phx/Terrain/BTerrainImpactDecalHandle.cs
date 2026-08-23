@@ -54,9 +54,9 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region TextureName
-		string mTextureName;
+		string? mTextureName;
 		[Meta.TextureReference]
-		public string TextureName
+		public string? TextureName
 		{
 			get { return mTextureName; }
 			set { mTextureName = value; }
@@ -73,7 +73,9 @@ namespace KSoft.Phoenix.Phx
 			s.StreamAttributeOpt("timeFullyOpaque", ref mTimeFullyOpaque, f => f != 5.0f);
 			s.StreamAttributeOpt("fadeOutTime", ref mFadeOutTime, f => f != 10.0f);
 			s.StreamAttributeEnumOpt("orientation", ref mOrientation, e => e != OrientationType.Random);
-			s.StreamCursor(ref mTextureName);
+			string textureName = s.IsReading ? string.Empty : mTextureName ?? throw new System.ArgumentNullException(nameof(mTextureName));
+			s.StreamCursor(ref textureName);
+			mTextureName = textureName;
 		}
 		#endregion
 	};

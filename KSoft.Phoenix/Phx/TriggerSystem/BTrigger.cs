@@ -41,10 +41,12 @@ namespace KSoft.Phoenix.Phx
 			where TCursor : class
 		{
 			var k_AND_params = BTriggerCondition.kBListXmlParams_And;
+			var andRootName = k_AND_params.RootName
+				?? throw new System.InvalidOperationException("Trigger condition XML requires an And root name.");
 
 			if (s.IsReading)
 			{
-				if (OrConditions = !s.ElementsExists(k_AND_params.RootName))
+				if (OrConditions = !s.ElementsExists(andRootName))
 				{
 					XML.XmlUtil.Serialize(s, Conditions, BTriggerCondition.kBListXmlParams_Or);
 				}
@@ -60,7 +62,7 @@ namespace KSoft.Phoenix.Phx
 				// with the engine. The runtime will assume the the TS is bad if neither tag is present
 				if (Conditions.Count == 0)
 				{
-					s.WriteElement(k_AND_params.RootName);
+					s.WriteElement(andRootName);
 				}
 				else
 				{

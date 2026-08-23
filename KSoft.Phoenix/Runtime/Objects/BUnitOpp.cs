@@ -14,7 +14,7 @@ namespace KSoft.Phoenix.Runtime
 			MaxCount=0x4E20,
 		};
 
-		public BVector[] Path;
+		public BVector[]? Path;
 		public BSimTarget Target { get; private set; } = new();
 		public BEntityID Source;
 		public BUnitOppID ID;
@@ -32,7 +32,7 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public void Serialize(IO.EndianStream s)
 		{
-			BSaveGame.StreamVectorArray(s, ref Path, cMaximumPathLength);
+			BSaveGameNullableSerialization.StreamVectorArray(s, ref Path, cMaximumPathLength);
 			s.Stream(Target);
 			s.Stream(ref Source);
 			s.Stream(ref ID);

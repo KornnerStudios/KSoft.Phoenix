@@ -83,7 +83,7 @@ namespace KSoft.Phoenix
 		}
 		#endregion
 
-		public override readonly bool Equals(object obj)
+		public override readonly bool Equals(object? obj)
 		{
 			if (obj is PhxSYSTEMTIME phxSystemTime)
 			{

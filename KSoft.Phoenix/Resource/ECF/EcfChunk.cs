@@ -152,7 +152,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 
 		public virtual void BuildBuffer(IO.EndianStream blockStream, Stream sourceFile
-			, Security.Cryptography.TigerHashBase hasher = null)
+			, Security.Cryptography.TigerHashBase? hasher = null)
 		{
 			blockStream.AlignToBoundry(DataAlignmentBit);
 

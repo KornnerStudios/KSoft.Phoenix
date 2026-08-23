@@ -25,8 +25,8 @@ namespace KSoft.Phoenix.Runtime
 		const int cMaximumEntityRefs = 0x3E8;
 
 		public BVector Position, Up, Forward, Velocity;
-		public ActionListEntry[] Actions;
-		public BEntityRef[] EntityRefs;
+		public ActionListEntry[] Actions = null!;
+		public BEntityRef[] EntityRefs = null!;
 		public BEntityID ID;
 		public BPlayerID PlayerID;
 		public float YDisplacement,

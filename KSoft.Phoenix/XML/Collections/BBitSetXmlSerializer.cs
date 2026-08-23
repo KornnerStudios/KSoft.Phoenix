@@ -38,6 +38,9 @@ namespace KSoft.Phoenix.XML
 		private Collections.BBitSet? mBits;
 		public Collections.BBitSet Bits => mBits!;
 
+		private string ElementName => Params.ElementName
+			?? throw new InvalidOperationException("Bit-set XML serialization requires an element name.");
+
 		internal BBitSetXmlSerializer()
 		{
 		}
@@ -97,7 +100,7 @@ namespace KSoft.Phoenix.XML
 			}
 			else
 			{
-				foreach (var n in s.ElementsByName(Params.ElementName))
+				foreach (var n in s.ElementsByName(ElementName))
 				{
 					using (s.EnterCursorBookmark(n))
 					{
@@ -147,7 +150,7 @@ namespace KSoft.Phoenix.XML
 				}
 				else
 				{
-					using (s.EnterCursorBookmark(Params.ElementName))
+					using (s.EnterCursorBookmark(ElementName))
 					{
 						Params.StreamDataName(s, ref name);
 					}
@@ -158,7 +161,8 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			var getDefault = Bits.Params.kGetMemberDefaultValue;
+			var getDefault = Bits.Params.kGetMemberDefaultValue
+				?? throw new InvalidOperationException("Bit-set default values require a default-value provider.");
 			for (int x = 0; x < penum.MemberCount; x++)
 			{
 				bool bitDefault = getDefault(x);
@@ -180,8 +184,8 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			// #NOTE we don't check the book mark for null here because the root element is optional
-			using (s.EnterCursorBookmarkOpt(Params.GetOptionalRootName()))
+			var rootName = Params.GetOptionalRootName();
+			if (rootName is null)
 			{
 				if (s.IsReading)
 				{
@@ -190,6 +194,20 @@ namespace KSoft.Phoenix.XML
 				else if (s.IsWriting)
 				{
 					WriteNodes(s);
+				}
+			}
+			else
+			{
+				using (s.EnterCursorBookmarkOpt(rootName))
+				{
+					if (s.IsReading)
+					{
+						ReadNodes(s);
+					}
+					else if (s.IsWriting)
+					{
+						WriteNodes(s);
+					}
 				}
 			}
 		}

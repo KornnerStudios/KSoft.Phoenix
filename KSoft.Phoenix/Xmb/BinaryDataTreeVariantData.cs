@@ -87,7 +87,7 @@ namespace KSoft.Phoenix.Xmb
 					OpaqueArrayRef = TypeDesc.MakeArray(ArrayLength);
 				}
 
-				pool.InternalBuffer.Seek(nameValue.Offset);
+				(pool.InternalBuffer ?? throw new InvalidOperationException()).Seek(nameValue.Offset);
 			}
 
 			switch (Type)
@@ -98,7 +98,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Bool:
 					if (ArrayLength > 1)
 					{
-						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef!);
+						TypeDesc.ReadArray(pool.InternalBuffer ?? throw new InvalidOperationException(), OpaqueArrayRef!);
 					}
 					else
 					{
@@ -110,7 +110,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Int:
 					if (ArrayLength > 1)
 					{
-						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef!);
+						TypeDesc.ReadArray(pool.InternalBuffer ?? throw new InvalidOperationException(), OpaqueArrayRef!);
 					}
 					else
 					{
@@ -120,7 +120,7 @@ namespace KSoft.Phoenix.Xmb
 						}
 						else
 						{
-							this.Int64 = pool.InternalBuffer.ReadUInt64();
+							this.Int64 = (pool.InternalBuffer ?? throw new InvalidOperationException()).ReadUInt64();
 						}
 					}
 					break;
@@ -128,7 +128,7 @@ namespace KSoft.Phoenix.Xmb
 				case BinaryDataTreeVariantType.Float:
 					if (ArrayLength > 1)
 					{
-						TypeDesc.ReadArray(pool.InternalBuffer, OpaqueArrayRef!);
+						TypeDesc.ReadArray(pool.InternalBuffer ?? throw new InvalidOperationException(), OpaqueArrayRef!);
 					}
 					else
 					{
@@ -138,7 +138,7 @@ namespace KSoft.Phoenix.Xmb
 						}
 						else
 						{
-							this.Double = pool.InternalBuffer.ReadDouble();
+							this.Double = (pool.InternalBuffer ?? throw new InvalidOperationException()).ReadDouble();
 						}
 					}
 					break;
@@ -157,7 +157,7 @@ namespace KSoft.Phoenix.Xmb
 					}
 					else
 					{
-						this.String = pool.InternalBuffer.ReadString(IsUnicode
+						this.String = (pool.InternalBuffer ?? throw new InvalidOperationException()).ReadString(IsUnicode
 							? Memory.Strings.StringStorage.CStringUnicode
 							: Memory.Strings.StringStorage.CStringAscii);
 					}

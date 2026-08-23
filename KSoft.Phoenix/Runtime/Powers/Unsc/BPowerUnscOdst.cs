@@ -24,7 +24,7 @@ namespace KSoft.Phoenix.Runtime
 		};
 
 		public float SquadSpawnDelay;
-		public BODSTDrop[] ActiveDrops;
+		public BODSTDrop[]? ActiveDrops;
 		public BProtoObjectID ProjectileProtoID, ODSTProtoSquadID;
 		public BAIMissionID AddToMissionID;
 		public bool ReadyForShutdown;
@@ -35,7 +35,7 @@ namespace KSoft.Phoenix.Runtime
 			base.Serialize(s);
 
 			s.Stream(ref SquadSpawnDelay);
-			BSaveGame.StreamArray(s, ref ActiveDrops);
+			BSaveGameNullableSerialization.StreamArray(s, ref ActiveDrops);
 			s.Stream(ref ProjectileProtoID); s.Stream(ref ODSTProtoSquadID);
 			s.Stream(ref AddToMissionID);
 			s.Stream(ref ReadyForShutdown);

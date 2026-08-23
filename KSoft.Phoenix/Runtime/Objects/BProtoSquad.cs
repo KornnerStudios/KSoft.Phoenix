@@ -17,17 +17,19 @@ namespace KSoft.Phoenix.Runtime
 			CircleMenuIconID, AltCircleMenuIconID, HPBar;
 		public bool OneTimeSpawnUsed, KBAware;
 		public bool HasOverrideNodes;
-		public BProtoSquadNodeOverride[] OverrideNodes;
+		public BProtoSquadNodeOverride[] OverrideNodes = null!;
 
 		#region IEndianStreamSerializable Members
 		public override void Serialize(IO.EndianStream s)
 		{
 			base.Serialize(s);
-			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(s.Owner);
+			var owner = s.Owner;
+			System.ArgumentNullException.ThrowIfNull(owner);
+			var sg = KSoft.Debug.TypeCheck.CastReference<BSaveGame>(owner);
 
 			s.Stream(ref ProtoID);
 			s.Stream(ref BuildPoints);
-			sg.StreamBCost(s, ref Cost);
+			BSaveGameNullableSerialization.StreamBCost(sg, s, ref Cost);
 			s.Stream(ref MaxHP); s.Stream(ref MaxSP); s.Stream(ref MaxAmmo);
 			s.Stream(ref Level); s.Stream(ref TechLevel); s.Stream(ref DisplayNameIndex);
 			s.Stream(ref CircleMenuIconID); s.Stream(ref AltCircleMenuIconID); s.Stream(ref HPBar);

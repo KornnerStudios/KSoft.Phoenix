@@ -34,7 +34,7 @@ public sealed class WinSaveFile
 		=> fileSize > (cFixedProfileSettingSize + XContentData.SizeOf);
 	#endregion
 
-	public static OpenSavResult OpenSav(string filePath, out System.IO.MemoryStream fileMemoryStream)
+	public static OpenSavResult OpenSav(string filePath, out System.IO.MemoryStream? fileMemoryStream)
 	{
 		OpenSavResult result = OpenSavResult.Invalid;
 		fileMemoryStream = null;

@@ -42,7 +42,7 @@ namespace KSoft.Phoenix.Xmb
 		} }
 		#endregion
 
-		internal XmbFile Xmb;
+		internal XmbFile? Xmb;
 
 		#region Stats
 		public int NumberOfElements { get; set; }

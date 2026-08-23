@@ -27,7 +27,9 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			var td = KSoft.Debug.TypeCheck.CastReference<BTacticData>(s.UserData);
+			var userData = s.UserData;
+			System.ArgumentNullException.ThrowIfNull(userData);
+			var td = KSoft.Debug.TypeCheck.CastReference<BTacticData>(userData);
 
 			XML.XmlUtil.Serialize(s, TargetRules, BTacticTargetRule.kBListXmlParams);
 			s.StreamElements("PersistentAction", PersistentActions, td, BTacticData.StreamProtoActionID);

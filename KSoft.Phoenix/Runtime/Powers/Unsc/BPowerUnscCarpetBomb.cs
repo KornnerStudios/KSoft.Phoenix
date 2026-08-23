@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Runtime
 			#endregion
 		};
 
-		public BBombExplodeInfo[] BombExplodeInfos;
+		public BBombExplodeInfo[]? BombExplodeInfos;
 		public List<BEntityID> NudgedUnits = new();
 		public BVector StartLocation, StartDirection, RightVector;
 		public sbyte State;
@@ -39,7 +39,7 @@ namespace KSoft.Phoenix.Runtime
 		{
 			base.Serialize(s);
 
-			BSaveGame.StreamArray(s, ref BombExplodeInfos);
+			BSaveGameNullableSerialization.StreamArray(s, ref BombExplodeInfos);
 			BSaveGame.StreamCollection(s, NudgedUnits);
 			s.StreamV(ref StartLocation); s.StreamV(ref StartDirection); s.StreamV(ref RightVector);
 			s.Stream(ref State);

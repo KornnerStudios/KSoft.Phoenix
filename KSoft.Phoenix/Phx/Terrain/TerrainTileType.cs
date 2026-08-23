@@ -33,10 +33,10 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region ImpactEffect
-		string mImpactEffect;
+		string? mImpactEffect;
 		[Meta.UnusedData]
 		[Meta.VisualReference]
-		public string ImpactEffect
+		public string? ImpactEffect
 		{
 			get { return mImpactEffect; }
 			set { mImpactEffect = value; }

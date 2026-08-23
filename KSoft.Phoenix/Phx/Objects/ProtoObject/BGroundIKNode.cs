@@ -12,8 +12,8 @@ namespace KSoft.Phoenix.Phx
 		#endregion
 
 		#region Name
-		string mName;
-		public string Name
+		string? mName;
+		public string? Name
 		{
 			get { return mName; }
 			set { mName = value; }
@@ -62,7 +62,9 @@ namespace KSoft.Phoenix.Phx
 			where TDoc : class
 			where TCursor : class
 		{
-			s.StreamCursor(ref mName);
+			string name = s.IsReading ? string.Empty : mName ?? throw new System.ArgumentNullException(nameof(mName));
+			s.StreamCursor(ref name);
+			mName = name;
 			s.StreamAttribute("ikRange", ref mIKRange);
 			s.StreamAttribute("linkCount", ref mLinkCount);
 			s.StreamAttributeOpt("x", ref mAxisPositioning.X, Predicates.IsNotZero);

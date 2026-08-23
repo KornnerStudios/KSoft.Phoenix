@@ -74,9 +74,9 @@ namespace KSoft.Phoenix.Runtime
 			FlagCameraAutoZoomEnabled, FlagRestoreCameraEnableUserScroll, FlagRestoreCameraEnableUserYaw, FlagRestoreCameraEnableUserZoom,
 			FlagRestoreCameraEnableAutoZoomInstant, FlagRestoreCameraEnableAutoZoom;
 		public Phx.BPowerType PowerType;
-		public BPowerUser PowerUser;
+		public BPowerUser PowerUser = null!;
 		#endregion
-		public BEntityID[] SelectionList;
+		public BEntityID[] SelectionList = null!;
 
 		public float CameraZoomMin, CameraZoomMax,
 			CameraPitchMin, CameraPitchMax,
