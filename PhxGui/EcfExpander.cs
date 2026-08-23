@@ -39,7 +39,7 @@ namespace PhxGui
 			Task.Run((Action)stack.Expand);
 		}
 
-		private class ExpandEcfFilesStack
+		private sealed class ExpandEcfFilesStack
 		{
 			public MainWindowViewModel ViewModel = null!;
 
@@ -161,7 +161,7 @@ namespace PhxGui
 			}
 		};
 
-		private class ExpandEcfFileParameters
+		private sealed class ExpandEcfFileParameters
 		{
 			public BitVector32 EcfOptions;
 			public BitVector32 EcfExpanderOptions;

@@ -1534,7 +1534,7 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public static bool SortCommandsAfterReading = false;
+		public static bool SortCommandsAfterReading { get; set; }
 		private void SortCommands()
 		{
 			Commands.Sort(CompareCommands);

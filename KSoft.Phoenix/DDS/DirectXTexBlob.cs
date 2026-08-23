@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 namespace KSoft.DDS
 {
 	[StructLayout(LayoutKind.Sequential)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Owns a disposable native DirectXTex handle.")]
 	public struct DirectXTexBlob
 		: IDisposable
 	{

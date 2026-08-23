@@ -12,6 +12,7 @@ namespace KSoft.Phoenix.Resource
 		: IDisposable
 		, IO.IEndianStreamSerializable
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains game-file format hash-seed reference data.")]
 		const string kHashSeed = "TehHaloz";
 
 		[Flags]

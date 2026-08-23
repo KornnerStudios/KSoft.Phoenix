@@ -1,6 +1,7 @@
 ﻿
 namespace KSoft.Phoenix
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Stores numeric parsing state.")]
 	public struct IsNumericTester
 	{
 		public bool AllowExponential;

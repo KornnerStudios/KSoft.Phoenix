@@ -16,6 +16,7 @@ namespace KSoft.Phoenix.Resource
 			const int kOffsetCompressedAdler = kOffsetCompressedSize + sizeof(ulong);
 			const int kOffsetMode = kOffsetCompressedAdler + sizeof(uint);
 
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains compressed-stream format size documentation.")]
 			const int kSizeOf = kOffsetMode + sizeof(uint); // 0x14
 
 			public static uint Checksum(ulong srcSize, uint srcAdler, ulong cmpSize, uint cmpAdler,

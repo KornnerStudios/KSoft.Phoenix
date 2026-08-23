@@ -5,6 +5,7 @@ namespace KSoft.Phoenix.Xmb
 {
 	public struct BinaryDataTreePackedNode
 		: IO.IEndianStreamSerializable
+		, System.IEquatable<BinaryDataTreePackedNode>
 	{
 		public const int kSizeOf = 2+2+2+1+1;
 
@@ -13,6 +14,14 @@ namespace KSoft.Phoenix.Xmb
 		public ushort NameValueOffset;
 		public byte NameValuesCount;
 		public byte ChildNodesCount;
+
+		#region Overrides
+		public override readonly bool Equals(object? obj) => obj is BinaryDataTreePackedNode other && Equals(other);
+		public readonly bool Equals(BinaryDataTreePackedNode other) => ParentIndex == other.ParentIndex && ChildNodeIndex == other.ChildNodeIndex && NameValueOffset == other.NameValueOffset && NameValuesCount == other.NameValuesCount && ChildNodesCount == other.ChildNodesCount;
+		public static bool operator ==(BinaryDataTreePackedNode left, BinaryDataTreePackedNode right) => left.Equals(right);
+		public static bool operator !=(BinaryDataTreePackedNode left, BinaryDataTreePackedNode right) => !left.Equals(right);
+		public override readonly int GetHashCode() => System.HashCode.Combine(ParentIndex, ChildNodeIndex, NameValueOffset, NameValuesCount, ChildNodesCount);
+		#endregion
 
 		public readonly bool IsRootNode => ParentIndex == ushort.MaxValue;
 		public readonly bool HasNameValuesCountOverflow => NameValuesCount == byte.MaxValue;

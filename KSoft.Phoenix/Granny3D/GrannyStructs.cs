@@ -9,6 +9,7 @@ using granny_matrix_4x4 = System.Numerics.Matrix4x4;
 namespace KSoft.Granny3D
 {
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_data_type_definition
 	{
 		public granny_member_type MemberType;
@@ -25,6 +26,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_variant
 	{
 		public TPtr<granny_data_type_definition> Type;
@@ -32,6 +34,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_transform
 	{
 		public granny_transform_flags Flags;
@@ -43,6 +46,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_matrix_3x3
 	{
 		public Vector3 Row0;
@@ -52,6 +56,7 @@ namespace KSoft.Granny3D
 
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_file_info
 	{
 		public TPtr<granny_art_tool_info> ArtToolInfo;
@@ -70,6 +75,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_art_tool_info
 	{
 		public CharPtr FromArtToolName;
@@ -85,6 +91,7 @@ namespace KSoft.Granny3D
 
 	#region granny_texture
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_texture
 	{
 		public CharPtr FromFileName;
@@ -111,6 +118,7 @@ namespace KSoft.Granny3D
 
 	#region granny_material
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_material
 	{
 		public CharPtr Name;
@@ -127,6 +135,7 @@ namespace KSoft.Granny3D
 
 	#region granny_skeleton
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_skeleton
 	{
 		public CharPtr Name;
@@ -135,6 +144,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_bone
 	{
 		public CharPtr Name;
@@ -148,6 +158,7 @@ namespace KSoft.Granny3D
 
 	#region granny_mesh
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_mesh
 	{
 		public CharPtr Name;
@@ -160,6 +171,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_vertex_data
 	{
 		public TPtr<granny_data_type_definition> VertexType;
@@ -178,6 +190,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_tri_topology
 	{
 		public ArrayPtr<granny_tri_material_group> Groups;
@@ -191,6 +204,7 @@ namespace KSoft.Granny3D
 		public ArrayPtr<granny_tri_annotation_set> TriAnnotationSets;
 	};
 	[StructLayout(LayoutKind.Sequential)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_tri_material_group
 	{
 		public int MaterialIndex;
@@ -198,6 +212,7 @@ namespace KSoft.Granny3D
 		public int TriCount;
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_tri_annotation_set
 	{
 		public CharPtr Name;
@@ -208,12 +223,14 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_material_binding
 	{
 		public TPtr<granny_material> Material;
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_bone_binding
 	{
 		public CharPtr BoneName;
@@ -225,6 +242,7 @@ namespace KSoft.Granny3D
 
 	#region granny_model
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_model
 	{
 		public CharPtr Name;
@@ -234,6 +252,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_model_mesh_binding
 	{
 		public TPtr<granny_mesh> Mesh;
@@ -242,6 +261,7 @@ namespace KSoft.Granny3D
 
 	#region granny_track_group
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_track_group
 	{
 		public CharPtr Name;
@@ -260,6 +280,7 @@ namespace KSoft.Granny3D
 
 	#region granny_animation
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native Granny interop layout.")]
 	public struct granny_animation
 	{
 		public CharPtr Name;

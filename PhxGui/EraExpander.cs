@@ -68,7 +68,7 @@ namespace PhxGui
 			Task.Run((Action)stack.Expand);
 		}
 
-		private class ExpandEraFilesStack
+		private sealed class ExpandEraFilesStack
 		{
 			public MainWindowViewModel ViewModel = null!;
 
@@ -196,7 +196,7 @@ namespace PhxGui
 			}
 		};
 
-		private class ExpandEraFileParameters
+		private sealed class ExpandEraFileParameters
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraExpanderOptions;

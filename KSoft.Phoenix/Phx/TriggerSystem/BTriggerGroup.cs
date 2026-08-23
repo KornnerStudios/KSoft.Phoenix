@@ -12,6 +12,7 @@ namespace KSoft.Phoenix.Phx
 			DataName = DatabaseNamedObject.kXmlAttrNameN,
 		};
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlAttrId = "ID";
 		#endregion
 

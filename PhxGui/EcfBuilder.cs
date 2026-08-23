@@ -110,7 +110,7 @@ namespace PhxGui
 			}, scheduler);
 		}
 
-		private class BuildEcfFileParameters
+		private sealed class BuildEcfFileParameters
 		{
 			public BitVector32 EcfOptions;
 			public BitVector32 EcfBuilderOptions = default;

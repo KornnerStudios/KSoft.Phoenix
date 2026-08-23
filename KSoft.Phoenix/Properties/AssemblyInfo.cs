@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
+[assembly: DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
+
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("1a1f287c-66cc-480c-9fc2-54a4e0f11c47")]
 

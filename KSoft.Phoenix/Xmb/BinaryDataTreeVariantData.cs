@@ -6,6 +6,7 @@ namespace KSoft.Phoenix.Xmb
 	using BDTypeDesc = BinaryDataTreeVariantTypeDesc;
 
 	[Interop.StructLayout(Interop.LayoutKind.Explicit)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents mutable XMB variant data.")]
 	public struct BinaryDataTreeVariantData
 	{
 		#region Direct Data

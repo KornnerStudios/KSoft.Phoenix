@@ -14,12 +14,18 @@ namespace KSoft.Phoenix.Phx
 
 		//////////////////////////////////////////////////////////////////////////
 		// anim names
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlElementIdleAnim = "IdleAnim";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlElementWalkAnim = "WalkAnim";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlElementJogAnim = "JogAnim";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlElementRunAnim = "RunAnim";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlElementDeathAnim = "DeathAnim";
 		//////////////////////////////////////////////////////////////////////////
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlElementAction = "Action";
 		#endregion
 	};

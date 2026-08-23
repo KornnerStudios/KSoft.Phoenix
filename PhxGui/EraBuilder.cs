@@ -112,7 +112,7 @@ namespace PhxGui
 			}, scheduler);
 		}
 
-		private class BuildEraFileParameters
+		private sealed class BuildEraFileParameters
 		{
 			public BitVector32 EraOptions;
 			public BitVector32 EraBuilderOptions;

@@ -15,10 +15,15 @@ namespace KSoft.Phoenix.Phx
 		const string kXmlAttrEvalLimit = "EvalLimit";
 		const string kXmlAttrConditionalTrigger = "ConditionalTrigger";
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlAttrCommentOut = "CommentOut";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlAttrX = "X";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlAttrY = "Y";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlAttrGroupID = "GroupID";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XML schema reference data.")]
 		const string kXmlAttrTemplateID = "TemplateID";
 		#endregion
 

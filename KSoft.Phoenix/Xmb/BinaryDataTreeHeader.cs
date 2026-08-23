@@ -184,12 +184,21 @@ namespace KSoft.Phoenix.Xmb
 
 	public struct BinaryDataTreeSectionHeader
 		: IO.IEndianStreamSerializable
+		, IEquatable<BinaryDataTreeSectionHeader>
 	{
 		public const uint kSizeOf = sizeof(uint) * 3;
 
 		public uint Id;
 		public uint Size;
 		public uint Offset;
+
+		#region Overrides
+		public override readonly bool Equals(object? obj) => obj is BinaryDataTreeSectionHeader other && Equals(other);
+		public readonly bool Equals(BinaryDataTreeSectionHeader other) => Id == other.Id && Size == other.Size && Offset == other.Offset;
+		public static bool operator ==(BinaryDataTreeSectionHeader left, BinaryDataTreeSectionHeader right) => left.Equals(right);
+		public static bool operator !=(BinaryDataTreeSectionHeader left, BinaryDataTreeSectionHeader right) => !left.Equals(right);
+		public override readonly int GetHashCode() => HashCode.Combine(Id, Size, Offset);
+		#endregion
 
 		public void Serialize(IO.EndianStream s)
 		{

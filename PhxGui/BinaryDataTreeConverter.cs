@@ -39,7 +39,7 @@ namespace PhxGui
 			BinToXml,
 			XmlToBin,
 		};
-		private class BinaryDataTreeConverter
+		private sealed class BinaryDataTreeConverter
 		{
 			private readonly BinaryDataTreeConverterMode mMode = BinaryDataTreeConverterMode.BinToXml;
 			public bool DontOverwriteExistingFiles;

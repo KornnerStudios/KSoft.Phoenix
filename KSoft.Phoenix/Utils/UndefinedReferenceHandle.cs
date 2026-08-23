@@ -49,6 +49,7 @@ namespace KSoft.Phoenix
 	};
 
 	public struct UndefinedObjectResult
+		: IEquatable<UndefinedObjectResult>
 	{
 		public int MemberId { readonly get; private set; }
 		public string MemberName { readonly get; private set; }
@@ -58,5 +59,13 @@ namespace KSoft.Phoenix
 			MemberId = id;
 			MemberName = name;
 		}
+		#region Overrides
+		public override readonly bool Equals(object? obj) => obj is UndefinedObjectResult other && Equals(other);
+		public readonly bool Equals(UndefinedObjectResult other) => MemberId == other.MemberId && MemberName == other.MemberName;
+		public static bool operator ==(UndefinedObjectResult left, UndefinedObjectResult right) => left.Equals(right);
+		public static bool operator !=(UndefinedObjectResult left, UndefinedObjectResult right) => !left.Equals(right);
+		public override readonly int GetHashCode() => HashCode.Combine(MemberId, MemberName);
+		#endregion
+
 	};
 };

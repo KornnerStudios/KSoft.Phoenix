@@ -9,6 +9,7 @@ namespace KSoft.Phoenix.Runtime
 		void Serialize(IO.EndianStream s, CondensedListInfo parentListInfo);
 	};
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents packed collection storage.")]
 	public struct CondensedListItem8<T>
 		: ICondensedListItem
 		where T : class, IO.IEndianStreamSerializable, new()
@@ -33,6 +34,7 @@ namespace KSoft.Phoenix.Runtime
 		}
 		#endregion
 	};
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents packed collection storage.")]
 	public struct CondensedListItemValue8<T>
 		: ICondensedListItem
 		where T : struct, IO.IEndianStreamSerializable
@@ -53,6 +55,7 @@ namespace KSoft.Phoenix.Runtime
 		#endregion
 	};
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents packed collection storage.")]
 	public struct CondensedListItem16<T>
 		: ICondensedListItem
 		where T : class, IO.IEndianStreamSerializable, new()
@@ -77,6 +80,7 @@ namespace KSoft.Phoenix.Runtime
 		}
 		#endregion
 	};
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents packed collection storage.")]
 	public struct CondensedListItemValue16<T>
 		: ICondensedListItem
 		where T : struct, IO.IEndianStreamSerializable
@@ -97,6 +101,7 @@ namespace KSoft.Phoenix.Runtime
 		#endregion
 	};
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents packed collection storage.")]
 	public struct CondensedListItem32<T>
 		: ICondensedListItem
 		where T : class, IO.IEndianStreamSerializable, new()
@@ -121,6 +126,7 @@ namespace KSoft.Phoenix.Runtime
 		}
 		#endregion
 	};
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents packed collection storage.")]
 	public struct CondensedListItemValue32<T> : ICondensedListItem
 			where T : struct, IO.IEndianStreamSerializable
 	{

@@ -14,6 +14,7 @@ namespace KSoft.Phoenix.Xmb
 		#region Constants
 		public const int kSizeOf = 8;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XMB format encoding-limit documentation.")]
 		const int kMaxDirectEncodedStringLength = 4;
 
 		const int kSizeBitCount = 7;

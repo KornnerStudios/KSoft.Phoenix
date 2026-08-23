@@ -10,6 +10,7 @@ namespace KSoft.Phoenix.Runtime
 		public struct HUDItemEnabledStates
 			: IO.IEndianStreamSerializable
 		{
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains HUD bitfield layout size documentation.")]
 			const int kSizeOf = 0xB;
 
 			public bool Minimap, Resources, Time,

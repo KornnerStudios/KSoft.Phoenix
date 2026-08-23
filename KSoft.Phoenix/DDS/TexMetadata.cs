@@ -27,6 +27,7 @@ namespace KSoft.DDS
 	};
 
 	[StructLayout(LayoutKind.Sequential)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Defines a native DirectXTex interop layout.")]
 	public struct TexMetadata
 	{
 		public const uint kAlphaModeMask = 0x7;

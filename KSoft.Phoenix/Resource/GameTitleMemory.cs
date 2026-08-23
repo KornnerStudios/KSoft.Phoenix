@@ -45,8 +45,10 @@ namespace KSoft.Phoenix.Resource
 	sealed class GameTitleMemory1
 		: IO.IEndianStreamSerializable
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains game-title format version reference data.")]
 		const byte kVersion = 0x1B;
 		const byte kVersionTU = 0x1C; // Xbox360
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains game-title format version reference data.")]
 		const byte kVersion_LatestHWDE = 43;
 
 		#region IEndianStreamSerializable Members

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 namespace KSoft.Granny3D
 {
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a native pointer wrapper.")]
 	public struct CharPtr
 	{
 		public IntPtr Address;
@@ -23,6 +24,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a native pointer wrapper.")]
 	public struct TPtr<T>
 		where T : struct
 	{
@@ -79,6 +81,7 @@ namespace KSoft.Granny3D
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a native pointer wrapper.")]
 	public struct ArrayPtr
 	{
 		public int Count;
@@ -110,6 +113,7 @@ namespace KSoft.Granny3D
 		}
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a native pointer wrapper.")]
 	public struct ArrayCharPtr
 	{
 		public int Count;
@@ -137,6 +141,7 @@ namespace KSoft.Granny3D
 		}
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a native pointer wrapper.")]
 	public struct ArrayPtr<T>
 		where T : struct
 	{
@@ -176,6 +181,7 @@ namespace KSoft.Granny3D
 		}
 	};
 	[StructLayout(LayoutKind.Sequential, Pack=Granny2DLL.kAssumedPointerSize)]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents a native pointer wrapper.")]
 	public struct ArrayOfRefsPtr<T>
 		where T : struct
 	{

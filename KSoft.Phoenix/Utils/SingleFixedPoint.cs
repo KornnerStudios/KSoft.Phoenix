@@ -3,6 +3,7 @@ namespace KSoft.Phoenix
 {
 	static class SingleFixedPoint
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains fixed-point format scaling documentation.")]
 		const double kExponent = 4; // scaling exponent
 		const double kScaleToSingleMultiplier = 0.0001;//System.Math.Pow(10, -kExponent);
 		const double kScaleFromSingleMultiplier = 10000;//System.Math.Pow(10, kExponent);

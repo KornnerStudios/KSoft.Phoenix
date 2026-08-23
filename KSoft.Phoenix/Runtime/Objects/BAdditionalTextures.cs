@@ -1,6 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Runtime
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Represents mutable runtime object state.")]
 	public struct BAdditionalTextures
 		: IO.IEndianStreamSerializable
 	{

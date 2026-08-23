@@ -168,6 +168,7 @@ namespace KSoft.Phoenix.Xmb
 		};
 
 		const int kInfoFlagsBitIndex = kInfoLengthBitIndex + kInfoLengthBitCount;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains XMB format bit-layout documentation.")]
 		const int kInfoFlagsBitCount = 2;
 		const uint kInfoFlagsBitMask = 0xC0000000;
 		static RawVariantFlags GetFlags(uint data)

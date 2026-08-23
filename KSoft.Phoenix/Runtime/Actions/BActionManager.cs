@@ -18,6 +18,7 @@
 			;
 	};
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes", Justification = "Stores action-list serialization state.")]
 	public struct ActionListEntry
 		: IO.IEndianStreamSerializable
 	{

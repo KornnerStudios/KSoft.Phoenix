@@ -40,6 +40,7 @@ namespace KSoft.Phoenix.Engine
 		const string kPhysicsPath = @"physics\";
 		const string kScenariosPath = @"scenario\";
 		const string kSoundPath = @"sound\";
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains the game directory layout reference path.")]
 		const string kTalkingHeadsPath = @"video\talkingheads\";
 
 		/*public*/ string RootDirectory { get; /*private*/ set; }

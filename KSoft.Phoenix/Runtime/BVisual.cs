@@ -8,6 +8,7 @@ namespace KSoft.Phoenix.Runtime
 		: IO.IEndianStreamSerializable
 	{
 		const int kUVOffsetsSize = 0x18;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Retains visual-item format attachment-limit documentation.")]
 		const int cMaximumAttachments = 0x64;
 
 		public BMatrix Matrix;

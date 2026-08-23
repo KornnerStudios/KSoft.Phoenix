@@ -14,7 +14,7 @@ namespace PhxGui
 			XmbToXml,
 			XmlToXmb,
 		};
-		private class XmlConverter
+		private sealed class XmlConverter
 		{
 			private readonly XmlConverterMode mMode = XmlConverterMode.XmbToXml;
 			public bool DontOverwriteExistingFiles;
