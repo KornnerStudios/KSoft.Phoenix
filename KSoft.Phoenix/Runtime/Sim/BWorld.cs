@@ -101,6 +101,7 @@ namespace KSoft.Phoenix.Runtime
 		ObjectGroup[]? NumExplorationGroups;
 		BExplorationGroupTimerEntry[]? ActiveExplorationGroups;
 		public BPlayer[]? Players;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1814:Prefer jagged arrays over multidimensional", Justification = "Fixed serialized category-by-player matrix preserves two-dimensional indexing and stream order.")]
 		readonly PlayerColorCategory[,] PlayerColorCategories = new PlayerColorCategory[cMaxPlayerColorCategories, cMaximumSupportedPlayers];
 		readonly List<CondensedListItem16<BSimOrder>> SimOrders = new();
 		readonly List<CondensedListItem16<BUnitOpp>> UnitOpps = new();

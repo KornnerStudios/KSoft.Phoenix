@@ -31,6 +31,7 @@ namespace KSoft.Phoenix.Xmb
 	};
 
 	public struct BinaryDataTreeVariantTypeDesc
+		: IEquatable<BinaryDataTreeVariantTypeDesc>
 	{
 		public const int kSizeOf = 4;
 
@@ -80,13 +81,10 @@ namespace KSoft.Phoenix.Xmb
 
 		public override readonly bool Equals(object? obj)
 		{
-			if (obj is BinaryDataTreeVariantTypeDesc desc)
-			{
-				return this == desc;
-			}
-
-			return false;
+			return obj is BinaryDataTreeVariantTypeDesc desc && Equals(desc);
 		}
+
+		public readonly bool Equals(BinaryDataTreeVariantTypeDesc other) => this == other;
 
 		public override readonly int GetHashCode()
 		{

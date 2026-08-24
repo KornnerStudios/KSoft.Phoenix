@@ -9,6 +9,7 @@ namespace KSoft.Phoenix
 	[Interop.StructLayout(Interop.LayoutKind.Explicit, Size=PhxSYSTEMTIME.kSizeOf)]
 	public struct PhxSYSTEMTIME
 		: IO.IEndianStreamSerializable
+		, IEquatable<PhxSYSTEMTIME>
 	{
 		public const int kSizeOf = sizeof(ulong);
 		public static PhxSYSTEMTIME MinValue => new(1601, 1, 1);
@@ -85,13 +86,10 @@ namespace KSoft.Phoenix
 
 		public override readonly bool Equals(object? obj)
 		{
-			if (obj is PhxSYSTEMTIME phxSystemTime)
-			{
-				return phxSystemTime == this;
-			}
-
-			return base.Equals(obj);
+			return obj is PhxSYSTEMTIME phxSystemTime && Equals(phxSystemTime);
 		}
+
+		public readonly bool Equals(PhxSYSTEMTIME other) => this == other;
 
 		public override readonly int GetHashCode()
 		{
