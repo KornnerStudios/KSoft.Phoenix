@@ -18,7 +18,7 @@ namespace KSoft.Phoenix.Engine
 		internal Dictionary<XmlFileInfo, XmlFileLoadState> XmlFileLoadStatus { get; private set; }
 			= new();
 
-		public event EventHandler<XmlFileLoadStateChangedArgs>? XmlFileLoadStateChanged;
+		public event EventHandler<XmlFileLoadStateChangedEventArgs>? XmlFileLoadStateChanged;
 
 		internal void UpdateFileLoadStatus(XmlFileInfo file, XmlFileLoadState state)
 		{
@@ -32,7 +32,7 @@ namespace KSoft.Phoenix.Engine
 			var handler = XmlFileLoadStateChanged;
 			if (handler != null)
 			{
-				var args = new XmlFileLoadStateChangedArgs(file, state);
+				var args = new XmlFileLoadStateChangedEventArgs(file, state);
 				handler(this, args);
 			}
 		}

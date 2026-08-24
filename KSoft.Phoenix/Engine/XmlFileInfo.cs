@@ -87,13 +87,13 @@ namespace KSoft.Phoenix.Engine
 		}
 	};
 
-	public class XmlFileLoadStateChangedArgs
+	public class XmlFileLoadStateChangedEventArgs
 		: EventArgs
 	{
 		public XmlFileInfo XmlFile { get; private set; }
 		public XmlFileLoadState NewState { get; private set; }
 
-		public XmlFileLoadStateChangedArgs(XmlFileInfo xmlFile, XmlFileLoadState newState)
+		public XmlFileLoadStateChangedEventArgs(XmlFileInfo xmlFile, XmlFileLoadState newState)
 		{
 			XmlFile = xmlFile;
 			NewState = newState;

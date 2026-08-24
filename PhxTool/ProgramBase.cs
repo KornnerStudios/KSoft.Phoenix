@@ -20,6 +20,7 @@ namespace KSoft.Tool
 		protected abstract void InitializeOptions();
 		protected virtual bool ValidateArgs() => true;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2214:Do not call overridable methods in constructors", Justification = "Overrides only register deferred option callbacks and do not access derived state.")]
 		protected ProgramBase()
 		{
 			InitializeOptions();
