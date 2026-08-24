@@ -1,6 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.HaloWars
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "Values are mutually exclusive chat speaker identifiers.")]
 	public enum BChatSpeaker
 	{
 		Serena,

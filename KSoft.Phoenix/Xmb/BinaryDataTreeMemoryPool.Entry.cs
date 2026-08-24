@@ -11,7 +11,7 @@ namespace KSoft.Phoenix.Xmb
 	partial class BinaryDataTreeMemoryPool
 	{
 		[Interop.StructLayout(Interop.LayoutKind.Explicit)]
-		public sealed class PoolEntry
+		internal sealed class PoolEntry
 			: IO.IEndianStreamable
 		{
 			static readonly Text.StringStorageEncoding kAnsiEncoding =

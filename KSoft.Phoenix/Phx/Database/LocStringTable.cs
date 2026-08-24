@@ -414,6 +414,7 @@ namespace KSoft.Phoenix.Phx
 			return index;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Range statistics are exposed as part of the public string-table API.")]
 		public sealed class RangeStatsData
 		{
 			public LocStringTableIndexRange? Range { get; set; }

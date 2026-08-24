@@ -35,7 +35,7 @@
 			where TCursor : class
 		{
 			// This HW script has all the debug info stripped :o
-			if (s.StreamName!.EndsWith("skirmishai.triggerscript"))
+			if (s.StreamName!.EndsWith("skirmishai.triggerscript", System.StringComparison.OrdinalIgnoreCase))
 			{
 				return;
 			}

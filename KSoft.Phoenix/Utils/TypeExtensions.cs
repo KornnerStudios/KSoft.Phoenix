@@ -8,7 +8,7 @@ namespace KSoft.Phoenix
 	public static partial class TypeExtensionsPhx
 	{
 		#region Enum Bit Encoders
-		public static class BitEncoders
+		internal static class BitEncoders
 		{
 			// KSoft.Phoenix.Xmb
 			public static readonly EnumBitEncoder32<Xmb.BinaryDataTreeVariantType>

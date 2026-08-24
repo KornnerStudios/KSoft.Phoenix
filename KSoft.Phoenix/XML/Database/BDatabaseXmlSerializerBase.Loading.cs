@@ -22,7 +22,7 @@ namespace KSoft.Phoenix.XML
 		public delegate void StreamXmlCallback(IO.XmlElementStream s);
 
 		[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
-		public sealed class StreamXmlContextData
+		internal sealed class StreamXmlContextData
 		{
 			public Engine.ProtoDataXmlFileInfo ProtoFileInfo;
 			public Engine.XmlFileInfo FileInfo { get { return ProtoFileInfo.FileInfo
