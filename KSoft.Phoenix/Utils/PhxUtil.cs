@@ -174,15 +174,15 @@ namespace KSoft.Phoenix
 			}
 			if (length >= 2)
 			{
-				sb.AppendFormat(",{0}", vector.Y.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+				sb.Append(',').Append(vector.Y.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 			}
 			if (length >= 3)
 			{
-				sb.AppendFormat(",{0}", vector.Z.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+				sb.Append(',').Append(vector.Z.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 			}
 			if (length >= 4)
 			{
-				sb.AppendFormat(",{0}", vector.W.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
+				sb.Append(',').Append(vector.W.ToStringInvariant(Numbers.kFloatRoundTripFormatSpecifier));
 			}
 
 			return sb.ToString();

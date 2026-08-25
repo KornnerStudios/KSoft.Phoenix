@@ -117,11 +117,8 @@ namespace KSoft.Phoenix.Phx
 					dbid = provider.GetId((int)kind, id_name!);
 					if (dbid.IsNone())
 					{
-						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-							"Failed to resolve tactic {0} reference '{1}' from {2}.",
-							kind,
-							id_name,
-							xmlName ?? "ElementText")));
+						s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Failed to resolve tactic {kind} reference '{id_name}' from {xmlName ?? "ElementText"}.")));
 					}
 				}
 				else
@@ -135,10 +132,8 @@ namespace KSoft.Phoenix.Phx
 				id_name = provider.GetName((int)kind, dbid);
 				if (string.IsNullOrEmpty(id_name))
 				{
-					throw new InvalidOperationException(string.Format(
-						"Failed to resolve tactic {0} reference name for id {1}.",
-						kind,
-						dbid));
+					throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Failed to resolve tactic {kind} reference name for id {dbid}."));
 				}
 
 				if (isOptional)

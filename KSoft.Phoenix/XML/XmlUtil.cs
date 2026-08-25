@@ -180,10 +180,8 @@ namespace KSoft.Phoenix
 					var parse_result = PhxUtil.ParseBVectorString(string_value);
 					if (!parse_result.HasValue)
 					{
-						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-							"Failed to parse value (hint: {0}) as vector: {1}",
-							xmlSource.RequiresName() ? xmlName : "ElementText",
-							string_value)));
+						s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Failed to parse value (hint: {(xmlSource.RequiresName() ? xmlName : "ElementText")}) as vector: {string_value}")));
 					}
 
 					vector = parse_result.Value;
@@ -241,10 +239,8 @@ namespace KSoft.Phoenix
 					System.ArgumentNullException.ThrowIfNull(string_value);
 					if (!PhxUtil.TokenizeIntegerColor(string_value, defaultAlpha, ref color))
 					{
-						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-							"Failed to parse value (hint: {0}) as color: {1}",
-							xmlSource.RequiresName() ? xmlName : "ElementText",
-							string_value)));
+						s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Failed to parse value (hint: {(xmlSource.RequiresName() ? xmlName : "ElementText")}) as color: {string_value}")));
 					}
 				}
 			}
@@ -303,10 +299,8 @@ namespace KSoft.Phoenix
 					dbid = protoEnum.TryGetMemberId(id_name);
 					if (dbid.IsNone())
 					{
-						s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-							"Failed to resolve proto enum member '{0}' from {1}.",
-							id_name,
-							xmlSource.RequiresName() ? xmlName : "ElementText")));
+						s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Failed to resolve proto enum member '{id_name}' from {(xmlSource.RequiresName() ? xmlName : "ElementText")}.")));
 					}
 				}
 				//else
@@ -323,9 +317,8 @@ namespace KSoft.Phoenix
 				id_name = protoEnum.TryGetMemberName(dbid);
 				if (id_name.IsNullOrEmpty())
 				{
-					throw new System.InvalidOperationException(string.Format(
-						"Failed to resolve proto enum member name for id {0}.",
-						dbid));
+					throw new System.InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Failed to resolve proto enum member name for id {dbid}."));
 				}
 
 				if (isOptional)

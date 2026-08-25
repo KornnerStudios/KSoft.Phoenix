@@ -23,7 +23,7 @@ namespace KSoft.Phoenix.Phx
 				"{0} ({1}): Generated UndefinedHandle for '{2}.{3}' ({4}). {5}={6}",
 				s.StreamName, Text.TextLineInfo.ToString(line_info, verboseString: true),
 				cursor_name, "InnerText",
-				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString());
+				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString(KSoft.Util.InvariantCultureInfo));
 		}
 
 		internal static bool Stream<TDoc, TCursor>(
@@ -41,9 +41,8 @@ namespace KSoft.Phoenix.Phx
 				dbid = xs.Database.GetId(kind, id_name);
 				if (dbid.IsNone())
 				{
-					s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-						"Failed to resolve {0} reference '{1}' from {2}.",
-						kind, id_name, "ElementText")));
+					s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Failed to resolve {kind} reference '{id_name}' from ElementText.")));
 				}
 				if (PhxUtil.IsUndefinedReferenceHandle(dbid))
 				{
@@ -60,8 +59,8 @@ namespace KSoft.Phoenix.Phx
 				string? id_name = xs.Database.GetName(kind, dbid);
 				if (string.IsNullOrEmpty(id_name))
 				{
-					throw new InvalidOperationException(string.Format(
-						"Failed to resolve {0} reference name for id {1}.", kind, dbid));
+					throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Failed to resolve {kind} reference name for id {dbid}."));
 				}
 
 				string required_id_name = id_name;
@@ -92,21 +91,16 @@ namespace KSoft.Phoenix.Phx
 		{
 			if (Type != expected)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Expected tech effect type {0}, got {1}.",
-					expected,
-					Type));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Expected tech effect type {expected}, got {Type}."));
 			}
 		}
 		void ThrowIfTypeIsNot(BProtoTechEffectType expected1, BProtoTechEffectType expected2)
 		{
 			if (Type != expected1 && Type != expected2)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Expected tech effect type {0} or {1}, got {2}.",
-					expected1,
-					expected2,
-					Type));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Expected tech effect type {expected1} or {expected2}, got {Type}."));
 			}
 		}
 		void ThrowIfDataSubtypeIsNot(BObjectDataType expected)
@@ -114,10 +108,8 @@ namespace KSoft.Phoenix.Phx
 			ThrowIfTypeIsNot(BProtoTechEffectType.Data);
 			if (SubType != expected)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Expected tech effect subtype {0}, got {1}.",
-					expected,
-					SubType));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Expected tech effect subtype {expected}, got {SubType}."));
 			}
 		}
 		void ThrowIfDataSubtypeIsNot(BObjectDataType expected1, BObjectDataType expected2)
@@ -125,11 +117,8 @@ namespace KSoft.Phoenix.Phx
 			ThrowIfTypeIsNot(BProtoTechEffectType.Data);
 			if (SubType != expected1 && SubType != expected2)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Expected tech effect subtype {0} or {1}, got {2}.",
-					expected1,
-					expected2,
-					SubType));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Expected tech effect subtype {expected1} or {expected2}, got {SubType}."));
 			}
 		}
 		void ThrowIfDataSubtypeIsNot(BObjectDataType expected1, BObjectDataType expected2, BObjectDataType expected3)
@@ -137,12 +126,8 @@ namespace KSoft.Phoenix.Phx
 			ThrowIfTypeIsNot(BProtoTechEffectType.Data);
 			if (SubType != expected1 && SubType != expected2 && SubType != expected3)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Expected tech effect subtype {0}, {1}, or {2}, got {3}.",
-					expected1,
-					expected2,
-					expected3,
-					SubType));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Expected tech effect subtype {expected1}, {expected2}, or {expected3}, got {SubType}."));
 			}
 		}
 

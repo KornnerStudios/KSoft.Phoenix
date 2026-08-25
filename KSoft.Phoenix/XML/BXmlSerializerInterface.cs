@@ -248,7 +248,7 @@ namespace KSoft.Phoenix.XML
 				"{0} ({1}): Generated UndefinedHandle for '{2}.{3}' ({4}). {5}={6}",
 				s.StreamName, Text.TextLineInfo.ToString(line_info, verboseString: true),
 				cursor_name, xmlName ?? "InnerText",
-				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString());
+				kind, name, PhxUtil.GetUndefinedReferenceDataIndex(id).ToString(KSoft.Util.InvariantCultureInfo));
 		}
 
 		static void ThrowUnresolvedReferenceId<TDoc, TCursor>(
@@ -256,18 +256,13 @@ namespace KSoft.Phoenix.XML
 			where TDoc : class
 			where TCursor : class
 		{
-			s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-				"Failed to resolve {0} reference '{1}' from {2}.",
-				kind,
-				idName,
-				xmlName ?? "ElementText")));
+			s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+				$"Failed to resolve {kind} reference '{idName}' from {xmlName ?? "ElementText"}.")));
 		}
 		static void ThrowUnresolvedReferenceName(int dbid, string kind)
 		{
-			throw new InvalidOperationException(string.Format(
-				"Failed to resolve {0} reference name for id {1}.",
-				kind,
-				dbid));
+			throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+				$"Failed to resolve {kind} reference name for id {dbid}."));
 		}
 
 		protected static bool ToLowerName(Phx.DatabaseObjectKind kind)
