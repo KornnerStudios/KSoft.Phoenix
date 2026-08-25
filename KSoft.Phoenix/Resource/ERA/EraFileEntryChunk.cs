@@ -61,13 +61,13 @@ namespace KSoft.Phoenix.Resource
 			if (eraUtil != null && eraUtil.DebugOutput != null)
 			{
 				eraUtil.DebugOutput.Write("FileEntry: {0} @{1} offset={2} end={3} size={4} dsize={5} adler={6} ",
-					base.EntryId.ToString("X16"),
-					position.ToString("X8"),
-					base.DataOffset.u32.ToString("X8"),
-					(base.DataOffset.u32 + base.DataSize).ToString("X8"),
-					base.DataSize.ToString("X8"),
-					DataUncompressedSize.ToString("X8"),
-					base.Adler32.ToString("X8"));
+					base.EntryId.ToString("X16", KSoft.Util.InvariantCultureInfo),
+					position.ToString("X8", KSoft.Util.InvariantCultureInfo),
+					base.DataOffset.u32.ToString("X8", KSoft.Util.InvariantCultureInfo),
+					(base.DataOffset.u32 + base.DataSize).ToString("X8", KSoft.Util.InvariantCultureInfo),
+					base.DataSize.ToString("X8", KSoft.Util.InvariantCultureInfo),
+					DataUncompressedSize.ToString("X8", KSoft.Util.InvariantCultureInfo),
+					base.Adler32.ToString("X8", KSoft.Util.InvariantCultureInfo));
 
 				if (!string.IsNullOrEmpty(FileName))
 				{
@@ -87,7 +87,7 @@ namespace KSoft.Phoenix.Resource
 		{
 			if (includeFileData && mFileTimeBits != 0)
 			{
-				s.WriteAttribute("fileTime", mFileTimeBits.ToString("X16"));
+				s.WriteAttribute("fileTime", mFileTimeBits.ToString("X16", KSoft.Util.InvariantCultureInfo));
 			}
 
 			// only because it's interesting to have, never read back in
@@ -119,13 +119,13 @@ namespace KSoft.Phoenix.Resource
 			{
 				if (DataUncompressedSize != DataSize)
 				{
-					s.WriteAttribute("fullSize", DataUncompressedSize.ToString("X8"));
+					s.WriteAttribute("fullSize", DataUncompressedSize.ToString("X8", KSoft.Util.InvariantCultureInfo));
 				}
 
 				s.WriteAttribute("compressedDataHash",
 					Text.Util.ByteArrayToString(CompressedDataTiger128));
 
-				s.WriteAttribute("nameOffset", FileNameOffset.ToString("X6"));
+				s.WriteAttribute("nameOffset", FileNameOffset.ToString("X6", KSoft.Util.InvariantCultureInfo));
 			}
 
 			base.WriteFlags(s);

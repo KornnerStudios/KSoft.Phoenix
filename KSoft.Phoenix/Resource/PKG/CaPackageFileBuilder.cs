@@ -138,10 +138,8 @@ namespace KSoft.Phoenix.Resource.PKG
 
 					if (pkg_memory.BaseStream.Position != preamble_size)
 					{
-						throw new InvalidOperationException(string.Format(
-							"Written PKG header ended at position {0}, expected {1}.",
-							pkg_memory.BaseStream.Position,
-							preamble_size));
+						throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Written PKG header ended at position {pkg_memory.BaseStream.Position}, expected {preamble_size}."));
 					}
 
 					using (var fs = new FileStream(pkg_filename, FileMode.Create, FileAccess.Write))

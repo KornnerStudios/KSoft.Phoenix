@@ -40,7 +40,7 @@ namespace KSoft.Phoenix.Resource
 			s.Stream(ref size);
 			if (size < kNonSignatureBytesSize)
 			{
-				throw new System.IO.InvalidDataException(size.ToString("X8"));
+				throw new System.IO.InvalidDataException(size.ToString("X8", KSoft.Util.InvariantCultureInfo));
 			}
 			s.Pad64();
 

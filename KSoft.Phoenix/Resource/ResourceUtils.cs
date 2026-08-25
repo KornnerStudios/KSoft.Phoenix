@@ -146,7 +146,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				kGfxSignature => kSwfSignature,
 				kGfxCompressedSignature => kSwfCompressedSignature,
-				_ => throw new KSoft.Debug.UnreachableException(signature.ToString("X8")),
+				_ => throw new KSoft.Debug.UnreachableException(signature.ToString("X8", KSoft.Util.InvariantCultureInfo)),
 			};
 		}
 		public static bool IsSwfHeader(uint signature)

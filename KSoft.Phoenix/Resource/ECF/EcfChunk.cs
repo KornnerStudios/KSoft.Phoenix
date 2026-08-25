@@ -140,9 +140,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 		protected virtual byte[] DecompressFromBuffer(IO.EndianStream blockStream, byte[] buffer)
 		{
-			throw new InvalidOperationException(string.Format(
-				"Can't get the decompressed bytes for {0} (from {1}). Need to know the uncompressed data size",
-				EntryId, blockStream.StreamName));
+			throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+				$"Can't get the decompressed bytes for {EntryId} (from {blockStream.StreamName}). Need to know the uncompressed data size"));
 		}
 
 		byte[] DecompressFromStream(IO.EndianStream blockStream)
@@ -164,10 +163,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			if (blockStream.BaseStream.Position != blockStream.BaseStream.Length)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Block stream must be positioned at the end before writing chunk data; position is {0}, length is {1}.",
-					blockStream.BaseStream.Position,
-					blockStream.BaseStream.Length));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Block stream must be positioned at the end before writing chunk data; position is {blockStream.BaseStream.Position}, length is {blockStream.BaseStream.Length}."));
 			}
 
 			DataOffset = blockStream.PositionPtr;
@@ -211,10 +208,8 @@ namespace KSoft.Phoenix.Resource.ECF
 			long expected_end_position = (long)DataOffset + DataSize;
 			if (blockStream.BaseStream.Position != expected_end_position)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Chunk write ended at position {0}, expected {1}.",
-					blockStream.BaseStream.Position,
-					expected_end_position));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Chunk write ended at position {blockStream.BaseStream.Position}, expected {expected_end_position}."));
 			}
 		}
 
@@ -316,17 +311,17 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 		protected virtual void WriteFields(IO.XmlElementStream s, bool includeFileData)
 		{
-			s.WriteAttribute("id", EntryId.ToString("X16"));
+			s.WriteAttribute("id", EntryId.ToString("X16", KSoft.Util.InvariantCultureInfo));
 			//if (Flags != 0)
 			//	s.WriteAttribute("flags", Flags.ToString("X1"));
 			if (DataAlignmentBit != kDefaultAlignmentBit)
 			{
-				s.WriteAttribute("align", DataAlignmentBit.ToString("X1"));
+				s.WriteAttribute("align", DataAlignmentBit.ToString("X1", KSoft.Util.InvariantCultureInfo));
 			}
 			if (includeFileData)
 			{
-				s.WriteAttribute("offset", DataOffset.u32.ToString("X8"));
-				s.WriteAttribute("size", DataSize.ToString("X8"));
+				s.WriteAttribute("offset", DataOffset.u32.ToString("X8", KSoft.Util.InvariantCultureInfo));
+				s.WriteAttribute("size", DataSize.ToString("X8", KSoft.Util.InvariantCultureInfo));
 			}
 		}
 

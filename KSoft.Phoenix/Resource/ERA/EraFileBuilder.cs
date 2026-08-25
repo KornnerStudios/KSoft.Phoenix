@@ -157,10 +157,8 @@ namespace KSoft.Phoenix.Resource
 					// we also allow the written size to be LESS THAN the assumed preamble size
 					if (era_memory.BaseStream.Position > preamble_size)
 					{
-						throw new InvalidOperationException(string.Format(
-							"Written ERA header ended at position {0}, maximum expected preamble is {1}.",
-							era_memory.BaseStream.Position,
-							preamble_size));
+						throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Written ERA header ended at position {era_memory.BaseStream.Position}, maximum expected preamble is {preamble_size}."));
 					}
 
 					// finally, bake the ERA memory stream into a file

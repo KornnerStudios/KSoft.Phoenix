@@ -58,11 +58,8 @@ namespace KSoft.Phoenix.Resource
 					var actual_adler = mHeader.ComputeAdler32(s.BaseStream, header_position);
 					if (actual_adler != mHeader.Adler32)
 					{
-						throw new System.IO.InvalidDataException(string.Format(
-							"ERA header adler32 {0} does not match actual adler32 {1}",
-							mHeader.Adler32.ToString("X8"),
-							actual_adler.ToString("X8")
-							));
+						throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"ERA header adler32 {mHeader.Adler32:X8} does not match actual adler32 {actual_adler:X8}"));
 					}
 				}
 			}

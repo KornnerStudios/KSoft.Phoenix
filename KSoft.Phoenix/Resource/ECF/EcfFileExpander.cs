@@ -199,10 +199,8 @@ namespace KSoft.Phoenix.Resource.ECF
 				}
 				catch (Exception e)
 				{
-					throw new Exception(string.Format(
-						"ReadEcfChunksToDefinitionBytes failed on chunk {0} in {1}",
-						chunk.Id.ToString("X8"), mEcfStream!.StreamName
-					), e);
+					throw new Exception(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"ReadEcfChunksToDefinitionBytes failed on chunk {chunk.Id:X8} in {mEcfStream!.StreamName}"), e);
 				}
 			}
 		}
@@ -219,10 +217,8 @@ namespace KSoft.Phoenix.Resource.ECF
 				}
 				catch (Exception e)
 				{
-					throw new Exception(string.Format(
-						"ExpandChunksToFiles failed on chunk {0} in {1}",
-						chunk.Id.ToString("X8"), mEcfStream!.StreamName
-					), e);
+					throw new Exception(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"ExpandChunksToFiles failed on chunk {chunk.Id:X8} in {mEcfStream!.StreamName}"), e);
 				}
 			}
 		}

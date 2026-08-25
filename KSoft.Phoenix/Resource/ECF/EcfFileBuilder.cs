@@ -160,10 +160,8 @@ namespace KSoft.Phoenix.Resource.ECF
 
 					if (ecf_memory.BaseStream.Position != preamble_size)
 					{
-						throw new InvalidOperationException(string.Format(
-							"Written ECF header ended at position {0}, expected {1}.",
-							ecf_memory.BaseStream.Position,
-							preamble_size));
+						throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Written ECF header ended at position {ecf_memory.BaseStream.Position}, expected {preamble_size}."));
 					}
 
 					// Update sizes and checksums
@@ -189,7 +187,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			foreach (var chunk in EcfDefinition.Chunks)
 			{
-				ProgressOutput?.Write("\r\t\t{0} ", chunk.Id.ToString("X16"));
+				ProgressOutput?.Write("\r\t\t{0} ", chunk.Id.ToString("X16", KSoft.Util.InvariantCultureInfo));
 
 				success = success && BuildChunkToStream(ecfStream, chunk);
 

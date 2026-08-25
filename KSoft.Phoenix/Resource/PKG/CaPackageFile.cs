@@ -156,17 +156,15 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			if (entry.Offset < 0 || entry.Offset > s.BaseStream.Length)
 			{
-				throw new InvalidOperationException(string.Format(
-					"File entry '{0}' offset @{1} is not within length #{2} of file {3}",
-					entry.Name, entry.Offset, s.BaseStream.Length, s.StreamName));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"File entry '{entry.Name}' offset @{entry.Offset} is not within length #{s.BaseStream.Length} of file {s.StreamName}"));
 			}
 
 			long endOffset = entry.Offset + entry.Size;
 			if (endOffset < 0 || endOffset > s.BaseStream.Length)
 			{
-				throw new InvalidOperationException(string.Format(
-					"File entry '{0}' @{1} with size #{2} is not within length #{3} of file {4}",
-					entry.Name, entry.Offset, entry.Size, s.BaseStream.Length, s.StreamName));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"File entry '{entry.Name}' @{entry.Offset} with size #{entry.Size} is not within length #{s.BaseStream.Length} of file {s.StreamName}"));
 			}
 
 			s.Seek(entry.Offset);
@@ -186,10 +184,8 @@ namespace KSoft.Phoenix.Resource.PKG
 			}
 			if (entry.Offset != 0 || entry.Size != 0)
 			{
-				throw new ArgumentException(string.Format(
-					"Package entry offset and size must be zero before writing bytes; offset is {0}, size is {1}.",
-					entry.Offset,
-					entry.Size), nameof(entry));
+				throw new ArgumentException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Package entry offset and size must be zero before writing bytes; offset is {entry.Offset}, size is {entry.Size}."), nameof(entry));
 			}
 
 			entry.Offset = s.BaseStream.Position;

@@ -78,13 +78,9 @@ namespace KSoft.Phoenix.Resource
 					? fileEntry.FileName
 					: "FileNames";//fileEntry.EntryId.ToString("X16");
 
-				throw new System.IO.InvalidDataException(string.Format(
-					"Invalid chunk adler32 for '{0}' offset={1} size={2} " +
-					"expected {3} but got {4}",
-					chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
-					fileEntry.Adler32.ToString("X8"),
-					actual_adler.ToString("X8")
-					));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Invalid chunk adler32 for '{chunk_name}' offset={fileEntry.DataOffset} size={fileEntry.DataSize:X8} " +
+					$"expected {fileEntry.Adler32:X8} but got {actual_adler:X8}"));
 			}
 		}
 
@@ -98,13 +94,9 @@ namespace KSoft.Phoenix.Resource
 					? fileEntry.FileName
 					: "FileNames";//fileEntry.EntryId.ToString("X16");
 
-				throw new System.IO.InvalidDataException(string.Format(
-					"Invalid chunk hash for '{0}' offset={1} size={2} " +
-					"expected {3} but got {4}",
-					chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
-					Text.Util.ByteArrayToString(fileEntry.CompressedDataTiger128!),
-					Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, EraFileEntryChunk.kCompresssedDataTigerHashSize)
-					));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Invalid chunk hash for '{chunk_name}' offset={fileEntry.DataOffset} size={fileEntry.DataSize:X8} " +
+					$"expected {Text.Util.ByteArrayToString(fileEntry.CompressedDataTiger128!)} but got {Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, EraFileEntryChunk.kCompresssedDataTigerHashSize)}"));
 			}
 
 			if (fileEntry.CompressionType == ECF.EcfCompressionType.Stored)
@@ -117,13 +109,9 @@ namespace KSoft.Phoenix.Resource
 						? fileEntry.FileName
 						: "FileNames";//fileEntry.EntryId.ToString("X16");
 
-					throw new System.IO.InvalidDataException(string.Format(
-						"Chunk id mismatch for '{0}' offset={1} size={2} " +
-						"expected {3} but got {4}",
-						chunk_name, fileEntry.DataOffset, fileEntry.DataSize.ToString("X8"),
-						fileEntry.DecompressedDataTiger64.ToString("X16"),
-						Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, sizeof(ulong))
-						));
+					throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Chunk id mismatch for '{chunk_name}' offset={fileEntry.DataOffset} size={fileEntry.DataSize:X8} " +
+						$"expected {fileEntry.DecompressedDataTiger64:X16} but got {Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, sizeof(ulong))}"));
 				}
 			}
 		}
@@ -366,9 +354,8 @@ namespace KSoft.Phoenix.Resource
 			ArgumentNullException.ThrowIfNull(blockStream);
 			if (!blockStream.IsReading)
 			{
-				throw new InvalidOperationException(string.Format(
-					"ERA expansion requires a readable block stream; stream mode is {0}.",
-					blockStream.StreamMode));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"ERA expansion requires a readable block stream; stream mode is {blockStream.StreamMode}."));
 			}
 
 			var eraExpander = KSoft.Debug.TypeCheck.CastReference<EraFileExpander>(blockStream.Owner!);
@@ -379,7 +366,7 @@ namespace KSoft.Phoenix.Resource
 			{
 				var file = mFiles[x];
 
-				eraExpander.ProgressOutput?.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+				eraExpander.ProgressOutput?.Write("\r\t\t{0} ", file.EntryId.ToString("X16", KSoft.Util.InvariantCultureInfo));
 
 				TryUnpack(blockStream, workPath, eraExpander, file);
 			}
@@ -655,9 +642,8 @@ namespace KSoft.Phoenix.Resource
 			ArgumentNullException.ThrowIfNull(blockStream);
 			if (!blockStream.IsWriting)
 			{
-				throw new InvalidOperationException(string.Format(
-					"ERA file-name table building requires a writable block stream; stream mode is {0}.",
-					blockStream.StreamMode));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"ERA file-name table building requires a writable block stream; stream mode is {blockStream.StreamMode}."));
 			}
 
 			using (var ms = new System.IO.MemoryStream(mFiles.Count * 128))
@@ -684,9 +670,8 @@ namespace KSoft.Phoenix.Resource
 			ArgumentNullException.ThrowIfNull(blockStream);
 			if (!blockStream.IsWriting)
 			{
-				throw new InvalidOperationException(string.Format(
-					"ERA building requires a writable block stream; stream mode is {0}.",
-					blockStream.StreamMode));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"ERA building requires a writable block stream; stream mode is {blockStream.StreamMode}."));
 			}
 
 			var builder = KSoft.Debug.TypeCheck.CastReference<EraFileBuilder>(blockStream.Owner!);
@@ -694,10 +679,8 @@ namespace KSoft.Phoenix.Resource
 			long expected_position = CalculateHeaderAndFileChunksSize();
 			if (blockStream.BaseStream.Position != expected_position)
 			{
-				throw new InvalidOperationException(string.Format(
-					"ERA build stream is at position {0}, expected {1}.",
-					blockStream.BaseStream.Position,
-					expected_position));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"ERA build stream is at position {blockStream.BaseStream.Position}, expected {expected_position}."));
 			}
 
 			BuildFileNameMaps(builder?.VerboseOutput);
@@ -707,7 +690,7 @@ namespace KSoft.Phoenix.Resource
 				EraFileEntryChunk file = mFiles[x];
 				if (builder != null && builder.ProgressOutput != null)
 				{
-					builder.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+					builder.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16", KSoft.Util.InvariantCultureInfo));
 				}
 
 				success &= TryPack(blockStream, workPath, file);
@@ -888,13 +871,8 @@ namespace KSoft.Phoenix.Resource
 
 					if (file.FileNameOffset != er.BaseStream.Position)
 					{
-						throw new System.IO.InvalidDataException(string.Format(
-							"#{0} {1} has bad filename offset {2} != {3}",
-							FileIndexToListingIndex(x),
-							file.EntryId.ToString("X16"),
-							file.FileNameOffset.ToString("X8"),
-							er.BaseStream.Position.ToString("X8")
-							));
+						throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"#{FileIndexToListingIndex(x)} {file.EntryId:X16} has bad filename offset {file.FileNameOffset:X8} != {er.BaseStream.Position:X8}"));
 					}
 
 					file.FileName = er.ReadString(Memory.Strings.StringStorage.CStringAscii);
@@ -923,7 +901,7 @@ namespace KSoft.Phoenix.Resource
 
 				if (eraUtil != null && eraUtil.ProgressOutput != null)
 				{
-					eraUtil.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16"));
+					eraUtil.ProgressOutput.Write("\r\t\t{0} ", file.EntryId.ToString("X16", KSoft.Util.InvariantCultureInfo));
 				}
 
 				ValidateAdler32(file, s);
@@ -1081,10 +1059,8 @@ namespace KSoft.Phoenix.Resource
 			var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 			file.FileName = "version.txt";
 			file.FileDateTime = BuildModeDefaultTimestamp;
-			string version = string.Format("{0}\n{1}\n{2}",
-				assembly.FullName,
-				assembly.GetName().Version,
-				System.Reflection.Assembly.GetEntryAssembly()!.FullName);
+			string version = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{assembly.FullName}\n{assembly.GetName().Version}\n{System.Reflection.Assembly.GetEntryAssembly()!.FullName}");
 			mLocalFiles[file.FileName] = version;
 			mFiles.Add(file);
 		}
