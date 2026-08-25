@@ -9,17 +9,16 @@ namespace KSoft.Phoenix.XML
 		protected static XmlNode? XPathSelectNodeByName(KSoft.IO.XmlElementStream s, XML.BListXmlParams op,
 			string dataName, string attributeName = Phx.DatabaseNamedObject.kXmlAttrName)
 		{
-			string xpath = string.Format(
-				"/{0}/{1}[@{2}='{3}']",
-				op.RootName, op.ElementName, attributeName, dataName);
+			string xpath = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"/{op.RootName}/{op.ElementName}[@{attributeName}='{dataName}']");
 			return s.Document.SelectSingleNode(xpath);
 		}
 
 		protected static XmlElement? XPathSelectElementByName(KSoft.IO.XmlElementStream s, string rootName
 			, string dataName)
 		{
-			string xpath = string.Format("/{0}/{1}",
-				rootName, dataName);
+			string xpath = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"/{rootName}/{dataName}");
 			var element = s.Document.SelectSingleNode(xpath);
 			return element as XmlElement;
 		}
@@ -53,7 +52,8 @@ namespace KSoft.Phoenix.XML
 		protected static void FixXmlTraceFixEvent(IO.XmlElementStream s, XmlNode node, string message, params object[] args)
 		{
 			string? lineInfoString = node is Text.ITextLineInfo lineInfo
-				? string.Format("{0} ({1})", s.StreamName, Text.TextLineInfo.ToString(lineInfo, verboseString: true))
+				? string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{s.StreamName} ({Text.TextLineInfo.ToString(lineInfo, verboseString: true)})")
 				: s.StreamName;
 
 			string messageOutput = message;

@@ -189,7 +189,7 @@ namespace KSoft.Phoenix.XML
 			}
 			catch (Exception ex)
 			{
-				throw new InvalidOperationException(string.Format("Failed to write {0}", item_name),
+				throw new InvalidOperationException("Failed to write " + item_name,
 					ex);
 			}
 		}

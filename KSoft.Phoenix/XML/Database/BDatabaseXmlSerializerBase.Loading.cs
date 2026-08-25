@@ -269,9 +269,8 @@ namespace KSoft.Phoenix.XML
 				{
 					var inner = args.TaskExceptions.ToAggregateExceptionOrNull().GetOnlyExceptionOrAllWhenAggregate();
 
-					throw new InvalidOperationException(string.Format(
-						"Failed to process one or more files for priority={0}",
-						p),
+					throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Failed to process one or more files for priority={p}"),
 						inner);
 				}
 
@@ -300,9 +299,7 @@ namespace KSoft.Phoenix.XML
 				{
 					if (tactic.SourceXmlFile == null)
 					{
-						throw new InvalidOperationException(string.Format(
-							"Tactic '{0}' must have source XML metadata before writing.",
-							tactic.Name));
+						throw new InvalidOperationException("Tactic '" + tactic.Name + "' must have source XML metadata before writing.");
 					}
 				}
 
