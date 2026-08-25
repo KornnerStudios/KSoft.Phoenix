@@ -19,11 +19,13 @@ namespace KSoft.Phoenix.Phx
 
 		public int EndIndex => (StartIndex + Count) - 1;
 
-		public override string ToString()
+		public string ToString(IFormatProvider provider)
 		{
-			return string.Format("{0}-{1} {2}",
-				StartIndex, EndIndex, ReservedFor);
+			ArgumentNullException.ThrowIfNull(provider);
+
+			return string.Create(provider, $"{StartIndex}-{EndIndex} {ReservedFor}");
 		}
+		public override string ToString() => ToString(KSoft.Util.InvariantCultureInfo);
 
 		public LocStringTableIndexRange(int count, string reservedFor)
 			: this(null, count, reservedFor)
@@ -423,18 +425,20 @@ namespace KSoft.Phoenix.Phx
 				return range.Count - UsedCount;
 			} }
 
-			public override string ToString()
+			public string ToString(IFormatProvider provider)
 			{
+				ArgumentNullException.ThrowIfNull(provider);
+
 				var range = Range;
 				if (range is null)
 				{
 					return base.ToString() ?? string.Empty;
 				}
 
-				return string.Format("{0}Total={1},Used={2},Free={3}, {4}",
-					new string('\t', range.Depth),
-					range.Count, UsedCount, FreeCount, range.ReservedFor);
+				return string.Create(provider,
+					$"{new string('\t', range.Depth)}Total={range.Count},Used={UsedCount},Free={FreeCount}, {range.ReservedFor}");
 			}
+			public override string ToString() => ToString(KSoft.Util.InvariantCultureInfo);
 		};
 		public Dictionary<LocStringTableIndexRange, RangeStatsData> RangeStats { get {
 			var result = new Dictionary<LocStringTableIndexRange, RangeStatsData>();

@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace KSoft.Phoenix.Phx
 {
 	public enum LocStringCategory
@@ -137,10 +138,12 @@ namespace KSoft.Phoenix.Phx
 		}
 		#endregion
 
-		public override string ToString()
+		public string ToString(IFormatProvider provider)
 		{
-			return string.Format("({0}) '{1}'",
-				ID, Text ?? "");
+			ArgumentNullException.ThrowIfNull(provider);
+
+			return string.Create(provider, $"({ID}) '{Text ?? ""}'");
 		}
+		public override string ToString() => ToString(KSoft.Util.InvariantCultureInfo);
 	};
 }

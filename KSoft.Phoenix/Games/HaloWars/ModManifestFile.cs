@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace KSoft.Phoenix.HaloWars
@@ -57,9 +58,16 @@ namespace KSoft.Phoenix.HaloWars
 			private set { OnPropertyChanged(); }
 		}
 
+		public string GetDisplayTitle(IFormatProvider provider)
+		{
+			ArgumentNullException.ThrowIfNull(provider);
+
+			return string.Create(provider, $"{Sku} ModManifest - {FilePath}");
+		}
+
 		public string DisplayTitle
 		{
-			get { return string.Format("{0} ModManifest - {1}", Sku, FilePath); }
+			get { return GetDisplayTitle(System.Globalization.CultureInfo.CurrentCulture); }
 			set { this.OnPropertyChanged(); }
 		}
 
