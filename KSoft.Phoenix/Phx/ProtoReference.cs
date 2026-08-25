@@ -346,8 +346,8 @@ namespace KSoft.Phoenix
 				return null;
 			}
 
-			return string.Format("{0}.{1}",
-				attr.ObjectSourceKind, attr.ProtoKindName);
+			return string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{attr.ObjectSourceKind}.{attr.ProtoKindName}");
 		}
 	};
 }

@@ -19,7 +19,7 @@ namespace KSoft.Collections
 
 		static string BuildUnRegisteredMsg()
 		{
-			return string.Format("Unregistered {0}!", "BTypeName");
+			return "Unregistered BTypeName!";
 		}
 		public BTypeNames()
 		{

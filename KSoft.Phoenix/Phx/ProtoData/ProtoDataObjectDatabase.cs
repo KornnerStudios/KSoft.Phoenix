@@ -48,9 +48,8 @@ namespace KSoft.Phoenix.Phx
 			}
 			else
 			{
-				throw new InvalidOperationException(string.Format(
-					"Provider type {0} does not have a ProtoDataTypeObjectSourceKindAttribute.",
-					providerType.FullName));
+				throw new InvalidOperationException(
+					$"Provider type {providerType.FullName} does not have a ProtoDataTypeObjectSourceKindAttribute.");
 			}
 
 			return kind;

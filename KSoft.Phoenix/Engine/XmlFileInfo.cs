@@ -82,8 +82,8 @@ namespace KSoft.Phoenix.Engine
 
 		public override string ToString()
 		{
-			return string.Format("{0}.{1}.{2}",
-				Location, Directory, FileName);
+			return string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{Location}.{Directory}.{FileName}");
 		}
 	};
 
@@ -117,7 +117,7 @@ namespace KSoft.Phoenix.Engine
 		}
 
 		public string DebuggerDisplay
-			=> string.Format("{0} {1}",
-				Priority, FileInfo);
+			=> string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{Priority} {FileInfo}");
 	};
 }

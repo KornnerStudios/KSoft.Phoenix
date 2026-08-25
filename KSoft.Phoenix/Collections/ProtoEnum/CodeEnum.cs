@@ -9,7 +9,7 @@ namespace KSoft.Collections
 		where TEnum : struct, Enum
 	{
 		static readonly string[] kNames = Enum.GetNames<TEnum>();
-		static readonly string kUnregisteredMessage = string.Format("Unregistered {0}!", typeof(TEnum).Name);
+		static readonly string kUnregisteredMessage = "Unregistered " + typeof(TEnum).Name + "!";
 
 		#region IProtoEnum Members
 		public int TryGetMemberId(string memberName)

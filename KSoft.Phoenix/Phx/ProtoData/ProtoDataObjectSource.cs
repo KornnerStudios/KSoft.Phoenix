@@ -29,8 +29,8 @@ namespace KSoft.Phoenix.Phx
 				return SourceKind.ToString();
 			}
 
-			return string.Format("{0} - {1}",
-				SourceKind, FileReference);
+			return string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{SourceKind} - {FileReference}");
 		}
 
 		public ProtoDataObjectDatabase GetObjectDatabase(Engine.PhxEngine engine)
@@ -43,9 +43,8 @@ namespace KSoft.Phoenix.Phx
 				ProtoDataObjectSourceKind.Database => new(database, typeof(DatabaseObjectKind)),
 				ProtoDataObjectSourceKind.GameData => new(database.GameData, typeof(GameDataObjectKind)),
 				ProtoDataObjectSourceKind.HPData => new(database.HPBars, typeof(HPBarDataObjectKind)),
-				_ => throw new System.NotImplementedException(string.Format(
-					nameof(GetObjectDatabase) + " needs support for {0}",
-					this)),
+				_ => throw new System.NotImplementedException(
+					nameof(GetObjectDatabase) + " needs support for " + this),
 			};
 		}
 	};

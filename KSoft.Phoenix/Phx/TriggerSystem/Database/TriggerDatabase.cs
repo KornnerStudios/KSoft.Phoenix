@@ -110,7 +110,7 @@ namespace KSoft.Phoenix.Phx
 		{
 			Debug.Trace.Engine.TraceInformation(
 				"TriggerProtoDbObject: {0} - Updated {1}/{2}",
-				ts, dbo.DbId.ToString(), dbo.Name);
+				ts, dbo.DbId.ToString(KSoft.Util.InvariantCultureInfo), dbo.Name);
 		}
 		void TryUpdate(BTriggerSystem ts, BTriggerCondition cond)
 		{

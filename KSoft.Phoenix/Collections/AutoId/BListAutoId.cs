@@ -21,7 +21,7 @@ namespace KSoft.Collections
 
 		static string BuildUnRegisteredMsg()
 		{
-			return string.Format("Unregistered {0}!", typeof(T).Name);
+			return "Unregistered " + typeof(T).Name + "!";
 		}
 		public BListAutoId(BListAutoIdParams? @params = null) : base(@params)
 		{
@@ -64,10 +64,9 @@ namespace KSoft.Collections
 			{
 				if (mDBI.ContainsKey(itemName))
 				{
-					throw new ArgumentException(string.Format(
-						"There is already a {0} named {1}",
-						typeof(T).Name, itemName
-						), nameof(itemName));
+					throw new ArgumentException(
+						"There is already a " + typeof(T).Name + " named " + itemName,
+						nameof(itemName));
 				}
 
 				mDBI.Add(item.Data, item);

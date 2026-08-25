@@ -182,18 +182,16 @@ namespace KSoft.Phoenix.Engine
 			var status = GetFileLoadStatus(file);
 			if (status < XmlFileLoadState.Preloaded)
 			{
-				throw new InvalidOperationException(string.Format(
-					"GetObjectDatabase called on {0} when its load status was {1}",
-					file, status));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"GetObjectDatabase called on {file} when its load status was {status}"));
 			}
 
 			var kvp = GetObjectDatabaseForFile(file);
 
 			if (kvp.Key == null)
 			{
-				throw new InvalidOperationException(string.Format(
-					"GetObjectDatabase called on {0} which didn't resolve to a DB",
-					file));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"GetObjectDatabase called on {file} which didn't resolve to a DB"));
 			}
 
 			return new ObjectDatabaseForFileResult(file, kvp.Key, kvp.Value);
