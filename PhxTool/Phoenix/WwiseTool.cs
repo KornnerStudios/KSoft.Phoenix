@@ -27,7 +27,7 @@ namespace KSoft.Tool.Phoenix
 			var sb = new System.Text.StringBuilder(64);
 			sb.Append("Valid modes: ");
 
-			sb.AppendFormat("{0},", Mode.Extract.ToString().ToLowerInvariant());
+			sb.Append(Mode.Extract.ToString().ToLowerInvariant()).Append(',');
 
 			return sb.ToString();
 		}
@@ -181,7 +181,7 @@ namespace KSoft.Tool.Phoenix
 			if (stopwatch != null)
 			{
 				stopwatch.Stop();
-				Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
+				Console.WriteLine(string.Create(KSoft.Util.InvariantCultureInfo, $"\t\tPerf: {stopwatch.Elapsed}"));
 				stopwatch.Restart();
 			}
 			#endregion
@@ -211,7 +211,7 @@ namespace KSoft.Tool.Phoenix
 			if (stopwatch != null)
 			{
 				stopwatch.Stop();
-				Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
+				Console.WriteLine(string.Create(KSoft.Util.InvariantCultureInfo, $"\t\tPerf: {stopwatch.Elapsed}"));
 				stopwatch.Restart();
 			}
 			#endregion
@@ -223,7 +223,7 @@ namespace KSoft.Tool.Phoenix
 			if (stopwatch != null)
 			{
 				stopwatch.Stop();
-				Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
+				Console.WriteLine(string.Create(KSoft.Util.InvariantCultureInfo, $"\t\tPerf: {stopwatch.Elapsed}"));
 				stopwatch.Restart();
 			}
 
@@ -240,7 +240,7 @@ namespace KSoft.Tool.Phoenix
 					if (stopwatch != null)
 					{
 						stopwatch.Stop();
-						Console.WriteLine("\t\tPerf: {0}", stopwatch.Elapsed);
+						Console.WriteLine(string.Create(KSoft.Util.InvariantCultureInfo, $"\t\tPerf: {stopwatch.Elapsed}"));
 						stopwatch.Restart();
 					}
 				}
@@ -261,7 +261,7 @@ namespace KSoft.Tool.Phoenix
 			if (stopwatch != null)
 			{
 				stopwatch.Stop();
-				Console.WriteLine("Perf: {0}", stopwatch.Elapsed);
+				Console.WriteLine(string.Create(KSoft.Util.InvariantCultureInfo, $"Perf: {stopwatch.Elapsed}"));
 			}
 
 			Console.WriteLine("Done");
