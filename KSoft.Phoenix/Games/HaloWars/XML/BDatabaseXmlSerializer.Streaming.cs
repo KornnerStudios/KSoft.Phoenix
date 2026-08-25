@@ -129,7 +129,8 @@ namespace KSoft.Phoenix.HaloWars
 		#region Fix GameData
 		static void FixGameDataXmlInfectionMapEntryInfected(IO.XmlElementStream s, string infected)
 		{
-			string xpath = string.Format("InfectionMap/InfectionMapEntry[contains(@infected, '{0}')]", infected);
+			string xpath = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"InfectionMap/InfectionMapEntry[contains(@infected, '{infected}')]");
 			var elements = s.Cursor!.SelectNodes(xpath)!;
 			if (elements.Count > 0)
 			{
@@ -575,12 +576,10 @@ namespace KSoft.Phoenix.HaloWars
 			const string k_attr_command_data = "CommandData";
 			const string k_element_target = "Target";
 
-			string invalid_command_data_format = string.Format(
-				"/{0}/{1}/Effects/Effect[@{2}='",
-				op.RootName, op.ElementName, k_attr_command_data) + "{0}']";
-			string invalid_target_format = string.Format(
-				"/{0}/{1}/Effects/Effect[Target='",
-				op.RootName, op.ElementName) + "{0}']";
+			string invalid_command_data_format = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"/{op.RootName}/{op.ElementName}/Effects/Effect[@{k_attr_command_data}='{{0}}']");
+			string invalid_target_format = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"/{op.RootName}/{op.ElementName}/Effects/Effect[Target='{{0}}']");
 
 			string xpath;
 			XmlNodeList elements;
@@ -590,7 +589,7 @@ namespace KSoft.Phoenix.HaloWars
 				#region Alpha only
 				if (build == Engine.PhxEngineBuild.Alpha)
 				{
-					xpath = string.Format(invalid_target_format, "cov_inf_eliteleader_01");
+					xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "cov_inf_eliteleader_01");
 					elements = s.Cursor!.SelectNodes(xpath)!;
 					if (elements.Count > 0)
 					{
@@ -606,7 +605,7 @@ namespace KSoft.Phoenix.HaloWars
 			#region Alpha only
 			if (build == Engine.PhxEngineBuild.Alpha)
 			{
-				xpath = string.Format(invalid_target_format, "cov_inf_elite_leader01");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "cov_inf_elite_leader01");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -622,7 +621,7 @@ namespace KSoft.Phoenix.HaloWars
 			if (!ToLowerName(Phx.DatabaseObjectKind.Tech))
 			{
 				#region unsc_MAC_upgrade
-				xpath = string.Format(invalid_command_data_format, "unsc_mac_upgrade1");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_command_data_format, "unsc_mac_upgrade1");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -632,7 +631,7 @@ namespace KSoft.Phoenix.HaloWars
 					}
 				}
 
-				xpath = string.Format(invalid_command_data_format, "unsc_mac_upgrade2");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_command_data_format, "unsc_mac_upgrade2");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -642,7 +641,7 @@ namespace KSoft.Phoenix.HaloWars
 					}
 				}
 
-				xpath = string.Format(invalid_command_data_format, "unsc_mac_upgrade3");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_command_data_format, "unsc_mac_upgrade3");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -654,7 +653,7 @@ namespace KSoft.Phoenix.HaloWars
 				#endregion
 
 				#region unsc_flameMarine_upgrade
-				xpath = string.Format(invalid_target_format, "unsc_flamemarine_upgrade1");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "unsc_flamemarine_upgrade1");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -665,7 +664,7 @@ namespace KSoft.Phoenix.HaloWars
 				}
 				}
 
-				xpath = string.Format(invalid_target_format, "unsc_flamemarine_upgrade2");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "unsc_flamemarine_upgrade2");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -676,7 +675,7 @@ namespace KSoft.Phoenix.HaloWars
 				}
 				}
 
-				xpath = string.Format(invalid_target_format, "unsc_flamemarine_upgrade3");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "unsc_flamemarine_upgrade3");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -691,7 +690,7 @@ namespace KSoft.Phoenix.HaloWars
 
 			if (!ToLowerName(Phx.DatabaseObjectKind.Squad))
 			{
-				xpath = string.Format(invalid_target_format, "unsc_inf_flamemarine_01");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "unsc_inf_flamemarine_01");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -702,7 +701,7 @@ namespace KSoft.Phoenix.HaloWars
 				}
 				}
 
-				xpath = string.Format(invalid_target_format, "unsc_inf_Marine_01");
+				xpath = string.Format(KSoft.Util.InvariantCultureInfo, invalid_target_format, "unsc_inf_Marine_01");
 				elements = s.Cursor!.SelectNodes(xpath)!;
 				if (elements.Count > 0)
 				{
@@ -736,9 +735,8 @@ namespace KSoft.Phoenix.HaloWars
 		// Remove non-existent ProtoTechs that are referenced by effects
 		static void FixTechsXmlEffectsInvalid(IO.XmlElementStream s, XML.BListXmlParams op, Engine.PhxEngineBuild build)
 		{
-			string xpath_target = string.Format(
-				"/{0}/{1}/Effects/Effect/Target",
-				op.RootName, op.ElementName);
+			string xpath_target = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"/{op.RootName}/{op.ElementName}/Effects/Effect/Target");
 			XmlNodeList elements;
 
 			if (build == Engine.PhxEngineBuild.Release)
@@ -789,9 +787,8 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		static void FixPowersXmlUndefinedTechPrereqs(IO.XmlElementStream s, XML.BListXmlParams op, Engine.PhxEngineBuild build)
 		{
-			string xpath_target = string.Format(
-				"/{0}/{1}/Attributes/TechPrereq",
-				op.RootName, op.ElementName);
+			string xpath_target = string.Create(KSoft.Util.InvariantCultureInfo,
+				$"/{op.RootName}/{op.ElementName}/Attributes/TechPrereq");
 			XmlNodeList elements;
 
 			if (build == Engine.PhxEngineBuild.Release)
