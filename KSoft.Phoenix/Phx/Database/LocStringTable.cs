@@ -66,10 +66,8 @@ namespace KSoft.Phoenix.Phx
 		{
 			if (absoluteEndIndex <= absoluteStartIndex)
 			{
-				throw new ArgumentException(string.Format(
-					"End index must be greater than start index; end is {0}, start is {1}.",
-					absoluteEndIndex,
-					absoluteStartIndex), nameof(absoluteEndIndex));
+				throw new ArgumentException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"End index must be greater than start index; end is {absoluteEndIndex}, start is {absoluteStartIndex}."), nameof(absoluteEndIndex));
 			}
 
 			int expected_start_index = StartIndex + Count;
@@ -240,9 +238,8 @@ namespace KSoft.Phoenix.Phx
 				if (bit_index == id)
 				{
 					var existing_item = this[insert_index + 1];
-					throw new InvalidOperationException(string.Format(
-						"Can't insert {0} as there is already a string with that ID: {1}",
-						item, existing_item));
+					throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Can't insert {item} as there is already a string with that ID: {existing_item}"));
 				}
 
 				insert_index++;
@@ -299,10 +296,8 @@ namespace KSoft.Phoenix.Phx
 				{
 					if (UsedIndices[id] == state)
 					{
-						throw new ArgumentException(string.Format(
-							"LocString #{0} '{1}' is already {2}",
-							str.ID, str.Text,
-							state ? "set" : "unset"));
+						throw new ArgumentException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"LocString #{str.ID} '{str.Text}' is already {(state ? "set" : "unset")}"));
 					}
 				}
 				else if (id >= UsedIndices.Length)
@@ -336,9 +331,8 @@ namespace KSoft.Phoenix.Phx
 				{
 					if (new_item.ID != old_item.ID)
 					{
-						throw new InvalidOperationException(string.Format(
-							"ID mismatch: {0} != {1}",
-							new_item, old_item));
+						throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"ID mismatch: {new_item} != {old_item}"));
 					}
 				}
 				else if (new_item != null)
@@ -545,9 +539,8 @@ namespace KSoft.Phoenix.Phx
 						int id = str.ID;
 						if (UsedIndices[id])
 						{
-							s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-								"Duplicate LocString: #{0} '{1}'",
-								str.ID, str.Text)));
+							s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+								$"Duplicate LocString: #{str.ID} '{str.Text}'")));
 						}
 
 						UsedIndices[id] = true;
