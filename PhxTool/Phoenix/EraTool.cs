@@ -28,10 +28,10 @@ namespace KSoft.Tool.Phoenix
 			var sb = new System.Text.StringBuilder(64);
 			sb.Append("Valid modes: ");
 
-			sb.AppendFormat("{0},", Mode.Expand.ToString().ToLowerInvariant());
-			sb.AppendFormat("{0},", Mode.Build.ToString().ToLowerInvariant());
-			sb.AppendFormat("{0},", Mode.Decrypt.ToString().ToLowerInvariant());
-			sb.AppendFormat("{0},", Mode.Encrypt.ToString().ToLowerInvariant());
+			sb.Append(Mode.Expand.ToString().ToLowerInvariant()).Append(',');
+			sb.Append(Mode.Build.ToString().ToLowerInvariant()).Append(',');
+			sb.Append(Mode.Decrypt.ToString().ToLowerInvariant()).Append(',');
+			sb.Append(Mode.Encrypt.ToString().ToLowerInvariant()).Append(',');
 
 			return sb.ToString();
 		}

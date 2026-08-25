@@ -29,7 +29,7 @@ namespace KSoft.Tool.Phoenix
 			var sb = new System.Text.StringBuilder(64);
 			sb.Append("Valid modes: ");
 
-			sb.AppendFormat("{0},", Mode.DumpSingle24Values.ToString().ToLowerInvariant());
+			sb.Append(Mode.DumpSingle24Values.ToString().ToLowerInvariant()).Append(',');
 
 			return sb.ToString();
 		}
@@ -216,7 +216,7 @@ namespace KSoft.Tool.Phoenix
 				sb.AppendLine("[");
 				foreach (var entry in mergedDumpInfo.Entries)
 				{
-					string kvpCode = FormattableString.Invariant(
+					string kvpCode = string.Create(KSoft.Util.InvariantCultureInfo,
 						$"new(0x{entry.Single24Bits:X6}, {entry.FloatValue}f),");
 
 					sb.Append('\t');
