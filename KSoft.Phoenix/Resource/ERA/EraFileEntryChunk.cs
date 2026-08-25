@@ -178,8 +178,7 @@ namespace KSoft.Phoenix.Resource
 
 		public override string ToString()
 		{
-			return string.Format("{0}",
-				FileName);
+			return FileName ?? string.Empty;
 		}
 	};
 }

@@ -227,7 +227,7 @@ namespace KSoft.Tool.Phoenix
 					{
 						sb.Append(' ', spacesToDescription);
 					}
-					sb.AppendLine($"// {entry.Description}");
+					sb.Append("// ").AppendLine(entry.Description);
 				}
 				sb.AppendLine("];");
 

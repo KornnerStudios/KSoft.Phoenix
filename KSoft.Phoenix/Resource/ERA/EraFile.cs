@@ -801,7 +801,8 @@ namespace KSoft.Phoenix.Resource
 			} catch (Exception ex)
 			{
 				Debug.Trace.Resource.TraceData(System.Diagnostics.TraceEventType.Error, TypeExtensions.kNone,
-					string.Format("Couldn't pack file into {0}, encountered exception dealing with {1}", FileName, file.FileName),
+					string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Couldn't pack file into {FileName}, encountered exception dealing with {file.FileName}"),
 					ex);
 				return false;
 			}

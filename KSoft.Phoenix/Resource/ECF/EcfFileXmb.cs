@@ -45,7 +45,7 @@ namespace KSoft.Phoenix.Resource.ECF
 						break;
 
 					default:
-						throw new KSoft.Debug.UnreachableException(chunk.EntryId.ToString("X16"));
+						throw new KSoft.Debug.UnreachableException(chunk.EntryId.ToString("X16", KSoft.Util.InvariantCultureInfo));
 				}
 			}
 		}
@@ -56,8 +56,8 @@ namespace KSoft.Phoenix.Resource.ECF
 			{
 				if (!chunk.IsDeflateStream)
 				{
-					throw new System.IO.InvalidDataException(string.Format("{0}'s is supposed to be an XMB but isn't compressed",
-						chunk.EntryId.ToString("X16")));
+					throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"{chunk.EntryId:X16}'s is supposed to be an XMB but isn't compressed"));
 				}
 
 				FileData = CompressedStream.DecompressFromStream(s);

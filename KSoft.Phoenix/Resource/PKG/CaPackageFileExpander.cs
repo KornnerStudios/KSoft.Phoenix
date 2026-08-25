@@ -179,10 +179,8 @@ namespace KSoft.Phoenix.Resource.PKG
 				}
 				catch (Exception e)
 				{
-					throw new Exception(string.Format(
-						"ExpandEntriesToFiles failed on {0} in {1}",
-						entry.Name, mPkgStream!.StreamName
-					), e);
+					throw new Exception(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"ExpandEntriesToFiles failed on {entry.Name} in {mPkgStream!.StreamName}"), e);
 				}
 			}
 		}
@@ -210,4 +208,3 @@ namespace KSoft.Phoenix.Resource.PKG
 		#endregion
 	};
 }
-
