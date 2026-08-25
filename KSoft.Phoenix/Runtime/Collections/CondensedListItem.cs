@@ -162,10 +162,8 @@ namespace KSoft.Phoenix.Runtime
 				{
 					if (capacity > info.MaxCount)
 					{
-						throw new System.IO.InvalidDataException(string.Format(
-							"Read list capacity {0} exceeds maximum {1}.",
-							capacity,
-							info.MaxCount));
+						throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Read list capacity {capacity} exceeds maximum {info.MaxCount}."));
 					}
 					list.Capacity = capacity;
 				}
@@ -175,10 +173,8 @@ namespace KSoft.Phoenix.Runtime
 				{
 					if (list.Count > info.MaxCount)
 					{
-						throw new System.IO.InvalidDataException(string.Format(
-							"Read list count {0} exceeds maximum {1}.",
-							list.Count,
-							info.MaxCount));
+						throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Read list count {list.Count} exceeds maximum {info.MaxCount}."));
 					}
 					list.Add(item);
 				}
@@ -209,11 +205,8 @@ namespace KSoft.Phoenix.Runtime
 			{
 				if (capacity > info.MaxCount || count >= info.MaxCount)
 				{
-					throw new System.IO.InvalidDataException(string.Format(
-						"Read free-list capacity/count {0}/{1} is outside maximum {2}.",
-						capacity,
-						count,
-						info.MaxCount));
+					throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Read free-list capacity/count {capacity}/{count} is outside maximum {info.MaxCount}."));
 				}
 				list.Capacity = capacity;
 

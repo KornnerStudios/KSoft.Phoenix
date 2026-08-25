@@ -73,10 +73,8 @@
 			{
 				if (count > cActionListMaximumCount)
 				{
-					throw new System.IO.InvalidDataException(string.Format(
-						"Read action list count {0} exceeds maximum {1}.",
-						count,
-						cActionListMaximumCount));
+					throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Read action list count {count} exceeds maximum {cActionListMaximumCount}."));
 				}
 				actionList = new ActionListEntry[count];
 			}
@@ -89,17 +87,13 @@
 				{
 					if (expected_index == cSaveMarker.IteratorEndUInt8)
 					{
-						throw new System.IO.InvalidDataException(string.Format(
-							"Read action index {0} used the iterator-end sentinel {1}.",
-							expected_index,
-							cSaveMarker.IteratorEndUInt8));
+						throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Read action index {expected_index} used the iterator-end sentinel {cSaveMarker.IteratorEndUInt8}."));
 					}
 					if (expected_index != x)
 					{
-						throw new System.IO.InvalidDataException(string.Format(
-							"Read action index {0}, expected {1}.",
-							expected_index,
-							x));
+						throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Read action index {expected_index}, expected {x}."));
 					}
 				}
 

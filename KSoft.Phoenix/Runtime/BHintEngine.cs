@@ -34,18 +34,14 @@ namespace KSoft.Phoenix.Runtime
 			BSaveGame.StreamArray16(s, ref SquadList);
 			if (SquadList.Length > kMaxEntitiesPerList)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Squad list count is {0}, maximum is {1}.",
-					SquadList.Length,
-					kMaxEntitiesPerList));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Squad list count is {SquadList.Length}, maximum is {kMaxEntitiesPerList}."));
 			}
 			BSaveGame.StreamArray16(s, ref UnitList);
 			if (UnitList.Length > kMaxEntitiesPerList)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Unit list count is {0}, maximum is {1}.",
-					UnitList.Length,
-					kMaxEntitiesPerList));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Unit list count is {UnitList.Length}, maximum is {kMaxEntitiesPerList}."));
 			}
 			s.Stream(EntityFilterSet);
 			s.Stream(ref Float);
@@ -109,10 +105,8 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref ParentHint);
 			if (ParentHint > kMaxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Parent hint id is {0}, maximum is {1}.",
-					ParentHint,
-					kMaxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Parent hint id is {ParentHint}, maximum is {kMaxCount}."));
 			}
 			s.Stream(ref PrereqsMet); s.Stream(ref DirtyProfile);
 			s.StreamSignature(cSaveMarker.Concept);
@@ -147,10 +141,8 @@ namespace KSoft.Phoenix.Runtime
 			BSaveGame.StreamArray16(s, ref AllowedConcepts);
 			if (AllowedConcepts.Length > BConcept.kMaxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Allowed concept count is {0}, maximum is {1}.",
-					AllowedConcepts.Length,
-					BConcept.kMaxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Allowed concept count is {AllowedConcepts.Length}, maximum is {BConcept.kMaxCount}."));
 			}
 			s.Stream(ref WaitForNextRescore);
 			s.Stream(ref LastGameTime);

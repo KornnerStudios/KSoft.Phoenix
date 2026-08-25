@@ -57,18 +57,14 @@ namespace KSoft.Phoenix.Runtime
 			BSaveGame.StreamArray(s, ref TrainLimits!);
 			if (TrainLimits!.Length > kTrainLimitsMaxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Train-limit count is {0}, maximum is {1}.",
-					TrainLimits!.Length,
-					kTrainLimitsMaxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Train-limit count is {TrainLimits!.Length}, maximum is {kTrainLimitsMaxCount}."));
 			}
 			BSaveGame.StreamArray(s, ref Hardpoints!);
 			if (Hardpoints!.Length > BHardpoint.kMaxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Hardpoint count is {0}, maximum is {1}.",
-					Hardpoints!.Length,
-					BHardpoint.kMaxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Hardpoint count is {Hardpoints!.Length}, maximum is {BHardpoint.kMaxCount}."));
 			}
 			BSaveGameNullableSerialization.StreamBCost(sg, s, ref Cost);
 			s.Stream(ref ProtoVisualIndex);

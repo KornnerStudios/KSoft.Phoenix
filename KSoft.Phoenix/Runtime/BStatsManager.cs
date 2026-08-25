@@ -328,7 +328,7 @@ namespace KSoft.Phoenix.Runtime
 				BStatScoreGraphRecorder.kStatType => new BStatScoreGraphRecorder(),
 #endif
 
-				_ => throw new KSoft.Debug.UnreachableException(statType.ToString()),
+				_ => throw new KSoft.Debug.UnreachableException(statType.ToString(KSoft.Util.InvariantCultureInfo)),
 			};
 		}
 		public void Serialize(IO.EndianStream s)

@@ -201,18 +201,14 @@ namespace KSoft.Phoenix.Runtime
 			BSaveGame.StreamArray16(s, ref UniqueProtoObjects);
 			if (UniqueProtoObjects.Length > kProtoUniqueUnitsListInfo.MaxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Unique proto-object count is {0}, maximum is {1}.",
-					UniqueProtoObjects.Length,
-					kProtoUniqueUnitsListInfo.MaxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Unique proto-object count is {UniqueProtoObjects.Length}, maximum is {kProtoUniqueUnitsListInfo.MaxCount}."));
 			}
 			BSaveGame.StreamArray16(s, ref UniqueProtoSquad);
 			if (UniqueProtoSquad.Length > kProtoUniqueUnitsListInfo.MaxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Unique proto-squad count is {0}, maximum is {1}.",
-					UniqueProtoSquad.Length,
-					kProtoUniqueUnitsListInfo.MaxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Unique proto-squad count is {UniqueProtoSquad.Length}, maximum is {kProtoUniqueUnitsListInfo.MaxCount}."));
 			}
 			BSaveGame.StreamArray(s, ref PowerEntries);
 			BSaveGame.StreamArray(s, ref Abilities);

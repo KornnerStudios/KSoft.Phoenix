@@ -28,7 +28,7 @@ namespace KSoft.Phoenix.Runtime
 				case sizeof(ushort):var cap16 = (ushort)capacity;	s.Stream(ref cap16);capacity = cap16; break;
 				case sizeof(int):	s.Stream(ref capacity); break;
 
-				default: throw new KSoft.Debug.UnreachableException(IndexSize.ToString());
+				default: throw new KSoft.Debug.UnreachableException(IndexSize.ToString(KSoft.Util.InvariantCultureInfo));
 			}
 		}
 		public void StreamDoneIndex(IO.EndianStream s)
@@ -39,7 +39,7 @@ namespace KSoft.Phoenix.Runtime
 				case sizeof(ushort):s.StreamSignature((ushort)DoneIndex); break;
 				case sizeof(uint):	s.StreamSignature((uint)DoneIndex); break;
 
-				default: throw new KSoft.Debug.UnreachableException(IndexSize.ToString());
+				default: throw new KSoft.Debug.UnreachableException(IndexSize.ToString(KSoft.Util.InvariantCultureInfo));
 			}
 		}
 	};

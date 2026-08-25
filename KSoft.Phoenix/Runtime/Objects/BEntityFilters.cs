@@ -37,7 +37,7 @@ namespace KSoft.Phoenix.Runtime
 				BEntityFilterIsSelected.kType => new BEntityFilterIsSelected(),
 				BEntityFilterCanChangeOwner.kType => new BEntityFilterCanChangeOwner(),
 				BEntityFilterJacking.kType => new BEntityFilterJacking(),
-				_ => throw new KSoft.Debug.UnreachableException(type.ToString()),
+				_ => throw new KSoft.Debug.UnreachableException(type.ToString(KSoft.Util.InvariantCultureInfo)),
 			};
 		}
 	};

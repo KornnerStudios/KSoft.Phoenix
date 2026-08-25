@@ -42,10 +42,8 @@ namespace KSoft.Phoenix.Runtime
 		{
 			if (count > maxCount)
 			{
-				throw new System.IO.InvalidDataException(string.Format(
-					"Read array count {0} exceeds maximum {1}.",
-					count,
-					maxCount));
+				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Read array count {count} exceeds maximum {maxCount}."));
 			}
 		}
 
