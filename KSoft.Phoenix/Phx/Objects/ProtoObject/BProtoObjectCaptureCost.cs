@@ -60,9 +60,8 @@ namespace KSoft.Phoenix.Phx
 
 			if (!xs.StreamTypeName(s, costDataName, ref mResourceType, GameDataObjectKind.Cost, isOptional: false, xmlSource: XML.XmlUtil.kSourceAttr))
 			{
-				s.ThrowReadException(new System.IO.InvalidDataException(string.Format(
-					"ProtoObject's {0} XML doesn't define a {1}",
-					kBListXmlParams.ElementName, BResource.kBListTypeValuesXmlParams_Cost.DataName)));
+				s.ThrowReadException(new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"ProtoObject's {kBListXmlParams.ElementName} XML doesn't define a {BResource.kBListTypeValuesXmlParams_Cost.DataName}")));
 			}
 
 			s.StreamCursor(ref mCost);

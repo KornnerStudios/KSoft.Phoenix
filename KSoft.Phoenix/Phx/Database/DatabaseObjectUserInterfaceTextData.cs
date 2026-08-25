@@ -39,9 +39,8 @@ namespace KSoft.Phoenix.Phx
 		{
 			if (!hasFlag)
 			{
-				throw new InvalidOperationException(string.Format(
-					"{0} cannot be set because its matching Has* flag is false.",
-					propertyName));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"{propertyName} cannot be set because its matching Has* flag is false."));
 			}
 		}
 

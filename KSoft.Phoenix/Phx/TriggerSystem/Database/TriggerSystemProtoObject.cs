@@ -58,32 +58,26 @@ namespace KSoft.Phoenix.Phx
 		{
 			if (Name != obj.Name)
 			{
-				Debug.Trace.Engine.TraceInformation(
-					"TriggerProtoDbObject: '{0}' - Encountered different names for {1}, '{2}' != '{3}'",
-					ts, this.DbId.ToString(), this.Name, obj.Name);
+				Debug.Trace.Engine.TraceInformation(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"TriggerProtoDbObject: '{ts}' - Encountered different names for {DbId}, '{Name}' != '{obj.Name}'"));
 			}
 
 			if (ContainsUserClassTypeVar(ts, obj))
 			{
-				Debug.Trace.Engine.TraceInformation(
-					"TriggerProtoDbObject: {0} - Encountered {1}/{2} which has a UserClassType Var, skipping comparison",
-					ts, DbId.ToString(), Name);
+				Debug.Trace.Engine.TraceInformation(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"TriggerProtoDbObject: {ts} - Encountered {DbId}/{Name} which has a UserClassType Var, skipping comparison"));
 				return 0;
 			}
 
 			if (Version != obj.Version)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Trigger proto object version is {0}, expected {1}.",
-					Version,
-					obj.Version));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Trigger proto object version is {Version}, expected {obj.Version}."));
 			}
 			if (Params.Count != obj.Args.Count)
 			{
-				throw new InvalidOperationException(string.Format(
-					"Trigger proto object parameter count is {0}, expected {1}.",
-					Params.Count,
-					obj.Args.Count));
+				throw new InvalidOperationException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Trigger proto object parameter count is {Params.Count}, expected {obj.Args.Count}."));
 			}
 
 			int diff = 0;
