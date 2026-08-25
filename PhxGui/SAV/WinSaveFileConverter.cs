@@ -1,6 +1,7 @@
 ﻿using KSoft;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,8 +29,8 @@ partial class MainWindowViewModel
 		{
 			if (t.IsFaulted)
 			{
-				MessagesText += string.Format("SAV decrypt failure {0}{1}",
-					Environment.NewLine, t.Exception.GetOnlyExceptionOrAll());
+				MessagesText += string.Create(CultureInfo.CurrentCulture,
+					$"SAV decrypt failure {Environment.NewLine}{t.Exception.GetOnlyExceptionOrAll()}");
 			}
 
 			FinishProcessing();
@@ -167,8 +168,8 @@ partial class MainWindowViewModel
 			Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 				new Action(() =>
 				{
-					ViewModel.MessagesText += string.Format("Skipped due to existing output {0}{1}",
-						inputFile, Environment.NewLine);
+					ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"Skipped due to existing output {inputFile}{Environment.NewLine}");
 				}));
 		}
 
@@ -177,8 +178,8 @@ partial class MainWindowViewModel
 			Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 				new Action(() =>
 				{
-					ViewModel.MessagesText += string.Format("Skipped due to read-only output {0}{1}",
-						inputFile, Environment.NewLine);
+					ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"Skipped due to read-only output {inputFile}{Environment.NewLine}");
 				}));
 		}
 
@@ -187,8 +188,8 @@ partial class MainWindowViewModel
 			Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 				new Action(() =>
 				{
-					ViewModel.MessagesText += string.Format("EXCEPTION {0}{1}{2}",
-						inputFile, Environment.NewLine, e);
+					ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"EXCEPTION {inputFile}{Environment.NewLine}{e}");
 				}));
 		}
 
@@ -197,8 +198,8 @@ partial class MainWindowViewModel
 			Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 				new Action(() =>
 				{
-					ViewModel.MessagesText += string.Format("Skipped as the file is not valid {0}{1}",
-						inputFile, Environment.NewLine);
+					ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"Skipped as the file is not valid {inputFile}{Environment.NewLine}");
 				}));
 		}
 
@@ -207,8 +208,8 @@ partial class MainWindowViewModel
 			Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 				new Action(() =>
 				{
-					ViewModel.MessagesText += string.Format("Skipped as the file is not encrypted {0}{1}",
-						inputFile, Environment.NewLine);
+					ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"Skipped as the file is not encrypted {inputFile}{Environment.NewLine}");
 				}));
 		}
 	};

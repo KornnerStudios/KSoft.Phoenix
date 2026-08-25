@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,14 +31,13 @@ namespace PhxGui
 			{
 				if (t.IsFaulted || t.Result.StartsWith("ERROR", StringComparison.Ordinal))
 				{
-					MessagesText += string.Format("Patch EXE finished with errors: {0}{1}",
-						Environment.NewLine,
-						t.IsFaulted ? t.Exception!.GetOnlyExceptionOrAll()!.ToString() : t.Result);
+					MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"Patch EXE finished with errors: {Environment.NewLine}{(t.IsFaulted ? t.Exception!.GetOnlyExceptionOrAll()!.ToString() : t.Result)}");
 				}
 				else
 				{
-					MessagesText = string.Format("EXE is now ready for modding use: {0}",
-						t.Result);
+					MessagesText = string.Create(CultureInfo.CurrentCulture,
+						$"EXE is now ready for modding use: {t.Result}");
 				}
 
 				FinishProcessing();
@@ -122,15 +122,15 @@ namespace PhxGui
 			#region boilerplate
 			if (args.ExeFileType == MainWindowViewModel.AcceptedFileType.Xex)
 			{
-				return string.Format("ERROR patching XEX files is not supported: {0}",
-					 args.ExeFile);
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR patching XEX files is not supported: {args.ExeFile}");
 			}
 
 			var exe_file_attrs = File.GetAttributes(args.ExeFile);
 			if (exe_file_attrs.HasFlag(FileAttributes.ReadOnly))
 			{
-				return string.Format("ERROR Cannot patch read-only file (this tool creates a backup): {0}",
-					args.ExeFile);
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Cannot patch read-only file (this tool creates a backup): {args.ExeFile}");
 			}
 
 			try
@@ -138,10 +138,8 @@ namespace PhxGui
 				args.BackupFile();
 			} catch (Exception ex)
 			{
-				return string.Format("ERROR Failed to create backup: {0}{1}{2}",
-					 args.ExeFile,
-					 Environment.NewLine,
-					 ex);
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Failed to create backup: {args.ExeFile}{Environment.NewLine}{ex}");
 			}
 
 			byte[] sourceExeBytes;
@@ -151,10 +149,8 @@ namespace PhxGui
 			}
 			catch (Exception ex)
 			{
-				return string.Format("ERROR Failed to read file to memory: {0}{1}{2}",
-					args.ExeFile,
-					 Environment.NewLine,
-					 ex);
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Failed to read file to memory: {args.ExeFile}{Environment.NewLine}{ex}");
 			}
 			#endregion
 
@@ -172,7 +168,7 @@ namespace PhxGui
 				string? errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
-					finalErrorMessage.AppendFormat("ERROR EraDigitalSignatureCheck - {0}: {1}" +
+					finalErrorMessage.AppendFormat(CultureInfo.CurrentCulture, "ERROR EraDigitalSignatureCheck - {0}: {1}" +
 						"SHA1={2}{3}" +
 						"File={4}{5}",
 						errorMessage, Environment.NewLine,
@@ -185,7 +181,7 @@ namespace PhxGui
 				string? errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
-					finalErrorMessage.AppendFormat("ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
+					finalErrorMessage.AppendFormat(CultureInfo.CurrentCulture, "ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
 						"SHA1={2}{3}" +
 						"File={4}{5}",
 						errorMessage, Environment.NewLine,
@@ -198,7 +194,7 @@ namespace PhxGui
 				string? errorMessage = PatchGameExeUserProfileSetupTickerInfoByPatternMatching(sourceExeBytes, sourceExeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
-					finalErrorMessage.AppendFormat("ERROR UserProfileSetupTickerInfo - {0}: {1}" +
+					finalErrorMessage.AppendFormat(CultureInfo.CurrentCulture, "ERROR UserProfileSetupTickerInfo - {0}: {1}" +
 						"SHA1={2}{3}" +
 						"File={4}{5}",
 						errorMessage, Environment.NewLine,
@@ -284,8 +280,8 @@ namespace PhxGui
 			var exe_file_attrs = File.GetAttributes(args.ExeFile);
 			if (exe_file_attrs.HasFlag(FileAttributes.ReadOnly))
 			{
-				return string.Format("ERROR Cannot patch read-only file (this tool creates a backup): {0}",
-					args.ExeFile);
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Cannot patch read-only file (this tool creates a backup): {args.ExeFile}");
 			}
 
 			args.BackupFile();
@@ -300,12 +296,8 @@ namespace PhxGui
 			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes!);
 			if (!TryGetPatchInfo(exe_file_sha1, out PatchInfo? exe_paches) || exe_paches == null)
 			{
-				return string.Format("ERROR Unrecongized file: {0}" +
-					"SHA1={1}{2}" +
-					"File={3}{4}",
-					Environment.NewLine,
-					exe_file_sha1, Environment.NewLine,
-					args.ExeFile, Environment.NewLine);
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Unrecongized file: {Environment.NewLine}SHA1={exe_file_sha1}{Environment.NewLine}File={args.ExeFile}{Environment.NewLine}");
 			}
 
 			using (var fs = File.OpenWrite(args.ExeFile))

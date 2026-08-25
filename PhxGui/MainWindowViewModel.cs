@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using KSoft;
@@ -161,10 +162,8 @@ namespace PhxGui
 							? e.ToVerboseString()!
 							: e.ToBasicString()!;
 					}
-					MessagesText += string.Format("Test data load finished with errors: {0}{1}{2}",
-						"See PhxGui.log for any additional details",
-						Environment.NewLine,
-						error);
+					MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"Test data load finished with errors: See PhxGui.log for any additional details{Environment.NewLine}{error}");
 				}
 				else
 				{

@@ -2,6 +2,7 @@
 using KSoft.Collections;
 using KSoft.Phoenix.Resource;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -68,8 +69,8 @@ namespace PhxGui
 				Dispatcher.BeginInvoke(DispatcherPriority.Background,
 					new Action(() =>
 					{
-						ViewModel.StatusText = string.Format("Expanding {0}",
-							ecfFile);
+						ViewModel.StatusText = string.Create(CultureInfo.CurrentCulture,
+							$"Expanding {ecfFile}");
 					}));
 
 				args.EcfPath = ecfFile;
@@ -120,7 +121,7 @@ namespace PhxGui
 							}
 
 							var sb = new System.Text.StringBuilder();
-							sb.Append($"Expand {error_type} ");
+							sb.Append(CultureInfo.CurrentCulture, $"Expand {error_type} ");
 							sb.AppendLine(ecfFile);
 							sb.AppendLine(error_hint);
 

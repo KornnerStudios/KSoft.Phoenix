@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -97,8 +98,8 @@ namespace PhxGui
 				Dispatcher.BeginInvoke(DispatcherPriority.Background,
 					new Action(() =>
 					{
-						ViewModel.StatusText = string.Format("Expanding {0}",
-							eraFile);
+						ViewModel.StatusText = string.Create(CultureInfo.CurrentCulture,
+							$"Expanding {eraFile}");
 					}));
 
 				args.EraPath = eraFile;
@@ -155,7 +156,7 @@ namespace PhxGui
 							}
 
 							var sb = new System.Text.StringBuilder();
-							sb.Append($"Expand {error_type} ");
+							sb.Append(CultureInfo.CurrentCulture, $"Expand {error_type} ");
 							sb.AppendLine(eraFile);
 							sb.AppendLine(error_hint);
 

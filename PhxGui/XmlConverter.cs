@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -94,8 +95,8 @@ namespace PhxGui
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 					new Action(() =>
 					{
-						ViewModel.MessagesText += string.Format("Skipped due to existing output {0}{1}",
-							inputFile, Environment.NewLine);
+						ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+							$"Skipped due to existing output {inputFile}{Environment.NewLine}");
 					}));
 			}
 
@@ -104,8 +105,8 @@ namespace PhxGui
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 					new Action(() =>
 					{
-						ViewModel.MessagesText += string.Format("Skipped due to read-only output {0}{1}",
-							inputFile, Environment.NewLine);
+						ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+							$"Skipped due to read-only output {inputFile}{Environment.NewLine}");
 					}));
 			}
 
@@ -114,8 +115,8 @@ namespace PhxGui
 				Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
 					new Action(() =>
 					{
-						ViewModel.MessagesText += string.Format("EXCEPTION {0}{1}{2}",
-							inputFile, Environment.NewLine, e);
+						ViewModel.MessagesText += string.Create(CultureInfo.CurrentCulture,
+							$"EXCEPTION {inputFile}{Environment.NewLine}{e}");
 					}));
 			}
 
@@ -186,8 +187,8 @@ namespace PhxGui
 			{
 				if (t.IsFaulted)
 				{
-					MessagesText += string.Format("XMB->XML failure {0}{1}",
-						Environment.NewLine, t.Exception.GetOnlyExceptionOrAll());
+					MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"XMB->XML failure {Environment.NewLine}{t.Exception.GetOnlyExceptionOrAll()}");
 				}
 
 				FinishProcessing();
@@ -210,8 +211,8 @@ namespace PhxGui
 			{
 				if (t.IsFaulted)
 				{
-					MessagesText += string.Format("XMB->XML failure {0}{1}",
-						Environment.NewLine, t.Exception.GetOnlyExceptionOrAll());
+					MessagesText += string.Create(CultureInfo.CurrentCulture,
+						$"XMB->XML failure {Environment.NewLine}{t.Exception.GetOnlyExceptionOrAll()}");
 				}
 
 				FinishProcessing();

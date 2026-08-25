@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using KSoft;
@@ -40,8 +41,8 @@ namespace PhxGui
 			#endif
 			args.ListingPath = ecfListing;
 
-			StatusText = string.Format("Building {0} ECF",
-				Path.GetFileNameWithoutExtension(ecfListing));
+			StatusText = string.Create(CultureInfo.CurrentCulture,
+				$"Building {Path.GetFileNameWithoutExtension(ecfListing)} ECF");
 
 			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 			var task = Task.Run(() =>
@@ -87,7 +88,7 @@ namespace PhxGui
 						}
 
 						var sb = new System.Text.StringBuilder();
-						sb.Append($"Build {error_type} ");
+						sb.Append(CultureInfo.CurrentCulture, $"Build {error_type} ");
 						sb.AppendLine(args.ListingPath);
 						sb.AppendLine(error_hint);
 
