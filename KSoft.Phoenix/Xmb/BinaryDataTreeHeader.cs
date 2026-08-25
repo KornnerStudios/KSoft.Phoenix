@@ -150,8 +150,8 @@ namespace KSoft.Phoenix.Xmb
 			var actual_crc = (byte)GetCrc16();
 			if (actual_crc != HeaderCrc8)
 			{
-				throw new InvalidDataException(string.Format("Invalid CRC 0x{0}, expected 0x{1}",
-					actual_crc.ToString("X2"), HeaderCrc8.ToString("X2")));
+				throw new InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+					$"Invalid CRC 0x{actual_crc:X2}, expected 0x{HeaderCrc8:X2}"));
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace KSoft.Phoenix.Xmb
 				(int)BinaryDataTreeHeaderSignature.LittleEndian or
 				(int)BinaryDataTreeHeaderSignature.BigEndian
 				=> (BinaryDataTreeHeaderSignature)peek,
-				_ => throw new InvalidDataException(peek.ToString("X8")),
+				_ => throw new InvalidDataException(peek.ToString("X8", KSoft.Util.InvariantCultureInfo)),
 			};
 		}
 

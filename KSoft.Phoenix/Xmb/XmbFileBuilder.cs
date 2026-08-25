@@ -81,7 +81,7 @@ namespace KSoft.Phoenix.Xmb
 		{
 			var sb = new System.Text.StringBuilder();
 
-			sb.AppendFormat("XMLCOMP -file {0}",
+			sb.AppendFormat(KSoft.Util.InvariantCultureInfo, "XMLCOMP -file {0}",
 				xmlFileName);
 			sb.Append(BuilderOptions.Test(XmbFileBuilderOptions.LittleEndian)==false ? "" :
 				" -littleEndian");

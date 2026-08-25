@@ -103,8 +103,8 @@ namespace KSoft.Phoenix.Xmb
 					uint actual_data_crc = GetDataCrc32(s.BaseStream);
 					if (mHeader.DataCrc32 != actual_data_crc)
 					{
-						throw new InvalidDataException(string.Format("Invalid Data CRC 0x{0}, expected 0x{1}",
-							actual_data_crc.ToString("X8"), mHeader.DataCrc32.ToString("X8")));
+						throw new InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+							$"Invalid Data CRC 0x{actual_data_crc:X8}, expected 0x{mHeader.DataCrc32:X8}"));
 					}
 				}
 			}
@@ -221,8 +221,8 @@ namespace KSoft.Phoenix.Xmb
 				uint actual_data_crc = GetDataCrc32(s.BaseStream);
 				if (mHeader.DataCrc32 != actual_data_crc)
 				{
-					throw new InvalidDataException(string.Format("Invalid Data CRC 0x{0}, expected 0x{1}",
-						actual_data_crc.ToString("X8"), mHeader.DataCrc32.ToString("X8")));
+					throw new InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Invalid Data CRC 0x{actual_data_crc:X8}, expected 0x{mHeader.DataCrc32:X8}"));
 				}
 			}
 			#endregion
@@ -430,7 +430,7 @@ namespace KSoft.Phoenix.Xmb
 			var nameData = NameData;
 			if (nameData == null || nameOffset >= nameData.Length)
 			{
-				throw new InvalidOperationException(nameOffset.ToString("X8"));
+				throw new InvalidOperationException(nameOffset.ToString("X8", KSoft.Util.InvariantCultureInfo));
 			}
 
 			nameDataReader.Seek(nameOffset);

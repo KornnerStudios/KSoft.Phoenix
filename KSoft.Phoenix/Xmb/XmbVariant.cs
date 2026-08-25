@@ -76,7 +76,7 @@ namespace KSoft.Phoenix.Xmb
 				} break;
 
 				default:
-					throw new ArgumentOutOfRangeException(nameof(length), length.ToString());
+					throw new ArgumentOutOfRangeException(nameof(length), length.ToString(KSoft.Util.InvariantCultureInfo));
 			}
 
 			var vector = new BVector(x, y, z, w);
@@ -141,8 +141,8 @@ namespace KSoft.Phoenix.Xmb
 					}
 
 					result = IsUnsigned
-						? i.ToString()
-						: ((int)i).ToString();
+						? i.ToString(KSoft.Util.InvariantCultureInfo)
+						: ((int)i).ToString(KSoft.Util.InvariantCultureInfo);
 				} break;
 
 				case XmbVariantType.Double: {

@@ -74,8 +74,8 @@ namespace KSoft.Phoenix.Xmb
 		{
 			if (!ValidOffset(dataOffset))
 			{
-				throw new ArgumentOutOfRangeException(nameof(dataOffset), string.Format("{0} > {1}",
-					dataOffset.ToString("X8"), mPoolSize.ToString("X6")));
+				throw new ArgumentOutOfRangeException(nameof(dataOffset), string.Create(KSoft.Util.InvariantCultureInfo,
+					$"{dataOffset:X8} > {mPoolSize:X6}"));
 			}
 
 			if (dataOffset < sizeof(uint))
@@ -125,8 +125,8 @@ namespace KSoft.Phoenix.Xmb
 		{
 			if (!ValidOffset(offset))
 			{
-				throw new ArgumentOutOfRangeException(nameof(offset), string.Format("{0} > {1}",
-					offset.ToString("X8"), mPoolSize.ToString("X6")));
+				throw new ArgumentOutOfRangeException(nameof(offset), string.Create(KSoft.Util.InvariantCultureInfo,
+					$"{offset:X8} > {mPoolSize:X6}"));
 			}
 
 			if (!Entries.TryGetValue(offset, out PoolEntry? e))

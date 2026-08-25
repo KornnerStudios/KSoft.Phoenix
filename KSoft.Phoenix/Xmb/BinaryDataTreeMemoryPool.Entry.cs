@@ -313,7 +313,7 @@ namespace KSoft.Phoenix.Xmb
 					} break;
 
 					default:
-						throw new KSoft.Debug.UnreachableException(TypeDesc.SizeOf.ToString());
+						throw new KSoft.Debug.UnreachableException(TypeDesc.SizeOf.ToString(KSoft.Util.InvariantCultureInfo));
 				}
 			}
 			void ReadFloat(IO.EndianReader s)
@@ -357,7 +357,7 @@ namespace KSoft.Phoenix.Xmb
 					} break;
 
 					default:
-						throw new KSoft.Debug.UnreachableException(TypeDesc.SizeOf.ToString());
+						throw new KSoft.Debug.UnreachableException(TypeDesc.SizeOf.ToString(KSoft.Util.InvariantCultureInfo));
 				}
 			}
 			void ReadString(IO.EndianReader s)

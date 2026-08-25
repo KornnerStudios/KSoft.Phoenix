@@ -59,8 +59,8 @@ namespace KSoft.Phoenix.Xmb
 
 		public override readonly string ToString()
 		{
-			return string.Format("{0} {1} {2} {3}",
-				Size, Alignment, Flags, Type);
+			return string.Create(KSoft.Util.InvariantCultureInfo,
+				$"{Size} {Alignment} {Flags} {Type}");
 		}
 
 		#region Equality utils
@@ -374,9 +374,8 @@ namespace KSoft.Phoenix.Xmb
 			{
 				EType.Null => "null",
 				EType.Bool => "bool",
-				EType.Int => string.Format("{0}int{1}",
-					IsUnsigned ? "u" : "",
-					SizeOf * Bits.kByteBitCount),
+				EType.Int => string.Create(KSoft.Util.InvariantCultureInfo,
+					$"{(IsUnsigned ? "u" : "")}int{SizeOf * Bits.kByteBitCount}"),
 				EType.Float => SizeOf == sizeof(float)
 					? "float"
 					: "double",

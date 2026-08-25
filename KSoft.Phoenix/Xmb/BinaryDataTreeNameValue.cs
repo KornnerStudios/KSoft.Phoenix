@@ -57,8 +57,8 @@ namespace KSoft.Phoenix.Xmb
 
 		public override readonly string ToString()
 		{
-			return string.Format("0x{0} 0x{1} 0x{2}",
-				NameOffset.ToString("X4"), Flags.ToString("X4"), Int.ToString("X8"));
+			return string.Create(KSoft.Util.InvariantCultureInfo,
+				$"0x{NameOffset:X4} 0x{Flags:X4} 0x{Int:X8}");
 		}
 
 		#region Properties
@@ -197,10 +197,8 @@ namespace KSoft.Phoenix.Xmb
 				size = pool.GetUInt32(Offset-sizeof(uint));
 				if (size <= Constants.kSizeBitField.Bitmask32)
 				{
-					throw new InvalidDataException(string.Format(
-						"Indirect binary data tree size is {0}, expected greater than {1}.",
-						size,
-						Constants.kSizeBitField.Bitmask32));
+					throw new InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
+						$"Indirect binary data tree size is {size}, expected greater than {Constants.kSizeBitField.Bitmask32}."));
 				}
 			}
 
@@ -248,8 +246,8 @@ namespace KSoft.Phoenix.Xmb
 					}
 
 					result = IsUnsigned
-						? i.ToString()
-						: ((int)i).ToString();
+						? i.ToString(KSoft.Util.InvariantCultureInfo)
+						: ((int)i).ToString(KSoft.Util.InvariantCultureInfo);
 				} break;
 
 				case BinaryDataTreeVariantType.Float: {
@@ -323,7 +321,7 @@ namespace KSoft.Phoenix.Xmb
 						sizeof(ulong) => IsUnsigned
 							? BinaryDataTreeVariantTypeDesc.UInt64
 							: BinaryDataTreeVariantTypeDesc. Int64,
-						_ => throw new KSoft.Debug.UnreachableException(Type + TypeSize.ToString()),
+						_ => throw new KSoft.Debug.UnreachableException(Type + TypeSize.ToString(KSoft.Util.InvariantCultureInfo)),
 					};
 				case BinaryDataTreeVariantType.Float:
 					if (TypeSize == sizeof(double))
