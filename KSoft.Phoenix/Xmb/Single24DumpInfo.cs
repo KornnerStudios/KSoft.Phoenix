@@ -44,6 +44,8 @@ namespace KSoft.Phoenix.Xmb
 
 		public static Single24DumpInfo Merge(IEnumerable<Single24DumpInfo> infos)
 		{
+			ArgumentNullException.ThrowIfNull(infos);
+
 			var mergedInfo = new Single24DumpInfo();
 			Dictionary<uint, Single24DumpEntry> bitsToEntries = new();
 

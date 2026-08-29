@@ -9,6 +9,8 @@ namespace KSoft.Phoenix.Resource
 		#region Compression utils
 		public static byte[] Compress(byte[] bytes, out uint resultAdler, int lvl = 5)
 		{
+			ArgumentNullException.ThrowIfNull(bytes);
+
 			byte[] result = new byte[bytes.Length];
 			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out uint /*adler32*/_, result);
 
@@ -77,6 +79,8 @@ namespace KSoft.Phoenix.Resource
 
 		public static void RemoveXmbExtension(ref string filename)
 		{
+			ArgumentNullException.ThrowIfNull(filename);
+
 			filename = filename.Replace(Xmb.XmbFile.kFileExt, "", StringComparison.Ordinal);
 
 			//if (System.IO.Path.GetExtension(filename) != ".xml")

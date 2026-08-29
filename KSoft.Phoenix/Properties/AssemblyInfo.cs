@@ -20,3 +20,6 @@ using System.Runtime.InteropServices;
 [assembly: SuppressMessage("Design",
 	"CA1041:Provide ObsoleteAttribute message",
 	Justification = "Legacy game-format enum values have no uniform replacement")]
+[assembly: SuppressMessage("Design",
+	"CA1062:Validate arguments of public methods",
+	Justification = "Public serialization and stream APIs require caller-established non-null stream/model contracts")]

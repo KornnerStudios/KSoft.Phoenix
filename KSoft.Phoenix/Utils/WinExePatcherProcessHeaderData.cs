@@ -99,6 +99,8 @@ namespace KSoft.Phoenix.zPatching
 
 		public void ApplyModJmp(byte[] dstExeBytes)
 		{
+			ArgumentNullException.ThrowIfNull(dstExeBytes);
+
 			int index = ModJmpFileOffset;
 			dstExeBytes[index++] = 0xE9;
 			Bitwise.ByteSwap.ReplaceBytes(dstExeBytes, index, ModJmpVa);
