@@ -8,6 +8,18 @@ namespace KSoft.DDS.Test
 		: Phoenix.BaseTestClass
 	{
 		[TestMethod]
+		public void DirectXTex_ScratchImage_DefaultDisposeTest()
+		{
+			DirectXTexScratchImage image = default;
+			Assert.IsInstanceOfType<IDisposable>(image);
+
+			image.Dispose();
+			image.Dispose();
+
+			Assert.IsTrue(image.IsNull);
+		}
+
+		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
 		public void DirectXTex_SetupTest()
 		{
