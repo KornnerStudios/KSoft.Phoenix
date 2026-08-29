@@ -8,6 +8,7 @@ using KSoft;
 
 namespace PhxGui
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1852:Seal internal types", Justification = "WPF binding view model extended through partial classes.")]
 	partial class MainWindowViewModel
 	{
 		private void BinaryDataTreeBinToXml(string[] files)
