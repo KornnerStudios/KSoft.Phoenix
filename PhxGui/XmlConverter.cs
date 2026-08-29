@@ -120,6 +120,7 @@ namespace PhxGui
 					}));
 			}
 
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch-all conversion failures are converted to UI status messages so the application remains responsive.")]
 			public void Convert()
 			{
 				var p = Parallel.ForEach(mInputFiles, f =>

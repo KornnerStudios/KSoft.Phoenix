@@ -367,7 +367,7 @@ namespace KSoft.Phoenix
 				try
 				{
 					task.Wait();
-				} catch (Exception ex)
+				} catch (AggregateException ex)
 				{
 					ex.UnusedExceptionVar();
 				}

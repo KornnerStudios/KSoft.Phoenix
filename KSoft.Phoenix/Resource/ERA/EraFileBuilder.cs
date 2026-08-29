@@ -63,6 +63,7 @@ namespace KSoft.Phoenix.Resource
 
 			return result;
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this listing recovery boundary.")]
 		public bool Read() // read the listing definition
 		{
 			bool result = true;
@@ -186,6 +187,7 @@ namespace KSoft.Phoenix.Resource
 		/// <param name="eraName">Name of the final ERA file (without any directory or extension data)</param>
 		/// <param name="outputPath">(Optional) The path to output the final ERA file. Defaults to <paramref name="workPath"/></param>
 		/// <returns>True if all build operations were successful, false otherwise</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this archive build recovery boundary.")]
 		public bool Build(string workPath, string eraName, string? outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))

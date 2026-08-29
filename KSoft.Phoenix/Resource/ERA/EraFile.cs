@@ -406,6 +406,7 @@ namespace KSoft.Phoenix.Resource
 			return true;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged while recovering from optional archive file transformations.")]
 		private void UnpackToDisk(IO.EndianStream blockStream, string fullPath, EraFileExpander expander, EraFileEntryChunk file)
 		{
 			byte[] buffer = file.GetBuffer(blockStream);
@@ -778,6 +779,7 @@ namespace KSoft.Phoenix.Resource
 			return true;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result while packing an archive file.")]
 		private bool TryPackFileFromDisk(IO.EndianStream blockStream, string workPath,
 			EraFileEntryChunk file)
 		{

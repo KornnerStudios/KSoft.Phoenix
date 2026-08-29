@@ -98,7 +98,9 @@ namespace KSoft.Tool.Phoenix
 					try {
 						Directory.CreateDirectory(mOutputPath);
 						output_path_exists = true;
-					} catch (Exception ex) {
+					} catch (IOException ex) {
+						Console.WriteLine("Error: failed to create output path. Reason: {0}", ex.Message);
+					} catch (UnauthorizedAccessException ex) {
 						Console.WriteLine("Error: failed to create output path. Reason: {0}", ex.Message);
 					}
 

@@ -75,6 +75,7 @@ namespace KSoft.Phoenix.Engine
 		}
 
 		public bool HasAlreadyLoaded { get; private set; }
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Engine load failures are intentionally surfaced as recoverable engine operation failures.")]
 		public virtual bool Load()
 		{
 			Exception? exception = null;

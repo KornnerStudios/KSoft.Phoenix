@@ -136,7 +136,11 @@ namespace PhxGui
 			try
 			{
 				args.BackupFile();
-			} catch (Exception ex)
+			} catch (IOException ex)
+			{
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Failed to create backup: {args.ExeFile}{Environment.NewLine}{ex}");
+			} catch (UnauthorizedAccessException ex)
 			{
 				return string.Create(CultureInfo.CurrentCulture,
 					$"ERROR Failed to create backup: {args.ExeFile}{Environment.NewLine}{ex}");
@@ -147,7 +151,12 @@ namespace PhxGui
 			{
 				sourceExeBytes = File.ReadAllBytes(args.ExeFile);
 			}
-			catch (Exception ex)
+			catch (IOException ex)
+			{
+				return string.Create(CultureInfo.CurrentCulture,
+					$"ERROR Failed to read file to memory: {args.ExeFile}{Environment.NewLine}{ex}");
+			}
+			catch (UnauthorizedAccessException ex)
 			{
 				return string.Create(CultureInfo.CurrentCulture,
 					$"ERROR Failed to read file to memory: {args.ExeFile}{Environment.NewLine}{ex}");

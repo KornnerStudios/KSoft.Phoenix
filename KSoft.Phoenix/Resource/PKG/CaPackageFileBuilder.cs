@@ -55,6 +55,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			return result;
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this listing recovery boundary.")]
 		public bool Read() // read the listing definition
 		{
 			bool result = true;

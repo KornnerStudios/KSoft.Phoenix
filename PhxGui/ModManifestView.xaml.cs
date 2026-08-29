@@ -51,6 +51,7 @@ namespace PhxGui
 			return selected_index;
 		} }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch-all file load failures are converted to a UI message so the application remains responsive.")]
 		private bool ReadManifestFromFile()
 		{
 			var manifest = ModManifest;
@@ -80,6 +81,7 @@ namespace PhxGui
 			return true;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch-all file write failures are converted to a UI message so the application remains responsive.")]
 		private bool WriteManifestFromFile()
 		{
 			var manifest = ModManifest;

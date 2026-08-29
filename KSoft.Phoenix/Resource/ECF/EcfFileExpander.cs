@@ -38,6 +38,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		}
 
 		#region Reading
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this archive read recovery boundary.")]
 		public bool Read()
 		{
 			bool result = true;
@@ -98,6 +99,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		#region Expanding
 		bool WriteChunksToFile => ExpanderOptions.Test(EcfFileExpanderOptions.DontSaveChunksToFiles) == false;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this archive extraction recovery boundary.")]
 		public bool ExpandTo(string workPath, string listingName)
 		{
 			if (mEcfFile == null)

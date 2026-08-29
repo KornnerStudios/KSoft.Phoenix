@@ -32,6 +32,7 @@ namespace KSoft.Phoenix.Xmb.Test
 
 		[TestMethod]
 		[TestCategory("ExcludedFromAppveyor")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Test intentionally captures conversion failures to report a complete fixture diagnostic.")]
 		public void BDT_ToXmlTest()
 		{
 			bool any_failed = false;

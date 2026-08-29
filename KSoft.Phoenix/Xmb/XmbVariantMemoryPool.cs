@@ -302,7 +302,11 @@ namespace KSoft.Phoenix.Xmb
 			{
 				v = Convert.ToInt32(str, (int)NumeralBase.Decimal);
 			}
-			catch (Exception)
+			catch (FormatException)
+			{
+				return false;
+			}
+			catch (OverflowException)
 			{
 				return false;
 			}
@@ -350,7 +354,11 @@ namespace KSoft.Phoenix.Xmb
 			{
 				v = Convert.ToUInt32(str, (int)NumeralBase.Decimal);
 			}
-			catch (Exception)
+			catch (FormatException)
+			{
+				return false;
+			}
+			catch (OverflowException)
 			{
 				return false;
 			}
@@ -382,7 +390,11 @@ namespace KSoft.Phoenix.Xmb
 			{
 				v = Convert.ToDouble(str, KSoft.Util.InvariantCultureInfo);
 			}
-			catch (Exception)
+			catch (FormatException)
+			{
+				return false;
+			}
+			catch (OverflowException)
 			{
 				return false;
 			}

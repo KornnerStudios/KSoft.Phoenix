@@ -47,7 +47,12 @@ namespace KSoft.Phoenix.Resource
 					? lastWriteTime
 					: createTime;
 			}
-			catch (Exception ex)
+			catch (IOException ex)
+			{
+				Debug.Trace.Resource.TraceInformation(ex.ToString());
+				return false;
+			}
+			catch (UnauthorizedAccessException ex)
 			{
 				Debug.Trace.Resource.TraceInformation(ex.ToString());
 				return false;
@@ -58,27 +63,19 @@ namespace KSoft.Phoenix.Resource
 
 		public bool ComputeSourceFileDigest()
 		{
-			bool result;
-			try
+			var sourceFileName = SourceFileName;
+			if (sourceFileName is null)
 			{
-				var sourceFileName = SourceFileName;
-				if (sourceFileName is null)
-				{
-					return false;
-				}
-
-				result = Security.Cryptography.PhxHash.Sha1HashFile(sourceFileName, SourceDigest, out long fileLength);
-
-				if (result)
-				{
-					SourceFileSize = fileLength;
-				}
-			}
-			catch (Exception ex)
-			{
-				Debug.Trace.Resource.TraceInformation(ex.ToString());
 				return false;
 			}
+
+			var result = Security.Cryptography.PhxHash.Sha1HashFile(sourceFileName, SourceDigest, out long fileLength);
+
+			if (result)
+			{
+				SourceFileSize = fileLength;
+			}
+
 			return result;
 		}
 

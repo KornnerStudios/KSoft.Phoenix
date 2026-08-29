@@ -267,7 +267,12 @@ namespace KSoft.Security.Cryptography
 
 				Array.Copy(result_final, result, result_final.Length);
 			}
-			catch (Exception ex)
+			catch (IOException ex)
+			{
+				Debug.Trace.Security.TraceInformation(ex.ToString());
+				return false;
+			}
+			catch (UnauthorizedAccessException ex)
 			{
 				Debug.Trace.Security.TraceInformation(ex.ToString());
 				return false;

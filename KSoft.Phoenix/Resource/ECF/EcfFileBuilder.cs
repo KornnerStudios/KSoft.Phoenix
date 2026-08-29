@@ -59,6 +59,7 @@ namespace KSoft.Phoenix.Resource.ECF
 
 			return result;
 		}
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this listing recovery boundary.")]
 		public bool Read() // read the listing definition
 		{
 			bool result = true;
@@ -75,6 +76,7 @@ namespace KSoft.Phoenix.Resource.ECF
 		#endregion
 
 		#region Building
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Exceptions are logged and converted to a failure result at this archive build recovery boundary.")]
 		public bool Build(string workPath, string? outputPath = null)
 		{
 			if (string.IsNullOrWhiteSpace(outputPath))
