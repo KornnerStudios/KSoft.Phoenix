@@ -181,8 +181,8 @@ namespace KSoft.Phoenix.Xmb
 		static void SetFlags(RawVariantFlags flags, ref uint data)
 		{
 			uint f = (uint)flags;
-			f <<= kInfoTypeBitIndex;
-			f &= kInfoTypeBitMask;
+			f <<= kInfoFlagsBitIndex;
+			f &= kInfoFlagsBitMask;
 
 			data |= f;
 		}
@@ -382,6 +382,7 @@ namespace KSoft.Phoenix.Xmb
 
 			if (is_indirect)
 			{
+				f |= RawVariantFlags.Offset;
 				data = v.Offset & kValueBitMask;
 			}
 		}
