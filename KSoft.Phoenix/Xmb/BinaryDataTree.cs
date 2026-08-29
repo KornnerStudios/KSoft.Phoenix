@@ -320,7 +320,7 @@ namespace KSoft.Phoenix.Xmb
 
 		private uint GetDataCrc32(Stream s)
 		{
-			var crc_hasher = new Security.Cryptography.CrcHash32(PhxUtil.kCrc32Definition);
+			using var crc_hasher = new Security.Cryptography.CrcHash32(PhxUtil.kCrc32Definition);
 			var stream_crc_hash_computer = new Security.Cryptography.StreamHashComputer<Security.Cryptography.CrcHash32>(crc_hasher, s, restorePosition: true);
 			stream_crc_hash_computer.SetRangeAtCurrentOffset(mHeader.DataSize);
 			uint actual_data_crc = stream_crc_hash_computer.Compute().Hash32;
@@ -504,7 +504,7 @@ namespace KSoft.Phoenix.Xmb
 			}
 
 			string root_name = rootNode.NodeName;
-			var s = IO.XmlElementStream.CreateForWrite(root_name);
+			using var s = IO.XmlElementStream.CreateForWrite(root_name);
 			rootNode.ToXml(tree, s);
 
 			XmlDocument result = s.Document;

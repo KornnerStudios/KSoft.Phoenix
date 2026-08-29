@@ -34,7 +34,9 @@ namespace KSoft.Collections.Test
 		[TestMethod]
 		public void ProtoEnumWithUndefined_UnregisteredUndefinedMember_ThrowsOutOfRange()
 		{
+#pragma warning disable CA2000 // The constructor throws before an owned disposable is initialized on this path.
 			var proto_enum = new ProtoEnumWithUndefinedImpl(new CodeEnum<TestCode>());
+#pragma warning restore CA2000
 			int undefined_id = Phoenix.PhxUtil.GetUndefinedReferenceHandle(0);
 
 			var exception = Assert.ThrowsExactly<ArgumentOutOfRangeException>(

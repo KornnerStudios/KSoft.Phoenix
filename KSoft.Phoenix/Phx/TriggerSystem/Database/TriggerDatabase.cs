@@ -181,7 +181,9 @@ namespace KSoft.Phoenix.Phx
 			{
 				s.InitializeAtRootElement();
 				s.StreamMode = System.IO.FileAccess.Write;
+#pragma warning disable CA2000 // GetNullInterface returns a non-owning no-op serializer interface.
 				s.SetSerializerInterface(XML.BXmlSerializerInterface.GetNullInterface(db));
+#pragma warning restore CA2000
 				Serialize(s);
 
 				s.Document.Save(path);
