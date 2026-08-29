@@ -13,15 +13,12 @@ namespace KSoft.Security.Cryptography
 		public static bool TraceSha1Hash { get; set; }
 
 		// NOTE: data is written to the buffer in MSB order
-		// #TODO make thread safe
-		static readonly byte[] gUInt64Buffer = new byte[sizeof(ulong)];
-
-		static void BufferFillUnicode(char unicode)
+		static void BufferFillUnicode(byte[] buffer, char unicode)
 		{
-			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, (ushort)unicode);
+			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)unicode);
 			if (BitConverter.IsLittleEndian)
 			{
-				Bitwise.ByteSwap.SwapUInt16(gUInt64Buffer, 0);
+				Bitwise.ByteSwap.SwapUInt16(buffer, 0);
 			}
 		}
 
@@ -33,97 +30,103 @@ namespace KSoft.Security.Cryptography
 
 		public static void UInt8(SHA1 sha, uint word, bool isFinal = false)
 		{
-			gUInt64Buffer[0] = (byte)(word >> 0);
+			var buffer = new byte[sizeof(byte)];
+			buffer[0] = (byte)(word >> 0);
 
 			if (isFinal)
 			{
-				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(byte));
+				sha.TransformFinalBlock(buffer, 0, sizeof(byte));
 			}
 			else
 			{
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(byte), null, 0);
+				sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
 			}
 		}
 		public static void UInt16(SHA1 sha, uint word, bool isFinal = false)
 		{
-			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, (ushort)word);
+			var buffer = new byte[sizeof(ushort)];
+			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)word);
 			if (BitConverter.IsLittleEndian)
 			{
-				Bitwise.ByteSwap.SwapUInt16(gUInt64Buffer, 0);
+				Bitwise.ByteSwap.SwapUInt16(buffer, 0);
 			}
 
 			if (isFinal)
 			{
-				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(ushort));
+				sha.TransformFinalBlock(buffer, 0, sizeof(ushort));
 			}
 			else
 			{
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ushort), null, 0);
+				sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
 			}
 		}
 		public static void UInt32(SHA1 sha, uint word, bool isFinal = false)
 		{
-			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, word);
+			var buffer = new byte[sizeof(uint)];
+			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
 			if (BitConverter.IsLittleEndian)
 			{
-				Bitwise.ByteSwap.SwapUInt32(gUInt64Buffer, 0);
+				Bitwise.ByteSwap.SwapUInt32(buffer, 0);
 			}
 
 			if (isFinal)
 			{
-				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(uint));
+				sha.TransformFinalBlock(buffer, 0, sizeof(uint));
 			}
 			else
 			{
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(uint), null, 0);
+				sha.TransformBlock(buffer, 0, sizeof(uint), null, 0);
 			}
 		}
 		public static void UInt64(SHA1 sha, ulong word, bool isFinal = false)
 		{
-			Bitwise.ByteSwap.ReplaceBytes(gUInt64Buffer, 0, word);
+			var buffer = new byte[sizeof(ulong)];
+			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
 			if (BitConverter.IsLittleEndian)
 			{
-				Bitwise.ByteSwap.SwapUInt64(gUInt64Buffer, 0);
+				Bitwise.ByteSwap.SwapUInt64(buffer, 0);
 			}
 
 			if (isFinal)
 			{
-				sha.TransformFinalBlock(gUInt64Buffer, 0, sizeof(ulong));
+				sha.TransformFinalBlock(buffer, 0, sizeof(ulong));
 			}
 			else
 			{
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ulong), null, 0);
+				sha.TransformBlock(buffer, 0, sizeof(ulong), null, 0);
 			}
 		}
 
 		public static void Ascii(SHA1 sha, string str, int fixedLength = 0)
 		{
+			var buffer = new byte[sizeof(ushort)];
 			for (int x = 0; x < str.Length; x++)
 			{
-				gUInt64Buffer[0] = (byte)(str[x] >> 0);
-				BufferFillUnicode(str[x]);
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(byte), null, 0);
+				buffer[0] = (byte)(str[x] >> 0);
+				BufferFillUnicode(buffer, str[x]);
+				sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
 			}
 
-			gUInt64Buffer[0] = 0;
+			buffer[0] = 0;
 			for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
 			{
-				BufferFillUnicode('\0');
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(byte), null, 0);
+				BufferFillUnicode(buffer, '\0');
+				sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
 			}
 		}
 		public static void Unicode(SHA1 sha, string str, int fixedLength = 0)
 		{
+			var buffer = new byte[sizeof(ushort)];
 			for (int x = 0; x < str.Length; x++)
 			{
-				BufferFillUnicode(str[x]);
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ushort), null, 0);
+				BufferFillUnicode(buffer, str[x]);
+				sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
 			}
 
-			BufferFillUnicode('\0');
+			BufferFillUnicode(buffer, '\0');
 			for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
 			{
-				sha.TransformBlock(gUInt64Buffer, 0, sizeof(ushort), null, 0);
+				sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
 			}
 		}
 
@@ -143,6 +146,16 @@ namespace KSoft.Security.Cryptography
 			ArgumentOutOfRangeException.ThrowIfNegative(inputOffset);
 			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(inputLength);
 
+			long stream_length = inputStream.Length;
+			if (inputOffset > stream_length)
+			{
+				throw new ArgumentOutOfRangeException(nameof(inputOffset));
+			}
+			if (inputLength > stream_length - inputOffset)
+			{
+				throw new ArgumentOutOfRangeException(nameof(inputLength));
+			}
+
 			var scratch_buffer = new byte[k_read_block_size];
 
 			using (new IO.StreamPositionContext(inputStream))
@@ -152,14 +165,20 @@ namespace KSoft.Security.Cryptography
 				for (long input_bytes_read = 0; input_bytes_read < inputLength; )
 				{
 					long bytes_remaining = inputLength - input_bytes_read;
-					int read_block_length = System.Math.Min((int)bytes_remaining, scratch_buffer.Length);
+					int read_block_length = (int)System.Math.Min(bytes_remaining, (long)scratch_buffer.Length);
 
 					Array.Clear(scratch_buffer, 0, scratch_buffer.Length);
 					for (int actual_bytes_read = 0; actual_bytes_read < read_block_length; )
 					{
 						int sub_block_offset = actual_bytes_read;
 						int sub_block_length = read_block_length - sub_block_offset;
-						actual_bytes_read += inputStream.Read(scratch_buffer, sub_block_offset, sub_block_length);
+						int bytes_read = inputStream.Read(scratch_buffer, sub_block_offset, sub_block_length);
+						if (bytes_read == 0)
+						{
+							throw new EndOfStreamException("The stream ended before the requested range was read.");
+						}
+
+						actual_bytes_read += bytes_read;
 					}
 
 					sha.TransformBlock(
