@@ -482,9 +482,13 @@ namespace KSoft.Phoenix.Xmb
 
 			for (int nameValueIndex = packed_node.NameValueOffset; ; numNameValues++)
 			{
-				if ((nameValueIndex + numNameValues) >= numNameValues)
+				if ((nameValueIndex + numNameValues) > nameValues.Length)
 				{
 					throw new InvalidDataException();
+				}
+				else if ((nameValueIndex + numNameValues) == nameValues.Length)
+				{
+					break;
 				}
 
 				var nameValue = nameValues[nameValueIndex + numNameValues];
