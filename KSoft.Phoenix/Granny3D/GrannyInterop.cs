@@ -56,8 +56,7 @@ namespace KSoft.Granny3D
 			ThrowIfNull();
 			ArgumentOutOfRangeException.ThrowIfNegative(index);
 
-			int offset = Marshal.SizeOf<T>();
-			offset += index;
+			int offset = checked(Marshal.SizeOf<T>() * index);
 
 			return Marshal.PtrToStructure<T>(Address + offset);
 		}
@@ -73,8 +72,7 @@ namespace KSoft.Granny3D
 			ThrowIfNull();
 			ArgumentOutOfRangeException.ThrowIfNegative(toIndex);
 
-			int offset = Marshal.SizeOf<T>();
-			offset += toIndex;
+			int offset = checked(Marshal.SizeOf<T>() * toIndex);
 
 			Marshal.StructureToPtr(s, Address + offset, fDeleteOld: false);
 		}
@@ -106,8 +104,7 @@ namespace KSoft.Granny3D
 			}
 			ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(structSize, 0);
 
-			int offset = structSize;
-			offset += index;
+			int offset = checked(structSize * index);
 
 			return Array + offset;
 		}
@@ -206,8 +203,7 @@ namespace KSoft.Granny3D
 				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
-			int offset = IntPtr.Size;
-			offset += index;
+			int offset = checked(IntPtr.Size * index);
 
 			var ptr = Marshal.PtrToStructure<IntPtr>(Array + offset);
 
