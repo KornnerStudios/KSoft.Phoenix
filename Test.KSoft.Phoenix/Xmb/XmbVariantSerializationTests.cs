@@ -52,6 +52,51 @@ public sealed class XmbVariantSerializationTests
 		Assert.AreEqual(0x00123456u, actual.Offset);
 	}
 
+	[TestMethod]
+	public void Write_IndirectInt_EncodesOffsetTypeAndRoundTrips()
+	{
+		var value = new XmbVariant
+		{
+			Type = XmbVariantType.Int,
+			IsIndirect = true,
+			Offset = 0x00123456,
+		};
+
+		byte[] bytes = Serialize(value);
+		CollectionAssert.AreEqual(new byte[] { 0x84, 0x12, 0x34, 0x56 }, bytes);
+
+		var (rawData, actual) = Deserialize(bytes);
+		Assert.AreEqual(0x84123456u, rawData);
+		Assert.AreEqual(XmbVariantSerialization.RawVariantType.Int,
+			XmbVariantSerialization.GetTypeFromRawData(rawData));
+		Assert.AreEqual(XmbVariantType.Int, actual.Type);
+		Assert.IsFalse(actual.IsUnsigned);
+		Assert.IsTrue(actual.IsIndirect);
+		Assert.AreEqual(0x00123456u, actual.Offset);
+	}
+
+	[TestMethod]
+	public void Write_IndirectSingle_EncodesOffsetTypeAndRoundTrips()
+	{
+		var value = new XmbVariant
+		{
+			Type = XmbVariantType.Single,
+			IsIndirect = true,
+			Offset = 0x00123456,
+		};
+
+		byte[] bytes = Serialize(value);
+		CollectionAssert.AreEqual(new byte[] { 0x82, 0x12, 0x34, 0x56 }, bytes);
+
+		var (rawData, actual) = Deserialize(bytes);
+		Assert.AreEqual(0x82123456u, rawData);
+		Assert.AreEqual(XmbVariantSerialization.RawVariantType.Single,
+			XmbVariantSerialization.GetTypeFromRawData(rawData));
+		Assert.AreEqual(XmbVariantType.Single, actual.Type);
+		Assert.IsTrue(actual.IsIndirect);
+		Assert.AreEqual(0x00123456u, actual.Offset);
+	}
+
 	private static byte[] Serialize(XmbVariant value)
 	{
 		using var stream = new MemoryStream();

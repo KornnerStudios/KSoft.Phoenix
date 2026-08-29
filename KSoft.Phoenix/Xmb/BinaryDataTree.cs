@@ -480,21 +480,24 @@ namespace KSoft.Phoenix.Xmb
 				return;
 			}
 
-			for (int nameValueIndex = packed_node.NameValueOffset; ; numNameValues++)
+			int nameValueIndex = packed_node.NameValueOffset;
+			int remainingNameValues = nameValues.Length - nameValueIndex;
+			if (nameValueIndex > nameValues.Length || numNameValues > remainingNameValues)
 			{
-				if ((nameValueIndex + numNameValues) > nameValues.Length)
-				{
-					throw new InvalidDataException();
-				}
-				else if ((nameValueIndex + numNameValues) == nameValues.Length)
+				throw new InvalidDataException();
+			}
+
+			for (; ; numNameValues++)
+			{
+				var nameValue = nameValues[nameValueIndex + numNameValues - 1];
+				if (nameValue.IsLastNameValue)
 				{
 					break;
 				}
 
-				var nameValue = nameValues[nameValueIndex + numNameValues];
-				if (nameValue.IsLastNameValue)
+				if (numNameValues == remainingNameValues)
 				{
-					break;
+					throw new InvalidDataException();
 				}
 			}
 		}

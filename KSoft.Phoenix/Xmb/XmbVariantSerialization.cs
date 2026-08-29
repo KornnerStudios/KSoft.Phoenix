@@ -303,6 +303,12 @@ namespace KSoft.Phoenix.Xmb
 		static void DecomposeSingle(XmbVariant v, out RawVariantType t, out uint data)
 		{
 			t = RawVariantType.Single;
+			if (v.IsIndirect)
+			{
+				data = v.Offset;
+				return;
+			}
+
 			float single = v.Single;
 
 			// #TODO add a flag which will ignore all FixedPoint and Single24 optimizations and always store Indirect
@@ -328,6 +334,12 @@ namespace KSoft.Phoenix.Xmb
 		{
 			t = RawVariantType.Int;
 			if (v.IsUnsigned) { f |= RawVariantFlags.Unsigned; }
+			if (v.IsIndirect)
+			{
+				data = v.Offset;
+				return;
+			}
+
 			data = v.Int;
 
 			if (Bitwise.Int24.InRange(v.Int))

@@ -22,13 +22,13 @@ public sealed class BinaryDataTreeDecompilerTests
 			new()
 			{
 				ParentIndex = 0,
-				NameValueOffset = 256,
-				NameValuesCount = 1,
+				NameValueOffset = 257,
+				NameValuesCount = 2,
 			},
 		];
-		var nameValues = new BinaryDataTreeNameValue[byte.MaxValue + 2];
-		nameValues[byte.MaxValue].IsLastNameValue = true;
-		nameValues[byte.MaxValue + 1].IsLastNameValue = true;
+		var nameValues = new BinaryDataTreeNameValue[byte.MaxValue + 4];
+		nameValues[256].IsLastNameValue = true;
+		nameValues[258].IsLastNameValue = true;
 		var decompiler = new BinaryDataTreeDecompiler
 		{
 			PackedNodes = packedNodes,
@@ -46,10 +46,10 @@ public sealed class BinaryDataTreeDecompilerTests
 
 		var rootNameValues = nodes[0].NameValues;
 		Assert.IsNotNull(rootNameValues);
-		Assert.HasCount(byte.MaxValue, rootNameValues);
+		Assert.HasCount(byte.MaxValue + 1, rootNameValues);
 
 		var childNameValues = nodes[1].NameValues;
 		Assert.IsNotNull(childNameValues);
-		Assert.HasCount(1, childNameValues);
+		Assert.HasCount(2, childNameValues);
 	}
 }
