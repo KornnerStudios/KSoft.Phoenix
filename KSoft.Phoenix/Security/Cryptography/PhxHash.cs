@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -30,103 +31,145 @@ namespace KSoft.Security.Cryptography
 
 		public static void UInt8(SHA1 sha, uint word, bool isFinal = false)
 		{
-			var buffer = new byte[sizeof(byte)];
-			buffer[0] = (byte)(word >> 0);
+			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
+			try
+			{
+				buffer[0] = (byte)(word >> 0);
 
-			if (isFinal)
-			{
-				sha.TransformFinalBlock(buffer, 0, sizeof(byte));
+				if (isFinal)
+				{
+					sha.TransformFinalBlock(buffer, 0, sizeof(byte));
+				}
+				else
+				{
+					sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
+				}
 			}
-			else
+			finally
 			{
-				sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 		public static void UInt16(SHA1 sha, uint word, bool isFinal = false)
 		{
-			var buffer = new byte[sizeof(ushort)];
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)word);
-			if (BitConverter.IsLittleEndian)
+			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
+			try
 			{
-				Bitwise.ByteSwap.SwapUInt16(buffer, 0);
-			}
+				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)word);
+				if (BitConverter.IsLittleEndian)
+				{
+					Bitwise.ByteSwap.SwapUInt16(buffer, 0);
+				}
 
-			if (isFinal)
-			{
-				sha.TransformFinalBlock(buffer, 0, sizeof(ushort));
+				if (isFinal)
+				{
+					sha.TransformFinalBlock(buffer, 0, sizeof(ushort));
+				}
+				else
+				{
+					sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
+				}
 			}
-			else
+			finally
 			{
-				sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 		public static void UInt32(SHA1 sha, uint word, bool isFinal = false)
 		{
-			var buffer = new byte[sizeof(uint)];
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
-			if (BitConverter.IsLittleEndian)
+			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
+			try
 			{
-				Bitwise.ByteSwap.SwapUInt32(buffer, 0);
-			}
+				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
+				if (BitConverter.IsLittleEndian)
+				{
+					Bitwise.ByteSwap.SwapUInt32(buffer, 0);
+				}
 
-			if (isFinal)
-			{
-				sha.TransformFinalBlock(buffer, 0, sizeof(uint));
+				if (isFinal)
+				{
+					sha.TransformFinalBlock(buffer, 0, sizeof(uint));
+				}
+				else
+				{
+					sha.TransformBlock(buffer, 0, sizeof(uint), null, 0);
+				}
 			}
-			else
+			finally
 			{
-				sha.TransformBlock(buffer, 0, sizeof(uint), null, 0);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 		public static void UInt64(SHA1 sha, ulong word, bool isFinal = false)
 		{
-			var buffer = new byte[sizeof(ulong)];
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
-			if (BitConverter.IsLittleEndian)
+			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
+			try
 			{
-				Bitwise.ByteSwap.SwapUInt64(buffer, 0);
-			}
+				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
+				if (BitConverter.IsLittleEndian)
+				{
+					Bitwise.ByteSwap.SwapUInt64(buffer, 0);
+				}
 
-			if (isFinal)
-			{
-				sha.TransformFinalBlock(buffer, 0, sizeof(ulong));
+				if (isFinal)
+				{
+					sha.TransformFinalBlock(buffer, 0, sizeof(ulong));
+				}
+				else
+				{
+					sha.TransformBlock(buffer, 0, sizeof(ulong), null, 0);
+				}
 			}
-			else
+			finally
 			{
-				sha.TransformBlock(buffer, 0, sizeof(ulong), null, 0);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 
 		public static void Ascii(SHA1 sha, string str, int fixedLength = 0)
 		{
-			var buffer = new byte[sizeof(ushort)];
-			for (int x = 0; x < str.Length; x++)
+			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
+			try
 			{
-				buffer[0] = (byte)(str[x] >> 0);
-				BufferFillUnicode(buffer, str[x]);
-				sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
-			}
+				for (int x = 0; x < str.Length; x++)
+				{
+					buffer[0] = (byte)(str[x] >> 0);
+					BufferFillUnicode(buffer, str[x]);
+					sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
+				}
 
-			buffer[0] = 0;
-			for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
+				buffer[0] = 0;
+				for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
+				{
+					BufferFillUnicode(buffer, '\0');
+					sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
+				}
+			}
+			finally
 			{
-				BufferFillUnicode(buffer, '\0');
-				sha.TransformBlock(buffer, 0, sizeof(byte), null, 0);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 		public static void Unicode(SHA1 sha, string str, int fixedLength = 0)
 		{
-			var buffer = new byte[sizeof(ushort)];
-			for (int x = 0; x < str.Length; x++)
+			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
+			try
 			{
-				BufferFillUnicode(buffer, str[x]);
-				sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
-			}
+				for (int x = 0; x < str.Length; x++)
+				{
+					BufferFillUnicode(buffer, str[x]);
+					sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
+				}
 
-			BufferFillUnicode(buffer, '\0');
-			for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
+				BufferFillUnicode(buffer, '\0');
+				for (int x = 0, null_count = fixedLength - str.Length; x < null_count; x++)
+				{
+					sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
+				}
+			}
+			finally
 			{
-				sha.TransformBlock(buffer, 0, sizeof(ushort), null, 0);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 

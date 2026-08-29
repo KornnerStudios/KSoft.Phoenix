@@ -61,6 +61,16 @@ namespace KSoft.Security.Cryptography.Test
 		}
 
 		[TestMethod]
+		public void PhxHash_PrimitiveHelpers_PreserveInputDuringSameThreadReentrancy()
+		{
+			using var sha = new ReentrantSha1();
+
+			PhxHash.UInt32(sha, 0x12345678);
+
+			CollectionAssert.AreEqual(new byte[] { 0x12, 0x34, 0x56, 0x78 }, sha.Input);
+		}
+
+		[TestMethod]
 		public void PhxHash_Stream_ReadsFragmentedInputAndRestoresPosition()
 		{
 			byte[] input = { 0xDE, 0xAD, 0xBE, 0xEF, 0x12, 0x34, 0x56, 0x78 };
@@ -177,6 +187,36 @@ namespace KSoft.Security.Cryptography.Test
 			{
 				return base.Read(buffer, offset, System.Math.Min(count, mMaximumReadSize));
 			}
+		}
+
+		sealed class ReentrantSha1
+			: SHA1
+		{
+			bool mHasReentered;
+
+			public byte[] Input { get; private set; } = Array.Empty<byte>();
+
+			public ReentrantSha1()
+			{
+				HashSizeValue = PhxHash.kSha1SizeOf * 8;
+			}
+
+			public override void Initialize()
+			{
+			}
+
+			protected override void HashCore(byte[] array, int ibStart, int cbSize)
+			{
+				if (!mHasReentered)
+				{
+					mHasReentered = true;
+					PhxHash.UInt32(this, 0x9ABCDEF0);
+				}
+
+				Input = array[ibStart..(ibStart + cbSize)];
+			}
+
+			protected override byte[] HashFinal() => Array.Empty<byte>();
 		}
 
 		sealed class ZeroThenDataReadStream
