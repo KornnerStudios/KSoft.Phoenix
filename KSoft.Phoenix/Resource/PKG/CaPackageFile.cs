@@ -53,7 +53,7 @@ namespace KSoft.Phoenix.Resource.PKG
 			else if (s.IsWriting)
 			{
 				s.Writer.Write((long)Name.Length);
-				s.Writer.Write(Name, Memory.Strings.StringStorage.AsciiString);
+				s.Writer.Write(Name.AsSpan(), Memory.Strings.StringStorage.AsciiString);
 				s.Writer.Write(Offset);
 				s.Writer.Write(Size);
 			}

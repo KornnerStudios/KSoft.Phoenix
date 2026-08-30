@@ -26,7 +26,7 @@ namespace KSoft.Phoenix
 		public static IO.EndianStream StreamPascalString32(this IO.EndianStream s, ref string value)
 		{
 				 if (s.IsReading) { value = s.Reader.ReadString(Pascal32Encoding); }
-			else if (s.IsWriting) { s.Writer.Write(value, Pascal32Encoding); }
+			else if (s.IsWriting) { s.Writer.Write((value ?? string.Empty).AsSpan(), Pascal32Encoding); }
 
 			return s;
 		}
@@ -40,7 +40,7 @@ namespace KSoft.Phoenix
 		public static IO.EndianStream StreamPascalWideString32(this IO.EndianStream s, ref string value)
 		{
 				 if (s.IsReading) { value = s.Reader.ReadString(PascalUnicode32Encoding); }
-			else if (s.IsWriting) { s.Writer.Write(value, PascalUnicode32Encoding); }
+			else if (s.IsWriting) { s.Writer.Write((value ?? string.Empty).AsSpan(), PascalUnicode32Encoding); }
 
 			return s;
 		}

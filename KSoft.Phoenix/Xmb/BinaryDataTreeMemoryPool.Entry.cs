@@ -1,4 +1,5 @@
-﻿using Interop = System.Runtime.InteropServices;
+﻿using System;
+using Interop = System.Runtime.InteropServices;
 
 using Vector2f = System.Numerics.Vector2;
 using Vector3f = System.Numerics.Vector3;
@@ -389,7 +390,7 @@ namespace KSoft.Phoenix.Xmb
 					case BinaryDataTreeVariantType.Single: s.Write(Single); break;
 					case BinaryDataTreeVariantType.Double: s.Write(Double); break;
 					case BinaryDataTreeVariantType.String:
-						s.Write(String, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						s.Write((String ?? string.Empty).AsSpan(), IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
 						break;
 					case BinaryDataTreeVariantType.Vector:
 						if (VectorLength >= 1) s.Write(Vector4d.X);

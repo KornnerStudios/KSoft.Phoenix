@@ -1,4 +1,5 @@
-﻿using Interop = System.Runtime.InteropServices;
+﻿using System;
+using Interop = System.Runtime.InteropServices;
 
 using Vector2f = System.Numerics.Vector2;
 using Vector3f = System.Numerics.Vector3;
@@ -161,7 +162,7 @@ namespace KSoft.Phoenix.Xmb
 					case XmbVariantType.Double: s.Write(Double); break;
 					case XmbVariantType.String:
 						var stringValue = String ?? throw new System.InvalidOperationException("String variant has no string value.");
-						s.Write(stringValue, IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						s.Write(stringValue.AsSpan(), IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
 						break;
 					case XmbVariantType.Vector:
 					{

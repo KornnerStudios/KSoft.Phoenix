@@ -83,7 +83,7 @@ namespace KSoft.Phoenix
 				else
 				{
 					pointer = new Values.PtrHandle(pointer, (ulong)s.BaseStream.Position);
-					s.Writer.Write(value, Memory.Strings.StringStorage.CStringAscii);
+					s.Writer.Write((value ?? string.Empty).AsSpan(), Memory.Strings.StringStorage.CStringAscii);
 					streamed = true;
 				}
 			}
