@@ -195,7 +195,7 @@ namespace KSoft.Phoenix.Resource
 			UncompressedData = new byte[mHeader.UncompressedSize];
 			s.ReadExactly(UncompressedData);
 
-			mHeader.UncompressedAdler32 = Adler32.Compute(UncompressedData);
+			mHeader.UncompressedAdler32 = Adler32.Compute(UncompressedData.AsSpan());
 		}
 		public void WriteData(System.IO.Stream s)
 		{
@@ -242,7 +242,7 @@ namespace KSoft.Phoenix.Resource
 				out uint adler32/*mHeader.CompressedAdler32*/, compressedData);
 			CompressedData = compressedData;
 
-			mHeader.CompressedAdler32 = Adler32.Compute(compressedData);
+			mHeader.CompressedAdler32 = Adler32.Compute(compressedData.AsSpan());
 			if (mHeader.CompressedAdler32 != adler32)
 			{
 #if false

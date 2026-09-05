@@ -14,7 +14,7 @@ namespace KSoft.Phoenix.Resource
 			byte[] result = new byte[bytes.Length];
 			result = IO.Compression.ZLib.LowLevelCompress(bytes, lvl, out uint /*adler32*/_, result);
 
-			resultAdler = Security.Cryptography.Adler32.Compute(result);
+			resultAdler = Security.Cryptography.Adler32.Compute(result.AsSpan());
 
 			return result;
 		}
