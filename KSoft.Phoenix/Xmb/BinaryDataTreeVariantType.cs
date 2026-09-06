@@ -93,21 +93,21 @@ namespace KSoft.Phoenix.Xmb
 
 		public readonly uint GetSuperFastHashCode()
 		{
-			var buffer = PhxUtil.GetBufferForSuperFastHash(sizeof(uint));
+			Span<byte> buffer = stackalloc byte[sizeof(uint)];
 
 			uint hash;
 
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (uint)Type);
-			hash = PhxUtil.SuperFastHash(buffer, 0, sizeof(uint));
+			BitConverter.TryWriteBytes(buffer, (uint)Type);
+			hash = PhxUtil.SuperFastHash(buffer[..sizeof(uint)]);
 
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)Size);
-			hash = PhxUtil.SuperFastHash(buffer, 0, sizeof(ushort), hash);
+			BitConverter.TryWriteBytes(buffer, (ushort)Size);
+			hash = PhxUtil.SuperFastHash(buffer[..sizeof(ushort)], hash);
 
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)Alignment);
-			hash = PhxUtil.SuperFastHash(buffer, 0, sizeof(ushort), hash);
+			BitConverter.TryWriteBytes(buffer, (ushort)Alignment);
+			hash = PhxUtil.SuperFastHash(buffer[..sizeof(ushort)], hash);
 
 			buffer[0] = Flags;
-			hash = PhxUtil.SuperFastHash(buffer, 0, sizeof(byte), hash);
+			hash = PhxUtil.SuperFastHash(buffer[..sizeof(byte)], hash);
 
 			return hash;
 		}

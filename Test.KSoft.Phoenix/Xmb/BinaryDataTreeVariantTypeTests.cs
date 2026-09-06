@@ -8,6 +8,27 @@ namespace KSoft.Phoenix.Xmb.Test;
 public sealed class BinaryDataTreeVariantTypeTests
 {
 	[TestMethod]
+	public void GetSuperFastHashCode_SingleVectorDescriptor_ReturnsGoldenHash()
+	{
+		uint hash = BinaryDataTreeVariantTypeDesc.SingleVector.GetSuperFastHashCode();
+
+		Assert.AreEqual(0xF1797E07U, hash,
+			$"Expected 0xF1797E07, actual 0x{hash:X8}.");
+	}
+
+	[TestMethod]
+	public void PoolEntry_GetSuperFastHashCode_KnownEntry_ReturnsGoldenHash()
+	{
+		var entry = BinaryDataTreeMemoryPool.PoolEntry.New(BinaryDataTreeVariantTypeDesc.UInt16);
+		entry.ArrayLength = 3;
+
+		uint hash = entry.GetSuperFastHashCode();
+
+		Assert.AreEqual(0x9F10A388U, hash,
+			$"Expected 0x9F10A388, actual 0x{hash:X8}.");
+	}
+
+	[TestMethod]
 	public void ReadArray_AllSupportedDescriptors_PopulatesDestinationAndReturnsSameArray()
 	{
 		foreach (var testCase in GetSupportedArrayCases())

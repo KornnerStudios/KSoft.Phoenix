@@ -141,10 +141,10 @@ namespace KSoft.Phoenix.Xmb
 			{
 				var hash = TypeDesc.GetSuperFastHashCode();
 
-				var buffer = PhxUtil.GetBufferForSuperFastHash(sizeof(uint));
+				Span<byte> buffer = stackalloc byte[sizeof(uint)];
 
-				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (uint)ArrayLength);
-				hash = PhxUtil.SuperFastHash(buffer, 0, sizeof(uint), hash);
+				BitConverter.TryWriteBytes(buffer, (uint)ArrayLength);
+				hash = PhxUtil.SuperFastHash(buffer[..sizeof(uint)], hash);
 
 				// #TODO hash the value's bytes
 

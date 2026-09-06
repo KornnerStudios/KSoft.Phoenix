@@ -431,59 +431,24 @@ namespace KSoft.Phoenix
 			return found_pattern;
 		}
 
-		[ThreadStatic]
-		private static byte[]? gSharedBufferForSuperFastHash;
-		public static byte[] GetBufferForSuperFastHash(int bufferSize)
+		public static uint SuperFastHash(ReadOnlySpan<byte> buffer, uint initialValue = 0)
 		{
-			var buffer = gSharedBufferForSuperFastHash;
-			if (buffer is null)
-			{
-				buffer = new byte[16];
-				gSharedBufferForSuperFastHash = buffer;
-			}
-			else
-			{
-				buffer.FastClear();
-			}
-			if (bufferSize > buffer.Length)
-			{
-				buffer = new byte[bufferSize];
-			}
-
-			return buffer;
-		}
-		public static uint SuperFastHash(byte[] buffer, uint initialValue = 0)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-
-			return SuperFastHash(buffer, 0, buffer.Length, initialValue);
-		}
-		public static uint SuperFastHash(byte[] buffer, int startIndex, int length, uint initialValue = 0)
-		{
-			ArgumentNullException.ThrowIfNull(buffer);
-			ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
-			ArgumentOutOfRangeException.ThrowIfNegative(length);
-			if (startIndex > buffer.Length || length > buffer.Length - startIndex)
-			{
-				throw new ArgumentException("Range must fit within the buffer.");
-			}
-
 			// Based on code by Paul Hsieh
 			// http://www.azillionmonkeys.com/qed/hash.html
 
 			uint hash = initialValue;
 
-			int length_rem = length & (sizeof(uint)-1);
-			int words = length / sizeof(uint);
-			int index = startIndex;
+			int length_rem = buffer.Length & (sizeof(uint)-1);
+			int words = buffer.Length / sizeof(uint);
+			int index = 0;
 
 			// Main loop
 			for (; words > 0; words--)
 			{
-				hash += (uint)(BitConverter.ToUInt16(buffer, index));
+				hash += BitConverter.ToUInt16(buffer[index..]);
 				index += sizeof(ushort);
 				hash ^= hash << 16;
-				hash ^= (uint)(BitConverter.ToUInt16(buffer, index) << 11);
+				hash ^= (uint)(BitConverter.ToUInt16(buffer[index..]) << 11);
 				index += sizeof(ushort);
 				hash += hash >> 11;
 			}
@@ -492,21 +457,18 @@ namespace KSoft.Phoenix
 			switch (length_rem)
 			{
 				case sizeof(ushort)+1:
-					hash += (uint)(BitConverter.ToUInt16(buffer, index));
+					hash += BitConverter.ToUInt16(buffer[index..]);
 					index += sizeof(ushort);
 					hash ^= (uint)(buffer[index] << 18);
 					hash += hash >> 11;
 					break;
 				case sizeof(ushort):
-					hash += (uint)(BitConverter.ToUInt16(buffer, index));
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-					index += sizeof(ushort);
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
+					hash += BitConverter.ToUInt16(buffer[index..]);
 					hash ^= hash << 11;
 					hash += hash >> 17;
 					break;
 				case sizeof(byte):
-					hash += buffer[index++];
+					hash += buffer[index];
 					hash ^= hash << 10;
 					hash += hash >> 1;
 					break;
