@@ -107,7 +107,8 @@ namespace KSoft.Phoenix.Runtime
 			base.Serialize(s);
 
 			s.StreamV(ref CenterOffset); s.StreamV(ref IconColorSize);
-			s.Stream(UVOffsets);
+			ArgumentNullException.ThrowIfNull(UVOffsets);
+			s.Stream(UVOffsets.AsSpan());
 			s.Stream(ref MultiframeTextureIndex);
 			s.Stream(ref VisualVariationIndex);
 			BVisualManager.Stream(s, ref Visual);

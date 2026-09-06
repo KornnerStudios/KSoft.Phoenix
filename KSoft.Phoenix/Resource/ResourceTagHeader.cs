@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace KSoft.Phoenix.Resource
 {
 	public enum ResourceTagPlatformId : byte
@@ -89,7 +90,9 @@ namespace KSoft.Phoenix.Resource
 			s.StreamVirtualAddress(ref TagUserNameOffset);
 
 			s.StreamVirtualAddress(ref SourceFileName);
-			s.Stream(SourceDigest);
+			ArgumentNullException.ThrowIfNull(SourceDigest);
+			Span<byte> sourceDigest = SourceDigest.AsSpan();
+			s.Stream(sourceDigest);
 			s.Stream(ref SourceFileSize);
 			s.Stream(ref SourceFileTimeStamp);
 

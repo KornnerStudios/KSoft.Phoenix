@@ -48,7 +48,7 @@ namespace KSoft.Phoenix.Resource
 				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 0);
 				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 1);
 			}
-			s.Stream(CompressedDataTiger128);
+			s.Stream(CompressedDataTiger128.AsSpan());
 			{
 				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 0);
 				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 1);

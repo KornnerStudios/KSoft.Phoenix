@@ -35,8 +35,10 @@ namespace KSoft.Phoenix.Resource
 				UnkC = new byte[UnkLength];
 				Unk18 = new byte[UnkLength];
 			}
-			s.Stream(UnkC);
-			s.Stream(Unk18);
+			ArgumentNullException.ThrowIfNull(UnkC);
+			s.Stream(UnkC.AsSpan());
+			ArgumentNullException.ThrowIfNull(Unk18);
+			s.Stream(Unk18.AsSpan());
 		}
 		#endregion
 	};

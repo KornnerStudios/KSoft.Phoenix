@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KSoft.Phoenix.Runtime
 {
@@ -186,7 +187,7 @@ namespace KSoft.Phoenix.Runtime
 		#region IEndianStreamSerializable Members
 		public virtual void Serialize(IO.EndianStream s)
 		{
-			s.Stream(KillerIDs);
+			s.Stream(KillerIDs.AsSpan());
 			s.Stream(ref Built); s.Stream(ref Lost); s.Stream(ref Destroyed); s.Stream(ref Max);
 			s.Stream(ref CombatID);
 			s.Stream(ref FirstTime); s.Stream(ref LastTime);

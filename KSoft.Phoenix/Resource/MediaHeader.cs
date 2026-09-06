@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 
 namespace KSoft.Phoenix.Resource
 {
@@ -97,9 +98,9 @@ namespace KSoft.Phoenix.Resource
 			s.Stream(ref SessionId);
 			s.Stream(ref GameType);
 			s.Stream(ref DataCryptKey);
-			s.Stream(DataHash, 0, DataHash.Length);
+			s.Stream(DataHash.AsSpan(0, DataHash.Length));
 			s.Stream(ref DataSize);
-			s.Stream(Hash, 0, Hash.Length);
+			s.Stream(Hash.AsSpan(0, Hash.Length));
 			s.Pad(kPaddingLength);
 		}
 		#endregion

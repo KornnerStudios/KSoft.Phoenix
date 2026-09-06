@@ -54,7 +54,7 @@ namespace KSoft.Phoenix.Resource
 			if (sig_data_length > 0)
 			{
 				byte[] signatureData = SignatureData ?? throw new InvalidOperationException("Signature data was unexpectedly null.");
-				s.Stream(signatureData);
+				s.Stream(signatureData.AsSpan());
 			}
 			s.StreamSignature(kSignatureMarker);
 		}

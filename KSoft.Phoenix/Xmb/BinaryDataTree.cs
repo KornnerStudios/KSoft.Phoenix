@@ -287,11 +287,11 @@ namespace KSoft.Phoenix.Xmb
 
 			s.Seek(name_data_offset);
 			Decompiler.NameData = new byte[name_data_size];
-			s.Stream(Decompiler.NameData);
+			s.Stream(Decompiler.NameData.AsSpan());
 
 			s.Seek(value_data_offset);
 			Decompiler.ValueData = new byte[value_data_size];
-			s.Stream(Decompiler.ValueData);
+			s.Stream(Decompiler.ValueData.AsSpan());
 
 			s.Seek(nodes_offset);
 			Decompiler.PackedNodes = new BinaryDataTreePackedNode[nodes_size / BinaryDataTreePackedNode.kSizeOf];

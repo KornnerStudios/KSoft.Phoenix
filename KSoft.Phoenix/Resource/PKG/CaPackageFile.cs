@@ -169,7 +169,7 @@ namespace KSoft.Phoenix.Resource.PKG
 
 			s.Seek(entry.Offset);
 			byte[] bytes = new byte[entry.Size];
-			s.Stream(bytes);
+			s.Stream(bytes.AsSpan());
 
 			return bytes;
 		}

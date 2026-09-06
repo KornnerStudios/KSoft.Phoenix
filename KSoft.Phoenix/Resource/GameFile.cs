@@ -292,7 +292,7 @@ namespace KSoft.Phoenix.Resource
 				// then any of the derived types:
 				//		BSaveGame, BRecordGame
 				var content = Content ?? throw new InvalidOperationException("Content must be initialized before writing.");
-				s.Stream(content);
+				s.Stream(content.AsSpan());
 			}
 		}
 		#endregion

@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace KSoft.Phoenix.Resource
 {
 	public sealed class SaveFile
@@ -22,7 +23,7 @@ namespace KSoft.Phoenix.Resource
 			}
 
 			var leftovers = mLeftovers ?? throw new System.InvalidOperationException("Save file leftovers are required when writing.");
-			s.Stream(leftovers, 0, leftovers.Length);
+			s.Stream(leftovers.AsSpan(0, leftovers.Length));
 		}
 		public void Serialize(IO.EndianStream s)
 		{

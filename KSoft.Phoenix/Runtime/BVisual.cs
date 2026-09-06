@@ -1,4 +1,6 @@
-﻿// int mType - cVisualAsset*
+﻿using System;
+
+// int mType - cVisualAsset*
 // int mIndex
 using BVisualAsset = System.UInt64;
 
@@ -46,7 +48,8 @@ namespace KSoft.Phoenix.Runtime
 			s.Stream(ref ModelAsset);
 			if (s.StreamCond(ModelUVOffsets, offsets => !offsets.EqualsZero()))
 			{
-				s.Stream(ModelUVOffsets);
+				ArgumentNullException.ThrowIfNull(ModelUVOffsets);
+				s.Stream(ModelUVOffsets.AsSpan());
 			}
 
 			StreamFlags(s);

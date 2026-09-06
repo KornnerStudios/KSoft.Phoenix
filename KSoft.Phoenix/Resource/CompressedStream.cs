@@ -58,7 +58,7 @@ namespace KSoft.Phoenix.Resource
 
 			var compressedData = CompressedData;
 			ArgumentNullException.ThrowIfNull(compressedData);
-			s.Stream(compressedData);
+			s.Stream(compressedData.AsSpan());
 			s.StreamSignature(kSignatureEndOfStream);
 		}
 
