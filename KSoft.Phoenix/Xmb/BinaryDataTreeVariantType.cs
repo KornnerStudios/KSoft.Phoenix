@@ -178,7 +178,9 @@ namespace KSoft.Phoenix.Xmb
 					return null;
 
 				case EType.Bool:
-					return reader.ReadFixedArray((bool[])array);
+					ArgumentNullException.ThrowIfNull(array);
+					reader.ReadFixedArray(((bool[])array).AsSpan());
+					return array;
 
 				case EType.Int:
 				{
@@ -186,20 +188,44 @@ namespace KSoft.Phoenix.Xmb
 					{
 						switch (Size)
 						{
-							case ESizeInBytes._1byte: return reader.ReadFixedArray((byte[])array);
-							case ESizeInBytes._2byte: return reader.ReadFixedArray((ushort[])array);
-							case ESizeInBytes._4byte: return reader.ReadFixedArray((uint[])array);
-							case ESizeInBytes._8byte: return reader.ReadFixedArray((ulong[])array);
+							case ESizeInBytes._1byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((byte[])array).AsSpan());
+								return array;
+							case ESizeInBytes._2byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((ushort[])array).AsSpan());
+								return array;
+							case ESizeInBytes._4byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((uint[])array).AsSpan());
+								return array;
+							case ESizeInBytes._8byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((ulong[])array).AsSpan());
+								return array;
 						}
 					}
 					else
 					{
 						switch (Size)
 						{
-							case ESizeInBytes._1byte: return reader.ReadFixedArray((sbyte[])array);
-							case ESizeInBytes._2byte: return reader.ReadFixedArray((short[])array);
-							case ESizeInBytes._4byte: return reader.ReadFixedArray((int[])array);
-							case ESizeInBytes._8byte: return reader.ReadFixedArray((long[])array);
+							case ESizeInBytes._1byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((sbyte[])array).AsSpan());
+								return array;
+							case ESizeInBytes._2byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((short[])array).AsSpan());
+								return array;
+							case ESizeInBytes._4byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((int[])array).AsSpan());
+								return array;
+							case ESizeInBytes._8byte:
+								ArgumentNullException.ThrowIfNull(array);
+								reader.ReadFixedArray(((long[])array).AsSpan());
+								return array;
 						}
 					}
 				} throw new KSoft.Debug.UnreachableException(this.ToString());
@@ -208,8 +234,14 @@ namespace KSoft.Phoenix.Xmb
 				{
 					switch (Size)
 					{
-						case ESizeInBytes._4byte: return reader.ReadFixedArray((float[])array);
-						case ESizeInBytes._8byte: return reader.ReadFixedArray((double[])array);
+						case ESizeInBytes._4byte:
+							ArgumentNullException.ThrowIfNull(array);
+							reader.ReadFixedArray(((float[])array).AsSpan());
+							return array;
+						case ESizeInBytes._8byte:
+							ArgumentNullException.ThrowIfNull(array);
+							reader.ReadFixedArray(((double[])array).AsSpan());
+							return array;
 					}
 				} throw new KSoft.Debug.UnreachableException(this.ToString());
 
@@ -229,7 +261,9 @@ namespace KSoft.Phoenix.Xmb
 					return null;
 
 				case EType.Bool:
-					return writer.WriteFixedArray((bool[])array);
+					ArgumentNullException.ThrowIfNull(array);
+					writer.WriteFixedArray(((bool[])array).AsSpan());
+					return array;
 
 				case EType.Int:
 				{
@@ -237,20 +271,44 @@ namespace KSoft.Phoenix.Xmb
 					{
 						switch (Size)
 						{
-							case ESizeInBytes._1byte: return writer.WriteFixedArray((byte[])array);
-							case ESizeInBytes._2byte: return writer.WriteFixedArray((ushort[])array);
-							case ESizeInBytes._4byte: return writer.WriteFixedArray((uint[])array);
-							case ESizeInBytes._8byte: return writer.WriteFixedArray((ulong[])array);
+							case ESizeInBytes._1byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((byte[])array).AsSpan());
+								return array;
+							case ESizeInBytes._2byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((ushort[])array).AsSpan());
+								return array;
+							case ESizeInBytes._4byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((uint[])array).AsSpan());
+								return array;
+							case ESizeInBytes._8byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((ulong[])array).AsSpan());
+								return array;
 						}
 					}
 					else
 					{
 						switch (Size)
 						{
-							case ESizeInBytes._1byte: return writer.WriteFixedArray((sbyte[])array);
-							case ESizeInBytes._2byte: return writer.WriteFixedArray((short[])array);
-							case ESizeInBytes._4byte: return writer.WriteFixedArray((int[])array);
-							case ESizeInBytes._8byte: return writer.WriteFixedArray((long[])array);
+							case ESizeInBytes._1byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((sbyte[])array).AsSpan());
+								return array;
+							case ESizeInBytes._2byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((short[])array).AsSpan());
+								return array;
+							case ESizeInBytes._4byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((int[])array).AsSpan());
+								return array;
+							case ESizeInBytes._8byte:
+								ArgumentNullException.ThrowIfNull(array);
+								writer.WriteFixedArray(((long[])array).AsSpan());
+								return array;
 						}
 					}
 				} throw new KSoft.Debug.UnreachableException(this.ToString());
@@ -259,8 +317,14 @@ namespace KSoft.Phoenix.Xmb
 				{
 					switch (Size)
 					{
-						case ESizeInBytes._4byte: return writer.WriteFixedArray((float[])array);
-						case ESizeInBytes._8byte: return writer.WriteFixedArray((double[])array);
+						case ESizeInBytes._4byte:
+							ArgumentNullException.ThrowIfNull(array);
+							writer.WriteFixedArray(((float[])array).AsSpan());
+							return array;
+						case ESizeInBytes._8byte:
+							ArgumentNullException.ThrowIfNull(array);
+							writer.WriteFixedArray(((double[])array).AsSpan());
+							return array;
 					}
 				} throw new KSoft.Debug.UnreachableException(this.ToString());
 
