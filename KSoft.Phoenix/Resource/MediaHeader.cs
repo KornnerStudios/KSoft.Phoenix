@@ -76,7 +76,7 @@ namespace KSoft.Phoenix.Resource
 			PhxHash.Ascii(sha, author, kAuthorStorage.FixedLength);
 			DateTime.UpdateHash(sha);
 			PhxHash.UInt64(sha, AuthorXuid);
-			PhxHash.UInt32(sha, Bitwise.ByteSwap.SingleToUInt32(Length));
+			PhxHash.UInt32(sha, BitConverter.SingleToUInt32Bits(Length));
 			PhxHash.UInt16(sha, SessionId);
 			PhxHash.UInt32(sha, (uint)GameType);
 			PhxHash.UInt64(sha, DataCryptKey);
