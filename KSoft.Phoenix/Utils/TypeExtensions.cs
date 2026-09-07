@@ -165,7 +165,7 @@ namespace KSoft.Phoenix
 				var value = property.GetValue(obj, null) as byte[];
 				if (value is { Length: > 0 })
 				{
-					string str_value = Text.Util.ByteArrayToString(value);
+					string str_value = Convert.ToHexString(value);
 					if (str_value.IsNotNullOrEmpty())
 					{
 						s.WriteCursor(str_value);

@@ -123,7 +123,7 @@ namespace KSoft.Phoenix.Resource
 				}
 
 				s.WriteAttribute("compressedDataHash",
-					Text.Util.ByteArrayToString(CompressedDataTiger128));
+					Convert.ToHexString(CompressedDataTiger128));
 
 				s.WriteAttribute("nameOffset", FileNameOffset.ToString("X6", KSoft.Util.InvariantCultureInfo));
 			}

@@ -96,7 +96,7 @@ namespace KSoft.Phoenix.Resource
 
 				throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
 					$"Invalid chunk hash for '{chunk_name}' offset={fileEntry.DataOffset} size={fileEntry.DataSize:X8} " +
-					$"expected {Text.Util.ByteArrayToString(fileEntry.CompressedDataTiger128!)} but got {Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, EraFileEntryChunk.kCompresssedDataTigerHashSize)}"));
+					$"expected {Convert.ToHexString(fileEntry.CompressedDataTiger128!)} but got {Convert.ToHexString(TigerHasher!.Hash!.AsSpan(0, EraFileEntryChunk.kCompresssedDataTigerHashSize))}"));
 			}
 
 			if (fileEntry.CompressionType == ECF.EcfCompressionType.Stored)
@@ -111,7 +111,7 @@ namespace KSoft.Phoenix.Resource
 
 					throw new System.IO.InvalidDataException(string.Create(KSoft.Util.InvariantCultureInfo,
 						$"Chunk id mismatch for '{chunk_name}' offset={fileEntry.DataOffset} size={fileEntry.DataSize:X8} " +
-						$"expected {fileEntry.DecompressedDataTiger64:X16} but got {Text.Util.ByteArrayToString(TigerHasher!.Hash!, 0, sizeof(ulong))}"));
+						$"expected {fileEntry.DecompressedDataTiger64:X16} but got {Convert.ToHexString(TigerHasher!.Hash!.AsSpan(0, sizeof(ulong)))}"));
 				}
 			}
 		}

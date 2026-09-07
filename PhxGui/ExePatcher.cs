@@ -171,7 +171,7 @@ namespace PhxGui
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(ms);
 			}
 
-			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes!);
+			var exe_file_sha1 = Convert.ToHexString(exe_file_sha1_bytes!);
 
 			var finalErrorMessage = new System.Text.StringBuilder();
 			{
@@ -305,7 +305,7 @@ namespace PhxGui
 				exe_file_sha1_bytes = sha1_provider.ComputeHash(fs);
 			}
 
-			var exe_file_sha1 = KSoft.Text.Util.ByteArrayToString(exe_file_sha1_bytes!);
+			var exe_file_sha1 = Convert.ToHexString(exe_file_sha1_bytes!);
 			if (!TryGetPatchInfo(exe_file_sha1, out PatchInfo? exe_paches) || exe_paches == null)
 			{
 				return string.Create(CultureInfo.CurrentCulture,

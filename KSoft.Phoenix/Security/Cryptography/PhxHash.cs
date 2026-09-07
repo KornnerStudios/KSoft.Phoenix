@@ -270,7 +270,7 @@ namespace KSoft.Security.Cryptography
 #if DEBUG
 				if (TraceSha1Hash && System.Diagnostics.Debugger.IsAttached)
 				{
-					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Result: {1}", str, Text.Util.ByteArrayToString(hash1));
+					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Result: {1}", str, Convert.ToHexString(hash1));
 				}
 #endif // DEBUG
 
@@ -282,7 +282,7 @@ namespace KSoft.Security.Cryptography
 #if DEBUG
 				if (TraceSha1Hash && System.Diagnostics.Debugger.IsAttached)
 				{
-					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Final: {1}", str, Text.Util.ByteArrayToString(hash2));
+					Debug.Trace.Security.TraceInformation("Sha1Hash: {0} Final: {1}", str, Convert.ToHexString(hash2));
 				}
 #endif // DEBUG
 
