@@ -243,17 +243,17 @@ namespace KSoft.Security.Cryptography
 
 		// #TODO_PHOENIX rename and move this into PhxTEA
 		public const int kResultSize = 0x18;
-		static void ValidateSha1HashResult(byte[] result)
+		static void ValidateSha1HashResult(byte[] result, int requiredLength)
 		{
 			ArgumentNullException.ThrowIfNull(result);
-			ArgumentOutOfRangeException.ThrowIfLessThan(result.Length, kResultSize, nameof(result));
+			ArgumentOutOfRangeException.ThrowIfLessThan(result.Length, requiredLength, nameof(result));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy game digest format; not used for security authentication.")]
 		public static void Sha1Hash(string str, byte[] result)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(str);
-			ValidateSha1HashResult(result);
+			ValidateSha1HashResult(result, kResultSize);
 
 			Array.Clear(result, 0, result.Length);
 
@@ -310,7 +310,7 @@ namespace KSoft.Security.Cryptography
 		public static bool Sha1HashFile(string fileName, byte[] result, out long fileLength)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(fileName);
-			ValidateSha1HashResult(result);
+			ValidateSha1HashResult(result, kSha1SizeOf);
 
 			fileLength = -1;
 

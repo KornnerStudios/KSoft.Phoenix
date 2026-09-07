@@ -122,7 +122,28 @@ namespace KSoft.Security.Cryptography.Test
 			AssertThrowsArgument("fileName", () => _ = PhxHash.Sha1HashFile(string.Empty, result, out _));
 			AssertThrowsArgumentNull("result", () => _ = PhxHash.Sha1HashFile("missing.bin", null!, out _));
 			AssertThrowsArgumentOutOfRange("result", () =>
-				_ = PhxHash.Sha1HashFile("missing.bin", new byte[PhxHash.kResultSize - 1], out _));
+				_ = PhxHash.Sha1HashFile("missing.bin", new byte[PhxHash.kSha1SizeOf - 1], out _));
+		}
+
+		[TestMethod]
+		public void PhxHash_Sha1HashFile_TwentyByteDestinationWritesDigestAndLength()
+		{
+			byte[] input = [0x10, 0x20, 0x30, 0x40, 0x50];
+			string fileName = Path.GetTempFileName();
+			try
+			{
+				File.WriteAllBytes(fileName, input);
+				var result = new byte[PhxHash.kSha1SizeOf];
+
+				Assert.IsTrue(PhxHash.Sha1HashFile(fileName, result, out long fileLength));
+
+				CollectionAssert.AreEqual(SHA1.HashData(input), result);
+				Assert.AreEqual(input.Length, fileLength);
+			}
+			finally
+			{
+				File.Delete(fileName);
+			}
 		}
 
 		static void AssertThrowsArgument(string parameterName, Action action)
