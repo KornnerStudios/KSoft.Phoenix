@@ -122,9 +122,9 @@ public sealed class WinExePatcherParticleGateway
 		return true;
 	}
 
-	public void ApplyModJmp(byte[] dstExeBytes)
+	public void ApplyModJmp(Span<byte> dstExeBytes)
 	{
 		// loc_1407A79F6, replace assertion asm with NoParticles-like behavior
-		Array.Copy(NewAsmBytesPattern, 0, dstExeBytes, ModNewAsmBytesFileOffset, NewAsmBytesPattern.Length);
+		NewAsmBytesPattern.AsSpan().CopyTo(dstExeBytes[ModNewAsmBytesFileOffset..]);
 	}
 };

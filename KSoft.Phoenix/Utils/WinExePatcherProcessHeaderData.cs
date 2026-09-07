@@ -97,13 +97,12 @@ namespace KSoft.Phoenix.zPatching
 			return true;
 		}
 
-		public void ApplyModJmp(byte[] dstExeBytes)
+		public void ApplyModJmp(Span<byte> dstExeBytes)
 		{
-			ArgumentNullException.ThrowIfNull(dstExeBytes);
-
-			int index = ModJmpFileOffset;
-			dstExeBytes[index++] = 0xE9;
-			BitConverter.TryWriteBytes(dstExeBytes.AsSpan(index, sizeof(int)), ModJmpVa);
+			Span<byte> patchBytes = dstExeBytes.Slice(
+				ModJmpFileOffset, sizeof(byte) + sizeof(int));
+			patchBytes[0] = 0xE9;
+			BitConverter.TryWriteBytes(patchBytes[sizeof(byte)..], ModJmpVa);
 		}
 	};
 }

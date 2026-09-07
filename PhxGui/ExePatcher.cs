@@ -163,6 +163,7 @@ namespace PhxGui
 			}
 			#endregion
 
+			Span<byte> exeBytes = sourceExeBytes.AsSpan();
 			byte[]? exe_file_sha1_bytes = null;
 			using (var ms = new MemoryStream(sourceExeBytes))
 			using (var sha1_provider = System.Security.Cryptography.SHA1.Create())
@@ -174,7 +175,7 @@ namespace PhxGui
 
 			var finalErrorMessage = new System.Text.StringBuilder();
 			{
-				string? errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(sourceExeBytes, sourceExeBytes);
+				string? errorMessage = PatchGameExeEraDigitalSignatureCheckByPatternMatching(exeBytes, exeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
 					finalErrorMessage.AppendFormat(CultureInfo.CurrentCulture, "ERROR EraDigitalSignatureCheck - {0}: {1}" +
@@ -187,7 +188,7 @@ namespace PhxGui
 			}
 
 			{
-				string? errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(sourceExeBytes, sourceExeBytes);
+				string? errorMessage = PatchGameExeParticleGatewayAssertByPatternMatching(exeBytes, exeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
 					finalErrorMessage.AppendFormat(CultureInfo.CurrentCulture, "ERROR BParticleGateway cMaxDataSlots assert - {0}: {1}" +
@@ -200,7 +201,7 @@ namespace PhxGui
 			}
 
 			{
-				string? errorMessage = PatchGameExeUserProfileSetupTickerInfoByPatternMatching(sourceExeBytes, sourceExeBytes);
+				string? errorMessage = PatchGameExeUserProfileSetupTickerInfoByPatternMatching(exeBytes, exeBytes);
 				if (errorMessage.IsNotNullOrEmpty())
 				{
 					finalErrorMessage.AppendFormat(CultureInfo.CurrentCulture, "ERROR UserProfileSetupTickerInfo - {0}: {1}" +
@@ -219,13 +220,14 @@ namespace PhxGui
 
 			using (var fs = File.OpenWrite(args.ExeFile))
 			{
-				fs.Write(sourceExeBytes, 0, sourceExeBytes.Length);
+				fs.Write(exeBytes);
 			}
 
 			return args.ExeFile;
 		}
 
-		static string? PatchGameExeEraDigitalSignatureCheckByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
+		static string? PatchGameExeEraDigitalSignatureCheckByPatternMatching(
+			ReadOnlySpan<byte> sourceExeBytes, Span<byte> dstExeBytes)
 		{
 			var patch_pattern = new KSoft.Phoenix.zPatching.WinExePatcherProcessHeaderData();
 			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
@@ -244,7 +246,8 @@ namespace PhxGui
 			return null;
 		}
 
-		static string? PatchGameExeParticleGatewayAssertByPatternMatching(ReadOnlySpan<byte> sourceExeBytes, byte[] dstExeBytes)
+		static string? PatchGameExeParticleGatewayAssertByPatternMatching(
+			ReadOnlySpan<byte> sourceExeBytes, Span<byte> dstExeBytes)
 		{
 			var patch_pattern = new KSoft.Phoenix.Games.HaloWars.zPatching.WinExePatcherParticleGateway();
 			bool found_pattern = patch_pattern.FindPatterns(sourceExeBytes);
