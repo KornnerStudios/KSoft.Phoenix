@@ -64,25 +64,25 @@ namespace KSoft.Security.Cryptography
 			ArgumentNullException.ThrowIfNull(keyPhrase);
 			var key = new ulong[kKeySize];
 
-			var keyBytes = new byte[PhxHash.kResultSize];
-			PhxHash.Sha1Hash(keyPhrase, keyBytes.AsSpan());
+			Span<byte> keyBytes = stackalloc byte[PhxHash.kResultSize];
+			PhxHash.Sha1Hash(keyPhrase, keyBytes);
 
 			// set key elements from keyBytes, low part then high part
 			{
-				ulong keyLo = BitConverter.ToUInt32(keyBytes, 0 * sizeof(uint));
-				ulong keyHi = BitConverter.ToUInt32(keyBytes, 1 * sizeof(uint));
+				ulong keyLo = BitConverter.ToUInt32(keyBytes.Slice(0 * sizeof(uint), sizeof(uint)));
+				ulong keyHi = BitConverter.ToUInt32(keyBytes.Slice(1 * sizeof(uint), sizeof(uint)));
 
 				key[0] = (keyHi << Bits.kUInt32BitCount) | keyLo;
 			}
 			{
-				ulong keyLo = BitConverter.ToUInt32(keyBytes, 2 * sizeof(uint));
-				ulong keyHi = BitConverter.ToUInt32(keyBytes, 3 * sizeof(uint));
+				ulong keyLo = BitConverter.ToUInt32(keyBytes.Slice(2 * sizeof(uint), sizeof(uint)));
+				ulong keyHi = BitConverter.ToUInt32(keyBytes.Slice(3 * sizeof(uint), sizeof(uint)));
 
 				key[1] = (keyHi << Bits.kUInt32BitCount) | keyLo;
 			}
 			{
-				ulong keyLo = BitConverter.ToUInt32(keyBytes, 4 * sizeof(uint));
-				ulong keyHi = BitConverter.ToUInt32(keyBytes, 5 * sizeof(uint));
+				ulong keyLo = BitConverter.ToUInt32(keyBytes.Slice(4 * sizeof(uint), sizeof(uint)));
+				ulong keyHi = BitConverter.ToUInt32(keyBytes.Slice(5 * sizeof(uint), sizeof(uint)));
 
 				key[2] = (keyHi << Bits.kUInt32BitCount) | keyLo;
 			}
