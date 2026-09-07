@@ -16,10 +16,11 @@ namespace KSoft.Security.Cryptography
 		// NOTE: data is written to the buffer in MSB order
 		static void BufferFillUnicode(byte[] buffer, char unicode)
 		{
-			Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)unicode);
+			Span<byte> unicodeBytes = buffer.AsSpan(0, sizeof(ushort));
+			BitConverter.TryWriteBytes(unicodeBytes, (ushort)unicode);
 			if (BitConverter.IsLittleEndian)
 			{
-				Bitwise.ByteSwap.SwapUInt16(buffer, 0);
+				unicodeBytes.Reverse();
 			}
 		}
 
@@ -55,10 +56,11 @@ namespace KSoft.Security.Cryptography
 			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
 			try
 			{
-				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, (ushort)word);
+				Span<byte> wordBytes = buffer.AsSpan(0, sizeof(ushort));
+				BitConverter.TryWriteBytes(wordBytes, (ushort)word);
 				if (BitConverter.IsLittleEndian)
 				{
-					Bitwise.ByteSwap.SwapUInt16(buffer, 0);
+					wordBytes.Reverse();
 				}
 
 				if (isFinal)
@@ -80,10 +82,11 @@ namespace KSoft.Security.Cryptography
 			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
 			try
 			{
-				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
+				Span<byte> wordBytes = buffer.AsSpan(0, sizeof(uint));
+				BitConverter.TryWriteBytes(wordBytes, word);
 				if (BitConverter.IsLittleEndian)
 				{
-					Bitwise.ByteSwap.SwapUInt32(buffer, 0);
+					wordBytes.Reverse();
 				}
 
 				if (isFinal)
@@ -105,10 +108,11 @@ namespace KSoft.Security.Cryptography
 			byte[] buffer = ArrayPool<byte>.Shared.Rent(sizeof(ulong));
 			try
 			{
-				Bitwise.ByteSwap.ReplaceBytes(buffer, 0, word);
+				Span<byte> wordBytes = buffer.AsSpan(0, sizeof(ulong));
+				BitConverter.TryWriteBytes(wordBytes, word);
 				if (BitConverter.IsLittleEndian)
 				{
-					Bitwise.ByteSwap.SwapUInt64(buffer, 0);
+					wordBytes.Reverse();
 				}
 
 				if (isFinal)
@@ -297,7 +301,7 @@ namespace KSoft.Security.Cryptography
 				// we want to read the dwords of the result as big endian, as this is how the engine reads the bytes
 				for (int x = 0; x < kResultSize; x += sizeof(uint))
 				{
-					Bitwise.ByteSwap.SwapUInt32(result, x);
+					result.AsSpan(x, sizeof(uint)).Reverse();
 				}
 			}
 		}

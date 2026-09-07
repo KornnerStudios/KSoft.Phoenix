@@ -45,13 +45,13 @@ namespace KSoft.Phoenix.Resource
 
 			if (s.IsWriting)
 			{
-				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 0);
-				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 1);
+				CompressedDataTiger128.AsSpan(sizeof(ulong) * 0, sizeof(ulong)).Reverse();
+				CompressedDataTiger128.AsSpan(sizeof(ulong) * 1, sizeof(ulong)).Reverse();
 			}
 			s.Stream(CompressedDataTiger128.AsSpan());
 			{
-				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 0);
-				Bitwise.ByteSwap.SwapInt64(CompressedDataTiger128, sizeof(ulong) * 1);
+				CompressedDataTiger128.AsSpan(sizeof(ulong) * 0, sizeof(ulong)).Reverse();
+				CompressedDataTiger128.AsSpan(sizeof(ulong) * 1, sizeof(ulong)).Reverse();
 			}
 
 

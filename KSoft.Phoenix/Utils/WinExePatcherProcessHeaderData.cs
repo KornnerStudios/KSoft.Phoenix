@@ -103,7 +103,7 @@ namespace KSoft.Phoenix.zPatching
 
 			int index = ModJmpFileOffset;
 			dstExeBytes[index++] = 0xE9;
-			Bitwise.ByteSwap.ReplaceBytes(dstExeBytes, index, ModJmpVa);
+			BitConverter.TryWriteBytes(dstExeBytes.AsSpan(index, sizeof(int)), ModJmpVa);
 		}
 	};
 }
