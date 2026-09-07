@@ -65,7 +65,7 @@ namespace KSoft.Security.Cryptography
 			var key = new ulong[kKeySize];
 
 			var keyBytes = new byte[PhxHash.kResultSize];
-			PhxHash.Sha1Hash(keyPhrase, keyBytes);
+			PhxHash.Sha1Hash(keyPhrase, keyBytes.AsSpan());
 
 			// set key elements from keyBytes, low part then high part
 			{

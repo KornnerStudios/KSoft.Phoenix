@@ -243,19 +243,16 @@ namespace KSoft.Security.Cryptography
 
 		// #TODO_PHOENIX rename and move this into PhxTEA
 		public const int kResultSize = 0x18;
-		static void ValidateSha1HashResult(byte[] result, int requiredLength)
+		static void ValidateSha1HashResult(Span<byte> result, int requiredLength)
 		{
-			ArgumentNullException.ThrowIfNull(result);
 			ArgumentOutOfRangeException.ThrowIfLessThan(result.Length, requiredLength, nameof(result));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy game digest format; not used for security authentication.")]
-		public static void Sha1Hash(string str, byte[] result)
+		public static void Sha1Hash(string str, Span<byte> result)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(str);
 			ValidateSha1HashResult(result, kResultSize);
-
-			Array.Clear(result, 0, result.Length);
 
 			byte[] str_bytes = System.Text.Encoding.ASCII.GetBytes(str);
 
@@ -289,25 +286,30 @@ namespace KSoft.Security.Cryptography
 				}
 #endif // DEBUG
 
-				Array.Copy(hash2, 0 * sizeof(uint), result, 0 * sizeof(uint), sizeof(uint));
-				Array.Copy(hash2, 1 * sizeof(uint), result, 1 * sizeof(uint), sizeof(uint));
+				// The engine digest is five words from hash2 followed by the first word from hash1.
+				{
+					const int kHash2WordCount = 5;
+					int hash2ByteCount = kHash2WordCount * sizeof(uint);
+					ReadOnlySpan<byte> hash2Words = hash2;
+					Span<byte> hash2Destination = result[..hash2ByteCount];
+					hash2Words.CopyTo(hash2Destination);
 
-				Array.Copy(hash2, 2 * sizeof(uint), result, 2 * sizeof(uint), sizeof(uint));
-				Array.Copy(hash2, 3 * sizeof(uint), result, 3 * sizeof(uint), sizeof(uint));
-
-				Array.Copy(hash2, 4 * sizeof(uint), result, 4 * sizeof(uint), sizeof(uint));
-				Array.Copy(hash1, 0 * sizeof(uint), result, 5 * sizeof(uint), sizeof(uint));
+					ReadOnlySpan<byte> hash1FirstWord = hash1.AsSpan(0, sizeof(uint));
+					Span<byte> hash1Destination = result.Slice(hash2ByteCount, sizeof(uint));
+					hash1FirstWord.CopyTo(hash1Destination);
+				}
 
 				// we want to read the dwords of the result as big endian, as this is how the engine reads the bytes
 				for (int x = 0; x < kResultSize; x += sizeof(uint))
 				{
-					result.AsSpan(x, sizeof(uint)).Reverse();
+					Span<byte> resultWord = result.Slice(x, sizeof(uint));
+					resultWord.Reverse();
 				}
 			}
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Cryptography", "CA5350:Do Not Use Weak Cryptographic Algorithms", Justification = "Required for compatibility with the legacy game digest format; not used for security authentication.")]
-		public static bool Sha1HashFile(string fileName, byte[] result, out long fileLength)
+		public static bool Sha1HashFile(string fileName, Span<byte> result, out long fileLength)
 		{
 			ArgumentException.ThrowIfNullOrEmpty(fileName);
 			ValidateSha1HashResult(result, kSha1SizeOf);
@@ -331,7 +333,7 @@ namespace KSoft.Security.Cryptography
 					fileLength = fs.Length;
 				}
 
-				Array.Copy(result_final, result, result_final.Length);
+				result_final.AsSpan().CopyTo(result);
 			}
 			catch (IOException ex)
 			{

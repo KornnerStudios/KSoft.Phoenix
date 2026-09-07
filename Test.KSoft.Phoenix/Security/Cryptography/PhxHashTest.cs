@@ -16,13 +16,16 @@ namespace KSoft.Security.Cryptography.Test
 		{
 			const string cKeyPhrase = PhxTEA.kKeyGameFilePhrase;
 
-			var result = new byte[PhxHash.kResultSize];
-			PhxHash.Sha1Hash(cKeyPhrase, result);
+			var destination = new byte[PhxHash.kResultSize + 2];
+			Array.Fill(destination, (byte)0xCC);
+			PhxHash.Sha1Hash(cKeyPhrase, destination.AsSpan(1));
 
 			ulong[] gameFileTeaKey = PhxTEA.CreateKeyFromPhrase(cKeyPhrase);
 			Assert.IsNotNull(gameFileTeaKey);
 			Assert.HasCount(PhxTEA.kKeySize, gameFileTeaKey);
 			CollectionAssert.AreEqual(PhxTEA.kKeyGameFile, gameFileTeaKey);
+			Assert.AreEqual((byte)0xCC, destination[0]);
+			Assert.AreEqual((byte)0xCC, destination[^1]);
 		}
 
 		[TestMethod]
@@ -115,14 +118,14 @@ namespace KSoft.Security.Cryptography.Test
 
 			AssertThrowsArgumentNull("str", () => PhxHash.Sha1Hash(null!, result));
 			AssertThrowsArgument("str", () => PhxHash.Sha1Hash(string.Empty, result));
-			AssertThrowsArgumentNull("result", () => PhxHash.Sha1Hash("test", null!));
-			AssertThrowsArgumentOutOfRange("result", () => PhxHash.Sha1Hash("test", new byte[PhxHash.kResultSize - 1]));
+			AssertThrowsArgumentOutOfRange("result", () =>
+				PhxHash.Sha1Hash("test", new byte[PhxHash.kResultSize - 1].AsSpan()));
 
 			AssertThrowsArgumentNull("fileName", () => _ = PhxHash.Sha1HashFile(null!, result, out _));
 			AssertThrowsArgument("fileName", () => _ = PhxHash.Sha1HashFile(string.Empty, result, out _));
-			AssertThrowsArgumentNull("result", () => _ = PhxHash.Sha1HashFile("missing.bin", null!, out _));
 			AssertThrowsArgumentOutOfRange("result", () =>
-				_ = PhxHash.Sha1HashFile("missing.bin", new byte[PhxHash.kSha1SizeOf - 1], out _));
+				_ = PhxHash.Sha1HashFile(
+					"missing.bin", new byte[PhxHash.kSha1SizeOf - 1].AsSpan(), out _));
 		}
 
 		[TestMethod]
@@ -133,12 +136,16 @@ namespace KSoft.Security.Cryptography.Test
 			try
 			{
 				File.WriteAllBytes(fileName, input);
-				var result = new byte[PhxHash.kSha1SizeOf];
+				var destination = new byte[PhxHash.kSha1SizeOf + 2];
+				Array.Fill(destination, (byte)0xCC);
 
-				Assert.IsTrue(PhxHash.Sha1HashFile(fileName, result, out long fileLength));
+				Assert.IsTrue(PhxHash.Sha1HashFile(
+					fileName, destination.AsSpan(1, PhxHash.kSha1SizeOf), out long fileLength));
 
-				CollectionAssert.AreEqual(SHA1.HashData(input), result);
+				CollectionAssert.AreEqual(SHA1.HashData(input), destination[1..^1]);
 				Assert.AreEqual(input.Length, fileLength);
+				Assert.AreEqual((byte)0xCC, destination[0]);
+				Assert.AreEqual((byte)0xCC, destination[^1]);
 			}
 			finally
 			{

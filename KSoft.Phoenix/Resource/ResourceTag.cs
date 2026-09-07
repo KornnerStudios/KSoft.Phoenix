@@ -69,7 +69,8 @@ namespace KSoft.Phoenix.Resource
 				return false;
 			}
 
-			var result = Security.Cryptography.PhxHash.Sha1HashFile(sourceFileName, SourceDigest, out long fileLength);
+			var result = Security.Cryptography.PhxHash.Sha1HashFile(
+				sourceFileName, SourceDigest.AsSpan(), out long fileLength);
 
 			if (result)
 			{
