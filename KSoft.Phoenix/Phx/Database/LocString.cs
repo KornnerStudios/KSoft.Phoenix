@@ -1,4 +1,5 @@
 ﻿using System;
+using KSoft.PropertyChanged.SourceGeneration;
 
 namespace KSoft.Phoenix.Phx
 {
@@ -23,83 +24,59 @@ namespace KSoft.Phoenix.Phx
 		kNumberOf
 	};
 
-	public sealed class LocString
+	public sealed partial class LocString
 		: ObjectModel.BasicViewModel
 		, IO.ITagElementStringNameStreamable
 	{
 		#region ID
 		int mID = TypeExtensions.kNone;
-		public int ID
-		{
-			get { return mID; }
-			private set { this.SetFieldVal(ref mID, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mID))]
+		public partial int ID { get; private set; }
 		#endregion
 
 		#region Category
 		// #NOTE this engine doesn't specifically limit the category values to the stuff in the enum, but, to reduce memory overhead, I am
 		LocStringCategory mCategory = LocStringCategory.None;
-		public LocStringCategory Category
-		{
-			get { return mCategory; }
-			set { this.SetFieldEnum(ref mCategory, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mCategory))]
+		public partial LocStringCategory Category { get; set; }
 		#endregion
 
 		#region Scenario
 		string? mScenario;
-		public string? Scenario
-		{
-			get { return mScenario; }
-			set { this.SetField(ref mScenario, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mScenario))]
+		public partial string? Scenario { get; set; }
 		#endregion
 
 		#region IsSubtitle
 		bool mIsSubtitle;
-		public bool IsSubtitle
-		{
-			get { return mIsSubtitle; }
-			set { this.SetFieldVal(ref mIsSubtitle, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mIsSubtitle))]
+		public partial bool IsSubtitle { get; set; }
 		#endregion
 
 		#region IsUpdate
 		bool mIsUpdate;
-		public bool IsUpdate
-		{
-			get { return mIsUpdate; }
-			set { this.SetFieldVal(ref mIsUpdate, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mIsUpdate))]
+		public partial bool IsUpdate { get; set; }
 		#endregion
 
 		#region MouseKeyboardID
 		int mMouseKeyboardID = TypeExtensions.kNone;
-		public int MouseKeyboardID
-		{
-			get { return mMouseKeyboardID; }
-			set { this.SetFieldVal(ref mMouseKeyboardID, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mMouseKeyboardID))]
+		public partial int MouseKeyboardID { get; set; }
 		#endregion
 
 		#region OriginalID
 		// this is a string because there are cases with "and" in them. eg:
 		// "25045 and 23441"
 		string? mOriginalID;
-		public string? OriginalID
-		{
-			get { return mOriginalID; }
-			set { this.SetField(ref mOriginalID, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mOriginalID))]
+		public partial string? OriginalID { get; set; }
 		#endregion
 
 		#region Text
 		string? mText;
-		public string? Text
-		{
-			get { return mText; }
-			set { this.SetField(ref mText, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mText))]
+		public partial string? Text { get; set; }
 		#endregion
 
 		public LocString()
