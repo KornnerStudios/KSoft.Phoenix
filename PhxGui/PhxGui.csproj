@@ -45,6 +45,10 @@
       <Project>{8BC67689-8BAA-480E-B2C1-03590AB79259}</Project>
       <Name>KSoft.WPF</Name>
     </ProjectReference>
+    <ProjectReference Include="$(VitaRootDir)KSoft\KSoft.PropertyChanged.SourceGeneration\KSoft.PropertyChanged.SourceGeneration.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="False"
+                      PrivateAssets="all" />
     <ProjectReference Include="$(VitaRootDir)Games\Wwise\KSoft.Wwise\KSoft.Wwise.csproj">
       <Project>{bddec955-6d39-4058-92e5-f1bf170f860f}</Project>
       <Name>KSoft.Wwise</Name>

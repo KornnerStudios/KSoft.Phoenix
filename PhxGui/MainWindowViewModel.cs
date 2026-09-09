@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using KSoft;
 using KSoft.Collections;
+using KSoft.PropertyChanged.SourceGeneration;
 
 namespace PhxGui
 {
@@ -71,47 +72,28 @@ namespace PhxGui
 		} }
 
 		KSoft.Collections.BitVector32 mFlags;
-		public KSoft.Collections.BitVector32 Flags
-		{
-			get { return mFlags; }
-			set { this.SetFieldVal(ref mFlags, value); }
-		}
+		[GeneratedPropertyChanged(BackingField = nameof(mFlags))]
+		public partial KSoft.Collections.BitVector32 Flags { get; set; }
 		#endregion
 
 		#region StatusText
-		string mStatusText = string.Empty;
-		public string StatusText
-		{
-			get { return mStatusText; }
-			set { this.SetFieldObj(ref mStatusText, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial string StatusText { get; set; } = string.Empty;
 		#endregion
 
 		#region ProcessFilesHelpText
-		string mProcessFilesHelpText = string.Empty;
-		public string ProcessFilesHelpText
-		{
-			get { return mProcessFilesHelpText; }
-			set { this.SetFieldObj(ref mProcessFilesHelpText, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial string ProcessFilesHelpText { get; set; } = string.Empty;
 		#endregion
 
 		#region MessagesText
-		string mMessagesText = string.Empty;
-		public string MessagesText
-		{
-			get { return mMessagesText; }
-			set { this.SetFieldObj(ref mMessagesText, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial string MessagesText { get; set; } = string.Empty;
 		#endregion
 
 		#region IsProcessing
-		bool mIsProcessing;
-		public bool IsProcessing
-		{
-			get { return mIsProcessing; }
-			set { this.SetFieldVal(ref mIsProcessing, value); }
-		}
+		[GeneratedPropertyChanged]
+		public partial bool IsProcessing { get; set; }
 		#endregion
 
 		public ICommand DataLoadTest { get; private set; } = null!;
