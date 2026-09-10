@@ -2,7 +2,7 @@
 
 namespace KSoft.Collections
 {
-	public abstract class BListAutoIdObject
+	public abstract partial class BListAutoIdObject
 		: ObjectModel.BasicViewModel
 		, IListAutoIdObject
 	{
@@ -27,11 +27,8 @@ namespace KSoft.Collections
 
 		#region IListAutoIdObject Members
 		private int mAutoId;
-		public int AutoId
-		{
-			get { return mAutoId; }
-			set { this.SetFieldVal(ref mAutoId, value); }
-		}
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChanged(BackingField = nameof(mAutoId))]
+		public partial int AutoId { get; set; }
 
 		string IListAutoIdObject.Data
 		{

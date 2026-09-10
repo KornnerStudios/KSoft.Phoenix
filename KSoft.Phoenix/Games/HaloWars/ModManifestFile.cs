@@ -4,17 +4,18 @@ using System.IO;
 
 namespace KSoft.Phoenix.HaloWars
 {
-	public sealed class ModManifestFile
+	public sealed partial class ModManifestFile
 		: ObjectModel.BasicViewModel
 	{
 		#region Sku
 		DefinitiveEditionSku mSku = DefinitiveEditionSku.Undefined;
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
 		public DefinitiveEditionSku Sku
 		{
 			get { return mSku; }
 			set
 			{
-				if (this.SetFieldEnum(ref mSku, value))
+				if (this.SetFieldEnum(ref mSku, value, kSkuChangedEventArgs))
 				{
 					FilePath = Sku.GetModManifestPath();
 				}
@@ -125,18 +126,15 @@ namespace KSoft.Phoenix.HaloWars
 		}
 	};
 
-	public sealed class ModManifestDirectory
+	public sealed partial class ModManifestDirectory
 		: ObjectModel.BasicViewModel
 	{
 		const char kDisabledPrefix = ';';
 
 		#region IsDisabled
 		bool mIsDisabled;
-		public bool IsDisabled
-		{
-			get { return mIsDisabled; }
-			set { this.SetFieldVal(ref mIsDisabled, value); }
-		}
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChanged(BackingField = nameof(mIsDisabled))]
+		public partial bool IsDisabled { get; set; }
 		#endregion
 
 		#region Directory

@@ -1,16 +1,17 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	public abstract class DatabaseIdObject
+	public abstract partial class DatabaseIdObject
 		: DatabasePurchasableObject
 		, IDatabaseIdObject
 	{
 		#region DBID
 		private int mDbId = TypeExtensions.kNone;
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
 		public int DbId
 		{
 			get { return mDbId; }
-			set { this.SetFieldVal(ref mDbId, value); }
+			set { this.SetFieldVal(ref mDbId, value, kDbIdChangedEventArgs); }
 		}
 		#endregion
 

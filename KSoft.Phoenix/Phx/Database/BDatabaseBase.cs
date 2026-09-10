@@ -44,6 +44,7 @@ namespace KSoft.Phoenix.Phx
 
 		#region LoadState
 		DatabaseLoadState mLoadState = DatabaseLoadState.NotLoaded;
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
 		public DatabaseLoadState LoadState
 		{
 			get
@@ -57,7 +58,7 @@ namespace KSoft.Phoenix.Phx
 			{
 				lock (mLoadStateLockee)
 				{
-					this.SetFieldEnum(ref mLoadState, value);
+					this.SetFieldEnum(ref mLoadState, value, kLoadStateChangedEventArgs);
 				}
 			}
 		}
