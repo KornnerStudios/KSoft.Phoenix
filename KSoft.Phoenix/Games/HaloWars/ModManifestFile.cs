@@ -139,21 +139,10 @@ namespace KSoft.Phoenix.HaloWars
 
 		#region Directory
 		string mDirectory = null!;
-		public string Directory
-		{
-			get { return mDirectory; }
-			[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2245:Do not assign a property to itself",
-				Justification = "This is how OnPropertyChanged fires")]
-			set
-			{
-				if (this.SetFieldObj(ref mDirectory, value))
-				{
-					// refresh validity
-					IsValid = IsValid;
-					DoesExist = DoesExist;
-				}
-			}
-		}
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChanged(
+			BackingField = nameof(mDirectory),
+			DependentProperties = new[] { nameof(IsValid), nameof(DoesExist) })]
+		public partial string Directory { get; set; }
 		#endregion
 
 		#region IsValid

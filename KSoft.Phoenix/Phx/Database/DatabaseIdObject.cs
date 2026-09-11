@@ -7,12 +7,8 @@ namespace KSoft.Phoenix.Phx
 	{
 		#region DBID
 		private int mDbId = TypeExtensions.kNone;
-		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
-		public int DbId
-		{
-			get { return mDbId; }
-			set { this.SetFieldVal(ref mDbId, value, kDbIdChangedEventArgs); }
-		}
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChanged(BackingField = nameof(mDbId))]
+		public partial int DbId { get; set; }
 		#endregion
 
 		protected DatabaseIdObject(Collections.BTypeValuesParams<float> rsrcCostParams, XML.BTypeValuesXmlParams<float> rsrcCostXmlParams)

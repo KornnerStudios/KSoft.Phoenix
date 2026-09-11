@@ -8,17 +8,10 @@ namespace KSoft.Collections
 	{
 		private string mName;
 		[Browsable(false)]
-		public string Name
-		{
-			get { return mName; }
-			protected set
-			{
-				if (this.SetFieldObj(ref mName, value))
-				{
-					OnPropertyChanged(nameof(IListAutoIdObject.Data));
-				}
-			}
-		}
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChanged(
+			BackingField = nameof(mName),
+			DependentProperties = new[] { nameof(IListAutoIdObject.Data) })]
+		public partial string Name { get; protected set; }
 
 		protected BListAutoIdObject()
 		{
