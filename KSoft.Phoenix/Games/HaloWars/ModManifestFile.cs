@@ -9,18 +9,12 @@ namespace KSoft.Phoenix.HaloWars
 	{
 		#region Sku
 		DefinitiveEditionSku mSku = DefinitiveEditionSku.Undefined;
-		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
-		public DefinitiveEditionSku Sku
-		{
-			get { return mSku; }
-			set
-			{
-				if (this.SetFieldEnum(ref mSku, value, kSkuChangedEventArgs))
-				{
-					FilePath = Sku.GetModManifestPath();
-				}
-			}
-		}
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChanged(
+			BackingField = nameof(mSku),
+			ChangedHook = KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedHook.Parameterless)]
+		public partial DefinitiveEditionSku Sku { get; set; }
+
+		partial void OnSkuChanged() => FilePath = Sku.GetModManifestPath();
 		#endregion
 
 		#region FilePath
