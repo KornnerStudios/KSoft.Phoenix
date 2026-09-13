@@ -19,6 +19,7 @@ namespace KSoft.Phoenix.HaloWars
 
 		#region FilePath
 		string? mFilePath;
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
 		public string? FilePath
 		{
 			get { return mFilePath; }
@@ -29,7 +30,7 @@ namespace KSoft.Phoenix.HaloWars
 				if (!string.Equals(mFilePath, value, System.StringComparison.Ordinal))
 				{
 					mFilePath = value;
-					OnPropertyChanged();
+					OnPropertyChangedCached(kFilePathChangedEventArgs);
 					ContainingFolder = ContainingFolder;
 					DisplayTitle = DisplayTitle;
 				}
@@ -37,6 +38,7 @@ namespace KSoft.Phoenix.HaloWars
 		}
 		#endregion
 
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
 		public string? ContainingFolder
 		{
 			get
@@ -50,7 +52,7 @@ namespace KSoft.Phoenix.HaloWars
 				path = Path.GetDirectoryName(path);
 				return path;
 			}
-			private set { OnPropertyChanged(); }
+			private set { OnPropertyChangedCached(kContainingFolderChangedEventArgs); }
 		}
 
 		public string GetDisplayTitle(IFormatProvider provider)
@@ -60,10 +62,11 @@ namespace KSoft.Phoenix.HaloWars
 			return string.Create(provider, $"{Sku} ModManifest - {FilePath}");
 		}
 
+		[KSoft.PropertyChanged.SourceGeneration.GeneratedPropertyChangedEventArgs]
 		public string DisplayTitle
 		{
 			get { return GetDisplayTitle(System.Globalization.CultureInfo.CurrentCulture); }
-			set { this.OnPropertyChanged(); }
+			set { this.OnPropertyChangedCached(kDisplayTitleChangedEventArgs); }
 		}
 
 		public ObservableCollection<ModManifestDirectory> Directories { get; private set; }
