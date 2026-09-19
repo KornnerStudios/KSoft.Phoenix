@@ -50,11 +50,10 @@ namespace KSoft.Phoenix.Runtime
 		#region Collection
 		/// <summary>Stream the elements of an object collection, using a 32-bit length prefix</summary>
 		/// <typeparam name="T">Object type</typeparam>
-		/// <param name="s"></param>
-		/// <param name="array">Allocated on read</param>
-		/// <param name="isIterated"><see cref="cSaveMarker.IteratorEndInt32"/> is written after the collection data</param>
-		/// <param name="maxCount"></param>
-		/// <returns></returns>
+		/// <param name="s">Stream used to read or write the collection.</param>
+		/// <param name="c">Existing collection; cleared and repopulated when reading.</param>
+		/// <param name="isIterated">Whether to stream <see cref="cSaveMarker.IteratorEndInt32"/> after the collection data.</param>
+		/// <returns>The input stream.</returns>
 		public static IO.EndianStream StreamCollection<T>(IO.EndianStream s, List<T> c,
 			bool isIterated = false)
 			where T : IO.IEndianStreamSerializable, new()
