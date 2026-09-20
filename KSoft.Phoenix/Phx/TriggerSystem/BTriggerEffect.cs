@@ -1,7 +1,7 @@
 ﻿
 namespace KSoft.Phoenix.Phx
 {
-	/// <remarks>Effect's <see cref="TriggerScriptObject.ID"/> is ignored by runtime (deprecated or editor only?)</remarks>
+	/// <remarks>Effect's <see cref="TriggerScriptIdObject.ID"/> is ignored by runtime (deprecated or editor only?)</remarks>
 	public sealed class BTriggerEffect
 		: TriggerScriptObjectWithArgs
 	{

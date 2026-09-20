@@ -18,11 +18,11 @@ namespace KSoft.Collections
 		}
 
 		/// <summary>
-		/// If the new count is greater than <see cref="Count"/>, adds new elements up-to <paramref name="new_count"/>,
+		/// If the new count is greater than <c>Count</c>, adds new elements up-to <paramref name="newCount"/>,
 		/// using the "invalid value" defined in the list params
 		/// </summary>
 		/// <param name="newCount"></param>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="newCount"/> is less than <see cref="Count"/></exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="newCount"/> is less than <c>Count</c></exception>
 		internal void ResizeCount(int newCount)
 		{
 			if (newCount < Count)
