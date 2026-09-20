@@ -13,10 +13,10 @@ namespace KSoft.Phoenix.Xmb
 		sealed class PoolEntry
 			: IO.IEndianStreamable
 		{
-			static readonly Text.StringStorageEncoding kAnsiEncoding =
-				Text.StringStorageEncoding.TryAndGetStaticEncoding(Memory.Strings.StringStorage.CStringAscii);
-			static readonly Text.StringStorageEncoding kUnicodeEncoding =
-				Text.StringStorageEncoding.TryAndGetStaticEncoding(Memory.Strings.StringStorage.CStringUnicode);
+			static readonly Memory.Strings.StringStorage kAnsiStorage =
+				Memory.Strings.StringStorage.CStringAscii;
+			static readonly Memory.Strings.StringStorage kUnicodeStorage =
+				Memory.Strings.StringStorage.CStringUnicode;
 
 			[Interop.FieldOffset(0)]
 			public uint Int;
@@ -82,9 +82,9 @@ namespace KSoft.Phoenix.Xmb
 					case XmbVariantType.Double:
 						return sizeof(ulong);
 					case XmbVariantType.String:
-						var sse = IsUnicode ? kUnicodeEncoding : kAnsiEncoding;
 						var stringValue = String ?? throw new System.InvalidOperationException("String variant has no string value.");
-						return (uint)sse.GetByteCount(stringValue);
+						var storage = IsUnicode ? kUnicodeStorage : kAnsiStorage;
+						return (uint)Text.StringStorageEncoding.GetByteCount(storage, stringValue);
 					case XmbVariantType.Vector:
 						return (uint)(sizeof(uint) * VectorLength);
 
@@ -114,7 +114,7 @@ namespace KSoft.Phoenix.Xmb
 					case XmbVariantType.Single: s.Read(out Single); break;
 					case XmbVariantType.Double: s.Read(out Double); break;
 					case XmbVariantType.String:
-						String = s.ReadString(IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						String = s.ReadString(IsUnicode ? kUnicodeStorage : kAnsiStorage);
 						break;
 					case XmbVariantType.Vector:
 					{
@@ -162,7 +162,7 @@ namespace KSoft.Phoenix.Xmb
 					case XmbVariantType.Double: s.Write(Double); break;
 					case XmbVariantType.String:
 						var stringValue = String ?? throw new System.InvalidOperationException("String variant has no string value.");
-						s.Write(stringValue.AsSpan(), IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						s.Write(stringValue.AsSpan(), IsUnicode ? kUnicodeStorage : kAnsiStorage);
 						break;
 					case XmbVariantType.Vector:
 					{

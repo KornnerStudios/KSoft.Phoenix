@@ -20,8 +20,9 @@ namespace KSoft.Phoenix
 
 		#region PascalString32
 		static readonly Memory.Strings.StringStorage Pascal32Storage = new(
-			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
-		static readonly Text.StringStorageEncoding Pascal32Encoding = new(Pascal32Storage);
+			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageLengthPrefix.Int32);
+		static readonly Text.StringStorageEncoding Pascal32Encoding =
+			new(Pascal32Storage, Shell.EndianFormat.Big);
 
 		public static IO.EndianStream StreamPascalString32(this IO.EndianStream s, ref string value)
 		{
@@ -34,8 +35,9 @@ namespace KSoft.Phoenix
 
 		#region PascalWideString32
 		static readonly Memory.Strings.StringStorage PascalUnicode32Storage = new(
-			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageLengthPrefix.Int32, Shell.EndianFormat.Big);
-		static readonly Text.StringStorageEncoding PascalUnicode32Encoding = new(PascalUnicode32Storage);
+			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageLengthPrefix.Int32);
+		static readonly Text.StringStorageEncoding PascalUnicode32Encoding =
+			new(PascalUnicode32Storage, Shell.EndianFormat.Big);
 
 		public static IO.EndianStream StreamPascalWideString32(this IO.EndianStream s, ref string value)
 		{

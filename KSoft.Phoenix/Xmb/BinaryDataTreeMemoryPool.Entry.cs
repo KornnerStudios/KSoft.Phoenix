@@ -15,10 +15,10 @@ namespace KSoft.Phoenix.Xmb
 		internal sealed class PoolEntry
 			: IO.IEndianStreamable
 		{
-			static readonly Text.StringStorageEncoding kAnsiEncoding =
-				Text.StringStorageEncoding.TryAndGetStaticEncoding(Memory.Strings.StringStorage.CStringAscii);
-			static readonly Text.StringStorageEncoding kUnicodeEncoding =
-				Text.StringStorageEncoding.TryAndGetStaticEncoding(Memory.Strings.StringStorage.CStringUnicode);
+			static readonly Memory.Strings.StringStorage kAnsiStorage =
+				Memory.Strings.StringStorage.CStringAscii;
+			static readonly Memory.Strings.StringStorage kUnicodeStorage =
+				Memory.Strings.StringStorage.CStringUnicode;
 
 			[Interop.FieldOffset(0)]
 			public uint Int;
@@ -369,7 +369,7 @@ namespace KSoft.Phoenix.Xmb
 				}
 				else
 				{
-					String = s.ReadString(IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+					String = s.ReadString(IsUnicode ? kUnicodeStorage : kAnsiStorage);
 				}
 			}
 
@@ -390,7 +390,7 @@ namespace KSoft.Phoenix.Xmb
 					case BinaryDataTreeVariantType.Single: s.Write(Single); break;
 					case BinaryDataTreeVariantType.Double: s.Write(Double); break;
 					case BinaryDataTreeVariantType.String:
-						s.Write((String ?? string.Empty).AsSpan(), IsUnicode ? kUnicodeEncoding : kAnsiEncoding);
+						s.Write((String ?? string.Empty).AsSpan(), IsUnicode ? kUnicodeStorage : kAnsiStorage);
 						break;
 					case BinaryDataTreeVariantType.Vector:
 						if (VectorLength >= 1) s.Write(Vector4d.X);

@@ -16,7 +16,7 @@ namespace KSoft.Phoenix.Resource
 		const int kAlignmentBit = IntegerMath.kFourKiloAlignmentBit;
 		const string kFileNamesTableName = "_file_names.bin";
 		static readonly Memory.Strings.StringMemoryPoolSettings kFileNamesTablePoolConfig =
-			new(Memory.Strings.StringStorage.CStringAscii, false);
+			new(Memory.Strings.StringStorage.CStringAscii, Shell.EndianFormat.Big, false);
 
 		public string? FileName { get; set; }
 

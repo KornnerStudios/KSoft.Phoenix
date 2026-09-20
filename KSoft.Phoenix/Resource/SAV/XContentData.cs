@@ -12,7 +12,6 @@ namespace KSoft.Phoenix.Resource.SAV
 
 		static readonly Memory.Strings.StringStorage kDisplayNameStorage = new(
 			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString,
-			// ByteOrder should be whatever the stream's byte order is...
 			fixedLength: XCONTENT_MAX_DISPLAYNAME_LENGTH);
 		static readonly Memory.Strings.StringStorage kFileNameStorage = new(
 			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageType.CString,

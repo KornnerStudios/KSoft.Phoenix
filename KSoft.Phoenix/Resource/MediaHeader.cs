@@ -10,11 +10,9 @@ namespace KSoft.Phoenix.Resource
 		: IO.IEndianStreamSerializable
 	{
 		static readonly Memory.Strings.StringStorage kNameStorage = new(
-			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString,
-			Shell.EndianFormat.Big, 32);
+			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString, 32);
 		static readonly Memory.Strings.StringStorage kDescStorage = new(
-			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString,
-			Shell.EndianFormat.Big, 128);
+			Memory.Strings.StringStorageWidthType.Unicode, Memory.Strings.StringStorageType.CString, 128);
 		static readonly Memory.Strings.StringStorage kAuthorStorage = new(
 			Memory.Strings.StringStorageWidthType.Ascii, Memory.Strings.StringStorageType.CString, 16);
 

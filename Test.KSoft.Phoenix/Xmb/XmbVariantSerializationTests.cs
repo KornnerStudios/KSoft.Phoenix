@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KSoft.Phoenix.Xmb.Test;
@@ -95,6 +96,27 @@ public sealed class XmbVariantSerializationTests
 		Assert.AreEqual(XmbVariantType.Single, actual.Type);
 		Assert.IsTrue(actual.IsIndirect);
 		Assert.AreEqual(0x00123456u, actual.Offset);
+	}
+
+	[TestMethod]
+	[DataRow(Shell.EndianFormat.Little, "41000000")]
+	[DataRow(Shell.EndianFormat.Big, "00410000")]
+	public void UnicodePoolEntries_UsePoolStreamByteOrder(
+		Shell.EndianFormat byteOrder, string expectedHex)
+	{
+		using var writePool = new XmbVariantMemoryPool();
+		_ = writePool.Add(new XmbFileBuilder(), "A", isUnicode: true);
+		using var stream = new MemoryStream();
+		using (var writer = new IO.EndianWriter(stream, byteOrder) { BaseStreamOwner = false })
+		{
+			writePool.Write(writer);
+		}
+
+		byte[] bytes = stream.ToArray();
+		CollectionAssert.AreEqual(Convert.FromHexString(expectedHex), bytes);
+
+		using var readPool = new XmbVariantMemoryPool(bytes, byteOrder);
+		Assert.AreEqual("A", readPool.GetString(0, isUnicode: true));
 	}
 
 	private static byte[] Serialize(XmbVariant value)
