@@ -11,6 +11,14 @@
       >$(MSBuildProjectDirectory)\user.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\PhxGui\App.config"
+          Link="TraceConfigs\PhxGui.dll.config"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\PhxTool\App.config"
+          Link="TraceConfigs\PhxTool.dll.config"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="$(VitaRootDir)KSoft\KSoft\KSoft.csproj">
       <Project>{eb07f515-e27c-4768-8bd8-2829f657807e}</Project>
       <Name>KSoft</Name>
