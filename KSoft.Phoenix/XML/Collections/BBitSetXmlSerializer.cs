@@ -8,7 +8,7 @@ namespace KSoft.Phoenix.XML
 		private static BBitSetXmlSerializer? gBitSetXmlSerializer;
 
 		public static void Serialize<TDoc, TCursor>(IO.TagElementStream<TDoc, TCursor, string> s,
-			Collections.BBitSet bits, BBitSetXmlParams @params)
+			Collections.BBitSetBase bits, BBitSetXmlParams @params)
 			where TDoc : class
 			where TCursor : class
 		{
@@ -35,8 +35,8 @@ namespace KSoft.Phoenix.XML
 		private BBitSetXmlParams? mParams;
 		public BBitSetXmlParams Params => mParams!;
 
-		private Collections.BBitSet? mBits;
-		public Collections.BBitSet Bits => mBits!;
+		private Collections.BBitSetBase? mBits;
+		public Collections.BBitSetBase Bits => mBits!;
 
 		private string ElementName => Params.ElementName
 			?? throw new InvalidOperationException("Bit-set XML serialization requires an element name.");
@@ -45,7 +45,7 @@ namespace KSoft.Phoenix.XML
 		{
 		}
 
-		internal BBitSetXmlSerializer Reset(BBitSetXmlParams @params, Collections.BBitSet bits)
+		internal BBitSetXmlSerializer Reset(BBitSetXmlParams @params, Collections.BBitSetBase bits)
 		{
 			mParams = @params;
 			mBits = bits;
@@ -166,7 +166,7 @@ namespace KSoft.Phoenix.XML
 			for (int x = 0; x < penum.MemberCount; x++)
 			{
 				bool bitDefault = getDefault(x);
-				if (bitDefault == Bits[x])
+				if (bitDefault == Bits.GetBit(x))
 				{
 					continue;
 				}

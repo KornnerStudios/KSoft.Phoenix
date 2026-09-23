@@ -4,23 +4,27 @@ namespace KSoft.Collections
 {
 	using Phx = Phoenix.Phx;
 
-	public sealed class BBitSet
+	/// <summary>Shared reference-backed storage and initialization rules for Phoenix bit sets.</summary>
+	public abstract class BBitSetBase
 	{
 		Collections.BitSet? mBits;
 
-		/// <summary>Is this bitset void of any ON bits?</summary>
+		/// <summary>Reports whether storage is absent or all its bits are clear.</summary>
+		/// <remarks>This does not distinguish absent storage from an allocated all-clear set.</remarks>
 		public bool IsEmpty => mBits == null || mBits.IsAllClear;
-		/// <summary>Number of bits in the set, both ON and OFF</summary>
+		/// <summary>Gets zero when empty or all-clear; otherwise gets the storage's logical bit length.</summary>
 		public int Count =>	IsEmpty ? 0 : mBits!.Length;
-		/// <summary>Number of bits in the set which are ON</summary>
+		/// <summary>Gets the set-bit count, or zero when storage is absent.</summary>
 		public int EnabledCount => IsEmpty ? 0 : mBits!.Cardinality;
 
+		/// <summary>Gets the existing mutable storage, not a clone.</summary>
+		/// <remarks>Despite the non-nullable signature, this can be null before a database-backed domain is initialized or after empty-storage optimization. <see cref="IsEmpty"/> does not distinguish those cases from allocated all-clear storage.</remarks>
 		public Collections.BitSet RawBits => mBits!;
 
 		/// <summary>Parameters that dictate the functionality of this list</summary>
 		public BBitSetParams Params { get; private set; }
 
-		public BBitSet(BBitSetParams @params, Phx.BDatabaseBase? db = null)
+		protected BBitSetBase(BBitSetParams @params, Phx.BDatabaseBase? db = null)
 		{
 			ArgumentNullException.ThrowIfNull(@params);
 
@@ -110,11 +114,18 @@ namespace KSoft.Collections
 			}
 		}
 
+		protected internal bool GetBit(int bitIndex) => IsEmpty ? false : mBits![bitIndex];
+	};
+
+	public sealed class BBitSet : BBitSetBase
+	{
+		public BBitSet(BBitSetParams @params, Phx.BDatabaseBase? db = null) : base(@params, db) { }
+
 		/// <summary>Read or update a bit, initializing code-enum storage when needed.</summary>
 		/// <exception cref="InvalidOperationException">A write requires database-defined storage that has not been initialized.</exception>
 		public bool this[int bit_index]
 		{
-			get => IsEmpty ? false : mBits![bit_index];
+			get => GetBit(bit_index);
 			set => Set(bit_index, value);
 		}
 	};

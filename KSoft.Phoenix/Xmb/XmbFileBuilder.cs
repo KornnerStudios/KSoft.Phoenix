@@ -26,9 +26,9 @@ namespace KSoft.Phoenix.Xmb
 		public const int kCreatorToolVersion = 1;
 
 		#region BuilderOptions
-		public Collections.BitVector32 BuilderOptions;
+		public Collections.BitVector32<XmbFileBuilderOptions> BuilderOptions;
 		public string DebugBuilderOptions { get {
-			return BuilderOptions.ToString(XmbFileBuilderOptions.kNumberOf);
+			return BuilderOptions.ToFlagsString();
 		} }
 
 		public bool ForceStringVariants { get {

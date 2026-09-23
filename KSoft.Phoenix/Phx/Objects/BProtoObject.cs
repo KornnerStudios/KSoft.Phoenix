@@ -49,9 +49,6 @@ namespace KSoft.Phoenix.Phx
 			kXmlFileInfo,
 			kXmlFileInfoUpdate);
 
-		static readonly Collections.CodeEnum<BProtoObjectFlags> kFlagsProtoEnum = new();
-		static readonly Collections.BBitSetParams kFlagsParams = new(() => kFlagsProtoEnum);
-
 		static readonly Collections.BBitSetParams kObjectTypesParams = new(db => db.ObjectTypes);
 		static readonly XML.BBitSetXmlParams kObjectTypesXmlParams = new("ObjectType");
 
@@ -687,8 +684,7 @@ namespace KSoft.Phoenix.Phx
 			set { mNumStasisFieldsToStop = value; }
 		}
 		#endregion
-		public Collections.BBitSet Flags { get; private set; }
-			= new(kFlagsParams);
+		public Collections.BBitSet<BProtoObjectFlags> Flags { get; private set; } = new();
 		public Collections.BBitSet ObjectTypes { get; private set; }
 			 = new(kObjectTypesParams);
 		public Collections.BListArray<BProtoObjectDamageType> DamageTypes { get; private set; } = new();
