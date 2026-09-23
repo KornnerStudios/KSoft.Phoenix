@@ -110,16 +110,12 @@ namespace KSoft.Collections
 			}
 		}
 
+		/// <summary>Read or update a bit, initializing code-enum storage when needed.</summary>
+		/// <exception cref="InvalidOperationException">A write requires database-defined storage that has not been initialized.</exception>
 		public bool this[int bit_index]
 		{
 			get => IsEmpty ? false : mBits![bit_index];
-			set
-			{
-				if (!IsEmpty)
-				{
-					mBits![bit_index] = value;
-				}
-			}
+			set => Set(bit_index, value);
 		}
 	};
 }
