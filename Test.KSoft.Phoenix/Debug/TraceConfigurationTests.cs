@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -10,7 +11,20 @@ namespace KSoft.Phoenix.Test;
 public sealed class TraceConfigurationTests
 {
 	[TestMethod]
-	[DataRow("PhxTool.dll.config", "PhxTool", null)]
+	public void SecurityTraceSource_IsOwnedByKSoftSecurity()
+	{
+		TraceSource securitySource = KSoft.Debug.AssemblyTraceSourcesCollector
+			.FromClass(KSoft.Security.Program.DebugTraceClass)
+			.Single(source => source.Name == "KSoft.Security");
+		TraceSource phoenixSecurityAlias = KSoft.Debug.AssemblyTraceSourcesCollector
+			.FromClass(KSoft.Phoenix.Program.DebugTraceClass)
+			.Single(source => source.Name == "KSoft.Security");
+
+		Assert.AreSame(securitySource, phoenixSecurityAlias);
+	}
+
+	[TestMethod]
+	[DataRow("PhxTool.dll.config", "PhxTool", "PhxTool")]
 	[DataRow("PhxGui.dll.config", "PhxGui", "PhxGui")]
 	public void AppConfig_CoversActiveTraceSources(string configFileName, string baseFileName, string? appSourceName)
 	{
@@ -26,7 +40,8 @@ public sealed class TraceConfigurationTests
 		var traceSources = KSoft.Debug.AssemblyTraceSourcesCollector.FromClasses(
 			null,
 			KSoft.Program.DebugTraceClass,
-			KSoft.Phoenix.Program.DebugTraceClass);
+			KSoft.Phoenix.Program.DebugTraceClass,
+			KSoft.Wwise.Program.DebugTraceClass);
 
 		foreach (string sourceName in traceSources.Select(source => source.Name))
 		{

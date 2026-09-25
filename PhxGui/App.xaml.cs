@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
+using KSoft;
 
 namespace PhxGui
 {
@@ -8,9 +11,18 @@ namespace PhxGui
 	/// </summary>
 	public partial class App : Application
 	{
+		public static List<TraceSource> AllTraceSources { get; } = KSoft.Debug.AssemblyTraceSourcesCollector.FromClasses(
+			null,
+			KSoft.Program.DebugTraceClass,
+			KSoft.Phoenix.Program.DebugTraceClass,
+			KSoft.Wwise.Program.DebugTraceClass,
+			typeof(Debug.Trace))
+			.SortAndReturn(KSoft.Debug.AssemblyTraceSourcesCollector.CompareTraceSourcesByName);
+
 		public App()
 		{
 			KSoft.Program.Initialize();
+			KSoft.Program.RegisterTraceSources(AllTraceSources);
 		}
 
 		protected override void OnStartup(StartupEventArgs e)

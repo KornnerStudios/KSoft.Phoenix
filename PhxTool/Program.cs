@@ -37,6 +37,8 @@ namespace KSoft.Tool
 {
 	sealed partial class Program : ProgramBase
 	{
+		internal const string TraceCategoryName = "PhxTool";
+
 		protected override Environment ProgramEnvironment => Environment.None;
 
 		static string? gName;
@@ -63,6 +65,7 @@ namespace KSoft.Tool
 		static void Initialize()
 		{
 			KSoft.Program.Initialize();
+			KSoft.Program.RegisterTraceSources(DebugTraceClass);
 			KSoft.Phoenix.Program.Initialize();
 		}
 		static void Dispose()
@@ -70,6 +73,11 @@ namespace KSoft.Tool
 			KSoft.Phoenix.Program.Dispose();
 			KSoft.Program.Dispose();
 		}
+
+		public static Type DebugTraceClass => typeof(Debug.Trace);
+
+		internal static Microsoft.Extensions.Logging.ILogger CreateLogger()
+			=> KSoft.Program.CreateLogger(TraceCategoryName);
 
 		static void Main(string[] args)
 		{

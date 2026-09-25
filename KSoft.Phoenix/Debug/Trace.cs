@@ -12,7 +12,7 @@ namespace KSoft.Phoenix.Debug
 		/// <summary>Tracer for the <see cref="KSoft.Phoenix.Resource"/> namespace</summary>
 		public static Diag.TraceSource Resource { get; }		= new("KSoft.Phoenix.Resource", Diag.SourceLevels.All);
 		/// <summary>Tracer for the <see cref="KSoft.Security"/> namespace</summary>
-		public static Diag.TraceSource Security { get; }		= new("KSoft.Security",			Diag.SourceLevels.All);
+		public static Diag.TraceSource Security { get; }		= global::KSoft.Security.Debug.Trace.Security;
 		/// <summary>Tracer for the Trigger System related code</summary>
 		public static Diag.TraceSource TriggerSystem { get; }	= new("KSoft.Phoenix.Triggers", Diag.SourceLevels.All);
 		/// <summary>Tracer for the <see cref="KSoft.Phoenix.XML"/> namespace</summary>

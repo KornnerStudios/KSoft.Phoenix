@@ -14,10 +14,15 @@ namespace KSoft.Phoenix
 	{
 		public static void Initialize()
 		{
+			KSoft.Security.Program.Initialize();
+			KSoft.Wwise.Program.Initialize();
+			KSoft.Program.RegisterTraceSources(DebugTraceClass);
 		}
 
 		public static void Dispose()
 		{
+			KSoft.Wwise.Program.Dispose();
+			KSoft.Security.Program.Dispose();
 		}
 
 		public static Type DebugTraceClass { get { return typeof(Debug.Trace); } }
