@@ -2,8 +2,7 @@
     x:Class="PhxGui.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:HaloWarsAlias="clr-namespace:KSoft.Phoenix.HaloWars;assembly=KSoft.Phoenix"
-    StartupUri="MainWindow.xaml">
+    xmlns:HaloWarsAlias="clr-namespace:KSoft.Phoenix.HaloWars;assembly=KSoft.Phoenix">
     <Application.Resources>
         <ResourceDictionary>
             <HaloWarsAlias:ModManifestFile

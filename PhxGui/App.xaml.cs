@@ -18,6 +18,13 @@ namespace PhxGui
 			base.OnStartup(e);
 
 			KSoft.Phoenix.Program.Initialize();
+
+			var mainWindow = new MainWindow
+			{
+				DataContext = new MainWindowViewModel(),
+			};
+			MainWindow = mainWindow;
+			mainWindow.Show();
 		}
 
 		protected override void OnExit(ExitEventArgs e)

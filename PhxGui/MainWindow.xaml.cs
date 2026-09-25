@@ -9,13 +9,13 @@ namespace PhxGui
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private readonly MainWindowViewModel mViewModel = new();
+		private MainWindowViewModel ViewModel
+			=> (MainWindowViewModel)(DataContext
+				?? throw new System.InvalidOperationException("MainWindow requires a MainWindowViewModel DataContext."));
 
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			base.DataContext = mViewModel;
 		}
 
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -26,7 +26,7 @@ namespace PhxGui
 
 		private void OnDrop(object sender, DragEventArgs e)
 		{
-			if (mViewModel.IsProcessing)
+			if (ViewModel.IsProcessing)
 			{
 				return;
 			}
@@ -35,13 +35,13 @@ namespace PhxGui
 			{
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-				mViewModel.ProcessFiles(files);
+				ViewModel.ProcessFiles(files);
 			}
 		}
 
 		private void OnPreviewDragOver(object sender, DragEventArgs e)
 		{
-			if (mViewModel.IsProcessing)
+			if (ViewModel.IsProcessing)
 			{
 				return;
 			}
@@ -52,7 +52,7 @@ namespace PhxGui
 		private void OnPreviewDragEnter(object sender, DragEventArgs e)
 		{
 			e.Effects = DragDropEffects.None;
-			if (mViewModel.IsProcessing)
+			if (ViewModel.IsProcessing)
 			{
 				return;
 			}
@@ -60,7 +60,7 @@ namespace PhxGui
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-				if (mViewModel.AcceptsFiles(files))
+				if (ViewModel.AcceptsFiles(files))
 				{
 					e.Effects = DragDropEffects.Move;
 				}
@@ -69,24 +69,24 @@ namespace PhxGui
 
 		private void OnPreviewDragLeave(object sender, DragEventArgs e)
 		{
-			if (mViewModel.IsProcessing)
+			if (ViewModel.IsProcessing)
 			{
 				return;
 			}
 
-			mViewModel.ClearProcessFilesHelpText();
+			ViewModel.ClearProcessFilesHelpText();
 		}
 
 		private void OnMessagesBlockMouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (mViewModel.IsProcessing)
+			if (ViewModel.IsProcessing)
 			{
 				return;
 			}
 
-			if (!string.IsNullOrWhiteSpace(mViewModel.MessagesText))
+			if (!string.IsNullOrWhiteSpace(ViewModel.MessagesText))
 			{
-				Clipboard.SetText(mViewModel.MessagesText);
+				Clipboard.SetText(ViewModel.MessagesText);
 			}
 		}
 
